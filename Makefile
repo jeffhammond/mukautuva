@@ -1,9 +1,9 @@
 CC	= clang
 CFLAGS	= -O0 -Wall -Wextra -Werror
 
-all: header.x
+all: header.o
 
-%.x: %.c mpi.h
+%.o: %.c mpi.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
