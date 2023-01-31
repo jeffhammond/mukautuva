@@ -74,6 +74,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
         wrapname = "libmukmpich.so";
     }
 
+    // now we load the wrapper for the implementation we have
     void * w = dlopen(wrapname, RTLD_LAZY);
     if (w == NULL) {
         printf("dlopen of %s failed: %s\n", wrapname, dlerror() );
