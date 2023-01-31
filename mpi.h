@@ -1,3 +1,6 @@
+#ifndef MPI_H
+#define MPI_H
+
 typedef struct __MPI_Comm__         * MPI_Comm;
 typedef struct __MPI_Datatype__     * MPI_Datatype;
 typedef struct __MPI_Errhandler__   * MPI_Errhandler;
@@ -115,3 +118,4 @@ int MPI_Session_get_pset_info(MPI_Session session, const char *pset_name, MPI_In
 int MPI_Session_init(MPI_Info info, MPI_Errhandler errhandler, MPI_Session *session);
 int MPI_Unpublish_name(const char *service_name, MPI_Info info, const char *port_name);
 
+#endif
