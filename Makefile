@@ -1,9 +1,18 @@
 CC	= clang
 CFLAGS	= -O0 -Wall -Wextra -Werror
+CFLAGS	+= -fPIC
+SOFLAGS	= -shared
 
-all: header.o lib
+AR	= ar
+ARFLAGS	= -r
 
-lib: libinit.o wrapmpich.o wrapompi.o
+all: header.o libmuk.a libmuk.so
+
+libmuk.a: libinit.o wrapmpich.o wrapompi.o
+	$(AR) $(ARFLAGS) $@ $^
+
+libmuk.so: libinit.o wrapmpich.o wrapompi.o
+	$(CC) $(SOFLAGS) $^ -o $@
 
 header.o: header.c mpi.h
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -18,6 +27,6 @@ wrapompi.o: wrapompi.c ompi.h mpi.h muk.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	-rm -f *.o *.x *.s
+	-rm -f *.o *.x *.s *.a *.so
 	-rm -rf *.dSYM
 
