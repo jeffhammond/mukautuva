@@ -1,14 +1,15 @@
 CC	= clang
 CFLAGS	= -O0 -Wall -Wextra -Werror
+CFLAGS	+= -ferror-limit=3
 CFLAGS	+= -fPIC
 SOFLAGS	= -shared
 
 AR	= ar
 ARFLAGS	= -r
 
-all: header.o libmuk.a libmuk.so libmukompi.so libmukmpich.so
+all: header.o libmuk.a libmuk.so libmukompi.so #libmukmpich.so
 
-libmuk.a: libinit.o wrapmpich.o wrapompi.o
+libmuk.a: libinit.o
 	$(AR) $(ARFLAGS) $@ $^
 
 libmuk.so: libinit.o
@@ -23,13 +24,13 @@ libmukmpich.so: wrapmpich.o
 header.o: header.c mpi.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
-libinit.o: libinit.c mpi.h muk.h
+libinit.o: libinit.c mpi.h muk.h muk-dl.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
-wrapmpich.o: wrapmpich.c mpich.h mpi.h muk.h
+wrapmpich.o: wrapmpich. muk-mpi-typedefs.h muk-functions.hc
 	$(CC) $(CFLAGS) -c $< -o $@
 
-wrapompi.o: wrapompi.c ompi.h mpi.h muk.h
+wrapompi.o: wrapompi.c muk-mpi-typedefs.h muk-functions.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:

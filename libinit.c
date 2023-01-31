@@ -1,5 +1,5 @@
-#include "mpi.h"
 #include "muk.h"
+#include "muk-dl.h"
 
 #if defined(__linux__) && defined(__x86_64__)
 #define LIBMPI_NAME "/usr/lib/x86_64-linux-gnu/libmpi.so"
@@ -24,7 +24,7 @@ int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
 
     void * h = dlopen(soname, RTLD_LAZY);
     if (h == NULL) {
-        printf("dlopen failed: %s\n", dlerror() );
+        printf("dlopen of %s failed: %s\n", soname, dlerror() );
         abort();
     }
 
@@ -68,11 +68,22 @@ int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MUK_Get_version = MUK_DLSYM(h,"MPI_Get_version");
     rc = MUK_Get_version(&major, &minor);
 
-    if (whose_mpi == MPICH) {
-        rc = MPICH_Load_functions(h, major, minor);
-    } else if (whose_mpi == OMPI) {
-        rc = OMPI_Load_functions(h, major, minor);
-        rc = OMPI_Load_predefined(h);
+    char * wrapname;
+    if (whose_mpi == OMPI) {
+        wrapname = "libmukompi.so";
+    } else if (whose_mpi == MPICH) {
+        wrapname = "libmukmpich.so";
+    }
+
+    void * w = dlopen(wrapname, RTLD_LAZY);
+    if (w == NULL) {
+        printf("dlopen of %s failed: %s\n", wrapname, dlerror() );
+        abort();
+    } else {
+        MUK_Load_functions = MUK_DLSYM(w,"MUK_Load_functions");
+        rc = MUK_Load_functions(h, major, minor);
+        MUK_Load_predefined = MUK_DLSYM(w,"MUK_Load_predefined");
+        rc = MUK_Load_predefined(h);
     }
 
     return rc;
