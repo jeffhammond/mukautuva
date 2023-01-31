@@ -63,11 +63,7 @@ int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MUK_Initialized = MUK_DLSYM(h,"MPI_Initialized");
     MUK_Is_thread_main = MUK_DLSYM(h,"MPI_Is_thread_main");
     MUK_Query_thread = MUK_DLSYM(h,"MPI_Query_thread");
-
-    // load these here because theoretically, we need to handle the case where they
-    // are not symbols, which will be dependent on the library.
-    MUK_Wtime = MUK_DLSYM(h,"MPI_Wtime");
-    MUK_Wtick = MUK_DLSYM(h,"MPI_Wtick");
+    MUK_Get_processor_name = MUK_DLSYM(h,"MPI_Get_processor_name");
 
     int major, minor;
     MUK_Get_version = MUK_DLSYM(h,"MPI_Get_version");
@@ -99,7 +95,8 @@ int MPICH_Load_symbols(void * restrict h, int major, int minor)
 {
     (void)minor;
 
-    MPICH_Get_processor_name = MUK_DLSYM(h,"MPI_Get_processor_name");
+    MPICH_Wtime = MUK_DLSYM(h,"MPI_Wtime");
+    MPICH_Wtick = MUK_DLSYM(h,"MPI_Wtick");
     MPICH_Abort = MUK_DLSYM(h,"MPI_Abort");
 
     MPICH_Alloc_mem = MUK_DLSYM(h,"MPI_Alloc_mem");
@@ -172,7 +169,8 @@ int OMPI_Load_symbols(void * restrict h, int major, int minor)
 {
     (void)minor;
 
-    OMPI_Get_processor_name = MUK_DLSYM(h,"MPI_Get_processor_name");
+    OMPI_Wtime = MUK_DLSYM(h,"MPI_Wtime");
+    OMPI_Wtick = MUK_DLSYM(h,"MPI_Wtick");
     OMPI_Abort = MUK_DLSYM(h,"MPI_Abort");
 
     OMPI_Alloc_mem = MUK_DLSYM(h,"MPI_Alloc_mem");

@@ -73,9 +73,6 @@ int (*MPICH_File_create_errhandler)(MPICH_File_errhandler_function *file_errhand
 int (*MPICH_File_get_errhandler)(MPICH_File file, MPICH_Errhandler *errhandler);
 int (*MPICH_File_set_errhandler)(MPICH_File file, MPICH_Errhandler errhandler);
 int (*MPICH_Free_mem)(void *base);
-int (*MPICH_Get_library_version)(char *version, int *resultlen);
-int (*MPICH_Get_processor_name)(char *name, int *resultlen);
-int (*MPICH_Get_version)(int *version, int *subversion);
 int (*MPICH_Session_call_errhandler)(MPICH_Session session, int errorcode);
 int (*MPICH_Session_create_errhandler)(MPICH_Session_errhandler_function *session_errhandler_fn, MPICH_Errhandler *errhandler);
 int (*MPICH_Session_get_errhandler)(MPICH_Session session, MPICH_Errhandler *errhandler);
@@ -85,6 +82,11 @@ int (*MPICH_Win_create_errhandler)(MPICH_Win_errhandler_function *win_errhandler
 int (*MPICH_Win_get_errhandler)(MPICH_Win win, MPICH_Errhandler *errhandler);
 int (*MPICH_Win_set_errhandler)(MPICH_Win win, MPICH_Errhandler errhandler);
 int (*MPICH_Info_create)(MPICH_Info *info);
+
+// technically, these are not required to be symbols, but we know they are.
+// we can work around the theoretical problem if necessary.
+double (*MPICH_Wtime)(void);
+double (*MPICH_Wtick)(void);
 
 // A.3.9 Process Creation and Management C Bindings
 int (*MPICH_Close_port)(const char *port_name);
@@ -102,16 +104,9 @@ int (*MPICH_Comm_get_parent)(MPICH_Comm *parent);
 int (*MPICH_Comm_join)(int fd, MPICH_Comm *intercomm);
 int (*MPICH_Comm_spawn)(const char *command, char *argv[], int maxprocs, MPICH_Info info, int root, MPICH_Comm comm, MPICH_Comm *intercomm, int array_of_errcodes[]);
 int (*MPICH_Comm_spawn_multiple)(int count, char *array_of_commands[], char **array_of_argv[], const int array_of_maxprocs[], const MPICH_Info array_of_info[], int root, MPICH_Comm comm, MPICH_Comm *intercomm, int array_of_errcodes[]);
-int (*MPICH_Finalize)(void);
-int (*MPICH_Finalized)(int *flag);
-int (*MPICH_Init)(int *argc, char ***argv);
-int (*MPICH_Init_thread)(int *argc, char ***argv, int required, int *provided);
-int (*MPICH_Initialized)(int *flag);
-int (*MPICH_Is_thread_main)(int *flag);
 int (*MPICH_Lookup_name)(const char *service_name, MPICH_Info info, char *port_name);
 int (*MPICH_Open_port)(MPICH_Info info, char *port_name);
 int (*MPICH_Publish_name)(const char *service_name, MPICH_Info info, const char *port_name);
-int (*MPICH_Query_thread)(int *provided);
 int (*MPICH_Session_finalize)(MPICH_Session *session);
 int (*MPICH_Session_get_nth_pset)(MPICH_Session session, MPICH_Info info, int n, int *pset_len, char *pset_name);
 int (*MPICH_Session_get_info)(MPICH_Session session, MPICH_Info *info_used);

@@ -73,9 +73,6 @@ int (*OMPI_File_create_errhandler)(OMPI_File_errhandler_function *file_errhandle
 int (*OMPI_File_get_errhandler)(OMPI_File file, OMPI_Errhandler *errhandler);
 int (*OMPI_File_set_errhandler)(OMPI_File file, OMPI_Errhandler errhandler);
 int (*OMPI_Free_mem)(void *base);
-int (*OMPI_Get_library_version)(char *version, int *resultlen);
-int (*OMPI_Get_processor_name)(char *name, int *resultlen);
-int (*OMPI_Get_version)(int *version, int *subversion);
 int (*OMPI_Session_call_errhandler)(OMPI_Session session, int errorcode);
 int (*OMPI_Session_create_errhandler)(OMPI_Session_errhandler_function *session_errhandler_fn, OMPI_Errhandler *errhandler);
 int (*OMPI_Session_get_errhandler)(OMPI_Session session, OMPI_Errhandler *errhandler);
@@ -85,6 +82,11 @@ int (*OMPI_Win_create_errhandler)(OMPI_Win_errhandler_function *win_errhandler_f
 int (*OMPI_Win_get_errhandler)(OMPI_Win win, OMPI_Errhandler *errhandler);
 int (*OMPI_Win_set_errhandler)(OMPI_Win win, OMPI_Errhandler errhandler);
 int (*OMPI_Info_create)(OMPI_Info *info);
+
+// technically, these are not required to be symbols, but we know they are.
+// we can work around the theoretical problem if necessary.
+double (*OMPI_Wtime)(void);
+double (*OMPI_Wtick)(void);
 
 // A.3.9 Process Creation and Management C Bindings
 int (*OMPI_Close_port)(const char *port_name);
@@ -102,16 +104,9 @@ int (*OMPI_Comm_get_parent)(OMPI_Comm *parent);
 int (*OMPI_Comm_join)(int fd, OMPI_Comm *intercomm);
 int (*OMPI_Comm_spawn)(const char *command, char *argv[], int maxprocs, OMPI_Info info, int root, OMPI_Comm comm, OMPI_Comm *intercomm, int array_of_errcodes[]);
 int (*OMPI_Comm_spawn_multiple)(int count, char *array_of_commands[], char **array_of_argv[], const int array_of_maxprocs[], const OMPI_Info array_of_info[], int root, OMPI_Comm comm, OMPI_Comm *intercomm, int array_of_errcodes[]);
-int (*OMPI_Finalize)(void);
-int (*OMPI_Finalized)(int *flag);
-int (*OMPI_Init)(int *argc, char ***argv);
-int (*OMPI_Init_thread)(int *argc, char ***argv, int required, int *provided);
-int (*OMPI_Initialized)(int *flag);
-int (*OMPI_Is_thread_main)(int *flag);
 int (*OMPI_Lookup_name)(const char *service_name, OMPI_Info info, char *port_name);
 int (*OMPI_Open_port)(OMPI_Info info, char *port_name);
 int (*OMPI_Publish_name)(const char *service_name, OMPI_Info info, const char *port_name);
-int (*OMPI_Query_thread)(int *provided);
 int (*OMPI_Session_finalize)(OMPI_Session *session);
 int (*OMPI_Session_get_nth_pset)(OMPI_Session session, OMPI_Info info, int n, int *pset_len, char *pset_name);
 int (*OMPI_Session_get_info)(OMPI_Session session, OMPI_Info *info_used);

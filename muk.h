@@ -40,14 +40,10 @@ int (*MUK_Get_version)(int *version, int *subversion);
 // these symbols are ABI-agnostic
 int (*MUK_Finalize)(void);
 int (*MUK_Finalized)(int*);
-int (*MUK_Init_thread)(int *argc, char ***argv, int, int*);
+int (*MUK_Init_thread)(int*,char***,int,int*);
 int (*MUK_Initialized)(int*);
 int (*MUK_Is_thread_main)(int*);
 int (*MUK_Query_thread)(int*);
-
-// technically, these are not required to be symbols, but we know they are.
-// we can work around the theoretical problem if necessary.
-double (*MUK_Wtime)(void);
-double (*MUK_Wtick)(void);
+int (*MUK_Get_processor_name)(char*,int*);
 
 #endif
