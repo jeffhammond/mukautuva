@@ -11,9 +11,8 @@
 
 Which_MPI_e whose_mpi = UNKNOWN;
 
-static int load_symbols(void * restrict handle);
-
-int MPI_Init(int * argc, char *** argv)
+// alkaa = start
+int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
 {
     int rc;
 
@@ -30,7 +29,13 @@ int MPI_Init(int * argc, char *** argv)
     }
 
     MUK_Init = MUK_DLSYM(h,"MPI_Init");
-    rc = MUK_Init(argc,argv);
+    MUK_Init_thread = MUK_DLSYM(h,"MPI_Init_thread");
+
+    if (provided == NULL) {
+        rc = MUK_Init(argc,argv);
+    } else {
+        rc = MUK_Init_thread(argc,argv,requested,provided);
+    }
 
     // figure out which library i am using
     MUK_Get_library_version = MUK_DLSYM(h,"MPI_Get_library_version");
@@ -51,6 +56,14 @@ int MPI_Init(int * argc, char *** argv)
         }
     }
 
+    // these are ABI-agnostic and important, so why not load them now...
+    MUK_Finalize = MUK_DLSYM(h,"MPI_Finalize");
+    MUK_Finalized = MUK_DLSYM(h,"MPI_Finalized");
+    MUK_Init_thread = MUK_DLSYM(h,"MPI_Init_thread");
+    MUK_Initialized = MUK_DLSYM(h,"MPI_Initialized");
+    MUK_Is_thread_main = MUK_DLSYM(h,"MPI_Is_thread_main");
+    MUK_Query_thread = MUK_DLSYM(h,"MPI_Query_thread");
+
     // load these here because theoretically, we need to handle the case where they
     // are not symbols, which will be dependent on the library.
     MUK_Wtime = MUK_DLSYM(h,"MPI_Wtime");
@@ -69,11 +82,23 @@ int MPI_Init(int * argc, char *** argv)
     return rc;
 }
 
+int MPI_Init(int * argc, char *** argv)
+{
+    return MUK_Alkaa(argc,argv,-1,NULL);
+}
+
+int MPI_Init_thread(int * argc, char *** argv, int requested, int * provided)
+{
+    return MUK_Alkaa(argc,argv,requested,provided);
+}
+
 // VIM tip
 // s/int (\*MUK_\(.*\))(\(.*\));/MUK_\1 = MUK_DLSYM(h,"MPI_\1");
 
-static int MPICH_Load_symbols(void * restrict h, int major, int minor)
+int MPICH_Load_symbols(void * restrict h, int major, int minor)
 {
+    (void)minor;
+
     MPICH_Get_processor_name = MUK_DLSYM(h,"MPI_Get_processor_name");
     MPICH_Abort = MUK_DLSYM(h,"MPI_Abort");
 
@@ -105,14 +130,20 @@ static int MPICH_Load_symbols(void * restrict h, int major, int minor)
 
     MPICH_Close_port = MUK_DLSYM(h,"MPI_Close_port");
     MPICH_Comm_disconnect = MUK_DLSYM(h,"MPI_Comm_disconnect");
+    MPICH_Lookup_name = MUK_DLSYM(h,"MPI_Lookup_name");
+    MPICH_Open_port = MUK_DLSYM(h,"MPI_Open_port");
+    MPICH_Publish_name = MUK_DLSYM(h,"MPI_Publish_name");
+    MPICH_Unpublish_name = MUK_DLSYM(h,"MPI_Unpublish_name");
 
     MPICH_Info_create = MUK_DLSYM(h,"MPI_Info_create");
     MPICH_Info_dup = MUK_DLSYM(h,"MPI_Info_dup");
     MPICH_Info_free = MUK_DLSYM(h,"MPI_Info_free");
     MPICH_Info_get_nkeys = MUK_DLSYM(h,"MPI_Info_get_nkeys");
     MPICH_Info_get_nthkey = MUK_DLSYM(h,"MPI_Info_get_nthkey");
-    MPICH_Info_get_string = MUK_DLSYM(h,"MPI_Info_get_string");
     MPICH_Info_set = MUK_DLSYM(h,"MPI_Info_set");
+    if (major >= 4) {
+        MPICH_Info_get_string = MUK_DLSYM(h,"MPI_Info_get_string");
+    }
 
     MPICH_Comm_accept = MUK_DLSYM(h,"MPI_Comm_accept");
     MPICH_Comm_connect = MUK_DLSYM(h,"MPI_Comm_connect");
@@ -120,34 +151,27 @@ static int MPICH_Load_symbols(void * restrict h, int major, int minor)
     MPICH_Comm_join = MUK_DLSYM(h,"MPI_Comm_join");
     MPICH_Comm_spawn = MUK_DLSYM(h,"MPI_Comm_spawn");
     MPICH_Comm_spawn_multiple = MUK_DLSYM(h,"MPI_Comm_spawn_multiple");
-    MPICH_Finalize = MUK_DLSYM(h,"MPI_Finalize");
-    MPICH_Finalized = MUK_DLSYM(h,"MPI_Finalized");
-    MPICH_Init = MUK_DLSYM(h,"MPI_Init");
-    MPICH_Init_thread = MUK_DLSYM(h,"MPI_Init_thread");
-    MPICH_Initialized = MUK_DLSYM(h,"MPI_Initialized");
-    MPICH_Is_thread_main = MUK_DLSYM(h,"MPI_Is_thread_main");
-    MPICH_Lookup_name = MUK_DLSYM(h,"MPI_Lookup_name");
-    MPICH_Open_port = MUK_DLSYM(h,"MPI_Open_port");
-    MPICH_Publish_name = MUK_DLSYM(h,"MPI_Publish_name");
-    MPICH_Query_thread = MUK_DLSYM(h,"MPI_Query_thread");
-    MPICH_Unpublish_name = MUK_DLSYM(h,"MPI_Unpublish_name");
 
-    MPICH_Session_finalize = MUK_DLSYM(h,"MPI_Session_finalize");
-    MPICH_Session_get_nth_pset = MUK_DLSYM(h,"MPI_Session_get_nth_pset");
-    MPICH_Session_get_info = MUK_DLSYM(h,"MPI_Session_get_info");
-    MPICH_Session_get_num_psets = MUK_DLSYM(h,"MPI_Session_get_num_psets");
-    MPICH_Session_get_pset_info = MUK_DLSYM(h,"MPI_Session_get_pset_info");
-    MPICH_Session_init = MUK_DLSYM(h,"MPI_Session_init");
-    MPICH_Session_call_errhandler = MUK_DLSYM(h,"MPI_Session_call_errhandler");
-    MPICH_Session_create_errhandler = MUK_DLSYM(h,"MPI_Session_create_errhandler");
-    MPICH_Session_get_errhandler = MUK_DLSYM(h,"MPI_Session_get_errhandler");
-    MPICH_Session_set_errhandler = MUK_DLSYM(h,"MPI_Session_set_errhandler");
+    if (major >= 4) {
+        MPICH_Session_finalize = MUK_DLSYM(h,"MPI_Session_finalize");
+        MPICH_Session_get_nth_pset = MUK_DLSYM(h,"MPI_Session_get_nth_pset");
+        MPICH_Session_get_info = MUK_DLSYM(h,"MPI_Session_get_info");
+        MPICH_Session_get_num_psets = MUK_DLSYM(h,"MPI_Session_get_num_psets");
+        MPICH_Session_get_pset_info = MUK_DLSYM(h,"MPI_Session_get_pset_info");
+        MPICH_Session_init = MUK_DLSYM(h,"MPI_Session_init");
+        MPICH_Session_call_errhandler = MUK_DLSYM(h,"MPI_Session_call_errhandler");
+        MPICH_Session_create_errhandler = MUK_DLSYM(h,"MPI_Session_create_errhandler");
+        MPICH_Session_get_errhandler = MUK_DLSYM(h,"MPI_Session_get_errhandler");
+        MPICH_Session_set_errhandler = MUK_DLSYM(h,"MPI_Session_set_errhandler");
+    }
 
     return 0;
 }
 
-static int OMPI_Load_symbols(void * restrict h, int major, int minor)
+int OMPI_Load_symbols(void * restrict h, int major, int minor)
 {
+    (void)minor;
+
     OMPI_Get_processor_name = MUK_DLSYM(h,"MPI_Get_processor_name");
     OMPI_Abort = MUK_DLSYM(h,"MPI_Abort");
 
@@ -179,14 +203,20 @@ static int OMPI_Load_symbols(void * restrict h, int major, int minor)
 
     OMPI_Close_port = MUK_DLSYM(h,"MPI_Close_port");
     OMPI_Comm_disconnect = MUK_DLSYM(h,"MPI_Comm_disconnect");
+    OMPI_Lookup_name = MUK_DLSYM(h,"MPI_Lookup_name");
+    OMPI_Open_port = MUK_DLSYM(h,"MPI_Open_port");
+    OMPI_Publish_name = MUK_DLSYM(h,"MPI_Publish_name");
+    OMPI_Unpublish_name = MUK_DLSYM(h,"MPI_Unpublish_name");
 
     OMPI_Info_create = MUK_DLSYM(h,"MPI_Info_create");
     OMPI_Info_dup = MUK_DLSYM(h,"MPI_Info_dup");
     OMPI_Info_free = MUK_DLSYM(h,"MPI_Info_free");
     OMPI_Info_get_nkeys = MUK_DLSYM(h,"MPI_Info_get_nkeys");
     OMPI_Info_get_nthkey = MUK_DLSYM(h,"MPI_Info_get_nthkey");
-    OMPI_Info_get_string = MUK_DLSYM(h,"MPI_Info_get_string");
     OMPI_Info_set = MUK_DLSYM(h,"MPI_Info_set");
+    if (major >= 4) {
+        OMPI_Info_get_string = MUK_DLSYM(h,"MPI_Info_get_string");
+    }
 
     OMPI_Comm_accept = MUK_DLSYM(h,"MPI_Comm_accept");
     OMPI_Comm_connect = MUK_DLSYM(h,"MPI_Comm_connect");
@@ -194,28 +224,19 @@ static int OMPI_Load_symbols(void * restrict h, int major, int minor)
     OMPI_Comm_join = MUK_DLSYM(h,"MPI_Comm_join");
     OMPI_Comm_spawn = MUK_DLSYM(h,"MPI_Comm_spawn");
     OMPI_Comm_spawn_multiple = MUK_DLSYM(h,"MPI_Comm_spawn_multiple");
-    OMPI_Finalize = MUK_DLSYM(h,"MPI_Finalize");
-    OMPI_Finalized = MUK_DLSYM(h,"MPI_Finalized");
-    OMPI_Init = MUK_DLSYM(h,"MPI_Init");
-    OMPI_Init_thread = MUK_DLSYM(h,"MPI_Init_thread");
-    OMPI_Initialized = MUK_DLSYM(h,"MPI_Initialized");
-    OMPI_Is_thread_main = MUK_DLSYM(h,"MPI_Is_thread_main");
-    OMPI_Lookup_name = MUK_DLSYM(h,"MPI_Lookup_name");
-    OMPI_Open_port = MUK_DLSYM(h,"MPI_Open_port");
-    OMPI_Publish_name = MUK_DLSYM(h,"MPI_Publish_name");
-    OMPI_Query_thread = MUK_DLSYM(h,"MPI_Query_thread");
-    OMPI_Unpublish_name = MUK_DLSYM(h,"MPI_Unpublish_name");
 
-    OMPI_Session_finalize = MUK_DLSYM(h,"MPI_Session_finalize");
-    OMPI_Session_get_nth_pset = MUK_DLSYM(h,"MPI_Session_get_nth_pset");
-    OMPI_Session_get_info = MUK_DLSYM(h,"MPI_Session_get_info");
-    OMPI_Session_get_num_psets = MUK_DLSYM(h,"MPI_Session_get_num_psets");
-    OMPI_Session_get_pset_info = MUK_DLSYM(h,"MPI_Session_get_pset_info");
-    OMPI_Session_init = MUK_DLSYM(h,"MPI_Session_init");
-    OMPI_Session_call_errhandler = MUK_DLSYM(h,"MPI_Session_call_errhandler");
-    OMPI_Session_create_errhandler = MUK_DLSYM(h,"MPI_Session_create_errhandler");
-    OMPI_Session_get_errhandler = MUK_DLSYM(h,"MPI_Session_get_errhandler");
-    OMPI_Session_set_errhandler = MUK_DLSYM(h,"MPI_Session_set_errhandler");
+    if (major >= 4) {
+        OMPI_Session_finalize = MUK_DLSYM(h,"MPI_Session_finalize");
+        OMPI_Session_get_nth_pset = MUK_DLSYM(h,"MPI_Session_get_nth_pset");
+        OMPI_Session_get_info = MUK_DLSYM(h,"MPI_Session_get_info");
+        OMPI_Session_get_num_psets = MUK_DLSYM(h,"MPI_Session_get_num_psets");
+        OMPI_Session_get_pset_info = MUK_DLSYM(h,"MPI_Session_get_pset_info");
+        OMPI_Session_init = MUK_DLSYM(h,"MPI_Session_init");
+        OMPI_Session_call_errhandler = MUK_DLSYM(h,"MPI_Session_call_errhandler");
+        OMPI_Session_create_errhandler = MUK_DLSYM(h,"MPI_Session_create_errhandler");
+        OMPI_Session_get_errhandler = MUK_DLSYM(h,"MPI_Session_get_errhandler");
+        OMPI_Session_set_errhandler = MUK_DLSYM(h,"MPI_Session_set_errhandler");
+    }
 
     return 0;
 }

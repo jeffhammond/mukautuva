@@ -1,6 +1,58 @@
 #ifndef OMPI_H
 #define OMPI_H
 
+typedef void * OMPI_Comm;
+typedef void * OMPI_Datatype;
+typedef void * OMPI_Errhandler;
+typedef void * OMPI_File;
+typedef void * OMPI_Group;
+typedef void * OMPI_Info;
+typedef void * OMPI_Message;
+typedef void * OMPI_Op;
+typedef void * OMPI_Request;
+typedef void * OMPI_Session;
+typedef void * OMPI_Win;
+
+typedef struct __OMPI_Status__
+{
+    int MPI_SOURCE;
+    int MPI_TAG;
+    int MPI_ERROR;
+    int _cancelled;
+    size_t _ucount;
+}
+OMPI_Status;
+
+// TODO these may be configurable...
+typedef ptrdiff_t OMPI_Aint;
+typedef long long OMPI_Count;
+typedef long long OMPI_Offset;
+
+// A.1.3 Prototype Definitions
+typedef void OMPI_User_function(void *invec, void *inoutvec, int *len, OMPI_Datatype *datatype);
+typedef void OMPI_User_function_c(void *invec, void *inoutvec, OMPI_Count *len, OMPI_Datatype *datatype);
+typedef int OMPI_Comm_copy_attr_function(OMPI_Comm oldcomm, int comm_keyval, void *extra_state, void *attribute_val_in, void *attribute_val_out, int *flag);
+typedef int OMPI_Comm_delete_attr_function(OMPI_Comm comm, int comm_keyval, void *attribute_val, void *extra_state);
+typedef int OMPI_Win_copy_attr_function(OMPI_Win oldwin, int win_keyval, void *extra_state, void *attribute_val_in, void *attribute_val_out, int *flag);
+typedef int OMPI_Win_delete_attr_function(OMPI_Win win, int win_keyval, void *attribute_val, void *extra_state);
+typedef int OMPI_Type_copy_attr_function(OMPI_Datatype oldtype, int type_keyval, void *extra_state, void *attribute_val_in, void *attribute_val_out, int *flag);
+typedef int OMPI_Type_delete_attr_function(OMPI_Datatype datatype, int type_keyval, void *attribute_val, void *extra_state);
+typedef void OMPI_Comm_errhandler_function(OMPI_Comm *comm, int *error_code, ...);
+typedef void OMPI_Win_errhandler_function(OMPI_Win *win, int *error_code, ...);
+typedef void OMPI_File_errhandler_function(OMPI_File *file, int *error_code, ...);
+typedef void OMPI_Session_errhandler_function(OMPI_Session *session, int *error_code, ...);
+typedef int OMPI_Grequest_query_function(void *extra_state, OMPI_Status *status);
+typedef int OMPI_Grequest_free_function(void *extra_state);
+typedef int OMPI_Grequest_cancel_function(void *extra_state, int complete);
+typedef int OMPI_Datarep_extent_function(OMPI_Datatype datatype, OMPI_Aint *extent, void *extra_state);
+typedef int OMPI_Datarep_conversion_function(void *userbuf, OMPI_Datatype datatype, int count, void *filebuf, OMPI_Offset position, void *extra_state);
+typedef int OMPI_Datarep_conversion_function_c(void *userbuf, OMPI_Datatype datatype, OMPI_Count count, void *filebuf, OMPI_Offset position, void *extra_state);
+#if 0
+typedef void OMPI_T_event_cb_function(OMPI_T_event_instance event_instance, OMPI_T_event_registration event_registration, OMPI_T_cb_safety cb_safety, void *user_data);
+typedef void OMPI_T_event_free_cb_function(OMPI_T_event_registration event_registration, OMPI_T_cb_safety cb_safety, void *user_data);
+typedef void OMPI_T_event_dropped_cb_function(OMPI_Count count, OMPI_T_event_registration event_registration, int source_index, OMPI_T_cb_safety cb_safety, void *user_data);
+#endif
+
 // VIM tip:
 // s/int OMPI_\(.*\)(\(.*\));/int (*OMPI_\1)(\2);
 

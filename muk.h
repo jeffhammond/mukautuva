@@ -20,6 +20,9 @@ typedef enum {
 
 extern Which_MPI_e whose_mpi;
 
+int MPICH_Load_symbols(void * restrict h, int major, int minor);
+int OMPI_Load_symbols(void * restrict h, int major, int minor);
+
 static inline void * MUK_DLSYM(void * restrict handle, const char * restrict symbol)
 {
     void * fp = dlsym(handle, symbol);
@@ -33,6 +36,14 @@ static inline void * MUK_DLSYM(void * restrict handle, const char * restrict sym
 int (*MUK_Init)(int *argc, char ***argv);
 int (*MUK_Get_library_version)(char *version, int *resultlen);
 int (*MUK_Get_version)(int *version, int *subversion);
+
+// these symbols are ABI-agnostic
+int (*MUK_Finalize)(void);
+int (*MUK_Finalized)(int*);
+int (*MUK_Init_thread)(int *argc, char ***argv, int, int*);
+int (*MUK_Initialized)(int*);
+int (*MUK_Is_thread_main)(int*);
+int (*MUK_Query_thread)(int*);
 
 // technically, these are not required to be symbols, but we know they are.
 // we can work around the theoretical problem if necessary.
