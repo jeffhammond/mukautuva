@@ -1,5 +1,3 @@
-#include <stddef.h>
-
 typedef struct __MPI_Comm__         * MPI_Comm;
 typedef struct __MPI_Datatype__     * MPI_Datatype;
 typedef struct __MPI_Errhandler__   * MPI_Errhandler;
@@ -21,6 +19,7 @@ typedef struct __MPI_Status__
 }
 MPI_Status;
 
+#include <stddef.h>
 typedef ptrdiff_t MPI_Aint;
 typedef ptrdiff_t MPI_Count;
 typedef ptrdiff_t MPI_Offset;
@@ -44,9 +43,11 @@ typedef int MPI_Grequest_cancel_function(void *extra_state, int complete);
 typedef int MPI_Datarep_extent_function(MPI_Datatype datatype, MPI_Aint *extent, void *extra_state);
 typedef int MPI_Datarep_conversion_function(void *userbuf, MPI_Datatype datatype, int count, void *filebuf, MPI_Offset position, void *extra_state);
 typedef int MPI_Datarep_conversion_function_c(void *userbuf, MPI_Datatype datatype, MPI_Count count, void *filebuf, MPI_Offset position, void *extra_state);
-//typedef void MPI_T_event_cb_function(MPI_T_event_instance event_instance, MPI_T_event_registration event_registration, MPI_T_cb_safety cb_safety, void *user_data);
-//typedef void MPI_T_event_free_cb_function(MPI_T_event_registration event_registration, MPI_T_cb_safety cb_safety, void *user_data);
-//typedef void MPI_T_event_dropped_cb_function(MPI_Count count, MPI_T_event_registration event_registration, int source_index, MPI_T_cb_safety cb_safety, void *user_data);
+#if 0
+typedef void MPI_T_event_cb_function(MPI_T_event_instance event_instance, MPI_T_event_registration event_registration, MPI_T_cb_safety cb_safety, void *user_data);
+typedef void MPI_T_event_free_cb_function(MPI_T_event_registration event_registration, MPI_T_cb_safety cb_safety, void *user_data);
+typedef void MPI_T_event_dropped_cb_function(MPI_Count count, MPI_T_event_registration event_registration, int source_index, MPI_T_cb_safety cb_safety, void *user_data);
+#endif
 
 // A.3.7 MPI Environmental Management C Bindings
 int MPI_Add_error_class(int *errorclass);
