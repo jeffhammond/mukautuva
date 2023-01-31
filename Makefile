@@ -6,12 +6,18 @@ SOFLAGS	= -shared
 AR	= ar
 ARFLAGS	= -r
 
-all: header.o libmuk.a libmuk.so
+all: header.o libmuk.a libmuk.so libmukompi.so libmukmpich.so
 
 libmuk.a: libinit.o wrapmpich.o wrapompi.o
 	$(AR) $(ARFLAGS) $@ $^
 
-libmuk.so: libinit.o wrapmpich.o wrapompi.o
+libmuk.so: libinit.o
+	$(CC) $(SOFLAGS) $^ -o $@
+
+libmukompi.so: wrapompi.o
+	$(CC) $(SOFLAGS) $^ -o $@
+
+libmukmpich.so: wrapmpich.o
 	$(CC) $(SOFLAGS) $^ -o $@
 
 header.o: header.c mpi.h

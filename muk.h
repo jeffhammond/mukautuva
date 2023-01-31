@@ -9,9 +9,6 @@
 
 #include "debug.h"
 
-#include "mpich.h"
-#include "ompi.h"
-
 typedef enum {
     MPICH   = 1,
     OMPI    = 2,
