@@ -20,6 +20,7 @@ extern Which_MPI_e whose_mpi;
 int (*MUK_Load_functions)(void * restrict h, int major, int minor);
 int (*MUK_Load_predefined)(void * restrict h);
 
+#if 0
 // these symbols are ABI-agnostic and are needed before anything else can be loaded
 int (*MUK_Init)(int *argc, char ***argv);
 int (*MUK_Get_library_version)(char *version, int *resultlen);
@@ -33,5 +34,6 @@ int (*MUK_Initialized)(int*);
 int (*MUK_Is_thread_main)(int*);
 int (*MUK_Query_thread)(int*);
 int (*MUK_Get_processor_name)(char*,int*);
+#endif
 
 #endif

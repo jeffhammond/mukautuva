@@ -1,6 +1,11 @@
 #include "muk.h"
 #include "muk-dl.h"
 
+#define USE_MUK_NAMESPACE
+#include "muk-mpi-typedefs.h"
+#define MAKE_FUNCTION_POINTERS
+#include "muk-mpi-functions.h"
+
 #if defined(__linux__) && defined(__x86_64__)
 #define LIBMPI_NAME "/usr/lib/x86_64-linux-gnu/libmpi.so"
 #elif defined(__MACH__)
