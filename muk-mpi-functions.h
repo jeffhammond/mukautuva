@@ -44,8 +44,8 @@ int NIMI_FSUB(Win_create_errhandler)(NIMI_SUB(Win_errhandler_function) *win_errh
 int NIMI_FSUB(Win_get_errhandler)(NIMI_SUB(Win) win, NIMI_SUB(Errhandler) *errhandler);
 int NIMI_FSUB(Win_set_errhandler)(NIMI_SUB(Win) win, NIMI_SUB(Errhandler) errhandler);
 int NIMI_FSUB(Info_create)(NIMI_SUB(Info) *info);
-double NIMI_SUB(Wtime)(void);
-double NIMI_SUB(Wtick)(void);
+double NIMI_FSUB(Wtime)(void);
+double NIMI_FSUB(Wtick)(void);
 
 // A.3.9 Process Creation and Management C Bindings
 int NIMI_FSUB(Close_port)(const char *port_name);
