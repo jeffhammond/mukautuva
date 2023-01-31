@@ -9,6 +9,9 @@
 
 #include "debug.h"
 
+#include "mpich.h"
+#include "ompi.h"
+
 typedef enum {
     MPICH   = 1,
     OMPI    = 2,
@@ -26,8 +29,14 @@ static inline void * MUK_DLSYM(void * restrict handle, const char * restrict sym
     return fp;
 }
 
-// all the MPI functions, as function pointers
-int (*MUK_Init)(int*,char***);
-int (*MUK_Get_library_version)(char*,int*);
+// these symbols are ABI-agnostic and are needed before anything else can be loaded
+int (*MUK_Init)(int *argc, char ***argv);
+int (*MUK_Get_library_version)(char *version, int *resultlen);
+int (*MUK_Get_version)(int *version, int *subversion);
+
+// technically, these are not required to be symbols, but we know they are.
+// we can work around the theoretical problem if necessary.
+double (*MUK_Wtime)(void);
+double (*MUK_Wtick)(void);
 
 #endif
