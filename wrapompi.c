@@ -7,6 +7,16 @@
 
 #include "muk-builtin-handles.h"
 
+typedef struct __OMPI_Status__
+{
+    int MPI_SOURCE;
+    int MPI_TAG;
+    int MPI_ERROR;
+    int _cancelled;
+    size_t _ucount;
+}
+OMPI_Status;
+
 int MUK_Load_functions(void * restrict h, int major, int minor)
 {
     (void)minor;

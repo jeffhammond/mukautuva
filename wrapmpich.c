@@ -1,6 +1,16 @@
 #include "muk-mpi-typedefs.h"
 #include "muk-functions.h"
 
+typedef struct __MPICH_Status__
+{
+    int count_lo;
+    int count_hi_and_cancelled;
+    int MPI_SOURCE;
+    int MPI_TAG;
+    int MPI_ERROR;
+}
+MPICH_Status;
+
 int MUK_Load_functions(void * restrict h, int major, int minor)
 {
     (void)minor;

@@ -12,7 +12,7 @@
 Which_MPI_e whose_mpi = UNKNOWN;
 
 // alkaa = start
-int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
+static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
 {
     int rc;
 
@@ -58,7 +58,6 @@ int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     // these are ABI-agnostic and important, so why not load them now...
     MUK_Finalize = MUK_DLSYM(h,"MPI_Finalize");
     MUK_Finalized = MUK_DLSYM(h,"MPI_Finalized");
-    MUK_Init_thread = MUK_DLSYM(h,"MPI_Init_thread");
     MUK_Initialized = MUK_DLSYM(h,"MPI_Initialized");
     MUK_Is_thread_main = MUK_DLSYM(h,"MPI_Is_thread_main");
     MUK_Query_thread = MUK_DLSYM(h,"MPI_Query_thread");
@@ -89,6 +88,10 @@ int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     return rc;
 }
 
+#define USE_MPI_NAMESPACE
+#include "muk-mpi-typedefs.h"
+#include "muk-mpi-functions.h"
+
 int MPI_Init(int * argc, char *** argv)
 {
     return MUK_Alkaa(argc,argv,-1,NULL);
@@ -97,4 +100,44 @@ int MPI_Init(int * argc, char *** argv)
 int MPI_Init_thread(int * argc, char *** argv, int requested, int * provided)
 {
     return MUK_Alkaa(argc,argv,requested,provided);
+}
+
+int MPI_Get_library_version(char *version, int *resultlen)
+{
+    return MUK_Get_library_version(version, resultlen);
+}
+
+int MPI_Finalize(void)
+{
+    return MUK_Finalize();
+}
+
+int MPI_Finalized(int * flag)
+{
+    return MUK_Finalized(flag);
+}
+
+int MPI_Initialized(int * flag)
+{
+    return MUK_Initialized(flag);
+}
+
+int MPI_Is_thread_main(int * flag)
+{
+    return MUK_Is_thread_main(flag);
+}
+
+int MPI_Query_thread(int * provided)
+{
+    return MUK_Query_thread(provided);
+}
+
+int MPI_Get_processor_name(char *name, int *resultlen)
+{
+    return MUK_Get_processor_name(name, resultlen);
+}
+
+int MPI_Get_version(int * major, int * minor)
+{
+    return MUK_Get_version(major, minor);
 }
