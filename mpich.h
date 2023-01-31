@@ -115,4 +115,6 @@ int (*MPICH_Session_get_pset_info)(MPICH_Session session, const char *pset_name,
 int (*MPICH_Session_init)(MPICH_Info info, MPICH_Errhandler errhandler, MPICH_Session *session);
 int (*MPICH_Unpublish_name)(const char *service_name, MPICH_Info info, const char *port_name);
 
+#include "mpich-builtin-handles.h"
+
 #endif

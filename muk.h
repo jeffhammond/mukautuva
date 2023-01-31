@@ -20,9 +20,11 @@ typedef enum {
 
 extern Which_MPI_e whose_mpi;
 
-int MPICH_Load_symbols(void * restrict h, int major, int minor);
-int OMPI_Load_symbols(void * restrict h, int major, int minor);
+int MPICH_Load_functions(void * restrict h, int major, int minor);
+int OMPI_Load_functions(void * restrict h, int major, int minor);
+int OMPI_Load_predefined(void * restrict h);
 
+// this is for function symbols, or other symbols that are not optional.
 static inline void * MUK_DLSYM(void * restrict handle, const char * restrict symbol)
 {
     void * fp = dlsym(handle, symbol);
@@ -30,6 +32,17 @@ static inline void * MUK_DLSYM(void * restrict handle, const char * restrict sym
         printf("MUK_DLSYM: failed to find %s - %s\n", symbol, dlerror() );
     }
     return fp;
+}
+
+// this is for cases where symbols are optional, i.e. predefined handles,
+// where we provide the value to use where the symbol is not found.
+static inline void * MUK_DLSYM_OPT(void * restrict handle, const char * restrict symbol, void * fallback)
+{
+    void * p = dlsym(handle, symbol);
+    if (p == NULL) {
+        p = fallback;
+    }
+    return p;
 }
 
 // these symbols are ABI-agnostic and are needed before anything else can be loaded

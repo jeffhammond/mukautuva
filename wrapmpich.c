@@ -5,7 +5,7 @@
 // VIM tip
 // s/int (\*MUK_\(.*\))(\(.*\));/MUK_\1 = MUK_DLSYM(h,"MPI_\1");
 
-int MPICH_Load_symbols(void * restrict h, int major, int minor)
+int MPICH_Load_functions(void * restrict h, int major, int minor)
 {
     (void)minor;
 

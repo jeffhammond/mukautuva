@@ -69,9 +69,10 @@ int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     rc = MUK_Get_version(&major, &minor);
 
     if (whose_mpi == MPICH) {
-        rc = MPICH_Load_symbols(h, major, minor);
+        rc = MPICH_Load_functions(h, major, minor);
     } else if (whose_mpi == OMPI) {
-        rc = OMPI_Load_symbols(h, major, minor);
+        rc = OMPI_Load_functions(h, major, minor);
+        rc = OMPI_Load_predefined(h);
     }
 
     return rc;

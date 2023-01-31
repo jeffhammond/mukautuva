@@ -115,4 +115,6 @@ int (*OMPI_Session_get_pset_info)(OMPI_Session session, const char *pset_name, O
 int (*OMPI_Session_init)(OMPI_Info info, OMPI_Errhandler errhandler, OMPI_Session *session);
 int (*OMPI_Unpublish_name)(const char *service_name, OMPI_Info info, const char *port_name);
 
+#include "ompi-builtin-handles.h"
+
 #endif
