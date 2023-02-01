@@ -1,5 +1,4 @@
-#ifndef MUK_BUILTIN_HANDLES_H
-#define MUK_BUILTIN_HANDLES_H
+#undef NIMI_SUB
 
 #if defined(USE_MPI_NAMESPACE)
 #define NIMI_SUB(text) MPI ## _ ## text
@@ -72,5 +71,3 @@ NIMI_SUB(Datatype) NIMI_SUB(LONG_LONG);
 NIMI_SUB(Datatype) NIMI_SUB(UNSIGNED_LONG_LONG);
 NIMI_SUB(Datatype) NIMI_SUB(2COMPLEX);
 NIMI_SUB(Datatype) NIMI_SUB(2DOUBLE_COMPLEX);
-
-#endif

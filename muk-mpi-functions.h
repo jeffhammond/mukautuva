@@ -1,11 +1,11 @@
-#ifndef MUK_MPI_FUNCTIONS_H
-#define MUK_MPI_FUNCTIONS_H
+#undef NIMI_SUB
+#undef NIMI_FSUB
 
 #if defined(USE_MPI_NAMESPACE)
-    //#define NIMI_SUB(text) MPI ## _ ## text
+    #define NIMI_SUB(text) MPI ## _ ## text
     #define NIMI_FSUB(text) int MPI ## _ ## text
 #elif defined(USE_MUK_NAMESPACE)
-    //#define NIMI_SUB(text) int MUK ## _ ## text
+    #define NIMI_SUB(text) MUK ## _ ## text
     #if defined(MAKE_INTERFACE)
         #define NIMI_FSUB(text) int MUK ## _ ## text
     #elif defined(MAKE_FUNCTION_POINTERS)
@@ -130,5 +130,3 @@ NIMI_FSUB(Session_get_num_psets)(NIMI_SUB(Session) session, NIMI_SUB(Info) info,
 NIMI_FSUB(Session_get_pset_info)(NIMI_SUB(Session) session, const char *pset_name, NIMI_SUB(Info) *info);
 NIMI_FSUB(Session_init)(NIMI_SUB(Info) info, NIMI_SUB(Errhandler) errhandler, NIMI_SUB(Session) *session);
 NIMI_FSUB(Unpublish_name)(const char *service_name, NIMI_SUB(Info) info, const char *port_name);
-
-#endif

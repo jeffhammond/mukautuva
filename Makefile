@@ -5,7 +5,8 @@ MPICHCC=/usr/bin/mpicc.mpich
 
 CC	= gcc
 CFLAGS	= -g3 -O0 -Wall -Wextra #-Werror
-#CFLAGS	+= -ferror-limit=3
+#CFLAGS	+= -ferror-limit=3 # Clang
+CFLAGS	+= -fmax-errors=3 # GCC
 CFLAGS	+= -fPIC
 SOFLAGS	= -shared
 
@@ -25,10 +26,10 @@ libs: libmuk.a libmuk.so libmukompi.so libmukmpich.so
 header.o: header.c mpi.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
-libmuk.a: libinit.o
+libmuk.a: libinit.o wrapmuk.o
 	$(AR) $(ARFLAGS) $@ $^
 
-libmuk.so: libinit.o
+libmuk.so: libinit.o wrapmuk.o
 	$(CC) $(SOFLAGS) $^ -o $@
 
 libmukompi.so: loadompi.o wrapompi.o
@@ -38,6 +39,9 @@ libmukmpich.so: loadmpich.o wrapmpich.o
 	$(MPICHCC) $(SOFLAGS) $^ -o $@
 
 libinit.o: libinit.c muk.h muk-dl.h muk-mpi-typedefs.h muk-mpi-functions.h
+	$(CC) $(CFLAGS) -c $< -o $@
+
+wrapmuk.o: wrapmuk.c muk-mpi-typedefs.h muk-mpi-functions.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 loadmpich.o: loadmpich.c muk-mpi-typedefs.h muk-mpi-functions.h

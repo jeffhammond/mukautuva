@@ -5,7 +5,7 @@
 #include "muk-mpi-functions.h"
 
 // this contains predefined handles that use the MUK ABI
-//#include "muk-builtin-handles.h"
+//#include "muk-mpi-predefined.h"
 
 // this is the OMPI header
 #include <mpi.h>

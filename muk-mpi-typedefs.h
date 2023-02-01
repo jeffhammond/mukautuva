@@ -1,5 +1,4 @@
-#ifndef MUK_MPI_TYPEDEFS_H
-#define MUK_MPI_TYPEDEFS_H
+#undef NIMI_SUB
 
 #if defined(USE_MPI_NAMESPACE)
 #define NIMI_SUB(text) MPI ## _ ## text
@@ -21,7 +20,7 @@ typedef struct __MPI_Request__      * NIMI_SUB(Request);
 typedef struct __MPI_Session__      * NIMI_SUB(Session);
 typedef struct __MPI_Win__          * NIMI_SUB(Win);
 
-typedef struct __MPI_Status__
+typedef struct //__MPI_Status__
 {
     int MPI_SOURCE;
     int MPI_TAG;
@@ -54,5 +53,3 @@ typedef int NIMI_SUB(Grequest_cancel_function)(void *extra_state, int complete);
 typedef int NIMI_SUB(Datarep_extent_function)(NIMI_SUB(Datatype) datatype, NIMI_SUB(Aint) *extent, void *extra_state);
 typedef int NIMI_SUB(Datarep_conversion_function)(void *userbuf, NIMI_SUB(Datatype) datatype, int count, void *filebuf, NIMI_SUB(Offset) position, void *extra_state);
 typedef int NIMI_SUB(Datarep_conversion_function_c)(void *userbuf, NIMI_SUB(Datatype) datatype, NIMI_SUB(Count) count, void *filebuf, NIMI_SUB(Offset) position, void *extra_state);
-
-#endif
