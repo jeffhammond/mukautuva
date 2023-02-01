@@ -10,19 +10,23 @@ SOFLAGS	= -shared
 AR	= ar
 ARFLAGS	= -r
 
-all: header.o testinit.x libmuk.a libmuk.so libmukompi.so libmukmpich.so
+all: libs tests
 
-testinit.x: testinit.c libmuk.so mpi.h
+tests: header.o testinit.x testcomm.x
+
+libs: libmuk.a libmuk.so libmukompi.so libmukmpich.so
+
+%.x: %.c libmuk.so mpi.h
 	$(CC) $(CFLAGS) $< -L. -lmuk -o $@
 
 # this just tests if mpi.h can be compiled without errors
 header.o: header.c mpi.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
-libmuk.a: libinit.o
+libmuk.a: libinit.o wrapmuk.o
 	$(AR) $(ARFLAGS) $@ $^
 
-libmuk.so: libinit.o
+libmuk.so: libinit.o wrapmuk.o
 	$(CC) $(SOFLAGS) $^ -o $@
 
 libmukompi.so: loadompi.o wrapompi.o
@@ -31,7 +35,10 @@ libmukompi.so: loadompi.o wrapompi.o
 libmukmpich.so: loadmpich.o wrapmpich.o
 	$(MPICHCC) $(SOFLAGS) $^ -o $@
 
-libinit.o: libinit.c mpi.h muk.h muk-dl.h
+libinit.o: libinit.c muk.h muk-dl.h muk-mpi-typedefs.h muk-mpi-functions.h
+	$(CC) $(CFLAGS) -c $< -o $@
+
+wrapmuk.o: wrapmuk.c muk.h muk-mpi-typedefs.h muk-mpi-functions.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 loadmpich.o: loadmpich.c muk-mpi-typedefs.h muk-mpi-functions.h
