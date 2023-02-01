@@ -14,8 +14,6 @@ int main(int argc, char* argv[])
     rc = MPI_Is_thread_main(&flag);
     printf("is thread main? %d\n", flag);
 
-    printf("wtime = %f wtick = %f\n", MPI_Wtime(), MPI_Wtick());
-
     rc = MPI_Finalize();
 
     return rc;

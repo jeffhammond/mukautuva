@@ -1,22 +1,6 @@
 #include "muk.h"
 #include "muk-dl.h"
 
-#define USE_MUK_NAMESPACE
-#include "muk-mpi-typedefs.h"
-#define MAKE_FUNCTION_POINTERS
-#include "muk-mpi-functions.h"
-#undef USE_MUK_NAMESPACE
-#undef MAKE_FUNCTION_POINTERS
-
-#define USE_MPI_NAMESPACE
-#include "muk-mpi-typedefs.h"
-#include "muk-mpi-predefined.h"
-#include "muk-mpi-functions.h"
-#undef USE_MPI_NAMESPACE
-
-double (*MUK_Wtime)(void);
-double (*MUK_Wtick)(void);
-
 #if defined(__linux__) && defined(__x86_64__)
 #define LIBMPI_NAME "/usr/lib/x86_64-linux-gnu/libmpi.so"
 #elif defined(__MACH__)
@@ -26,6 +10,52 @@ double (*MUK_Wtick)(void);
 #endif
 
 Which_MPI_e whose_mpi = UNKNOWN;
+
+typedef struct __MPI_Comm__ * MUK_Comm;
+typedef struct __MPI_Datatype__ * MUK_Datatype;
+typedef struct __MPI_Errhandler__ * MUK_Errhandler;
+typedef struct __MPI_File__ * MUK_File;
+typedef struct __MPI_Group__ * MUK_Group;
+typedef struct __MPI_Info__ * MUK_Info;
+typedef struct __MPI_Message__ * MUK_Message;
+typedef struct __MPI_Op__ * MUK_Op;
+typedef struct __MPI_Request__ * MUK_Request;
+typedef struct __MPI_Session__ * MUK_Session;
+typedef struct __MPI_Win__ * MUK_Win;
+
+typedef struct
+{
+    int MPI_SOURCE;
+    int MPI_TAG;
+    int MPI_ERROR;
+    int __kielletty__[5];
+}
+MUK_Status;
+
+typedef ptrdiff_t MUK_Aint;
+typedef ptrdiff_t MUK_Count;
+typedef ptrdiff_t MUK_Offset;
+
+int (*MUK_Init)(int *argc, char ***argv);
+int (*MUK_Init_thread)(int *argc, char ***argv, int required, int *provided);
+int (*MUK_Initialized)(int *flag);
+
+int (*MUK_Get_library_version)(char *version, int *resultlen);
+int (*MUK_Get_processor_name)(char *name, int *resultlen);
+int (*MUK_Get_version)(int *version, int *subversion);
+
+int (*MUK_Finalize)(void);
+int (*MUK_Finalized)(int *flag);
+
+int (*MUK_Init_thread)(int *argc, char ***argv, int required, int *provided);
+int (*MUK_Is_thread_main)(int *flag);
+int (*MUK_Query_thread)(int *provided);
+
+int (*MUK_Comm_rank)(MUK_Comm comm, int *rank);
+int (*MUK_Comm_size)(MUK_Comm comm, int *size);
+int (*MUK_Abort)(MUK_Comm comm, int errorcode);
+
+extern MUK_Comm MPI_COMM_WORLD;
 
 // alkaa = start
 static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
@@ -81,31 +111,31 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MUK_Is_thread_main = MUK_DLSYM(h,"MPI_Is_thread_main");
     MUK_Query_thread = MUK_DLSYM(h,"MPI_Query_thread");
     MUK_Get_processor_name = MUK_DLSYM(h,"MPI_Get_processor_name");
-    MUK_Wtime = MUK_DLSYM(h,"MPI_Wtime");
-    MUK_Wtick = MUK_DLSYM(h,"MPI_Wtick");
 
     int major, minor;
     MUK_Get_version = MUK_DLSYM(h,"MPI_Get_version");
     rc = MUK_Get_version(&major, &minor);
 
-    char * wrapname;
+    // now we are hacking
+    MUK_Abort = MUK_DLSYM(h,"MPI_Abort");
+    MUK_Comm_rank = MUK_DLSYM(h,"MPI_Comm_rank");
+    MUK_Comm_size = MUK_DLSYM(h,"MPI_Comm_size");
+
+    char * prename;
     if (whose_mpi == OMPI) {
-        wrapname = "libmukompi.so";
+        prename = "ompi-predefined.so";
     } else if (whose_mpi == MPICH) {
-        wrapname = "libmukmpich.so";
+        prename = "mpich-predefined.so";
     }
 
-    // now we load the wrapper for the implementation we have
-    void * w = dlopen(wrapname, RTLD_LAZY);
-    if (w == NULL) {
-        printf("dlopen of %s failed: %s\n", wrapname, dlerror() );
+    void * p = dlopen(prename, RTLD_LAZY);
+    if (p == NULL) {
+        printf("dlopen of %s failed: %s\n", prename, dlerror() );
         abort();
-    } else {
-        MUK_Load_functions = MUK_DLSYM(w,"MUK_Load_functions");
-        rc = MUK_Load_functions(h, major, minor);
-        MUK_Load_predefined = MUK_DLSYM(w,"MUK_Load_predefined");
-        rc = MUK_Load_predefined(h);
     }
+    MPI_COMM_WORLD = MUK_DLSYM(p,"IMPL_COMM_WORLD");
+    printf("libinit: MPI_COMM_WORLD=%lx\n", (intptr_t)MPI_COMM_WORLD);
+    printf("libinit: MPI_COMM_WORLD=%d\n", *(int*)MPI_COMM_WORLD);
 
     return rc;
 }
@@ -160,5 +190,26 @@ int MPI_Get_version(int * major, int * minor)
     return MUK_Get_version(major, minor);
 }
 
-double MPI_Wtime(void) { return MUK_Wtime(); }
-double MPI_Wtick(void) { return MUK_Wtick(); }
+int MPI_Abort(MUK_Comm comm, int errorcode)
+{
+    return MUK_Abort(comm, errorcode);
+}
+
+int MPI_Comm_rank(MUK_Comm comm, int * rank)
+{
+    if (whose_mpi == OMPI) {
+        void * ompi_comm = *(void**)comm;
+        printf("OMPI comm=0x%lx\n", (intptr_t)comm);
+        return MUK_Comm_rank(ompi_comm, rank);
+    } else if (whose_mpi == MPICH) {
+        int mpich_comm = *(int*)comm;
+        printf("MPICH comm=0x%x\n", mpich_comm);
+        return MUK_Comm_rank(mpich_comm, rank);
+    }
+    return 0;
+}
+
+int MPI_Comm_size(MUK_Comm comm, int * size)
+{
+    return MUK_Comm_rank(comm, size);
+}

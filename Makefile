@@ -17,7 +17,7 @@ all: libs tests
 
 tests: header.o testinit.x testcomm.x
 
-libs: libmuk.a libmuk.so libmukompi.so libmukmpich.so
+libs: libmuk.a libmuk.so #libmukompi.so libmukmpich.so
 
 %.x: %.c libmuk.so mpi.h
 	$(CC) $(CFLAGS) $< -L. -lmuk -o $@
@@ -26,10 +26,10 @@ libs: libmuk.a libmuk.so libmukompi.so libmukmpich.so
 header.o: header.c mpi.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
-libmuk.a: libinit.o wrapmuk.o
+libmuk.a: libinit.o #wrapmuk.o
 	$(AR) $(ARFLAGS) $@ $^
 
-libmuk.so: libinit.o wrapmuk.o
+libmuk.so: libinit.o mpich-predefined.so ompi-predefined.so
 	$(CC) $(SOFLAGS) $^ -o $@
 
 libmukompi.so: loadompi.o wrapompi.o
@@ -38,10 +38,10 @@ libmukompi.so: loadompi.o wrapompi.o
 libmukmpich.so: loadmpich.o wrapmpich.o
 	$(MPICHCC) $(SOFLAGS) $^ -o $@
 
-libinit.o: libinit.c muk.h muk-dl.h muk-mpi-typedefs.h muk-mpi-functions.h
+libinit.o: libinit.c muk.h muk-dl.h #muk-mpi-typedefs.h muk-mpi-functions.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
-libinit.i: libinit.c muk.h muk-dl.h muk-mpi-typedefs.h muk-mpi-functions.h
+libinit.i: libinit.c muk.h muk-dl.h #muk-mpi-typedefs.h muk-mpi-functions.h
 	$(CC) $(CFLAGS) -E $< -o $@
 
 wrapmuk.o: wrapmuk.c muk-mpi-typedefs.h muk-mpi-functions.h
@@ -73,6 +73,18 @@ wrapompi.o: wrapompi.c muk-mpi-typedefs.h muk-mpi-functions.h
 
 wrapompi.i: wrapompi.c muk-mpi-typedefs.h muk-mpi-functions.h
 	$(OMPICC) $(CFLAGS) -E $< -o $@
+
+mpich-predefined.so: mpich-predefined.o
+	$(MPICHCC) $(SOFLAGS) $^ -o $@
+
+ompi-predefined.so: ompi-predefined.o
+	$(OMPICC) $(SOFLAGS) $^ -o $@
+
+mpich-predefined.o: impl-predefined.c
+	$(MPICHCC) $(CFLAGS) -c $< -o $@
+
+ompi-predefined.o: impl-predefined.c
+	$(OMPICC) $(CFLAGS) -c $< -o $@
 
 clean:
 	-rm -f *.o *.x *.s *.a *.i *.so
