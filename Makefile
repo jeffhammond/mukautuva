@@ -10,7 +10,10 @@ SOFLAGS	= -shared
 AR	= ar
 ARFLAGS	= -r
 
-all: header.o libmuk.a libmuk.so libmukompi.so #libmukmpich.so
+all: header.o testinit.x libmuk.a libmuk.so libmukompi.so #libmukmpich.so
+
+testinit.x: testinit.c libmuk.so mpi.h
+	$(CC) $(CFLAGS) $< -o $@
 
 # this just tests if mpi.h can be compiled without errors
 header.o: header.c mpi.h

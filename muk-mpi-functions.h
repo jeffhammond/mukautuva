@@ -15,6 +15,53 @@
     #error Namespace substitution problem
 #endif
 
+// A.3.5 Groups, Contexts, Communicators, and Caching
+int NIMI_FSUB(Comm_compare)(NIMI_SUB(Comm) comm1, NIMI_SUB(Comm) comm2, int *result);
+int NIMI_FSUB(Comm_create)(NIMI_SUB(Comm) comm, NIMI_SUB(Group) group, NIMI_SUB(Comm) *newcomm);
+int NIMI_FSUB(Comm_create_from_group)(NIMI_SUB(Group) group, const char *stringtag, NIMI_SUB(Info) info, NIMI_SUB(Errhandler) errhandler, NIMI_SUB(Comm) *newcomm);
+int NIMI_FSUB(Comm_create_group)(NIMI_SUB(Comm) comm, NIMI_SUB(Group) group, int tag, NIMI_SUB(Comm) *newcomm);
+int NIMI_FSUB(Comm_create_keyval)(NIMI_SUB(Comm_copy_attr_function) *comm_copy_attr_fn, NIMI_SUB(Comm_delete_attr_function) *comm_delete_attr_fn, int *comm_keyval, void *extra_state);
+int NIMI_FSUB(Comm_delete_attr)(NIMI_SUB(Comm) comm, int comm_keyval);
+int NIMI_FSUB(Comm_dup)(NIMI_SUB(Comm) comm, NIMI_SUB(Comm) *newcomm);
+int NIMI_FSUB(COMM_DUP_FN)(NIMI_SUB(Comm) oldcomm, int comm_keyval, void *extra_state, void *attribute_val_in, void *attribute_val_out, int *flag);
+int NIMI_FSUB(Comm_dup_with_info)(NIMI_SUB(Comm) comm, NIMI_SUB(Info) info, NIMI_SUB(Comm) *newcomm);
+int NIMI_FSUB(Comm_free)(NIMI_SUB(Comm) *comm);
+int NIMI_FSUB(Comm_free_keyval)(int *comm_keyval);
+int NIMI_FSUB(Comm_get_info)(NIMI_SUB(Comm) comm, NIMI_SUB(Info) *info_used);
+int NIMI_FSUB(Comm_get_attr)(NIMI_SUB(Comm) comm, int comm_keyval, void *attribute_val, int *flag);
+int NIMI_FSUB(Comm_get_name)(NIMI_SUB(Comm) comm, char *comm_name, int *resultlen);
+int NIMI_FSUB(Comm_size)(NIMI_SUB(Comm) comm, int *size);
+int NIMI_FSUB(Comm_split)(NIMI_SUB(Comm) comm, int color, int key, NIMI_SUB(Comm) *newcomm);
+int NIMI_FSUB(Comm_split_type)(NIMI_SUB(Comm) comm, int split_type, int key, NIMI_SUB(Info) info, NIMI_SUB(Comm) *newcomm);
+int NIMI_FSUB(Comm_group)(NIMI_SUB(Comm) comm, NIMI_SUB(Group) *group);
+int NIMI_FSUB(Comm_idup)(NIMI_SUB(Comm) comm, NIMI_SUB(Comm) *newcomm, NIMI_SUB(Request) *request);
+int NIMI_FSUB(Comm_idup_with_info)(NIMI_SUB(Comm) comm, NIMI_SUB(Info) info, NIMI_SUB(Comm) *newcomm, NIMI_SUB(Request) *request);
+int NIMI_FSUB(COMM_NULL_COPY_FN)(NIMI_SUB(Comm) oldcomm, int comm_keyval, void *extra_state, void *attribute_val_in, void *attribute_val_out, int *flag);
+int NIMI_FSUB(COMM_NULL_DELETE_FN)(NIMI_SUB(Comm) comm, int comm_keyval, void *attribute_val, void *extra_state);
+int NIMI_FSUB(Comm_rank)(NIMI_SUB(Comm) comm, int *rank);
+int NIMI_FSUB(Comm_remote_group)(NIMI_SUB(Comm) comm, NIMI_SUB(Group) *group);
+int NIMI_FSUB(Comm_remote_size)(NIMI_SUB(Comm) comm, int *size);
+int NIMI_FSUB(Comm_set_attr)(NIMI_SUB(Comm) comm, int comm_keyval, void *attribute_val);
+int NIMI_FSUB(Comm_set_info)(NIMI_SUB(Comm) comm, NIMI_SUB(Info) info);
+int NIMI_FSUB(Comm_set_name)(NIMI_SUB(Comm) comm, const char *comm_name);
+int NIMI_FSUB(Comm_test_inter)(NIMI_SUB(Comm) comm, int *flag);
+int NIMI_FSUB(Group_compare)(NIMI_SUB(Group) group1, NIMI_SUB(Group) group2, int *result);
+int NIMI_FSUB(Group_difference)(NIMI_SUB(Group) group1, NIMI_SUB(Group) group2, NIMI_SUB(Group) *newgroup);
+int NIMI_FSUB(Group_excl)(NIMI_SUB(Group) group, int n, const int ranks[], NIMI_SUB(Group) *newgroup);
+int NIMI_FSUB(Group_free)(NIMI_SUB(Group) *group);
+int NIMI_FSUB(Group_from_session_pset)(NIMI_SUB(Session) session, const char *pset_name, NIMI_SUB(Group) *newgroup);
+int NIMI_FSUB(Group_incl)(NIMI_SUB(Group) group, int n, const int ranks[], NIMI_SUB(Group) *newgroup);
+int NIMI_FSUB(Group_intersection)(NIMI_SUB(Group) group1, NIMI_SUB(Group) group2, NIMI_SUB(Group) *newgroup);
+int NIMI_FSUB(Group_range_excl)(NIMI_SUB(Group) group, int n, int ranges[][3], NIMI_SUB(Group) *newgroup);
+int NIMI_FSUB(Group_range_incl)(NIMI_SUB(Group) group, int n, int ranges[][3], NIMI_SUB(Group) *newgroup);
+int NIMI_FSUB(Group_rank)(NIMI_SUB(Group) group, int *rank);
+int NIMI_FSUB(Group_size)(NIMI_SUB(Group) group, int *size);
+int NIMI_FSUB(Group_translate_ranks)(NIMI_SUB(Group) group1, int n, const int ranks1[], NIMI_SUB(Group) group2, int ranks2[]);
+int NIMI_FSUB(Group_union)(NIMI_SUB(Group) group1, NIMI_SUB(Group) group2, NIMI_SUB(Group) *newgroup);
+int NIMI_FSUB(Intercomm_create)(NIMI_SUB(Comm) local_comm, int local_leader, NIMI_SUB(Comm) peer_comm, int remote_leader, int tag, NIMI_SUB(Comm) *newintercomm);
+int NIMI_FSUB(Intercomm_create_from_groups)(NIMI_SUB(Group) local_group, int local_leader, NIMI_SUB(Group) remote_group, int remote_leader, const char *stringtag, NIMI_SUB(Info) info, NIMI_SUB(Errhandler) errhandler, NIMI_SUB(Comm) *newintercomm);
+int NIMI_FSUB(Intercomm_merge)(NIMI_SUB(Comm) intercomm, int high, NIMI_SUB(Comm) *newintracomm);
+
 // A.3.7 Environmental Management C Bindings
 int NIMI_FSUB(Add_error_class)(int *errorclass);
 int NIMI_FSUB(Add_error_code)(int errorclass, int *errorcode);
