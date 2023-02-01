@@ -40,3 +40,13 @@ int MUK_Abort(MUK_Comm comm, int errorcode)
 {
     return MPI_Abort(Muuntaa_Comm(comm),errorcode);
 }
+
+int MUK_Comm_size(MUK_Comm comm, int * size)
+{
+    return MPI_Comm_size(Muuntaa_Comm(comm),size);
+}
+
+int MUK_Comm_rank(MUK_Comm comm, int * rank)
+{
+    return MPI_Comm_rank(Muuntaa_Comm(comm),rank);
+}

@@ -2,7 +2,7 @@ OMPICC=/opt/homebrew/Cellar/open-mpi/4.1.4_2/bin/mpicc
 MPICHCC=/opt/homebrew/Cellar/mpich/4.0.3/bin/mpicc
 
 CC	= clang
-CFLAGS	= -O0 -Wall -Wextra #-Werror
+CFLAGS	= -g3 -O0 -Wall -Wextra #-Werror
 CFLAGS	+= -ferror-limit=3
 CFLAGS	+= -fPIC
 SOFLAGS	= -shared
@@ -10,10 +10,10 @@ SOFLAGS	= -shared
 AR	= ar
 ARFLAGS	= -r
 
-all: header.o testinit.x libmuk.a libmuk.so libmukompi.so #libmukmpich.so
+all: header.o testinit.x libmuk.a libmuk.so libmukompi.so libmukmpich.so
 
 testinit.x: testinit.c libmuk.so mpi.h
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) $< -L. -lmuk -o $@
 
 # this just tests if mpi.h can be compiled without errors
 header.o: header.c mpi.h
@@ -34,13 +34,13 @@ libmukmpich.so: loadmpich.o wrapmpich.o
 libinit.o: libinit.c mpi.h muk.h muk-dl.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
-loadmpich.o: loadmpich. muk-mpi-typedefs.h muk-mpi-functions.h
+loadmpich.o: loadmpich.c muk-mpi-typedefs.h muk-mpi-functions.h
 	$(MPICHCC) $(CFLAGS) -c $< -o $@
 
 loadompi.o: loadompi.c muk-mpi-typedefs.h muk-mpi-functions.h
 	$(OMPICC) $(CFLAGS) -c $< -o $@
 
-wrapmpich.o: wrapmpich. muk-mpi-typedefs.h muk-mpi-functions.h
+wrapmpich.o: wrapmpich.c muk-mpi-typedefs.h muk-mpi-functions.h
 	$(MPICHCC) $(CFLAGS) -c $< -o $@
 
 wrapompi.o: wrapompi.c muk-mpi-typedefs.h muk-mpi-functions.h

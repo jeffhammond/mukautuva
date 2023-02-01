@@ -7,23 +7,23 @@
 
 #include "muk-builtin-handles.h"
 
-typedef struct __OMPI_Status__
+typedef struct __MPICH_Status__
 {
+    int count_lo;
+    int count_hi_and_cancelled;
     int MPI_SOURCE;
     int MPI_TAG;
     int MPI_ERROR;
-    int _cancelled;
-    size_t _ucount;
 }
-OMPI_Status;
+MPICH_Status;
 
 int MUK_Load_functions(void * restrict h, int major, int minor)
 {
     (void)minor;
 
-    MUK_Wtime = MUK_DLSYM(h,"MPI_Wtime");
-    MUK_Wtick = MUK_DLSYM(h,"MPI_Wtick");
-    //MUK_Abort = MUK_DLSYM(h,"MPI_Abort");
+    return -1;
+
+    MUK_Abort = MUK_DLSYM(h,"MPI_Abort");
 
     MUK_Comm_rank = MUK_DLSYM(h,"MPI_Comm_rank");
     MUK_Comm_size = MUK_DLSYM(h,"MPI_Comm_size");
@@ -96,6 +96,8 @@ int MUK_Load_functions(void * restrict h, int major, int minor)
 
 int MUK_Load_predefined(void * restrict h)
 {
+    (void)h;
+#if 0
     MUK_REQUEST_NULL    = MUK_DLSYM(h,"ompi_mpi_request_null");
     MUK_ERRHANDLER_NULL = MUK_DLSYM(h,"ompi_mpi_errhandler_null");
     MUK_INFO_NULL       = MUK_DLSYM(h,"ompi_mpi_info_null");
@@ -155,6 +157,6 @@ int MUK_Load_predefined(void * restrict h)
     MUK_UNSIGNED_LONG_LONG = MUK_DLSYM_OPT(h,"ompi_mpi_unsigned_long_long",MUK_DATATYPE_NULL);
     MUK_2COMPLEX           = MUK_DLSYM_OPT(h,"ompi_mpi_2complex",MUK_DATATYPE_NULL);
     MUK_2DOUBLE_COMPLEX    = MUK_DLSYM_OPT(h,"ompi_mpi_2double_complex",MUK_DATATYPE_NULL);
-
+#endif
     return 0;
 }

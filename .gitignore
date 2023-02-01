@@ -29,6 +29,7 @@
 *.dylib
 
 # Executables
+*.x
 *.exe
 *.out
 *.app
@@ -50,3 +51,6 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# VIM
+*.swp

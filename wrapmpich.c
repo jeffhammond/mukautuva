@@ -1,5 +1,14 @@
+// we need all the typedefs and function prototypes for the MUK ABI
+#define USE_MUK_NAMESPACE
 #include "muk-mpi-typedefs.h"
-#include "muk-functions.h"
+#define MAKE_INTERFACE
+#include "muk-mpi-functions.h"
+
+// this contains predefined handles that use the MUK ABI
+//#include "muk-builtin-handles.h"
+
+// this is the OMPI header
+#include <mpi.h>
 
 typedef struct __MPICH_Status__
 {
@@ -11,76 +20,33 @@ typedef struct __MPICH_Status__
 }
 MPICH_Status;
 
-int MUK_Load_functions(void * restrict h, int major, int minor)
+// MPICH handles are integers, so MUK handles (pointers) point to the respective MPICH handles
+// muuntaa = convert
+static inline MPI_Comm Muuntaa_Comm(MUK_Comm Comm) { return *(int*)Comm; }
+static inline MPI_Datatype Muuntaa_Datatype(MUK_Datatype Datatype) { return *(int*)Datatype; }
+static inline MPI_Errhandler Muuntaa_Errhandler(MUK_Errhandler Errhandler) { return *(int*)Errhandler; }
+static inline MPI_File Muuntaa_File(MUK_File File) { return *(int*)File; }
+static inline MPI_Group Muuntaa_Group(MUK_Group Group) { return *(int*)Group; }
+static inline MPI_Info Muuntaa_Info(MUK_Info Info) { return *(int*)Info; }
+static inline MPI_Message Muuntaa_Message(MUK_Message Message) { return *(int*)Message; }
+static inline MPI_Op Muuntaa_Op(MUK_Op Op) { return *(int*)Op; }
+static inline MPI_Request Muuntaa_Request(MUK_Request Request) { return *(int*)Request; }
+static inline MPI_Win Muuntaa_Win(MUK_Win Win) { return *(int*)Win; }
+#if MPI_VERSION >= 4
+static inline MPI_Session Muuntaa_Session(MUK_Session Session) { return *(int*)Session; }
+#endif
+
+int MUK_Abort(MUK_Comm comm, int errorcode)
 {
-    (void)minor;
+    return MPI_Abort(Muuntaa_Comm(comm),errorcode);
+}
 
-    MUK_Wtime = MUK_DLSYM(h,"MPI_Wtime");
-    MUK_Wtick = MUK_DLSYM(h,"MPI_Wtick");
-    MUK_Abort = MUK_DLSYM(h,"MPI_Abort");
+int MUK_Comm_size(MUK_Comm comm, int * size)
+{
+    return MPI_Comm_size(Muuntaa_Comm(comm),size);
+}
 
-    MUK_Alloc_mem = MUK_DLSYM(h,"MPI_Alloc_mem");
-    MUK_Free_mem = MUK_DLSYM(h,"MPI_Free_mem");
-
-    MUK_Add_error_class = MUK_DLSYM(h,"MPI_Add_error_class");
-    MUK_Add_error_code = MUK_DLSYM(h,"MPI_Add_error_code");
-    MUK_Add_error_string = MUK_DLSYM(h,"MPI_Add_error_string");
-
-    MUK_Comm_call_errhandler = MUK_DLSYM(h,"MPI_Comm_call_errhandler");
-    MUK_Comm_create_errhandler = MUK_DLSYM(h,"MPI_Comm_create_errhandler");
-    MUK_Comm_get_errhandler = MUK_DLSYM(h,"MPI_Comm_get_errhandler");
-    MUK_Comm_set_errhandler = MUK_DLSYM(h,"MPI_Comm_set_errhandler");
-
-    MUK_Errhandler_free = MUK_DLSYM(h,"MPI_Errhandler_free");
-    MUK_Error_class = MUK_DLSYM(h,"MPI_Error_class");
-    MUK_Error_string = MUK_DLSYM(h,"MPI_Error_string");
-
-    MUK_File_call_errhandler = MUK_DLSYM(h,"MPI_File_call_errhandler");
-    MUK_File_create_errhandler = MUK_DLSYM(h,"MPI_File_create_errhandler");
-    MUK_File_get_errhandler = MUK_DLSYM(h,"MPI_File_get_errhandler");
-    MUK_File_set_errhandler = MUK_DLSYM(h,"MPI_File_set_errhandler");
-
-    MUK_Win_call_errhandler = MUK_DLSYM(h,"MPI_Win_call_errhandler");
-    MUK_Win_create_errhandler = MUK_DLSYM(h,"MPI_Win_create_errhandler");
-    MUK_Win_get_errhandler = MUK_DLSYM(h,"MPI_Win_get_errhandler");
-    MUK_Win_set_errhandler = MUK_DLSYM(h,"MPI_Win_set_errhandler");
-
-    MUK_Close_port = MUK_DLSYM(h,"MPI_Close_port");
-    MUK_Comm_disconnect = MUK_DLSYM(h,"MPI_Comm_disconnect");
-    MUK_Lookup_name = MUK_DLSYM(h,"MPI_Lookup_name");
-    MUK_Open_port = MUK_DLSYM(h,"MPI_Open_port");
-    MUK_Publish_name = MUK_DLSYM(h,"MPI_Publish_name");
-    MUK_Unpublish_name = MUK_DLSYM(h,"MPI_Unpublish_name");
-
-    MUK_Info_create = MUK_DLSYM(h,"MPI_Info_create");
-    MUK_Info_dup = MUK_DLSYM(h,"MPI_Info_dup");
-    MUK_Info_free = MUK_DLSYM(h,"MPI_Info_free");
-    MUK_Info_get_nkeys = MUK_DLSYM(h,"MPI_Info_get_nkeys");
-    MUK_Info_get_nthkey = MUK_DLSYM(h,"MPI_Info_get_nthkey");
-    MUK_Info_set = MUK_DLSYM(h,"MPI_Info_set");
-    if (major >= 4) {
-        MUK_Info_get_string = MUK_DLSYM(h,"MPI_Info_get_string");
-    }
-
-    MUK_Comm_accept = MUK_DLSYM(h,"MPI_Comm_accept");
-    MUK_Comm_connect = MUK_DLSYM(h,"MPI_Comm_connect");
-    MUK_Comm_get_parent = MUK_DLSYM(h,"MPI_Comm_get_parent");
-    MUK_Comm_join = MUK_DLSYM(h,"MPI_Comm_join");
-    MUK_Comm_spawn = MUK_DLSYM(h,"MPI_Comm_spawn");
-    MUK_Comm_spawn_multiple = MUK_DLSYM(h,"MPI_Comm_spawn_multiple");
-
-    if (major >= 4) {
-        MUK_Session_finalize = MUK_DLSYM(h,"MPI_Session_finalize");
-        MUK_Session_get_nth_pset = MUK_DLSYM(h,"MPI_Session_get_nth_pset");
-        MUK_Session_get_info = MUK_DLSYM(h,"MPI_Session_get_info");
-        MUK_Session_get_num_psets = MUK_DLSYM(h,"MPI_Session_get_num_psets");
-        MUK_Session_get_pset_info = MUK_DLSYM(h,"MPI_Session_get_pset_info");
-        MUK_Session_init = MUK_DLSYM(h,"MPI_Session_init");
-        MUK_Session_call_errhandler = MUK_DLSYM(h,"MPI_Session_call_errhandler");
-        MUK_Session_create_errhandler = MUK_DLSYM(h,"MPI_Session_create_errhandler");
-        MUK_Session_get_errhandler = MUK_DLSYM(h,"MPI_Session_get_errhandler");
-        MUK_Session_set_errhandler = MUK_DLSYM(h,"MPI_Session_set_errhandler");
-    }
-
-    return 0;
+int MUK_Comm_rank(MUK_Comm comm, int * rank)
+{
+    return MPI_Comm_rank(Muuntaa_Comm(comm),rank);
 }

@@ -25,7 +25,10 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     char * env = getenv("MPI_LIB");
     if (env == NULL) {
         soname = LIBMPI_NAME;
+    } else {
+        soname = env;
     }
+    printf("soname = %s\n", soname);
 
     void * h = dlopen(soname, RTLD_LAZY);
     if (h == NULL) {
@@ -67,6 +70,8 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MUK_Is_thread_main = MUK_DLSYM(h,"MPI_Is_thread_main");
     MUK_Query_thread = MUK_DLSYM(h,"MPI_Query_thread");
     MUK_Get_processor_name = MUK_DLSYM(h,"MPI_Get_processor_name");
+    MUK_Wtime = MUK_DLSYM(h,"MPI_Wtime");
+    MUK_Wtick = MUK_DLSYM(h,"MPI_Wtick");
 
     int major, minor;
     MUK_Get_version = MUK_DLSYM(h,"MPI_Get_version");
@@ -146,4 +151,22 @@ int MPI_Get_processor_name(char *name, int *resultlen)
 int MPI_Get_version(int * major, int * minor)
 {
     return MUK_Get_version(major, minor);
+}
+
+double MPI_Wtime(void) { return MUK_Wtime(); }
+double MPI_Wtick(void) { return MUK_Wtick(); }
+
+int MPI_Abort(MUK_Comm comm, int errorcode)
+{
+    return MUK_Abort(comm,errorcode);
+}
+
+int MPI_Comm_size(MUK_Comm comm, int * size)
+{
+    return MUK_Comm_size(comm,size);
+}
+
+int MPI_Comm_rank(MUK_Comm comm, int * rank)
+{
+    return MUK_Comm_rank(comm,rank);
 }
