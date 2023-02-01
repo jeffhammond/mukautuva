@@ -1,5 +1,5 @@
-#ifndef MUK_MPI_TYPES_H
-#define MUK_MPI_TYPES_H
+#ifndef MUK_MPI_TYPEDEFS_H
+#define MUK_MPI_TYPEDEFS_H
 
 #if defined(USE_MPI_NAMESPACE)
 #define NIMI_SUB(text) MPI ## _ ## text

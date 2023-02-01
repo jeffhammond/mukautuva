@@ -2,7 +2,7 @@
 
 #define USE_MUK_NAMESPACE
 #include "muk-mpi-typedefs.h"
-#define MAKE_FUNCTION_POINTERS
+#define MAKE_FUNCTION_POINTERS_EXTERN
 #include "muk-mpi-functions.h"
 
 #include "muk-builtin-handles.h"
@@ -20,8 +20,6 @@ MPICH_Status;
 int MUK_Load_functions(void * restrict h, int major, int minor)
 {
     (void)minor;
-
-    return -1;
 
     MUK_Abort = MUK_DLSYM(h,"MPI_Abort");
 

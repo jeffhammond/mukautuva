@@ -1,9 +1,11 @@
-OMPICC=/opt/homebrew/Cellar/open-mpi/4.1.4_2/bin/mpicc
-MPICHCC=/opt/homebrew/Cellar/mpich/4.0.3/bin/mpicc
+#OMPICC=/opt/homebrew/Cellar/open-mpi/4.1.4_2/bin/mpicc
+#MPICHCC=/opt/homebrew/Cellar/mpich/4.0.3/bin/mpicc
+OMPICC=/usr/bin/mpicc.openmpi
+MPICHCC=/usr/bin/mpicc.mpich
 
-CC	= clang
+CC	= gcc
 CFLAGS	= -g3 -O0 -Wall -Wextra #-Werror
-CFLAGS	+= -ferror-limit=3
+#CFLAGS	+= -ferror-limit=3
 CFLAGS	+= -fPIC
 SOFLAGS	= -shared
 
@@ -23,10 +25,10 @@ libs: libmuk.a libmuk.so libmukompi.so libmukmpich.so
 header.o: header.c mpi.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
-libmuk.a: libinit.o wrapmuk.o
+libmuk.a: libinit.o
 	$(AR) $(ARFLAGS) $@ $^
 
-libmuk.so: libinit.o wrapmuk.o
+libmuk.so: libinit.o
 	$(CC) $(SOFLAGS) $^ -o $@
 
 libmukompi.so: loadompi.o wrapompi.o
@@ -36,9 +38,6 @@ libmukmpich.so: loadmpich.o wrapmpich.o
 	$(MPICHCC) $(SOFLAGS) $^ -o $@
 
 libinit.o: libinit.c muk.h muk-dl.h muk-mpi-typedefs.h muk-mpi-functions.h
-	$(CC) $(CFLAGS) -c $< -o $@
-
-wrapmuk.o: wrapmuk.c muk.h muk-mpi-typedefs.h muk-mpi-functions.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 loadmpich.o: loadmpich.c muk-mpi-typedefs.h muk-mpi-functions.h

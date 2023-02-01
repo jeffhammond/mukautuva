@@ -20,12 +20,12 @@ typedef struct __MPICH_Status__
 }
 MPICH_Status;
 
-// MPICH handles are integers, so MUK handles (pointers) point to the respective MPICH handles
+// MPICH handles are integers (except for MPI_File), so MUK handles (pointers) point to the respective MPICH handles
 // muuntaa = convert
 static inline MPI_Comm Muuntaa_Comm(MUK_Comm Comm) { return *(int*)Comm; }
 static inline MPI_Datatype Muuntaa_Datatype(MUK_Datatype Datatype) { return *(int*)Datatype; }
 static inline MPI_Errhandler Muuntaa_Errhandler(MUK_Errhandler Errhandler) { return *(int*)Errhandler; }
-static inline MPI_File Muuntaa_File(MUK_File File) { return *(int*)File; }
+static inline MPI_File Muuntaa_File(MUK_File File) { return (MPI_File)File; } // exception
 static inline MPI_Group Muuntaa_Group(MUK_Group Group) { return *(int*)Group; }
 static inline MPI_Info Muuntaa_Info(MUK_Info Info) { return *(int*)Info; }
 static inline MPI_Message Muuntaa_Message(MUK_Message Message) { return *(int*)Message; }

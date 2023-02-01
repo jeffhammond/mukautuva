@@ -6,6 +6,9 @@
 #define MAKE_FUNCTION_POINTERS
 #include "muk-mpi-functions.h"
 
+double (*MUK_Wtime)(void);
+double (*MUK_Wtick)(void);
+
 #if defined(__linux__) && defined(__x86_64__)
 #define LIBMPI_NAME "/usr/lib/x86_64-linux-gnu/libmpi.so"
 #elif defined(__MACH__)
@@ -155,3 +158,18 @@ int MPI_Get_version(int * major, int * minor)
 
 double MPI_Wtime(void) { return MUK_Wtime(); }
 double MPI_Wtick(void) { return MUK_Wtick(); }
+
+int MPI_Abort(MUK_Comm comm, int errorcode)
+{
+    return MUK_Abort(comm,errorcode);
+}
+
+int MPI_Comm_size(MUK_Comm comm, int * size)
+{
+    return MUK_Comm_size(comm,size);
+}
+
+int MPI_Comm_rank(MUK_Comm comm, int * rank)
+{
+    return MUK_Comm_rank(comm,rank);
+}

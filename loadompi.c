@@ -2,7 +2,7 @@
 
 #define USE_MUK_NAMESPACE
 #include "muk-mpi-typedefs.h"
-#define MAKE_FUNCTION_POINTERS
+#define MAKE_FUNCTION_POINTERS_EXTERN
 #include "muk-mpi-functions.h"
 
 #include "muk-builtin-handles.h"
@@ -21,9 +21,7 @@ int MUK_Load_functions(void * restrict h, int major, int minor)
 {
     (void)minor;
 
-    MUK_Wtime = MUK_DLSYM(h,"MPI_Wtime");
-    MUK_Wtick = MUK_DLSYM(h,"MPI_Wtick");
-    //MUK_Abort = MUK_DLSYM(h,"MPI_Abort");
+    MUK_Abort = MUK_DLSYM(h,"MPI_Abort");
 
     MUK_Comm_rank = MUK_DLSYM(h,"MPI_Comm_rank");
     MUK_Comm_size = MUK_DLSYM(h,"MPI_Comm_size");
