@@ -93,7 +93,9 @@ int MUK_Load_functions(void * restrict h, int major, int minor)
 
 int MUK_Load_predefined(void * restrict h)
 {
-    MUK_REQUEST_NULL    = MUK_DLSYM(h,"ompi_mpi_request_null");
+    //MUK_REQUEST_NULL    = MUK_DLSYM(h,"ompi_mpi_request_null");
+    MUK_REQUEST_NULL    = MUK_DLSYM(h,"ompi_request_null");
+
     MUK_ERRHANDLER_NULL = MUK_DLSYM(h,"ompi_mpi_errhandler_null");
     MUK_INFO_NULL       = MUK_DLSYM(h,"ompi_mpi_info_null");
     MUK_WIN_NULL        = MUK_DLSYM(h,"ompi_mpi_win_null");
@@ -106,7 +108,8 @@ int MUK_Load_predefined(void * restrict h)
     MUK_GROUP_NULL  = MUK_DLSYM(h,"ompi_mpi_group_null");
     MUK_GROUP_EMPTY = MUK_DLSYM_OPT(h,"ompi_mpi_group_empty",MUK_GROUP_NULL);
 
-    MUK_MESSAGE_NULL    = MUK_DLSYM(h,"ompi_mpi_message_null");
+    //MUK_MESSAGE_NULL    = MUK_DLSYM(h,"ompi_mpi_message_null");
+    MUK_MESSAGE_NULL    = MUK_DLSYM(h,"ompi_message_null");
     MUK_MESSAGE_NO_PROC = MUK_DLSYM_OPT(h,"ompi_mpi_message_no_proc",MUK_MESSAGE_NULL);
 
     MUK_OP_NULL = MUK_DLSYM(h,"ompi_mpi_op_null");
