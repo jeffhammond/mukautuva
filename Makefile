@@ -53,6 +53,6 @@ wrapompi.o: wrapompi.c muk-mpi-typedefs.h muk-mpi-functions.h
 	$(OMPICC) $(CFLAGS) -c $< -o $@
 
 clean:
-	-rm -f *.o *.x *.s *.a *.so
+	-rm -f *.o *.x *.s *.a *.i *.so
 	-rm -rf *.dSYM
 
