@@ -3,7 +3,8 @@
 #define USE_MUK_NAMESPACE
 #include "muk-mpi-typedefs.h"
 #include "muk-mpi-predefined.h"
-#define MAKE_FUNCTION_POINTERS_EXTERN
+#define MAKE_FUNCTION_POINTERS
+#define MAKE_EXTERN
 #include "muk-mpi-functions.h"
 
 typedef struct __MPICH_Status__

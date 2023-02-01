@@ -2,8 +2,9 @@
 
 #define USE_MUK_NAMESPACE
 #include "muk-mpi-typedefs.h"
+#define MAKE_EXTERN
 #include "muk-mpi-predefined.h"
-#define MAKE_FUNCTION_POINTERS_EXTERN
+#define MAKE_FUNCTION_POINTERS
 #include "muk-mpi-functions.h"
 
 typedef struct __OMPI_Status__
@@ -93,6 +94,8 @@ int MUK_Load_functions(void * restrict h, int major, int minor)
 
 int MUK_Load_predefined(void * restrict h)
 {
+    (void)h;
+#if 0
     //MUK_REQUEST_NULL    = MUK_DLSYM(h,"ompi_mpi_request_null");
     MUK_REQUEST_NULL    = MUK_DLSYM(h,"ompi_request_null");
 
@@ -155,6 +158,6 @@ int MUK_Load_predefined(void * restrict h)
     MUK_UNSIGNED_LONG_LONG = MUK_DLSYM_OPT(h,"ompi_mpi_unsigned_long_long",MUK_DATATYPE_NULL);
     MUK_2COMPLEX           = MUK_DLSYM_OPT(h,"ompi_mpi_2complex",MUK_DATATYPE_NULL);
     MUK_2DOUBLE_COMPLEX    = MUK_DLSYM_OPT(h,"ompi_mpi_2double_complex",MUK_DATATYPE_NULL);
-
+#endif
     return 0;
 }

@@ -9,9 +9,11 @@
     #if defined(MAKE_INTERFACE)
         #define NIMI_FSUB(text) int MUK ## _ ## text
     #elif defined(MAKE_FUNCTION_POINTERS)
-        #define NIMI_FSUB(text) int (*MUK ## _ ## text)
-    #elif defined(MAKE_FUNCTION_POINTERS_EXTERN)
-        #define NIMI_FSUB(text) extern int (*MUK ## _ ## text)
+        #if defined(MAKE_EXTERN)
+            #define NIMI_FSUB(text) extern int (*MUK ## _ ## text)
+        #else
+            #define NIMI_FSUB(text) int (*MUK ## _ ## text)
+        #endif
     #endif
 #else
     #error Namespace substitution problem

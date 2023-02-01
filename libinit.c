@@ -5,6 +5,14 @@
 #include "muk-mpi-typedefs.h"
 #define MAKE_FUNCTION_POINTERS
 #include "muk-mpi-functions.h"
+#undef USE_MUK_NAMESPACE
+#undef MAKE_FUNCTION_POINTERS
+
+#define USE_MPI_NAMESPACE
+#include "muk-mpi-typedefs.h"
+#include "muk-mpi-predefined.h"
+#include "muk-mpi-functions.h"
+#undef USE_MPI_NAMESPACE
 
 double (*MUK_Wtime)(void);
 double (*MUK_Wtick)(void);
@@ -101,10 +109,6 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
 
     return rc;
 }
-
-#define USE_MPI_NAMESPACE
-#include "muk-mpi-typedefs.h"
-#include "muk-mpi-functions.h"
 
 int MPI_Init(int * argc, char *** argv)
 {

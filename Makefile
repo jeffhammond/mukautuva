@@ -41,20 +41,38 @@ libmukmpich.so: loadmpich.o wrapmpich.o
 libinit.o: libinit.c muk.h muk-dl.h muk-mpi-typedefs.h muk-mpi-functions.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
+libinit.i: libinit.c muk.h muk-dl.h muk-mpi-typedefs.h muk-mpi-functions.h
+	$(CC) $(CFLAGS) -E $< -o $@
+
 wrapmuk.o: wrapmuk.c muk-mpi-typedefs.h muk-mpi-functions.h
 	$(CC) $(CFLAGS) -c $< -o $@
+
+wrapmuk.i: wrapmuk.c muk-mpi-typedefs.h muk-mpi-functions.h
+	$(CC) $(CFLAGS) -E $< -o $@
 
 loadmpich.o: loadmpich.c muk-mpi-typedefs.h muk-mpi-functions.h
 	$(MPICHCC) $(CFLAGS) -c $< -o $@
 
+loadmpich.i: loadmpich.c muk-mpi-typedefs.h muk-mpi-functions.h
+	$(MPICHCC) $(CFLAGS) -E $< -o $@
+
 loadompi.o: loadompi.c muk-mpi-typedefs.h muk-mpi-functions.h
 	$(OMPICC) $(CFLAGS) -c $< -o $@
+
+loadompi.i: loadompi.c muk-mpi-typedefs.h muk-mpi-functions.h
+	$(OMPICC) $(CFLAGS) -E $< -o $@
 
 wrapmpich.o: wrapmpich.c muk-mpi-typedefs.h muk-mpi-functions.h
 	$(MPICHCC) $(CFLAGS) -c $< -o $@
 
+wrapmpich.i: wrapmpich.c muk-mpi-typedefs.h muk-mpi-functions.h
+	$(MPICHCC) $(CFLAGS) -E $< -o $@
+
 wrapompi.o: wrapompi.c muk-mpi-typedefs.h muk-mpi-functions.h
 	$(OMPICC) $(CFLAGS) -c $< -o $@
+
+wrapompi.i: wrapompi.c muk-mpi-typedefs.h muk-mpi-functions.h
+	$(OMPICC) $(CFLAGS) -E $< -o $@
 
 clean:
 	-rm -f *.o *.x *.s *.a *.i *.so
