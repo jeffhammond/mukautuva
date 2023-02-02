@@ -1234,14 +1234,14 @@ int WRAP_Comm_size(MPI_Comm *comm, int * size)
     return IMPL_Comm_size(*comm, size);
 }
 
-int WRAP_Accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win)
+int WRAP_Accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win *win)
 {
-    return IMPL_Accumulate(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, op, win);
+    return IMPL_Accumulate(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, op, *win);
 }
 
-int WRAP_Accumulate_c(const void *origin_addr, IMPL_Count origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win)
+int WRAP_Accumulate_c(const void *origin_addr, IMPL_Count origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win *win)
 {
-    return IMPL_Accumulate_c(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, op, win);
+    return IMPL_Accumulate_c(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, op, *win);
 }
 
 int WRAP_Add_error_class(int *errorclass)
@@ -1274,44 +1274,44 @@ MPI_Aint WRAP_Aint_diff(IMPL_Aint addr1, IMPL_Aint addr2)
     return IMPL_Aint_diff(addr1, addr2);
 }
 
-int WRAP_Allgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
+int WRAP_Allgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm *comm)
 {
-    return IMPL_Allgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
+    return IMPL_Allgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm);
 }
 
-int WRAP_Allgather_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm)
+int WRAP_Allgather_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm *comm)
 {
-    return IMPL_Allgather_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
+    return IMPL_Allgather_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm);
 }
 
-int WRAP_Allgather_init(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Allgather_init(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Allgather_init(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm, info, request);
+    return IMPL_Allgather_init(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm, info, request);
 }
 
-int WRAP_Allgather_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Allgather_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Allgather_init_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm, info, request);
+    return IMPL_Allgather_init_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm, info, request);
 }
 
-int WRAP_Allgatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype recvtype, MPI_Comm comm)
+int WRAP_Allgatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype recvtype, MPI_Comm *comm)
 {
-    return IMPL_Allgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm);
+    return IMPL_Allgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, *comm);
 }
 
-int WRAP_Allgatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype recvtype, MPI_Comm comm)
+int WRAP_Allgatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype recvtype, MPI_Comm *comm)
 {
-    return IMPL_Allgatherv_c(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm);
+    return IMPL_Allgatherv_c(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, *comm);
 }
 
-int WRAP_Allgatherv_init(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype recvtype, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Allgatherv_init(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype recvtype, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Allgatherv_init(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm, info, request);
+    return IMPL_Allgatherv_init(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, *comm, info, request);
 }
 
-int WRAP_Allgatherv_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype recvtype, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Allgatherv_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype recvtype, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Allgatherv_init_c(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm, info, request);
+    return IMPL_Allgatherv_init_c(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, *comm, info, request);
 }
 
 int WRAP_Alloc_mem(IMPL_Aint size, MPI_Info info, void *baseptr)
@@ -1319,149 +1319,149 @@ int WRAP_Alloc_mem(IMPL_Aint size, MPI_Info info, void *baseptr)
     return IMPL_Alloc_mem(size, info, baseptr);
 }
 
-int WRAP_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int WRAP_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm)
 {
-    return IMPL_Allreduce(sendbuf, recvbuf, count, datatype, op, comm);
+    return IMPL_Allreduce(sendbuf, recvbuf, count, datatype, op, *comm);
 }
 
-int WRAP_Allreduce_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int WRAP_Allreduce_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm)
 {
-    return IMPL_Allreduce_c(sendbuf, recvbuf, count, datatype, op, comm);
+    return IMPL_Allreduce_c(sendbuf, recvbuf, count, datatype, op, *comm);
 }
 
-int WRAP_Allreduce_init(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Allreduce_init(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Allreduce_init(sendbuf, recvbuf, count, datatype, op, comm, info, request);
+    return IMPL_Allreduce_init(sendbuf, recvbuf, count, datatype, op, *comm, info, request);
 }
 
-int WRAP_Allreduce_init_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Allreduce_init_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Allreduce_init_c(sendbuf, recvbuf, count, datatype, op, comm, info, request);
+    return IMPL_Allreduce_init_c(sendbuf, recvbuf, count, datatype, op, *comm, info, request);
 }
 
-int WRAP_Alltoall(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
+int WRAP_Alltoall(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm *comm)
 {
-    return IMPL_Alltoall(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
+    return IMPL_Alltoall(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm);
 }
 
-int WRAP_Alltoall_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm)
+int WRAP_Alltoall_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm *comm)
 {
-    return IMPL_Alltoall_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
+    return IMPL_Alltoall_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm);
 }
 
-int WRAP_Alltoall_init(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Alltoall_init(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Alltoall_init(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm, info, request);
+    return IMPL_Alltoall_init(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm, info, request);
 }
 
-int WRAP_Alltoall_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Alltoall_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Alltoall_init_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm, info, request);
+    return IMPL_Alltoall_init_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm, info, request);
 }
 
-int WRAP_Alltoallv(const void *sendbuf, const int sendcounts[], const int sdispls[], MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int rdispls[], MPI_Datatype recvtype, MPI_Comm comm)
+int WRAP_Alltoallv(const void *sendbuf, const int sendcounts[], const int sdispls[], MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int rdispls[], MPI_Datatype recvtype, MPI_Comm *comm)
 {
-    return IMPL_Alltoallv(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, comm);
+    return IMPL_Alltoallv(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, *comm);
 }
 
-int WRAP_Alltoallv_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], MPI_Datatype recvtype, MPI_Comm comm)
+int WRAP_Alltoallv_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], MPI_Datatype recvtype, MPI_Comm *comm)
 {
-    return IMPL_Alltoallv_c(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, comm);
+    return IMPL_Alltoallv_c(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, *comm);
 }
 
-int WRAP_Alltoallv_init(const void *sendbuf, const int sendcounts[], const int sdispls[], MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int rdispls[], MPI_Datatype recvtype, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Alltoallv_init(const void *sendbuf, const int sendcounts[], const int sdispls[], MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int rdispls[], MPI_Datatype recvtype, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Alltoallv_init(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, comm, info, request);
+    return IMPL_Alltoallv_init(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, *comm, info, request);
 }
 
-int WRAP_Alltoallv_init_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], MPI_Datatype recvtype, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Alltoallv_init_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], MPI_Datatype recvtype, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Alltoallv_init_c(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, comm, info, request);
+    return IMPL_Alltoallv_init_c(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, *comm, info, request);
 }
 
-int WRAP_Alltoallw(const void *sendbuf, const int sendcounts[], const int sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const int recvcounts[], const int rdispls[], const MPI_Datatype recvtypes[], MPI_Comm comm)
+int WRAP_Alltoallw(const void *sendbuf, const int sendcounts[], const int sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const int recvcounts[], const int rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm)
 {
-    return IMPL_Alltoallw(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, comm);
+    return IMPL_Alltoallw(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm);
 }
 
-int WRAP_Alltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm comm)
+int WRAP_Alltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm)
 {
-    return IMPL_Alltoallw_c(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, comm);
+    return IMPL_Alltoallw_c(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm);
 }
 
-int WRAP_Alltoallw_init(const void *sendbuf, const int sendcounts[], const int sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const int recvcounts[], const int rdispls[], const MPI_Datatype recvtypes[], MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Alltoallw_init(const void *sendbuf, const int sendcounts[], const int sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const int recvcounts[], const int rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Alltoallw_init(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, comm, info, request);
+    return IMPL_Alltoallw_init(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm, info, request);
 }
 
-int WRAP_Alltoallw_init_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Alltoallw_init_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Alltoallw_init_c(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, comm, info, request);
+    return IMPL_Alltoallw_init_c(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm, info, request);
 }
 
-int WRAP_Attr_delete(MPI_Comm comm, int keyval)
+int WRAP_Attr_delete(MPI_Comm *comm, int keyval)
 {
-    return IMPL_Attr_delete(comm, keyval);
+    return IMPL_Attr_delete(*comm, keyval);
 }
 
-int WRAP_Attr_get(MPI_Comm comm, int keyval, void *attribute_val, int *flag)
+int WRAP_Attr_get(MPI_Comm *comm, int keyval, void *attribute_val, int *flag)
 {
-    return IMPL_Attr_get(comm, keyval, attribute_val, flag);
+    return IMPL_Attr_get(*comm, keyval, attribute_val, flag);
 }
 
-int WRAP_Attr_put(MPI_Comm comm, int keyval, void *attribute_val)
+int WRAP_Attr_put(MPI_Comm *comm, int keyval, void *attribute_val)
 {
-    return IMPL_Attr_put(comm, keyval, attribute_val);
+    return IMPL_Attr_put(*comm, keyval, attribute_val);
 }
 
-int WRAP_Barrier(MPI_Comm comm)
+int WRAP_Barrier(MPI_Comm *comm)
 {
-    return IMPL_Barrier(comm);
+    return IMPL_Barrier(*comm);
 }
 
-int WRAP_Barrier_init(MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Barrier_init(MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Barrier_init(comm, info, request);
+    return IMPL_Barrier_init(*comm, info, request);
 }
 
-int WRAP_Bcast(void *buffer, int count, MPI_Datatype datatype, int root, MPI_Comm comm)
+int WRAP_Bcast(void *buffer, int count, MPI_Datatype datatype, int root, MPI_Comm *comm)
 {
-    return IMPL_Bcast(buffer, count, datatype, root, comm);
+    return IMPL_Bcast(buffer, count, datatype, root, *comm);
 }
 
-int WRAP_Bcast_c(void *buffer, IMPL_Count count, MPI_Datatype datatype, int root, MPI_Comm comm)
+int WRAP_Bcast_c(void *buffer, IMPL_Count count, MPI_Datatype datatype, int root, MPI_Comm *comm)
 {
-    return IMPL_Bcast_c(buffer, count, datatype, root, comm);
+    return IMPL_Bcast_c(buffer, count, datatype, root, *comm);
 }
 
-int WRAP_Bcast_init(void *buffer, int count, MPI_Datatype datatype, int root, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Bcast_init(void *buffer, int count, MPI_Datatype datatype, int root, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Bcast_init(buffer, count, datatype, root, comm, info, request);
+    return IMPL_Bcast_init(buffer, count, datatype, root, *comm, info, request);
 }
 
-int WRAP_Bcast_init_c(void *buffer, IMPL_Count count, MPI_Datatype datatype, int root, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Bcast_init_c(void *buffer, IMPL_Count count, MPI_Datatype datatype, int root, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Bcast_init_c(buffer, count, datatype, root, comm, info, request);
+    return IMPL_Bcast_init_c(buffer, count, datatype, root, *comm, info, request);
 }
 
-int WRAP_Bsend(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
+int WRAP_Bsend(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm)
 {
-    return IMPL_Bsend(buf, count, datatype, dest, tag, comm);
+    return IMPL_Bsend(buf, count, datatype, dest, tag, *comm);
 }
 
-int WRAP_Bsend_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
+int WRAP_Bsend_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm)
 {
-    return IMPL_Bsend_c(buf, count, datatype, dest, tag, comm);
+    return IMPL_Bsend_c(buf, count, datatype, dest, tag, *comm);
 }
 
-int WRAP_Bsend_init(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Bsend_init(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Bsend_init(buf, count, datatype, dest, tag, comm, request);
+    return IMPL_Bsend_init(buf, count, datatype, dest, tag, *comm, request);
 }
 
-int WRAP_Bsend_init_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Bsend_init_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Bsend_init_c(buf, count, datatype, dest, tag, comm, request);
+    return IMPL_Bsend_init_c(buf, count, datatype, dest, tag, *comm, request);
 }
 
 int WRAP_Buffer_attach(void *buffer, int size)
@@ -1489,9 +1489,9 @@ int WRAP_Cancel(MPI_Request *request)
     return IMPL_Cancel(request);
 }
 
-int WRAP_Cart_coords(MPI_Comm comm, int rank, int maxdims, int coords[])
+int WRAP_Cart_coords(MPI_Comm *comm, int rank, int maxdims, int coords[])
 {
-    return IMPL_Cart_coords(comm, rank, maxdims, coords);
+    return IMPL_Cart_coords(*comm, rank, maxdims, coords);
 }
 
 int WRAP_Cart_create(MPI_Comm comm_old, int ndims, const int dims[], const int periods[], int reorder, MPI_Comm *comm_cart)
@@ -1499,34 +1499,34 @@ int WRAP_Cart_create(MPI_Comm comm_old, int ndims, const int dims[], const int p
     return IMPL_Cart_create(comm_old, ndims, dims, periods, reorder, comm_cart);
 }
 
-int WRAP_Cart_get(MPI_Comm comm, int maxdims, int dims[], int periods[], int coords[])
+int WRAP_Cart_get(MPI_Comm *comm, int maxdims, int dims[], int periods[], int coords[])
 {
-    return IMPL_Cart_get(comm, maxdims, dims, periods, coords);
+    return IMPL_Cart_get(*comm, maxdims, dims, periods, coords);
 }
 
-int WRAP_Cart_map(MPI_Comm comm, int ndims, const int dims[], const int periods[], int *newrank)
+int WRAP_Cart_map(MPI_Comm *comm, int ndims, const int dims[], const int periods[], int *newrank)
 {
-    return IMPL_Cart_map(comm, ndims, dims, periods, newrank);
+    return IMPL_Cart_map(*comm, ndims, dims, periods, newrank);
 }
 
-int WRAP_Cart_rank(MPI_Comm comm, const int coords[], int *rank)
+int WRAP_Cart_rank(MPI_Comm *comm, const int coords[], int *rank)
 {
-    return IMPL_Cart_rank(comm, coords, rank);
+    return IMPL_Cart_rank(*comm, coords, rank);
 }
 
-int WRAP_Cart_shift(MPI_Comm comm, int direction, int disp, int *rank_source, int *rank_dest)
+int WRAP_Cart_shift(MPI_Comm *comm, int direction, int disp, int *rank_source, int *rank_dest)
 {
-    return IMPL_Cart_shift(comm, direction, disp, rank_source, rank_dest);
+    return IMPL_Cart_shift(*comm, direction, disp, rank_source, rank_dest);
 }
 
-int WRAP_Cart_sub(MPI_Comm comm, const int remain_dims[], MPI_Comm *newcomm)
+int WRAP_Cart_sub(MPI_Comm *comm, const int remain_dims[], MPI_Comm **newcomm)
 {
-    return IMPL_Cart_sub(comm, remain_dims, newcomm);
+    return IMPL_Cart_sub(*comm, remain_dims, *newcomm);
 }
 
-int WRAP_Cartdim_get(MPI_Comm comm, int *ndims)
+int WRAP_Cartdim_get(MPI_Comm *comm, int *ndims)
 {
-    return IMPL_Cartdim_get(comm, ndims);
+    return IMPL_Cartdim_get(*comm, ndims);
 }
 
 int WRAP_Close_port(const char *port_name)
@@ -1534,14 +1534,14 @@ int WRAP_Close_port(const char *port_name)
     return IMPL_Close_port(port_name);
 }
 
-int WRAP_Comm_accept(const char *port_name, MPI_Info info, int root, MPI_Comm comm, MPI_Comm *newcomm)
+int WRAP_Comm_accept(const char *port_name, MPI_Info info, int root, MPI_Comm *comm, MPI_Comm **newcomm)
 {
-    return IMPL_Comm_accept(port_name, info, root, comm, newcomm);
+    return IMPL_Comm_accept(port_name, info, root, *comm, *newcomm);
 }
 
-int WRAP_Comm_call_errhandler(MPI_Comm comm, int errorcode)
+int WRAP_Comm_call_errhandler(MPI_Comm *comm, int errorcode)
 {
-    return IMPL_Comm_call_errhandler(comm, errorcode);
+    return IMPL_Comm_call_errhandler(*comm, errorcode);
 }
 
 int WRAP_Comm_compare(MPI_Comm comm1, MPI_Comm comm2, int *result)
@@ -1549,14 +1549,14 @@ int WRAP_Comm_compare(MPI_Comm comm1, MPI_Comm comm2, int *result)
     return IMPL_Comm_compare(comm1, comm2, result);
 }
 
-int WRAP_Comm_connect(const char *port_name, MPI_Info info, int root, MPI_Comm comm, MPI_Comm *newcomm)
+int WRAP_Comm_connect(const char *port_name, MPI_Info info, int root, MPI_Comm *comm, MPI_Comm **newcomm)
 {
-    return IMPL_Comm_connect(port_name, info, root, comm, newcomm);
+    return IMPL_Comm_connect(port_name, info, root, *comm, *newcomm);
 }
 
-int WRAP_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm *newcomm)
+int WRAP_Comm_create(MPI_Comm *comm, MPI_Group group, MPI_Comm **newcomm)
 {
-    return IMPL_Comm_create(comm, group, newcomm);
+    return IMPL_Comm_create(*comm, group, *newcomm);
 }
 
 int WRAP_Comm_create_errhandler(MPI_Comm_errhandler_function *comm_errhandler_fn, MPI_Errhandler *errhandler)
@@ -1564,14 +1564,14 @@ int WRAP_Comm_create_errhandler(MPI_Comm_errhandler_function *comm_errhandler_fn
     return IMPL_Comm_create_errhandler(comm_errhandler_fn, errhandler);
 }
 
-int WRAP_Comm_create_from_group(MPI_Group group, const char *stringtag, MPI_Info info, MPI_Errhandler errhandler, MPI_Comm *newcomm)
+int WRAP_Comm_create_from_group(MPI_Group group, const char *stringtag, MPI_Info info, MPI_Errhandler errhandler, MPI_Comm **newcomm)
 {
-    return IMPL_Comm_create_from_group(group, stringtag, info, errhandler, newcomm);
+    return IMPL_Comm_create_from_group(group, stringtag, info, errhandler, *newcomm);
 }
 
-int WRAP_Comm_create_group(MPI_Comm comm, MPI_Group group, int tag, MPI_Comm *newcomm)
+int WRAP_Comm_create_group(MPI_Comm *comm, MPI_Group group, int tag, MPI_Comm **newcomm)
 {
-    return IMPL_Comm_create_group(comm, group, tag, newcomm);
+    return IMPL_Comm_create_group(*comm, group, tag, *newcomm);
 }
 
 int WRAP_Comm_create_keyval(MPI_Comm_copy_attr_function *comm_copy_attr_fn, MPI_Comm_delete_attr_function *comm_delete_attr_fn, int *comm_keyval, void *extra_state)
@@ -1579,29 +1579,29 @@ int WRAP_Comm_create_keyval(MPI_Comm_copy_attr_function *comm_copy_attr_fn, MPI_
     return IMPL_Comm_create_keyval(comm_copy_attr_fn, comm_delete_attr_fn, comm_keyval, extra_state);
 }
 
-int WRAP_Comm_delete_attr(MPI_Comm comm, int comm_keyval)
+int WRAP_Comm_delete_attr(MPI_Comm *comm, int comm_keyval)
 {
-    return IMPL_Comm_delete_attr(comm, comm_keyval);
+    return IMPL_Comm_delete_attr(*comm, comm_keyval);
 }
 
-int WRAP_Comm_disconnect(MPI_Comm *comm)
+int WRAP_Comm_disconnect(MPI_Comm **comm)
 {
-    return IMPL_Comm_disconnect(comm);
+    return IMPL_Comm_disconnect(*comm);
 }
 
-int WRAP_Comm_dup(MPI_Comm comm, MPI_Comm *newcomm)
+int WRAP_Comm_dup(MPI_Comm *comm, MPI_Comm **newcomm)
 {
-    return IMPL_Comm_dup(comm, newcomm);
+    return IMPL_Comm_dup(*comm, *newcomm);
 }
 
-int WRAP_Comm_dup_with_info(MPI_Comm comm, MPI_Info info, MPI_Comm *newcomm)
+int WRAP_Comm_dup_with_info(MPI_Comm *comm, MPI_Info info, MPI_Comm **newcomm)
 {
-    return IMPL_Comm_dup_with_info(comm, info, newcomm);
+    return IMPL_Comm_dup_with_info(*comm, info, *newcomm);
 }
 
-int WRAP_Comm_free(MPI_Comm *comm)
+int WRAP_Comm_free(MPI_Comm **comm)
 {
-    return IMPL_Comm_free(comm);
+    return IMPL_Comm_free(*comm);
 }
 
 int WRAP_Comm_free_keyval(int *comm_keyval)
@@ -1609,24 +1609,24 @@ int WRAP_Comm_free_keyval(int *comm_keyval)
     return IMPL_Comm_free_keyval(comm_keyval);
 }
 
-int WRAP_Comm_get_attr(MPI_Comm comm, int comm_keyval, void *attribute_val, int *flag)
+int WRAP_Comm_get_attr(MPI_Comm *comm, int comm_keyval, void *attribute_val, int *flag)
 {
-    return IMPL_Comm_get_attr(comm, comm_keyval, attribute_val, flag);
+    return IMPL_Comm_get_attr(*comm, comm_keyval, attribute_val, flag);
 }
 
-int WRAP_Comm_get_errhandler(MPI_Comm comm, MPI_Errhandler *errhandler)
+int WRAP_Comm_get_errhandler(MPI_Comm *comm, MPI_Errhandler *errhandler)
 {
-    return IMPL_Comm_get_errhandler(comm, errhandler);
+    return IMPL_Comm_get_errhandler(*comm, errhandler);
 }
 
-int WRAP_Comm_get_info(MPI_Comm comm, MPI_Info *info_used)
+int WRAP_Comm_get_info(MPI_Comm *comm, MPI_Info *info_used)
 {
-    return IMPL_Comm_get_info(comm, info_used);
+    return IMPL_Comm_get_info(*comm, info_used);
 }
 
-int WRAP_Comm_get_name(MPI_Comm comm, char *comm_name, int *resultlen)
+int WRAP_Comm_get_name(MPI_Comm *comm, char *comm_name, int *resultlen)
 {
-    return IMPL_Comm_get_name(comm, comm_name, resultlen);
+    return IMPL_Comm_get_name(*comm, comm_name, resultlen);
 }
 
 int WRAP_Comm_get_parent(MPI_Comm *parent)
@@ -1634,19 +1634,19 @@ int WRAP_Comm_get_parent(MPI_Comm *parent)
     return IMPL_Comm_get_parent(parent);
 }
 
-int WRAP_Comm_group(MPI_Comm comm, MPI_Group *group)
+int WRAP_Comm_group(MPI_Comm *comm, MPI_Group *group)
 {
-    return IMPL_Comm_group(comm, group);
+    return IMPL_Comm_group(*comm, group);
 }
 
-int WRAP_Comm_idup(MPI_Comm comm, MPI_Comm *newcomm, MPI_Request *request)
+int WRAP_Comm_idup(MPI_Comm *comm, MPI_Comm **newcomm, MPI_Request *request)
 {
-    return IMPL_Comm_idup(comm, newcomm, request);
+    return IMPL_Comm_idup(*comm, *newcomm, request);
 }
 
-int WRAP_Comm_idup_with_info(MPI_Comm comm, MPI_Info info, MPI_Comm *newcomm, MPI_Request *request)
+int WRAP_Comm_idup_with_info(MPI_Comm *comm, MPI_Info info, MPI_Comm **newcomm, MPI_Request *request)
 {
-    return IMPL_Comm_idup_with_info(comm, info, newcomm, request);
+    return IMPL_Comm_idup_with_info(*comm, info, *newcomm, request);
 }
 
 int WRAP_Comm_join(int fd, MPI_Comm *intercomm)
@@ -1654,54 +1654,54 @@ int WRAP_Comm_join(int fd, MPI_Comm *intercomm)
     return IMPL_Comm_join(fd, intercomm);
 }
 
-int WRAP_Comm_remote_group(MPI_Comm comm, MPI_Group *group)
+int WRAP_Comm_remote_group(MPI_Comm *comm, MPI_Group *group)
 {
-    return IMPL_Comm_remote_group(comm, group);
+    return IMPL_Comm_remote_group(*comm, group);
 }
 
-int WRAP_Comm_remote_size(MPI_Comm comm, int *size)
+int WRAP_Comm_remote_size(MPI_Comm *comm, int *size)
 {
-    return IMPL_Comm_remote_size(comm, size);
+    return IMPL_Comm_remote_size(*comm, size);
 }
 
-int WRAP_Comm_set_attr(MPI_Comm comm, int comm_keyval, void *attribute_val)
+int WRAP_Comm_set_attr(MPI_Comm *comm, int comm_keyval, void *attribute_val)
 {
-    return IMPL_Comm_set_attr(comm, comm_keyval, attribute_val);
+    return IMPL_Comm_set_attr(*comm, comm_keyval, attribute_val);
 }
 
-int WRAP_Comm_set_errhandler(MPI_Comm comm, MPI_Errhandler errhandler)
+int WRAP_Comm_set_errhandler(MPI_Comm *comm, MPI_Errhandler errhandler)
 {
-    return IMPL_Comm_set_errhandler(comm, errhandler);
+    return IMPL_Comm_set_errhandler(*comm, errhandler);
 }
 
-int WRAP_Comm_set_info(MPI_Comm comm, MPI_Info info)
+int WRAP_Comm_set_info(MPI_Comm *comm, MPI_Info info)
 {
-    return IMPL_Comm_set_info(comm, info);
+    return IMPL_Comm_set_info(*comm, info);
 }
 
-int WRAP_Comm_set_name(MPI_Comm comm, const char *comm_name)
+int WRAP_Comm_set_name(MPI_Comm *comm, const char *comm_name)
 {
-    return IMPL_Comm_set_name(comm, comm_name);
+    return IMPL_Comm_set_name(*comm, comm_name);
 }
 
-int WRAP_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *newcomm)
+int WRAP_Comm_split(MPI_Comm *comm, int color, int key, MPI_Comm **newcomm)
 {
-    return IMPL_Comm_split(comm, color, key, newcomm);
+    return IMPL_Comm_split(*comm, color, key, *newcomm);
 }
 
-int WRAP_Comm_split_type(MPI_Comm comm, int split_type, int key, MPI_Info info, MPI_Comm *newcomm)
+int WRAP_Comm_split_type(MPI_Comm *comm, int split_type, int key, MPI_Info info, MPI_Comm **newcomm)
 {
-    return IMPL_Comm_split_type(comm, split_type, key, info, newcomm);
+    return IMPL_Comm_split_type(*comm, split_type, key, info, *newcomm);
 }
 
-int WRAP_Comm_test_inter(MPI_Comm comm, int *flag)
+int WRAP_Comm_test_inter(MPI_Comm *comm, int *flag)
 {
-    return IMPL_Comm_test_inter(comm, flag);
+    return IMPL_Comm_test_inter(*comm, flag);
 }
 
-int WRAP_Compare_and_swap(const void *origin_addr, const void *compare_addr, void *result_addr, MPI_Datatype datatype, int target_rank, IMPL_Aint target_disp, MPI_Win win)
+int WRAP_Compare_and_swap(const void *origin_addr, const void *compare_addr, void *result_addr, MPI_Datatype datatype, int target_rank, IMPL_Aint target_disp, MPI_Win *win)
 {
-    return IMPL_Compare_and_swap(origin_addr, compare_addr, result_addr, datatype, target_rank, target_disp, win);
+    return IMPL_Compare_and_swap(origin_addr, compare_addr, result_addr, datatype, target_rank, target_disp, *win);
 }
 
 int WRAP_Dims_create(int nnodes, int ndims, int dims[])
@@ -1719,14 +1719,14 @@ int WRAP_Dist_graph_create_adjacent(MPI_Comm comm_old, int indegree, const int s
     return IMPL_Dist_graph_create_adjacent(comm_old, indegree, sources, sourceweights, outdegree, destinations, destweights, info, reorder, comm_dist_graph);
 }
 
-int WRAP_Dist_graph_neighbors(MPI_Comm comm, int maxindegree, int sources[], int sourceweights[], int maxoutdegree, int destinations[], int destweights[])
+int WRAP_Dist_graph_neighbors(MPI_Comm *comm, int maxindegree, int sources[], int sourceweights[], int maxoutdegree, int destinations[], int destweights[])
 {
-    return IMPL_Dist_graph_neighbors(comm, maxindegree, sources, sourceweights, maxoutdegree, destinations, destweights);
+    return IMPL_Dist_graph_neighbors(*comm, maxindegree, sources, sourceweights, maxoutdegree, destinations, destweights);
 }
 
-int WRAP_Dist_graph_neighbors_count(MPI_Comm comm, int *indegree, int *outdegree, int *weighted)
+int WRAP_Dist_graph_neighbors_count(MPI_Comm *comm, int *indegree, int *outdegree, int *weighted)
 {
-    return IMPL_Dist_graph_neighbors_count(comm, indegree, outdegree, weighted);
+    return IMPL_Dist_graph_neighbors_count(*comm, indegree, outdegree, weighted);
 }
 
 int WRAP_Errhandler_create(MPI_Comm_errhandler_function *comm_errhandler_fn, MPI_Errhandler *errhandler)
@@ -1739,14 +1739,14 @@ int WRAP_Errhandler_free(MPI_Errhandler *errhandler)
     return IMPL_Errhandler_free(errhandler);
 }
 
-int WRAP_Errhandler_get(MPI_Comm comm, MPI_Errhandler *errhandler)
+int WRAP_Errhandler_get(MPI_Comm *comm, MPI_Errhandler *errhandler)
 {
-    return IMPL_Errhandler_get(comm, errhandler);
+    return IMPL_Errhandler_get(*comm, errhandler);
 }
 
-int WRAP_Errhandler_set(MPI_Comm comm, MPI_Errhandler errhandler)
+int WRAP_Errhandler_set(MPI_Comm *comm, MPI_Errhandler errhandler)
 {
-    return IMPL_Errhandler_set(comm, errhandler);
+    return IMPL_Errhandler_set(*comm, errhandler);
 }
 
 int WRAP_Error_class(int errorcode, int *errorclass)
@@ -1759,29 +1759,29 @@ int WRAP_Error_string(int errorcode, char *string, int *resultlen)
     return IMPL_Error_string(errorcode, string, resultlen);
 }
 
-int WRAP_Exscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int WRAP_Exscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm)
 {
-    return IMPL_Exscan(sendbuf, recvbuf, count, datatype, op, comm);
+    return IMPL_Exscan(sendbuf, recvbuf, count, datatype, op, *comm);
 }
 
-int WRAP_Exscan_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int WRAP_Exscan_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm)
 {
-    return IMPL_Exscan_c(sendbuf, recvbuf, count, datatype, op, comm);
+    return IMPL_Exscan_c(sendbuf, recvbuf, count, datatype, op, *comm);
 }
 
-int WRAP_Exscan_init(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Exscan_init(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Exscan_init(sendbuf, recvbuf, count, datatype, op, comm, info, request);
+    return IMPL_Exscan_init(sendbuf, recvbuf, count, datatype, op, *comm, info, request);
 }
 
-int WRAP_Exscan_init_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Exscan_init_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Exscan_init_c(sendbuf, recvbuf, count, datatype, op, comm, info, request);
+    return IMPL_Exscan_init_c(sendbuf, recvbuf, count, datatype, op, *comm, info, request);
 }
 
-int WRAP_Fetch_and_op(const void *origin_addr, void *result_addr, MPI_Datatype datatype, int target_rank, IMPL_Aint target_disp, MPI_Op op, MPI_Win win)
+int WRAP_Fetch_and_op(const void *origin_addr, void *result_addr, MPI_Datatype datatype, int target_rank, IMPL_Aint target_disp, MPI_Op op, MPI_Win *win)
 {
-    return IMPL_Fetch_and_op(origin_addr, result_addr, datatype, target_rank, target_disp, op, win);
+    return IMPL_Fetch_and_op(origin_addr, result_addr, datatype, target_rank, target_disp, op, *win);
 }
 
 int WRAP_File_call_errhandler(MPI_File fh, int errorcode)
@@ -1964,9 +1964,9 @@ int WRAP_File_iwrite_shared_c(MPI_File fh, const void *buf, IMPL_Count count, MP
     return IMPL_File_iwrite_shared_c(fh, buf, count, datatype, request);
 }
 
-int WRAP_File_open(MPI_Comm comm, const char *filename, int amode, MPI_Info info, MPI_File *fh)
+int WRAP_File_open(MPI_Comm *comm, const char *filename, int amode, MPI_Info info, MPI_File *fh)
 {
-    return IMPL_File_open(comm, filename, amode, info, fh);
+    return IMPL_File_open(*comm, filename, amode, info, fh);
 }
 
 int WRAP_File_preallocate(MPI_File fh, IMPL_Offset size)
@@ -2319,59 +2319,59 @@ int WRAP_Free_mem(void *base)
     return IMPL_Free_mem(base);
 }
 
-int WRAP_Gather(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
+int WRAP_Gather(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm *comm)
 {
-    return IMPL_Gather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm);
+    return IMPL_Gather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, *comm);
 }
 
-int WRAP_Gather_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
+int WRAP_Gather_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm *comm)
 {
-    return IMPL_Gather_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm);
+    return IMPL_Gather_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, *comm);
 }
 
-int WRAP_Gather_init(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Gather_init(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Gather_init(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm, info, request);
+    return IMPL_Gather_init(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, *comm, info, request);
 }
 
-int WRAP_Gather_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Gather_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Gather_init_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm, info, request);
+    return IMPL_Gather_init_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, *comm, info, request);
 }
 
-int WRAP_Gatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype recvtype, int root, MPI_Comm comm)
+int WRAP_Gatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype recvtype, int root, MPI_Comm *comm)
 {
-    return IMPL_Gatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, root, comm);
+    return IMPL_Gatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, root, *comm);
 }
 
-int WRAP_Gatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype recvtype, int root, MPI_Comm comm)
+int WRAP_Gatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype recvtype, int root, MPI_Comm *comm)
 {
-    return IMPL_Gatherv_c(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, root, comm);
+    return IMPL_Gatherv_c(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, root, *comm);
 }
 
-int WRAP_Gatherv_init(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Gatherv_init(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype recvtype, int root, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Gatherv_init(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, root, comm, info, request);
+    return IMPL_Gatherv_init(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, root, *comm, info, request);
 }
 
-int WRAP_Gatherv_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Gatherv_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype recvtype, int root, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Gatherv_init_c(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, root, comm, info, request);
+    return IMPL_Gatherv_init_c(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, root, *comm, info, request);
 }
 
-int WRAP_Get(void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win)
+int WRAP_Get(void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win *win)
 {
-    return IMPL_Get(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, win);
+    return IMPL_Get(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, *win);
 }
 
-int WRAP_Get_accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr, int result_count, MPI_Datatype result_datatype, int target_rank, IMPL_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win)
+int WRAP_Get_accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr, int result_count, MPI_Datatype result_datatype, int target_rank, IMPL_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win *win)
 {
-    return IMPL_Get_accumulate(origin_addr, origin_count, origin_datatype, result_addr, result_count, result_datatype, target_rank, target_disp, target_count, target_datatype, op, win);
+    return IMPL_Get_accumulate(origin_addr, origin_count, origin_datatype, result_addr, result_count, result_datatype, target_rank, target_disp, target_count, target_datatype, op, *win);
 }
 
-int WRAP_Get_accumulate_c(const void *origin_addr, IMPL_Count origin_count, MPI_Datatype origin_datatype, void *result_addr, IMPL_Count result_count, MPI_Datatype result_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win)
+int WRAP_Get_accumulate_c(const void *origin_addr, IMPL_Count origin_count, MPI_Datatype origin_datatype, void *result_addr, IMPL_Count result_count, MPI_Datatype result_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win *win)
 {
-    return IMPL_Get_accumulate_c(origin_addr, origin_count, origin_datatype, result_addr, result_count, result_datatype, target_rank, target_disp, target_count, target_datatype, op, win);
+    return IMPL_Get_accumulate_c(origin_addr, origin_count, origin_datatype, result_addr, result_count, result_datatype, target_rank, target_disp, target_count, target_datatype, op, *win);
 }
 
 int WRAP_Get_address(const void *location, IMPL_Aint *address)
@@ -2379,9 +2379,9 @@ int WRAP_Get_address(const void *location, IMPL_Aint *address)
     return IMPL_Get_address(location, address);
 }
 
-int WRAP_Get_c(void *origin_addr, IMPL_Count origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype target_datatype, MPI_Win win)
+int WRAP_Get_c(void *origin_addr, IMPL_Count origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype target_datatype, MPI_Win *win)
 {
-    return IMPL_Get_c(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, win);
+    return IMPL_Get_c(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, *win);
 }
 
 int WRAP_Get_count(const WRAP_Status *status, MPI_Datatype datatype, int *count)
@@ -2424,29 +2424,29 @@ int WRAP_Graph_create(MPI_Comm comm_old, int nnodes, const int indx[], const int
     return IMPL_Graph_create(comm_old, nnodes, indx, edges, reorder, comm_graph);
 }
 
-int WRAP_Graph_get(MPI_Comm comm, int maxindex, int maxedges, int indx[], int edges[])
+int WRAP_Graph_get(MPI_Comm *comm, int maxindex, int maxedges, int indx[], int edges[])
 {
-    return IMPL_Graph_get(comm, maxindex, maxedges, indx, edges);
+    return IMPL_Graph_get(*comm, maxindex, maxedges, indx, edges);
 }
 
-int WRAP_Graph_map(MPI_Comm comm, int nnodes, const int indx[], const int edges[], int *newrank)
+int WRAP_Graph_map(MPI_Comm *comm, int nnodes, const int indx[], const int edges[], int *newrank)
 {
-    return IMPL_Graph_map(comm, nnodes, indx, edges, newrank);
+    return IMPL_Graph_map(*comm, nnodes, indx, edges, newrank);
 }
 
-int WRAP_Graph_neighbors(MPI_Comm comm, int rank, int maxneighbors, int neighbors[])
+int WRAP_Graph_neighbors(MPI_Comm *comm, int rank, int maxneighbors, int neighbors[])
 {
-    return IMPL_Graph_neighbors(comm, rank, maxneighbors, neighbors);
+    return IMPL_Graph_neighbors(*comm, rank, maxneighbors, neighbors);
 }
 
-int WRAP_Graph_neighbors_count(MPI_Comm comm, int rank, int *nneighbors)
+int WRAP_Graph_neighbors_count(MPI_Comm *comm, int rank, int *nneighbors)
 {
-    return IMPL_Graph_neighbors_count(comm, rank, nneighbors);
+    return IMPL_Graph_neighbors_count(*comm, rank, nneighbors);
 }
 
-int WRAP_Graphdims_get(MPI_Comm comm, int *nnodes, int *nedges)
+int WRAP_Graphdims_get(MPI_Comm *comm, int *nnodes, int *nedges)
 {
-    return IMPL_Graphdims_get(comm, nnodes, nedges);
+    return IMPL_Graphdims_get(*comm, nnodes, nedges);
 }
 
 int WRAP_Grequest_complete(MPI_Request request)
@@ -2526,125 +2526,125 @@ int WRAP_Group_union(MPI_Group group1, MPI_Group group2, MPI_Group *newgroup)
     return IMPL_Group_union(group1, group2, newgroup);
 }
 
-int WRAP_Iallgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request)
+int WRAP_Iallgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Iallgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm, request);
+    return IMPL_Iallgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm, request);
 }
 
-int WRAP_Iallgather_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request)
+int WRAP_Iallgather_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Iallgather_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm, request);
+    return IMPL_Iallgather_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm, request);
 }
 
-int WRAP_Iallgatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request)
+int WRAP_Iallgatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype recvtype, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Iallgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm, request);
+    return IMPL_Iallgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, *comm, request);
 }
 
-int WRAP_Iallgatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request)
+int WRAP_Iallgatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype recvtype, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Iallgatherv_c(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm, request);
+    return IMPL_Iallgatherv_c(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, *comm, request);
 }
 
-int WRAP_Iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request)
+int WRAP_Iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Iallreduce(sendbuf, recvbuf, count, datatype, op, comm, request);
+    return IMPL_Iallreduce(sendbuf, recvbuf, count, datatype, op, *comm, request);
 }
 
-int WRAP_Iallreduce_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request)
+int WRAP_Iallreduce_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Iallreduce_c(sendbuf, recvbuf, count, datatype, op, comm, request);
+    return IMPL_Iallreduce_c(sendbuf, recvbuf, count, datatype, op, *comm, request);
 }
 
-int WRAP_Ialltoall(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ialltoall(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ialltoall(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm, request);
+    return IMPL_Ialltoall(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm, request);
 }
 
-int WRAP_Ialltoall_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ialltoall_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ialltoall_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm, request);
+    return IMPL_Ialltoall_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm, request);
 }
 
-int WRAP_Ialltoallv(const void *sendbuf, const int sendcounts[], const int sdispls[], MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int rdispls[], MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ialltoallv(const void *sendbuf, const int sendcounts[], const int sdispls[], MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int rdispls[], MPI_Datatype recvtype, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ialltoallv(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, comm, request);
+    return IMPL_Ialltoallv(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, *comm, request);
 }
 
-int WRAP_Ialltoallv_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ialltoallv_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], MPI_Datatype recvtype, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ialltoallv_c(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, comm, request);
+    return IMPL_Ialltoallv_c(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, *comm, request);
 }
 
-int WRAP_Ialltoallw(const void *sendbuf, const int sendcounts[], const int sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const int recvcounts[], const int rdispls[], const MPI_Datatype recvtypes[], MPI_Comm comm, MPI_Request *request)
+int WRAP_Ialltoallw(const void *sendbuf, const int sendcounts[], const int sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const int recvcounts[], const int rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ialltoallw(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, comm, request);
+    return IMPL_Ialltoallw(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm, request);
 }
 
-int WRAP_Ialltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm comm, MPI_Request *request)
+int WRAP_Ialltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ialltoallw_c(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, comm, request);
+    return IMPL_Ialltoallw_c(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm, request);
 }
 
-int WRAP_Ibarrier(MPI_Comm comm, MPI_Request *request)
+int WRAP_Ibarrier(MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ibarrier(comm, request);
+    return IMPL_Ibarrier(*comm, request);
 }
 
-int WRAP_Ibcast(void *buffer, int count, MPI_Datatype datatype, int root, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ibcast(void *buffer, int count, MPI_Datatype datatype, int root, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ibcast(buffer, count, datatype, root, comm, request);
+    return IMPL_Ibcast(buffer, count, datatype, root, *comm, request);
 }
 
-int WRAP_Ibcast_c(void *buffer, IMPL_Count count, MPI_Datatype datatype, int root, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ibcast_c(void *buffer, IMPL_Count count, MPI_Datatype datatype, int root, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ibcast_c(buffer, count, datatype, root, comm, request);
+    return IMPL_Ibcast_c(buffer, count, datatype, root, *comm, request);
 }
 
-int WRAP_Ibsend(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ibsend(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ibsend(buf, count, datatype, dest, tag, comm, request);
+    return IMPL_Ibsend(buf, count, datatype, dest, tag, *comm, request);
 }
 
-int WRAP_Ibsend_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ibsend_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ibsend_c(buf, count, datatype, dest, tag, comm, request);
+    return IMPL_Ibsend_c(buf, count, datatype, dest, tag, *comm, request);
 }
 
-int WRAP_Iexscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request)
+int WRAP_Iexscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Iexscan(sendbuf, recvbuf, count, datatype, op, comm, request);
+    return IMPL_Iexscan(sendbuf, recvbuf, count, datatype, op, *comm, request);
 }
 
-int WRAP_Iexscan_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request)
+int WRAP_Iexscan_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Iexscan_c(sendbuf, recvbuf, count, datatype, op, comm, request);
+    return IMPL_Iexscan_c(sendbuf, recvbuf, count, datatype, op, *comm, request);
 }
 
-int WRAP_Igather(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request)
+int WRAP_Igather(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Igather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm, request);
+    return IMPL_Igather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, *comm, request);
 }
 
-int WRAP_Igather_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request)
+int WRAP_Igather_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Igather_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm, request);
+    return IMPL_Igather_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, *comm, request);
 }
 
-int WRAP_Igatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request)
+int WRAP_Igatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype recvtype, int root, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Igatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, root, comm, request);
+    return IMPL_Igatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, root, *comm, request);
 }
 
-int WRAP_Igatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request)
+int WRAP_Igatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype recvtype, int root, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Igatherv_c(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, root, comm, request);
+    return IMPL_Igatherv_c(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, root, *comm, request);
 }
 
-int WRAP_Improbe(int source, int tag, MPI_Comm comm, int *flag, MPI_Message *message, WRAP_Status *status)
+int WRAP_Improbe(int source, int tag, MPI_Comm *comm, int *flag, MPI_Message *message, WRAP_Status *status)
 {
     MPI_Status impl_status;
-    int rc = IMPL_Improbe(source, tag, comm, flag, message, &impl_status);
+    int rc = IMPL_Improbe(source, tag, *comm, flag, message, &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
     return rc;
 }
@@ -2659,54 +2659,54 @@ int WRAP_Imrecv_c(void *buf, IMPL_Count count, MPI_Datatype datatype, MPI_Messag
     return IMPL_Imrecv_c(buf, count, datatype, message, request);
 }
 
-int WRAP_Ineighbor_allgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ineighbor_allgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ineighbor_allgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm, request);
+    return IMPL_Ineighbor_allgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm, request);
 }
 
-int WRAP_Ineighbor_allgather_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ineighbor_allgather_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ineighbor_allgather_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm, request);
+    return IMPL_Ineighbor_allgather_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm, request);
 }
 
-int WRAP_Ineighbor_allgatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ineighbor_allgatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype recvtype, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ineighbor_allgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm, request);
+    return IMPL_Ineighbor_allgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, *comm, request);
 }
 
-int WRAP_Ineighbor_allgatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ineighbor_allgatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype recvtype, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ineighbor_allgatherv_c(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm, request);
+    return IMPL_Ineighbor_allgatherv_c(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, *comm, request);
 }
 
-int WRAP_Ineighbor_alltoall(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ineighbor_alltoall(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ineighbor_alltoall(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm, request);
+    return IMPL_Ineighbor_alltoall(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm, request);
 }
 
-int WRAP_Ineighbor_alltoall_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ineighbor_alltoall_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ineighbor_alltoall_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm, request);
+    return IMPL_Ineighbor_alltoall_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm, request);
 }
 
-int WRAP_Ineighbor_alltoallv(const void *sendbuf, const int sendcounts[], const int sdispls[], MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int rdispls[], MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ineighbor_alltoallv(const void *sendbuf, const int sendcounts[], const int sdispls[], MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int rdispls[], MPI_Datatype recvtype, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ineighbor_alltoallv(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, comm, request);
+    return IMPL_Ineighbor_alltoallv(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, *comm, request);
 }
 
-int WRAP_Ineighbor_alltoallv_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ineighbor_alltoallv_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], MPI_Datatype recvtype, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ineighbor_alltoallv_c(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, comm, request);
+    return IMPL_Ineighbor_alltoallv_c(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, *comm, request);
 }
 
-int WRAP_Ineighbor_alltoallw(const void *sendbuf, const int sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const int recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm comm, MPI_Request *request)
+int WRAP_Ineighbor_alltoallw(const void *sendbuf, const int sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const int recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ineighbor_alltoallw(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, comm, request);
+    return IMPL_Ineighbor_alltoallw(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm, request);
 }
 
-int WRAP_Ineighbor_alltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm comm, MPI_Request *request)
+int WRAP_Ineighbor_alltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ineighbor_alltoallw_c(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, comm, request);
+    return IMPL_Ineighbor_alltoallw_c(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm, request);
 }
 
 int WRAP_Info_create(MPI_Info *info)
@@ -2779,132 +2779,132 @@ int WRAP_Intercomm_merge(MPI_Comm intercomm, int high, MPI_Comm *newintracomm)
     return IMPL_Intercomm_merge(intercomm, high, newintracomm);
 }
 
-int WRAP_Iprobe(int source, int tag, MPI_Comm comm, int *flag, WRAP_Status *status)
+int WRAP_Iprobe(int source, int tag, MPI_Comm *comm, int *flag, WRAP_Status *status)
 {
     MPI_Status impl_status;
-    int rc = IMPL_Iprobe(source, tag, comm, flag, &impl_status);
+    int rc = IMPL_Iprobe(source, tag, *comm, flag, &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
     return rc;
 }
 
-int WRAP_Irecv(void *buf, int count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Irecv(void *buf, int count, MPI_Datatype datatype, int source, int tag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Irecv(buf, count, datatype, source, tag, comm, request);
+    return IMPL_Irecv(buf, count, datatype, source, tag, *comm, request);
 }
 
-int WRAP_Irecv_c(void *buf, IMPL_Count count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Irecv_c(void *buf, IMPL_Count count, MPI_Datatype datatype, int source, int tag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Irecv_c(buf, count, datatype, source, tag, comm, request);
+    return IMPL_Irecv_c(buf, count, datatype, source, tag, *comm, request);
 }
 
-int WRAP_Ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ireduce(sendbuf, recvbuf, count, datatype, op, root, comm, request);
+    return IMPL_Ireduce(sendbuf, recvbuf, count, datatype, op, root, *comm, request);
 }
 
-int WRAP_Ireduce_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ireduce_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ireduce_c(sendbuf, recvbuf, count, datatype, op, root, comm, request);
+    return IMPL_Ireduce_c(sendbuf, recvbuf, count, datatype, op, root, *comm, request);
 }
 
-int WRAP_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int recvcounts[], MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int recvcounts[], MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ireduce_scatter(sendbuf, recvbuf, recvcounts, datatype, op, comm, request);
+    return IMPL_Ireduce_scatter(sendbuf, recvbuf, recvcounts, datatype, op, *comm, request);
 }
 
-int WRAP_Ireduce_scatter_block(const void *sendbuf, void *recvbuf, int recvcount, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ireduce_scatter_block(const void *sendbuf, void *recvbuf, int recvcount, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ireduce_scatter_block(sendbuf, recvbuf, recvcount, datatype, op, comm, request);
+    return IMPL_Ireduce_scatter_block(sendbuf, recvbuf, recvcount, datatype, op, *comm, request);
 }
 
-int WRAP_Ireduce_scatter_block_c(const void *sendbuf, void *recvbuf, IMPL_Count recvcount, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ireduce_scatter_block_c(const void *sendbuf, void *recvbuf, IMPL_Count recvcount, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ireduce_scatter_block_c(sendbuf, recvbuf, recvcount, datatype, op, comm, request);
+    return IMPL_Ireduce_scatter_block_c(sendbuf, recvbuf, recvcount, datatype, op, *comm, request);
 }
 
-int WRAP_Ireduce_scatter_c(const void *sendbuf, void *recvbuf, const IMPL_Count recvcounts[], MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ireduce_scatter_c(const void *sendbuf, void *recvbuf, const IMPL_Count recvcounts[], MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ireduce_scatter_c(sendbuf, recvbuf, recvcounts, datatype, op, comm, request);
+    return IMPL_Ireduce_scatter_c(sendbuf, recvbuf, recvcounts, datatype, op, *comm, request);
 }
 
-int WRAP_Irsend(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Irsend(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Irsend(buf, count, datatype, dest, tag, comm, request);
+    return IMPL_Irsend(buf, count, datatype, dest, tag, *comm, request);
 }
 
-int WRAP_Irsend_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Irsend_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Irsend_c(buf, count, datatype, dest, tag, comm, request);
+    return IMPL_Irsend_c(buf, count, datatype, dest, tag, *comm, request);
 }
 
-int WRAP_Iscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request)
+int WRAP_Iscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Iscan(sendbuf, recvbuf, count, datatype, op, comm, request);
+    return IMPL_Iscan(sendbuf, recvbuf, count, datatype, op, *comm, request);
 }
 
-int WRAP_Iscan_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request)
+int WRAP_Iscan_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Iscan_c(sendbuf, recvbuf, count, datatype, op, comm, request);
+    return IMPL_Iscan_c(sendbuf, recvbuf, count, datatype, op, *comm, request);
 }
 
-int WRAP_Iscatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request)
+int WRAP_Iscatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Iscatter(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm, request);
+    return IMPL_Iscatter(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, *comm, request);
 }
 
-int WRAP_Iscatter_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request)
+int WRAP_Iscatter_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Iscatter_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm, request);
+    return IMPL_Iscatter_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, *comm, request);
 }
 
-int WRAP_Iscatterv(const void *sendbuf, const int sendcounts[], const int displs[], MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request)
+int WRAP_Iscatterv(const void *sendbuf, const int sendcounts[], const int displs[], MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Iscatterv(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, comm, request);
+    return IMPL_Iscatterv(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, *comm, request);
 }
 
-int WRAP_Iscatterv_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint displs[], MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request)
+int WRAP_Iscatterv_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint displs[], MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Iscatterv_c(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, comm, request);
+    return IMPL_Iscatterv_c(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, *comm, request);
 }
 
-int WRAP_Isend(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Isend(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Isend(buf, count, datatype, dest, tag, comm, request);
+    return IMPL_Isend(buf, count, datatype, dest, tag, *comm, request);
 }
 
-int WRAP_Isend_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Isend_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Isend_c(buf, count, datatype, dest, tag, comm, request);
+    return IMPL_Isend_c(buf, count, datatype, dest, tag, *comm, request);
 }
 
-int WRAP_Isendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, int dest, int sendtag, void *recvbuf, int recvcount, MPI_Datatype recvtype, int source, int recvtag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Isendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, int dest, int sendtag, void *recvbuf, int recvcount, MPI_Datatype recvtype, int source, int recvtag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Isendrecv(sendbuf, sendcount, sendtype, dest, sendtag, recvbuf, recvcount, recvtype, source, recvtag, comm, request);
+    return IMPL_Isendrecv(sendbuf, sendcount, sendtype, dest, sendtag, recvbuf, recvcount, recvtype, source, recvtag, *comm, request);
 }
 
-int WRAP_Isendrecv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, int dest, int sendtag, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, int source, int recvtag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Isendrecv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, int dest, int sendtag, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, int source, int recvtag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Isendrecv_c(sendbuf, sendcount, sendtype, dest, sendtag, recvbuf, recvcount, recvtype, source, recvtag, comm, request);
+    return IMPL_Isendrecv_c(sendbuf, sendcount, sendtype, dest, sendtag, recvbuf, recvcount, recvtype, source, recvtag, *comm, request);
 }
 
-int WRAP_Isendrecv_replace(void *buf, int count, MPI_Datatype datatype, int dest, int sendtag, int source, int recvtag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Isendrecv_replace(void *buf, int count, MPI_Datatype datatype, int dest, int sendtag, int source, int recvtag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Isendrecv_replace(buf, count, datatype, dest, sendtag, source, recvtag, comm, request);
+    return IMPL_Isendrecv_replace(buf, count, datatype, dest, sendtag, source, recvtag, *comm, request);
 }
 
-int WRAP_Isendrecv_replace_c(void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int sendtag, int source, int recvtag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Isendrecv_replace_c(void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int sendtag, int source, int recvtag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Isendrecv_replace_c(buf, count, datatype, dest, sendtag, source, recvtag, comm, request);
+    return IMPL_Isendrecv_replace_c(buf, count, datatype, dest, sendtag, source, recvtag, *comm, request);
 }
 
-int WRAP_Issend(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Issend(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Issend(buf, count, datatype, dest, tag, comm, request);
+    return IMPL_Issend(buf, count, datatype, dest, tag, *comm, request);
 }
 
-int WRAP_Issend_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Issend_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Issend_c(buf, count, datatype, dest, tag, comm, request);
+    return IMPL_Issend_c(buf, count, datatype, dest, tag, *comm, request);
 }
 
 int WRAP_Keyval_create(MPI_Copy_function *copy_fn, MPI_Delete_function *delete_fn, int *keyval, void *extra_state)
@@ -2922,10 +2922,10 @@ int WRAP_Lookup_name(const char *service_name, MPI_Info info, char *port_name)
     return IMPL_Lookup_name(service_name, info, port_name);
 }
 
-int WRAP_Mprobe(int source, int tag, MPI_Comm comm, MPI_Message *message, WRAP_Status *status)
+int WRAP_Mprobe(int source, int tag, MPI_Comm *comm, MPI_Message *message, WRAP_Status *status)
 {
     MPI_Status impl_status;
-    int rc = IMPL_Mprobe(source, tag, comm, message, &impl_status);
+    int rc = IMPL_Mprobe(source, tag, *comm, message, &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
     return rc;
 }
@@ -2946,104 +2946,104 @@ int WRAP_Mrecv_c(void *buf, IMPL_Count count, MPI_Datatype datatype, MPI_Message
     return rc;
 }
 
-int WRAP_Neighbor_allgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
+int WRAP_Neighbor_allgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm *comm)
 {
-    return IMPL_Neighbor_allgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
+    return IMPL_Neighbor_allgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm);
 }
 
-int WRAP_Neighbor_allgather_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm)
+int WRAP_Neighbor_allgather_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm *comm)
 {
-    return IMPL_Neighbor_allgather_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
+    return IMPL_Neighbor_allgather_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm);
 }
 
-int WRAP_Neighbor_allgather_init(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Neighbor_allgather_init(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Neighbor_allgather_init(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm, info, request);
+    return IMPL_Neighbor_allgather_init(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm, info, request);
 }
 
-int WRAP_Neighbor_allgather_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Neighbor_allgather_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Neighbor_allgather_init_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm, info, request);
+    return IMPL_Neighbor_allgather_init_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm, info, request);
 }
 
-int WRAP_Neighbor_allgatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype recvtype, MPI_Comm comm)
+int WRAP_Neighbor_allgatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype recvtype, MPI_Comm *comm)
 {
-    return IMPL_Neighbor_allgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm);
+    return IMPL_Neighbor_allgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, *comm);
 }
 
-int WRAP_Neighbor_allgatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype recvtype, MPI_Comm comm)
+int WRAP_Neighbor_allgatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype recvtype, MPI_Comm *comm)
 {
-    return IMPL_Neighbor_allgatherv_c(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm);
+    return IMPL_Neighbor_allgatherv_c(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, *comm);
 }
 
-int WRAP_Neighbor_allgatherv_init(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype recvtype, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Neighbor_allgatherv_init(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype recvtype, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Neighbor_allgatherv_init(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm, info, request);
+    return IMPL_Neighbor_allgatherv_init(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, *comm, info, request);
 }
 
-int WRAP_Neighbor_allgatherv_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype recvtype, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Neighbor_allgatherv_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype recvtype, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Neighbor_allgatherv_init_c(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm, info, request);
+    return IMPL_Neighbor_allgatherv_init_c(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, *comm, info, request);
 }
 
-int WRAP_Neighbor_alltoall(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
+int WRAP_Neighbor_alltoall(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm *comm)
 {
-    return IMPL_Neighbor_alltoall(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
+    return IMPL_Neighbor_alltoall(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm);
 }
 
-int WRAP_Neighbor_alltoall_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm)
+int WRAP_Neighbor_alltoall_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm *comm)
 {
-    return IMPL_Neighbor_alltoall_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
+    return IMPL_Neighbor_alltoall_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm);
 }
 
-int WRAP_Neighbor_alltoall_init(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Neighbor_alltoall_init(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Neighbor_alltoall_init(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm, info, request);
+    return IMPL_Neighbor_alltoall_init(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm, info, request);
 }
 
-int WRAP_Neighbor_alltoall_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Neighbor_alltoall_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Neighbor_alltoall_init_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm, info, request);
+    return IMPL_Neighbor_alltoall_init_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, *comm, info, request);
 }
 
-int WRAP_Neighbor_alltoallv(const void *sendbuf, const int sendcounts[], const int sdispls[], MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int rdispls[], MPI_Datatype recvtype, MPI_Comm comm)
+int WRAP_Neighbor_alltoallv(const void *sendbuf, const int sendcounts[], const int sdispls[], MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int rdispls[], MPI_Datatype recvtype, MPI_Comm *comm)
 {
-    return IMPL_Neighbor_alltoallv(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, comm);
+    return IMPL_Neighbor_alltoallv(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, *comm);
 }
 
-int WRAP_Neighbor_alltoallv_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], MPI_Datatype recvtype, MPI_Comm comm)
+int WRAP_Neighbor_alltoallv_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], MPI_Datatype recvtype, MPI_Comm *comm)
 {
-    return IMPL_Neighbor_alltoallv_c(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, comm);
+    return IMPL_Neighbor_alltoallv_c(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, *comm);
 }
 
-int WRAP_Neighbor_alltoallv_init(const void *sendbuf, const int sendcounts[], const int sdispls[], MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int rdispls[], MPI_Datatype recvtype, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Neighbor_alltoallv_init(const void *sendbuf, const int sendcounts[], const int sdispls[], MPI_Datatype sendtype, void *recvbuf, const int recvcounts[], const int rdispls[], MPI_Datatype recvtype, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Neighbor_alltoallv_init(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, comm, info, request);
+    return IMPL_Neighbor_alltoallv_init(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, *comm, info, request);
 }
 
-int WRAP_Neighbor_alltoallv_init_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], MPI_Datatype recvtype, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Neighbor_alltoallv_init_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], MPI_Datatype sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], MPI_Datatype recvtype, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Neighbor_alltoallv_init_c(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, comm, info, request);
+    return IMPL_Neighbor_alltoallv_init_c(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, *comm, info, request);
 }
 
-int WRAP_Neighbor_alltoallw(const void *sendbuf, const int sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const int recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm comm)
+int WRAP_Neighbor_alltoallw(const void *sendbuf, const int sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const int recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm)
 {
-    return IMPL_Neighbor_alltoallw(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, comm);
+    return IMPL_Neighbor_alltoallw(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm);
 }
 
-int WRAP_Neighbor_alltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm comm)
+int WRAP_Neighbor_alltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm)
 {
-    return IMPL_Neighbor_alltoallw_c(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, comm);
+    return IMPL_Neighbor_alltoallw_c(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm);
 }
 
-int WRAP_Neighbor_alltoallw_init(const void *sendbuf, const int sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const int recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Neighbor_alltoallw_init(const void *sendbuf, const int sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const int recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Neighbor_alltoallw_init(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, comm, info, request);
+    return IMPL_Neighbor_alltoallw_init(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm, info, request);
 }
 
-int WRAP_Neighbor_alltoallw_init_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Neighbor_alltoallw_init_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Neighbor_alltoallw_init_c(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, comm, info, request);
+    return IMPL_Neighbor_alltoallw_init_c(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm, info, request);
 }
 
 int WRAP_Op_commutative(MPI_Op op, int *commute)
@@ -3073,14 +3073,14 @@ int WRAP_Open_port(MPI_Info info, char *port_name)
     return IMPL_Open_port(info, port_name);
 }
 
-int WRAP_Pack(const void *inbuf, int incount, MPI_Datatype datatype, void *outbuf, int outsize, int *position, MPI_Comm comm)
+int WRAP_Pack(const void *inbuf, int incount, MPI_Datatype datatype, void *outbuf, int outsize, int *position, MPI_Comm *comm)
 {
-    return IMPL_Pack(inbuf, incount, datatype, outbuf, outsize, position, comm);
+    return IMPL_Pack(inbuf, incount, datatype, outbuf, outsize, position, *comm);
 }
 
-int WRAP_Pack_c(const void *inbuf, IMPL_Count incount, MPI_Datatype datatype, void *outbuf, IMPL_Count outsize, IMPL_Count *position, MPI_Comm comm)
+int WRAP_Pack_c(const void *inbuf, IMPL_Count incount, MPI_Datatype datatype, void *outbuf, IMPL_Count outsize, IMPL_Count *position, MPI_Comm *comm)
 {
-    return IMPL_Pack_c(inbuf, incount, datatype, outbuf, outsize, position, comm);
+    return IMPL_Pack_c(inbuf, incount, datatype, outbuf, outsize, position, *comm);
 }
 
 int WRAP_Pack_external(const char *datarep, const void *inbuf, int incount, MPI_Datatype datatype, void *outbuf, IMPL_Aint outsize, IMPL_Aint *position)
@@ -3103,14 +3103,14 @@ int WRAP_Pack_external_size_c(const char *datarep, IMPL_Count incount, MPI_Datat
     return IMPL_Pack_external_size_c(datarep, incount, datatype, size);
 }
 
-int WRAP_Pack_size(int incount, MPI_Datatype datatype, MPI_Comm comm, int *size)
+int WRAP_Pack_size(int incount, MPI_Datatype datatype, MPI_Comm *comm, int *size)
 {
-    return IMPL_Pack_size(incount, datatype, comm, size);
+    return IMPL_Pack_size(incount, datatype, *comm, size);
 }
 
-int WRAP_Pack_size_c(IMPL_Count incount, MPI_Datatype datatype, MPI_Comm comm, IMPL_Count *size)
+int WRAP_Pack_size_c(IMPL_Count incount, MPI_Datatype datatype, MPI_Comm *comm, IMPL_Count *size)
 {
-    return IMPL_Pack_size_c(incount, datatype, comm, size);
+    return IMPL_Pack_size_c(incount, datatype, *comm, size);
 }
 
 int WRAP_Parrived(MPI_Request request, int partition, int *flag)
@@ -3138,22 +3138,22 @@ int WRAP_Pready_range(int partition_low, int partition_high, MPI_Request request
     return IMPL_Pready_range(partition_low, partition_high, request);
 }
 
-int WRAP_Precv_init(void *buf, int partitions, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Precv_init(void *buf, int partitions, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Precv_init(buf, partitions, count, datatype, dest, tag, comm, info, request);
+    return IMPL_Precv_init(buf, partitions, count, datatype, dest, tag, *comm, info, request);
 }
 
-int WRAP_Probe(int source, int tag, MPI_Comm comm, WRAP_Status *status)
+int WRAP_Probe(int source, int tag, MPI_Comm *comm, WRAP_Status *status)
 {
     MPI_Status impl_status;
-    int rc = IMPL_Probe(source, tag, comm, &impl_status);
+    int rc = IMPL_Probe(source, tag, *comm, &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
     return rc;
 }
 
-int WRAP_Psend_init(const void *buf, int partitions, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Psend_init(const void *buf, int partitions, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Psend_init(buf, partitions, count, datatype, dest, tag, comm, info, request);
+    return IMPL_Psend_init(buf, partitions, count, datatype, dest, tag, *comm, info, request);
 }
 
 int WRAP_Publish_name(const char *service_name, MPI_Info info, const char *port_name)
@@ -3161,70 +3161,70 @@ int WRAP_Publish_name(const char *service_name, MPI_Info info, const char *port_
     return IMPL_Publish_name(service_name, info, port_name);
 }
 
-int WRAP_Put(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win)
+int WRAP_Put(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win *win)
 {
-    return IMPL_Put(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, win);
+    return IMPL_Put(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, *win);
 }
 
-int WRAP_Put_c(const void *origin_addr, IMPL_Count origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype target_datatype, MPI_Win win)
+int WRAP_Put_c(const void *origin_addr, IMPL_Count origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype target_datatype, MPI_Win *win)
 {
-    return IMPL_Put_c(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, win);
+    return IMPL_Put_c(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, *win);
 }
 
-int WRAP_Raccumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request *request)
+int WRAP_Raccumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win *win, MPI_Request *request)
 {
-    return IMPL_Raccumulate(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, op, win, request);
+    return IMPL_Raccumulate(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, op, *win, request);
 }
 
-int WRAP_Raccumulate_c(const void *origin_addr, IMPL_Count origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request *request)
+int WRAP_Raccumulate_c(const void *origin_addr, IMPL_Count origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win *win, MPI_Request *request)
 {
-    return IMPL_Raccumulate_c(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, op, win, request);
+    return IMPL_Raccumulate_c(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, op, *win, request);
 }
 
-int WRAP_Recv(void *buf, int count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, WRAP_Status *status)
+int WRAP_Recv(void *buf, int count, MPI_Datatype datatype, int source, int tag, MPI_Comm *comm, WRAP_Status *status)
 {
     MPI_Status impl_status;
-    int rc = IMPL_Recv(buf, count, datatype, source, tag, comm, &impl_status);
+    int rc = IMPL_Recv(buf, count, datatype, source, tag, *comm, &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
     return rc;
 }
 
-int WRAP_Recv_c(void *buf, IMPL_Count count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, WRAP_Status *status)
+int WRAP_Recv_c(void *buf, IMPL_Count count, MPI_Datatype datatype, int source, int tag, MPI_Comm *comm, WRAP_Status *status)
 {
     MPI_Status impl_status;
-    int rc = IMPL_Recv_c(buf, count, datatype, source, tag, comm, &impl_status);
+    int rc = IMPL_Recv_c(buf, count, datatype, source, tag, *comm, &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
     return rc;
 }
 
-int WRAP_Recv_init(void *buf, int count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Recv_init(void *buf, int count, MPI_Datatype datatype, int source, int tag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Recv_init(buf, count, datatype, source, tag, comm, request);
+    return IMPL_Recv_init(buf, count, datatype, source, tag, *comm, request);
 }
 
-int WRAP_Recv_init_c(void *buf, IMPL_Count count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Recv_init_c(void *buf, IMPL_Count count, MPI_Datatype datatype, int source, int tag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Recv_init_c(buf, count, datatype, source, tag, comm, request);
+    return IMPL_Recv_init_c(buf, count, datatype, source, tag, *comm, request);
 }
 
-int WRAP_Reduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm)
+int WRAP_Reduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm *comm)
 {
-    return IMPL_Reduce(sendbuf, recvbuf, count, datatype, op, root, comm);
+    return IMPL_Reduce(sendbuf, recvbuf, count, datatype, op, root, *comm);
 }
 
-int WRAP_Reduce_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm)
+int WRAP_Reduce_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm *comm)
 {
-    return IMPL_Reduce_c(sendbuf, recvbuf, count, datatype, op, root, comm);
+    return IMPL_Reduce_c(sendbuf, recvbuf, count, datatype, op, root, *comm);
 }
 
-int WRAP_Reduce_init(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Reduce_init(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Reduce_init(sendbuf, recvbuf, count, datatype, op, root, comm, info, request);
+    return IMPL_Reduce_init(sendbuf, recvbuf, count, datatype, op, root, *comm, info, request);
 }
 
-int WRAP_Reduce_init_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Reduce_init_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Reduce_init_c(sendbuf, recvbuf, count, datatype, op, root, comm, info, request);
+    return IMPL_Reduce_init_c(sendbuf, recvbuf, count, datatype, op, root, *comm, info, request);
 }
 
 int WRAP_Reduce_local(const void *inbuf, void *inoutbuf, int count, MPI_Datatype datatype, MPI_Op op)
@@ -3237,44 +3237,44 @@ int WRAP_Reduce_local_c(const void *inbuf, void *inoutbuf, IMPL_Count count, MPI
     return IMPL_Reduce_local_c(inbuf, inoutbuf, count, datatype, op);
 }
 
-int WRAP_Reduce_scatter(const void *sendbuf, void *recvbuf, const int recvcounts[], MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int WRAP_Reduce_scatter(const void *sendbuf, void *recvbuf, const int recvcounts[], MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm)
 {
-    return IMPL_Reduce_scatter(sendbuf, recvbuf, recvcounts, datatype, op, comm);
+    return IMPL_Reduce_scatter(sendbuf, recvbuf, recvcounts, datatype, op, *comm);
 }
 
-int WRAP_Reduce_scatter_block(const void *sendbuf, void *recvbuf, int recvcount, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int WRAP_Reduce_scatter_block(const void *sendbuf, void *recvbuf, int recvcount, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm)
 {
-    return IMPL_Reduce_scatter_block(sendbuf, recvbuf, recvcount, datatype, op, comm);
+    return IMPL_Reduce_scatter_block(sendbuf, recvbuf, recvcount, datatype, op, *comm);
 }
 
-int WRAP_Reduce_scatter_block_c(const void *sendbuf, void *recvbuf, IMPL_Count recvcount, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int WRAP_Reduce_scatter_block_c(const void *sendbuf, void *recvbuf, IMPL_Count recvcount, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm)
 {
-    return IMPL_Reduce_scatter_block_c(sendbuf, recvbuf, recvcount, datatype, op, comm);
+    return IMPL_Reduce_scatter_block_c(sendbuf, recvbuf, recvcount, datatype, op, *comm);
 }
 
-int WRAP_Reduce_scatter_block_init(const void *sendbuf, void *recvbuf, int recvcount, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Reduce_scatter_block_init(const void *sendbuf, void *recvbuf, int recvcount, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Reduce_scatter_block_init(sendbuf, recvbuf, recvcount, datatype, op, comm, info, request);
+    return IMPL_Reduce_scatter_block_init(sendbuf, recvbuf, recvcount, datatype, op, *comm, info, request);
 }
 
-int WRAP_Reduce_scatter_block_init_c(const void *sendbuf, void *recvbuf, IMPL_Count recvcount, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Reduce_scatter_block_init_c(const void *sendbuf, void *recvbuf, IMPL_Count recvcount, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Reduce_scatter_block_init_c(sendbuf, recvbuf, recvcount, datatype, op, comm, info, request);
+    return IMPL_Reduce_scatter_block_init_c(sendbuf, recvbuf, recvcount, datatype, op, *comm, info, request);
 }
 
-int WRAP_Reduce_scatter_c(const void *sendbuf, void *recvbuf, const IMPL_Count recvcounts[], MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int WRAP_Reduce_scatter_c(const void *sendbuf, void *recvbuf, const IMPL_Count recvcounts[], MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm)
 {
-    return IMPL_Reduce_scatter_c(sendbuf, recvbuf, recvcounts, datatype, op, comm);
+    return IMPL_Reduce_scatter_c(sendbuf, recvbuf, recvcounts, datatype, op, *comm);
 }
 
-int WRAP_Reduce_scatter_init(const void *sendbuf, void *recvbuf, const int recvcounts[], MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Reduce_scatter_init(const void *sendbuf, void *recvbuf, const int recvcounts[], MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Reduce_scatter_init(sendbuf, recvbuf, recvcounts, datatype, op, comm, info, request);
+    return IMPL_Reduce_scatter_init(sendbuf, recvbuf, recvcounts, datatype, op, *comm, info, request);
 }
 
-int WRAP_Reduce_scatter_init_c(const void *sendbuf, void *recvbuf, const IMPL_Count recvcounts[], MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Reduce_scatter_init_c(const void *sendbuf, void *recvbuf, const IMPL_Count recvcounts[], MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Reduce_scatter_init_c(sendbuf, recvbuf, recvcounts, datatype, op, comm, info, request);
+    return IMPL_Reduce_scatter_init_c(sendbuf, recvbuf, recvcounts, datatype, op, *comm, info, request);
 }
 
 int WRAP_Register_datarep(const char *datarep, MPI_Datarep_conversion_function *read_conversion_fn, MPI_Datarep_conversion_function *write_conversion_fn, MPI_Datarep_extent_function *dtype_file_extent_fn, void *extra_state)
@@ -3302,164 +3302,164 @@ int WRAP_Request_get_status(MPI_Request request, int *flag, WRAP_Status *status)
     return rc;
 }
 
-int WRAP_Rget(void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win, MPI_Request *request)
+int WRAP_Rget(void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win *win, MPI_Request *request)
 {
-    return IMPL_Rget(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, win, request);
+    return IMPL_Rget(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, *win, request);
 }
 
-int WRAP_Rget_accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr, int result_count, MPI_Datatype result_datatype, int target_rank, IMPL_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request *request)
+int WRAP_Rget_accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr, int result_count, MPI_Datatype result_datatype, int target_rank, IMPL_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win *win, MPI_Request *request)
 {
-    return IMPL_Rget_accumulate(origin_addr, origin_count, origin_datatype, result_addr, result_count, result_datatype, target_rank, target_disp, target_count, target_datatype, op, win, request);
+    return IMPL_Rget_accumulate(origin_addr, origin_count, origin_datatype, result_addr, result_count, result_datatype, target_rank, target_disp, target_count, target_datatype, op, *win, request);
 }
 
-int WRAP_Rget_accumulate_c(const void *origin_addr, IMPL_Count origin_count, MPI_Datatype origin_datatype, void *result_addr, IMPL_Count result_count, MPI_Datatype result_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request *request)
+int WRAP_Rget_accumulate_c(const void *origin_addr, IMPL_Count origin_count, MPI_Datatype origin_datatype, void *result_addr, IMPL_Count result_count, MPI_Datatype result_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win *win, MPI_Request *request)
 {
-    return IMPL_Rget_accumulate_c(origin_addr, origin_count, origin_datatype, result_addr, result_count, result_datatype, target_rank, target_disp, target_count, target_datatype, op, win, request);
+    return IMPL_Rget_accumulate_c(origin_addr, origin_count, origin_datatype, result_addr, result_count, result_datatype, target_rank, target_disp, target_count, target_datatype, op, *win, request);
 }
 
-int WRAP_Rget_c(void *origin_addr, IMPL_Count origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype target_datatype, MPI_Win win, MPI_Request *request)
+int WRAP_Rget_c(void *origin_addr, IMPL_Count origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype target_datatype, MPI_Win *win, MPI_Request *request)
 {
-    return IMPL_Rget_c(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, win, request);
+    return IMPL_Rget_c(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, *win, request);
 }
 
-int WRAP_Rput(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win, MPI_Request *request)
+int WRAP_Rput(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win *win, MPI_Request *request)
 {
-    return IMPL_Rput(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, win, request);
+    return IMPL_Rput(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, *win, request);
 }
 
-int WRAP_Rput_c(const void *origin_addr, IMPL_Count origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype target_datatype, MPI_Win win, MPI_Request *request)
+int WRAP_Rput_c(const void *origin_addr, IMPL_Count origin_count, MPI_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype target_datatype, MPI_Win *win, MPI_Request *request)
 {
-    return IMPL_Rput_c(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, win, request);
+    return IMPL_Rput_c(origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, *win, request);
 }
 
-int WRAP_Rsend(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
+int WRAP_Rsend(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm)
 {
-    return IMPL_Rsend(buf, count, datatype, dest, tag, comm);
+    return IMPL_Rsend(buf, count, datatype, dest, tag, *comm);
 }
 
-int WRAP_Rsend_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
+int WRAP_Rsend_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm)
 {
-    return IMPL_Rsend_c(buf, count, datatype, dest, tag, comm);
+    return IMPL_Rsend_c(buf, count, datatype, dest, tag, *comm);
 }
 
-int WRAP_Rsend_init(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Rsend_init(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Rsend_init(buf, count, datatype, dest, tag, comm, request);
+    return IMPL_Rsend_init(buf, count, datatype, dest, tag, *comm, request);
 }
 
-int WRAP_Rsend_init_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Rsend_init_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Rsend_init_c(buf, count, datatype, dest, tag, comm, request);
+    return IMPL_Rsend_init_c(buf, count, datatype, dest, tag, *comm, request);
 }
 
-int WRAP_Scan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int WRAP_Scan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm)
 {
-    return IMPL_Scan(sendbuf, recvbuf, count, datatype, op, comm);
+    return IMPL_Scan(sendbuf, recvbuf, count, datatype, op, *comm);
 }
 
-int WRAP_Scan_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int WRAP_Scan_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm)
 {
-    return IMPL_Scan_c(sendbuf, recvbuf, count, datatype, op, comm);
+    return IMPL_Scan_c(sendbuf, recvbuf, count, datatype, op, *comm);
 }
 
-int WRAP_Scan_init(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Scan_init(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Scan_init(sendbuf, recvbuf, count, datatype, op, comm, info, request);
+    return IMPL_Scan_init(sendbuf, recvbuf, count, datatype, op, *comm, info, request);
 }
 
-int WRAP_Scan_init_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Scan_init_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Scan_init_c(sendbuf, recvbuf, count, datatype, op, comm, info, request);
+    return IMPL_Scan_init_c(sendbuf, recvbuf, count, datatype, op, *comm, info, request);
 }
 
-int WRAP_Scatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
+int WRAP_Scatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm *comm)
 {
-    return IMPL_Scatter(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm);
+    return IMPL_Scatter(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, *comm);
 }
 
-int WRAP_Scatter_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
+int WRAP_Scatter_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm *comm)
 {
-    return IMPL_Scatter_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm);
+    return IMPL_Scatter_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, *comm);
 }
 
-int WRAP_Scatter_init(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Scatter_init(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Scatter_init(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm, info, request);
+    return IMPL_Scatter_init(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, *comm, info, request);
 }
 
-int WRAP_Scatter_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Scatter_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Scatter_init_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm, info, request);
+    return IMPL_Scatter_init_c(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, *comm, info, request);
 }
 
-int WRAP_Scatterv(const void *sendbuf, const int sendcounts[], const int displs[], MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
+int WRAP_Scatterv(const void *sendbuf, const int sendcounts[], const int displs[], MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm *comm)
 {
-    return IMPL_Scatterv(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, comm);
+    return IMPL_Scatterv(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, *comm);
 }
 
-int WRAP_Scatterv_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint displs[], MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
+int WRAP_Scatterv_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint displs[], MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm *comm)
 {
-    return IMPL_Scatterv_c(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, comm);
+    return IMPL_Scatterv_c(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, *comm);
 }
 
-int WRAP_Scatterv_init(const void *sendbuf, const int sendcounts[], const int displs[], MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Scatterv_init(const void *sendbuf, const int sendcounts[], const int displs[], MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Scatterv_init(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, comm, info, request);
+    return IMPL_Scatterv_init(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, *comm, info, request);
 }
 
-int WRAP_Scatterv_init_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint displs[], MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Info info, MPI_Request *request)
+int WRAP_Scatterv_init_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint displs[], MPI_Datatype sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm *comm, MPI_Info info, MPI_Request *request)
 {
-    return IMPL_Scatterv_init_c(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, comm, info, request);
+    return IMPL_Scatterv_init_c(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, *comm, info, request);
 }
 
-int WRAP_Send(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
+int WRAP_Send(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm)
 {
-    return IMPL_Send(buf, count, datatype, dest, tag, comm);
+    return IMPL_Send(buf, count, datatype, dest, tag, *comm);
 }
 
-int WRAP_Send_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
+int WRAP_Send_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm)
 {
-    return IMPL_Send_c(buf, count, datatype, dest, tag, comm);
+    return IMPL_Send_c(buf, count, datatype, dest, tag, *comm);
 }
 
-int WRAP_Send_init(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Send_init(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Send_init(buf, count, datatype, dest, tag, comm, request);
+    return IMPL_Send_init(buf, count, datatype, dest, tag, *comm, request);
 }
 
-int WRAP_Send_init_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Send_init_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Send_init_c(buf, count, datatype, dest, tag, comm, request);
+    return IMPL_Send_init_c(buf, count, datatype, dest, tag, *comm, request);
 }
 
-int WRAP_Sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, int dest, int sendtag, void *recvbuf, int recvcount, MPI_Datatype recvtype, int source, int recvtag, MPI_Comm comm, WRAP_Status *status)
+int WRAP_Sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, int dest, int sendtag, void *recvbuf, int recvcount, MPI_Datatype recvtype, int source, int recvtag, MPI_Comm *comm, WRAP_Status *status)
 {
     MPI_Status impl_status;
-    int rc = IMPL_Sendrecv(sendbuf, sendcount, sendtype, dest, sendtag, recvbuf, recvcount, recvtype, source, recvtag, comm, &impl_status);
+    int rc = IMPL_Sendrecv(sendbuf, sendcount, sendtype, dest, sendtag, recvbuf, recvcount, recvtype, source, recvtag, *comm, &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
     return rc;
 }
 
-int WRAP_Sendrecv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, int dest, int sendtag, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, int source, int recvtag, MPI_Comm comm, WRAP_Status *status)
+int WRAP_Sendrecv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype sendtype, int dest, int sendtag, void *recvbuf, IMPL_Count recvcount, MPI_Datatype recvtype, int source, int recvtag, MPI_Comm *comm, WRAP_Status *status)
 {
     MPI_Status impl_status;
-    int rc = IMPL_Sendrecv_c(sendbuf, sendcount, sendtype, dest, sendtag, recvbuf, recvcount, recvtype, source, recvtag, comm, &impl_status);
+    int rc = IMPL_Sendrecv_c(sendbuf, sendcount, sendtype, dest, sendtag, recvbuf, recvcount, recvtype, source, recvtag, *comm, &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
     return rc;
 }
 
-int WRAP_Sendrecv_replace(void *buf, int count, MPI_Datatype datatype, int dest, int sendtag, int source, int recvtag, MPI_Comm comm, WRAP_Status *status)
+int WRAP_Sendrecv_replace(void *buf, int count, MPI_Datatype datatype, int dest, int sendtag, int source, int recvtag, MPI_Comm *comm, WRAP_Status *status)
 {
     MPI_Status impl_status;
-    int rc = IMPL_Sendrecv_replace(buf, count, datatype, dest, sendtag, source, recvtag, comm, &impl_status);
+    int rc = IMPL_Sendrecv_replace(buf, count, datatype, dest, sendtag, source, recvtag, *comm, &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
     return rc;
 }
 
-int WRAP_Sendrecv_replace_c(void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int sendtag, int source, int recvtag, MPI_Comm comm, WRAP_Status *status)
+int WRAP_Sendrecv_replace_c(void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int sendtag, int source, int recvtag, MPI_Comm *comm, WRAP_Status *status)
 {
     MPI_Status impl_status;
-    int rc = IMPL_Sendrecv_replace_c(buf, count, datatype, dest, sendtag, source, recvtag, comm, &impl_status);
+    int rc = IMPL_Sendrecv_replace_c(buf, count, datatype, dest, sendtag, source, recvtag, *comm, &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
     return rc;
 }
@@ -3516,24 +3516,24 @@ int WRAP_Session_set_errhandler(MPI_Session session, MPI_Errhandler errhandler)
 }
 #endif
 
-int WRAP_Ssend(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
+int WRAP_Ssend(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm)
 {
-    return IMPL_Ssend(buf, count, datatype, dest, tag, comm);
+    return IMPL_Ssend(buf, count, datatype, dest, tag, *comm);
 }
 
-int WRAP_Ssend_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
+int WRAP_Ssend_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm)
 {
-    return IMPL_Ssend_c(buf, count, datatype, dest, tag, comm);
+    return IMPL_Ssend_c(buf, count, datatype, dest, tag, *comm);
 }
 
-int WRAP_Ssend_init(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ssend_init(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ssend_init(buf, count, datatype, dest, tag, comm, request);
+    return IMPL_Ssend_init(buf, count, datatype, dest, tag, *comm, request);
 }
 
-int WRAP_Ssend_init_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request)
+int WRAP_Ssend_init_c(const void *buf, IMPL_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm *comm, MPI_Request *request)
 {
-    return IMPL_Ssend_init_c(buf, count, datatype, dest, tag, comm, request);
+    return IMPL_Ssend_init_c(buf, count, datatype, dest, tag, *comm, request);
 }
 
 int WRAP_Start(MPI_Request *request)
@@ -3662,9 +3662,9 @@ int WRAP_Testsome(int incount, MPI_Request array_of_requests[], int *outcount, i
     return rc;
 }
 
-int WRAP_Topo_test(MPI_Comm comm, int *status)
+int WRAP_Topo_test(MPI_Comm *comm, int *status)
 {
-    return IMPL_Topo_test(comm, status);
+    return IMPL_Topo_test(*comm, status);
 }
 
 int WRAP_Type_commit(MPI_Datatype *datatype)
@@ -3942,14 +3942,14 @@ int WRAP_Type_vector_c(IMPL_Count count, IMPL_Count blocklength, IMPL_Count stri
     return IMPL_Type_vector_c(count, blocklength, stride, oldtype, newtype);
 }
 
-int WRAP_Unpack(const void *inbuf, int insize, int *position, void *outbuf, int outcount, MPI_Datatype datatype, MPI_Comm comm)
+int WRAP_Unpack(const void *inbuf, int insize, int *position, void *outbuf, int outcount, MPI_Datatype datatype, MPI_Comm *comm)
 {
-    return IMPL_Unpack(inbuf, insize, position, outbuf, outcount, datatype, comm);
+    return IMPL_Unpack(inbuf, insize, position, outbuf, outcount, datatype, *comm);
 }
 
-int WRAP_Unpack_c(const void *inbuf, IMPL_Count insize, IMPL_Count *position, void *outbuf, IMPL_Count outcount, MPI_Datatype datatype, MPI_Comm comm)
+int WRAP_Unpack_c(const void *inbuf, IMPL_Count insize, IMPL_Count *position, void *outbuf, IMPL_Count outcount, MPI_Datatype datatype, MPI_Comm *comm)
 {
-    return IMPL_Unpack_c(inbuf, insize, position, outbuf, outcount, datatype, comm);
+    return IMPL_Unpack_c(inbuf, insize, position, outbuf, outcount, datatype, *comm);
 }
 
 int WRAP_Unpack_external(const char datarep[], const void *inbuf, IMPL_Aint insize, IMPL_Aint *position, void *outbuf, int outcount, MPI_Datatype datatype)
@@ -4023,54 +4023,54 @@ int WRAP_Waitsome(int incount, MPI_Request array_of_requests[], int *outcount, i
     return rc;
 }
 
-int WRAP_Win_allocate(IMPL_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, void *baseptr, MPI_Win *win)
+int WRAP_Win_allocate(IMPL_Aint size, int disp_unit, MPI_Info info, MPI_Comm *comm, void *baseptr, MPI_Win **win)
 {
-    return IMPL_Win_allocate(size, disp_unit, info, comm, baseptr, win);
+    return IMPL_Win_allocate(size, disp_unit, info, *comm, baseptr, *win);
 }
 
-int WRAP_Win_allocate_c(IMPL_Aint size, IMPL_Aint disp_unit, MPI_Info info, MPI_Comm comm, void *baseptr, MPI_Win *win)
+int WRAP_Win_allocate_c(IMPL_Aint size, IMPL_Aint disp_unit, MPI_Info info, MPI_Comm *comm, void *baseptr, MPI_Win **win)
 {
-    return IMPL_Win_allocate_c(size, disp_unit, info, comm, baseptr, win);
+    return IMPL_Win_allocate_c(size, disp_unit, info, *comm, baseptr, *win);
 }
 
-int WRAP_Win_allocate_shared(IMPL_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, void *baseptr, MPI_Win *win)
+int WRAP_Win_allocate_shared(IMPL_Aint size, int disp_unit, MPI_Info info, MPI_Comm *comm, void *baseptr, MPI_Win **win)
 {
-    return IMPL_Win_allocate_shared(size, disp_unit, info, comm, baseptr, win);
+    return IMPL_Win_allocate_shared(size, disp_unit, info, *comm, baseptr, *win);
 }
 
-int WRAP_Win_allocate_shared_c(IMPL_Aint size, IMPL_Aint disp_unit, MPI_Info info, MPI_Comm comm, void *baseptr, MPI_Win *win)
+int WRAP_Win_allocate_shared_c(IMPL_Aint size, IMPL_Aint disp_unit, MPI_Info info, MPI_Comm *comm, void *baseptr, MPI_Win **win)
 {
-    return IMPL_Win_allocate_shared_c(size, disp_unit, info, comm, baseptr, win);
+    return IMPL_Win_allocate_shared_c(size, disp_unit, info, *comm, baseptr, *win);
 }
 
-int WRAP_Win_attach(MPI_Win win, void *base, IMPL_Aint size)
+int WRAP_Win_attach(MPI_Win *win, void *base, IMPL_Aint size)
 {
-    return IMPL_Win_attach(win, base, size);
+    return IMPL_Win_attach(*win, base, size);
 }
 
-int WRAP_Win_call_errhandler(MPI_Win win, int errorcode)
+int WRAP_Win_call_errhandler(MPI_Win *win, int errorcode)
 {
-    return IMPL_Win_call_errhandler(win, errorcode);
+    return IMPL_Win_call_errhandler(*win, errorcode);
 }
 
-int WRAP_Win_complete(MPI_Win win)
+int WRAP_Win_complete(MPI_Win *win)
 {
-    return IMPL_Win_complete(win);
+    return IMPL_Win_complete(*win);
 }
 
-int WRAP_Win_create(void *base, IMPL_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, MPI_Win *win)
+int WRAP_Win_create(void *base, IMPL_Aint size, int disp_unit, MPI_Info info, MPI_Comm *comm, MPI_Win **win)
 {
-    return IMPL_Win_create(base, size, disp_unit, info, comm, win);
+    return IMPL_Win_create(base, size, disp_unit, info, *comm, *win);
 }
 
-int WRAP_Win_create_c(void *base, IMPL_Aint size, IMPL_Aint disp_unit, MPI_Info info, MPI_Comm comm, MPI_Win *win)
+int WRAP_Win_create_c(void *base, IMPL_Aint size, IMPL_Aint disp_unit, MPI_Info info, MPI_Comm *comm, MPI_Win **win)
 {
-    return IMPL_Win_create_c(base, size, disp_unit, info, comm, win);
+    return IMPL_Win_create_c(base, size, disp_unit, info, *comm, *win);
 }
 
-int WRAP_Win_create_dynamic(MPI_Info info, MPI_Comm comm, MPI_Win *win)
+int WRAP_Win_create_dynamic(MPI_Info info, MPI_Comm *comm, MPI_Win **win)
 {
-    return IMPL_Win_create_dynamic(info, comm, win);
+    return IMPL_Win_create_dynamic(info, *comm, *win);
 }
 
 int WRAP_Win_create_errhandler(MPI_Win_errhandler_function *win_errhandler_fn, MPI_Errhandler *errhandler)
@@ -4083,44 +4083,44 @@ int WRAP_Win_create_keyval(MPI_Win_copy_attr_function *win_copy_attr_fn, MPI_Win
     return IMPL_Win_create_keyval(win_copy_attr_fn, win_delete_attr_fn, win_keyval, extra_state);
 }
 
-int WRAP_Win_delete_attr(MPI_Win win, int win_keyval)
+int WRAP_Win_delete_attr(MPI_Win *win, int win_keyval)
 {
-    return IMPL_Win_delete_attr(win, win_keyval);
+    return IMPL_Win_delete_attr(*win, win_keyval);
 }
 
-int WRAP_Win_detach(MPI_Win win, const void *base)
+int WRAP_Win_detach(MPI_Win *win, const void *base)
 {
-    return IMPL_Win_detach(win, base);
+    return IMPL_Win_detach(*win, base);
 }
 
-int WRAP_Win_fence(int assert, MPI_Win win)
+int WRAP_Win_fence(int assert, MPI_Win *win)
 {
-    return IMPL_Win_fence(assert, win);
+    return IMPL_Win_fence(assert, *win);
 }
 
-int WRAP_Win_flush(int rank, MPI_Win win)
+int WRAP_Win_flush(int rank, MPI_Win *win)
 {
-    return IMPL_Win_flush(rank, win);
+    return IMPL_Win_flush(rank, *win);
 }
 
-int WRAP_Win_flush_all(MPI_Win win)
+int WRAP_Win_flush_all(MPI_Win *win)
 {
-    return IMPL_Win_flush_all(win);
+    return IMPL_Win_flush_all(*win);
 }
 
-int WRAP_Win_flush_local(int rank, MPI_Win win)
+int WRAP_Win_flush_local(int rank, MPI_Win *win)
 {
-    return IMPL_Win_flush_local(rank, win);
+    return IMPL_Win_flush_local(rank, *win);
 }
 
-int WRAP_Win_flush_local_all(MPI_Win win)
+int WRAP_Win_flush_local_all(MPI_Win *win)
 {
-    return IMPL_Win_flush_local_all(win);
+    return IMPL_Win_flush_local_all(*win);
 }
 
-int WRAP_Win_free(MPI_Win *win)
+int WRAP_Win_free(MPI_Win **win)
 {
-    return IMPL_Win_free(win);
+    return IMPL_Win_free(*win);
 }
 
 int WRAP_Win_free_keyval(int *win_keyval)
@@ -4128,103 +4128,103 @@ int WRAP_Win_free_keyval(int *win_keyval)
     return IMPL_Win_free_keyval(win_keyval);
 }
 
-int WRAP_Win_get_attr(MPI_Win win, int win_keyval, void *attribute_val, int *flag)
+int WRAP_Win_get_attr(MPI_Win *win, int win_keyval, void *attribute_val, int *flag)
 {
-    return IMPL_Win_get_attr(win, win_keyval, attribute_val, flag);
+    return IMPL_Win_get_attr(*win, win_keyval, attribute_val, flag);
 }
 
-int WRAP_Win_get_errhandler(MPI_Win win, MPI_Errhandler *errhandler)
+int WRAP_Win_get_errhandler(MPI_Win *win, MPI_Errhandler *errhandler)
 {
-    return IMPL_Win_get_errhandler(win, errhandler);
+    return IMPL_Win_get_errhandler(*win, errhandler);
 }
 
-int WRAP_Win_get_group(MPI_Win win, MPI_Group *group)
+int WRAP_Win_get_group(MPI_Win *win, MPI_Group *group)
 {
-    return IMPL_Win_get_group(win, group);
+    return IMPL_Win_get_group(*win, group);
 }
 
-int WRAP_Win_get_info(MPI_Win win, MPI_Info *info_used)
+int WRAP_Win_get_info(MPI_Win *win, MPI_Info *info_used)
 {
-    return IMPL_Win_get_info(win, info_used);
+    return IMPL_Win_get_info(*win, info_used);
 }
 
-int WRAP_Win_get_name(MPI_Win win, char *win_name, int *resultlen)
+int WRAP_Win_get_name(MPI_Win *win, char *win_name, int *resultlen)
 {
-    return IMPL_Win_get_name(win, win_name, resultlen);
+    return IMPL_Win_get_name(*win, win_name, resultlen);
 }
 
-int WRAP_Win_lock(int lock_type, int rank, int assert, MPI_Win win)
+int WRAP_Win_lock(int lock_type, int rank, int assert, MPI_Win *win)
 {
-    return IMPL_Win_lock(lock_type, rank, assert, win);
+    return IMPL_Win_lock(lock_type, rank, assert, *win);
 }
 
-int WRAP_Win_lock_all(int assert, MPI_Win win)
+int WRAP_Win_lock_all(int assert, MPI_Win *win)
 {
-    return IMPL_Win_lock_all(assert, win);
+    return IMPL_Win_lock_all(assert, *win);
 }
 
-int WRAP_Win_post(MPI_Group group, int assert, MPI_Win win)
+int WRAP_Win_post(MPI_Group group, int assert, MPI_Win *win)
 {
-    return IMPL_Win_post(group, assert, win);
+    return IMPL_Win_post(group, assert, *win);
 }
 
-int WRAP_Win_set_attr(MPI_Win win, int win_keyval, void *attribute_val)
+int WRAP_Win_set_attr(MPI_Win *win, int win_keyval, void *attribute_val)
 {
-    return IMPL_Win_set_attr(win, win_keyval, attribute_val);
+    return IMPL_Win_set_attr(*win, win_keyval, attribute_val);
 }
 
-int WRAP_Win_set_errhandler(MPI_Win win, MPI_Errhandler errhandler)
+int WRAP_Win_set_errhandler(MPI_Win *win, MPI_Errhandler errhandler)
 {
-    return IMPL_Win_set_errhandler(win, errhandler);
+    return IMPL_Win_set_errhandler(*win, errhandler);
 }
 
-int WRAP_Win_set_info(MPI_Win win, MPI_Info info)
+int WRAP_Win_set_info(MPI_Win *win, MPI_Info info)
 {
-    return IMPL_Win_set_info(win, info);
+    return IMPL_Win_set_info(*win, info);
 }
 
-int WRAP_Win_set_name(MPI_Win win, const char *win_name)
+int WRAP_Win_set_name(MPI_Win *win, const char *win_name)
 {
-    return IMPL_Win_set_name(win, win_name);
+    return IMPL_Win_set_name(*win, win_name);
 }
 
-int WRAP_Win_shared_query(MPI_Win win, int rank, IMPL_Aint *size, int *disp_unit, void *baseptr)
+int WRAP_Win_shared_query(MPI_Win *win, int rank, IMPL_Aint *size, int *disp_unit, void *baseptr)
 {
-    return IMPL_Win_shared_query(win, rank, size, disp_unit, baseptr);
+    return IMPL_Win_shared_query(*win, rank, size, disp_unit, baseptr);
 }
 
-int WRAP_Win_shared_query_c(MPI_Win win, int rank, IMPL_Aint *size, IMPL_Aint *disp_unit, void *baseptr)
+int WRAP_Win_shared_query_c(MPI_Win *win, int rank, IMPL_Aint *size, IMPL_Aint *disp_unit, void *baseptr)
 {
-    return IMPL_Win_shared_query_c(win, rank, size, disp_unit, baseptr);
+    return IMPL_Win_shared_query_c(*win, rank, size, disp_unit, baseptr);
 }
 
-int WRAP_Win_start(MPI_Group group, int assert, MPI_Win win)
+int WRAP_Win_start(MPI_Group group, int assert, MPI_Win *win)
 {
-    return IMPL_Win_start(group, assert, win);
+    return IMPL_Win_start(group, assert, *win);
 }
 
-int WRAP_Win_sync(MPI_Win win)
+int WRAP_Win_sync(MPI_Win *win)
 {
-    return IMPL_Win_sync(win);
+    return IMPL_Win_sync(*win);
 }
 
-int WRAP_Win_test(MPI_Win win, int *flag)
+int WRAP_Win_test(MPI_Win *win, int *flag)
 {
-    return IMPL_Win_test(win, flag);
+    return IMPL_Win_test(*win, flag);
 }
 
-int WRAP_Win_unlock(int rank, MPI_Win win)
+int WRAP_Win_unlock(int rank, MPI_Win *win)
 {
-    return IMPL_Win_unlock(rank, win);
+    return IMPL_Win_unlock(rank, *win);
 }
 
-int WRAP_Win_unlock_all(MPI_Win win)
+int WRAP_Win_unlock_all(MPI_Win *win)
 {
-    return IMPL_Win_unlock_all(win);
+    return IMPL_Win_unlock_all(*win);
 }
 
-int WRAP_Win_wait(MPI_Win win)
+int WRAP_Win_wait(MPI_Win *win)
 {
-    return IMPL_Win_wait(win);
+    return IMPL_Win_wait(*win);
 }
 
