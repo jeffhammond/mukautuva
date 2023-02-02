@@ -596,7 +596,6 @@ int (*IMPL_Win_unlock)(int rank, MPI_Win win);
 int (*IMPL_Win_unlock_all)(MPI_Win win);
 int (*IMPL_Win_wait)(MPI_Win win);
 
-
 //
 // MPI_ allows profiling of the implementation, in theory,
 // assuming we figure out whatever the DLL situation is there.
@@ -622,6 +621,40 @@ int WRAP_Load_functions(void * restrict h, int major, int minor)
     IMPL_Comm_rank = MUK_DLSYM(h, NIMI(Comm_rank) );
     IMPL_Comm_size = MUK_DLSYM(h, NIMI(Comm_size) );
     return 0;
+}
+
+// status conversion
+
+#include <string.h>
+
+static inline void WRAP_Status_to_MPI_Status(const WRAP_Status * w, MPI_Status * m)
+{
+    m->MPI_SOURCE = w->MPI_SOURCE;
+    m->MPI_TAG    = w->MPI_TAG;
+    m->MPI_ERROR  = w->MPI_ERROR;
+
+#if defined(MPICH)
+    memcpy(&(m->count_lo), w->__kielletty__, 2*sizeof(int));
+#elif defined(OPEN_MPI)
+    memcpy(&(m->_cancelled), w->__kielletty__, 3*sizeof(int));
+#else
+#error Need MPI_Status ABI support
+#endif
+}
+
+static inline void MPI_Status_to_WRAP_Status(const MPI_Status * m, WRAP_Status * w)
+{
+    w->MPI_SOURCE = m->MPI_SOURCE;
+    w->MPI_TAG    = m->MPI_TAG;
+    w->MPI_ERROR  = m->MPI_ERROR;
+
+#if defined(MPICH)
+    memcpy(w->__kielletty__, &(m->count_lo), 2*sizeof(int));
+#elif defined(OPEN_MPI)
+    memcpy(w->__kielletty__, &(m->_cancelled), 3*sizeof(int));
+#else
+#error Need MPI_Status ABI support
+#endif
 }
 
 int WRAP_Abort(MPI_Comm * comm, int errorcode)
