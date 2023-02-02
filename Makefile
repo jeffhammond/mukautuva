@@ -4,7 +4,7 @@ OMPICC=/usr/bin/mpicc.openmpi
 MPICHCC=/usr/bin/mpicc.mpich
 
 CC	= gcc
-CFLAGS	= -g3 -O0 -Wall -Wextra #-Werror
+CFLAGS	= -g3 -O0 -Wall -Wextra -Werror
 #CFLAGS	+= -ferror-limit=3 # Clang
 CFLAGS	+= -fmax-errors=3 # GCC
 CFLAGS	+= -fPIC

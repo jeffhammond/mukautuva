@@ -1414,12 +1414,18 @@ int WRAP_File_preallocate(MPI_File fh, IMPL_Offset size)
 
 int WRAP_File_read(MPI_File fh, void *buf, int count, MPI_Datatype datatype, WRAP_Status *status)
 {
-    return IMPL_File_read(fh, buf, count, datatype, status);
+    MPI_Status impl_status;
+    int rc = IMPL_File_read(fh, buf, count, datatype, &impl_status);
+    MPI_Status_to_WRAP_Status(&impl_status, status);
+    return rc;
 }
 
 int WRAP_File_read_all(MPI_File fh, void *buf, int count, MPI_Datatype datatype, WRAP_Status *status)
 {
-    return IMPL_File_read_all(fh, buf, count, datatype, status);
+    MPI_Status impl_status;
+    int rc = IMPL_File_read_all(fh, buf, count, datatype, &impl_status);
+    MPI_Status_to_WRAP_Status(&impl_status, status);
+    return rc;
 }
 
 int WRAP_File_read_all_begin(MPI_File fh, void *buf, int count, MPI_Datatype datatype)
@@ -1434,22 +1440,34 @@ int WRAP_File_read_all_begin_c(MPI_File fh, void *buf, IMPL_Count count, MPI_Dat
 
 int WRAP_File_read_all_c(MPI_File fh, void *buf, IMPL_Count count, MPI_Datatype datatype, WRAP_Status *status)
 {
-    return IMPL_File_read_all_c(fh, buf, count, datatype, status);
+    MPI_Status impl_status;
+    int rc = IMPL_File_read_all_c(fh, buf, count, datatype, &impl_status);
+    MPI_Status_to_WRAP_Status(&impl_status, status);
+    return rc;
 }
 
 int WRAP_File_read_all_end(MPI_File fh, void *buf, WRAP_Status *status)
 {
-    return IMPL_File_read_all_end(fh, buf, status);
+    MPI_Status impl_status;
+    int rc = IMPL_File_read_all_end(fh, buf, &impl_status);
+    MPI_Status_to_WRAP_Status(&impl_status, status);
+    return rc;
 }
 
 int WRAP_File_read_at(MPI_File fh, IMPL_Offset offset, void *buf, int count, MPI_Datatype datatype, WRAP_Status *status)
 {
-    return IMPL_File_read_at(fh, offset, buf, count, datatype, status);
+    MPI_Status impl_status;
+    int rc = IMPL_File_read_at(fh, offset, buf, count, datatype, &impl_status);
+    MPI_Status_to_WRAP_Status(&impl_status, status);
+    return rc;
 }
 
 int WRAP_File_read_at_all(MPI_File fh, IMPL_Offset offset, void *buf, int count, MPI_Datatype datatype, WRAP_Status *status)
 {
-    return IMPL_File_read_at_all(fh, offset, buf, count, datatype, status);
+    MPI_Status impl_status;
+    int rc = IMPL_File_read_at_all(fh, offset, buf, count, datatype, &impl_status);
+    MPI_Status_to_WRAP_Status(&impl_status, status);
+    return rc;
 }
 
 int WRAP_File_read_at_all_begin(MPI_File fh, IMPL_Offset offset, void *buf, int count, MPI_Datatype datatype)
@@ -1464,27 +1482,42 @@ int WRAP_File_read_at_all_begin_c(MPI_File fh, IMPL_Offset offset, void *buf, IM
 
 int WRAP_File_read_at_all_c(MPI_File fh, IMPL_Offset offset, void *buf, IMPL_Count count, MPI_Datatype datatype, WRAP_Status *status)
 {
-    return IMPL_File_read_at_all_c(fh, offset, buf, count, datatype, status);
+    MPI_Status impl_status;
+    int rc = IMPL_File_read_at_all_c(fh, offset, buf, count, datatype, &impl_status);
+    MPI_Status_to_WRAP_Status(&impl_status, status);
+    return rc;
 }
 
 int WRAP_File_read_at_all_end(MPI_File fh, void *buf, WRAP_Status *status)
 {
-    return IMPL_File_read_at_all_end(fh, buf, status);
+    MPI_Status impl_status;
+    int rc = IMPL_File_read_at_all_end(fh, buf, &impl_status);
+    MPI_Status_to_WRAP_Status(&impl_status, status);
+    return rc;
 }
 
 int WRAP_File_read_at_c(MPI_File fh, IMPL_Offset offset, void *buf, IMPL_Count count, MPI_Datatype datatype, WRAP_Status *status)
 {
-    return IMPL_File_read_at_c(fh, offset, buf, count, datatype, status);
+    MPI_Status impl_status;
+    int rc = IMPL_File_read_at_c(fh, offset, buf, count, datatype, &impl_status);
+    MPI_Status_to_WRAP_Status(&impl_status, status);
+    return rc;
 }
 
 int WRAP_File_read_c(MPI_File fh, void *buf, IMPL_Count count, MPI_Datatype datatype, WRAP_Status *status)
 {
-    return IMPL_File_read_c(fh, buf, count, datatype, status);
+    MPI_Status impl_status;
+    int rc = IMPL_File_read_c(fh, buf, count, datatype, &impl_status);
+    MPI_Status_to_WRAP_Status(&impl_status, status);
+    return rc;
 }
 
 int WRAP_File_read_ordered(MPI_File fh, void *buf, int count, MPI_Datatype datatype, WRAP_Status *status)
 {
-    return IMPL_File_read_ordered(fh, buf, count, datatype, status);
+    MPI_Status impl_status;
+    int rc = IMPL_File_read_ordered(fh, buf, count, datatype, &impl_status);
+    MPI_Status_to_WRAP_Status(&impl_status, status);
+    return rc;
 }
 
 int WRAP_File_read_ordered_begin(MPI_File fh, void *buf, int count, MPI_Datatype datatype)
@@ -1499,22 +1532,34 @@ int WRAP_File_read_ordered_begin_c(MPI_File fh, void *buf, IMPL_Count count, MPI
 
 int WRAP_File_read_ordered_c(MPI_File fh, void *buf, IMPL_Count count, MPI_Datatype datatype, WRAP_Status *status)
 {
-    return IMPL_File_read_ordered_c(fh, buf, count, datatype, status);
+    MPI_Status impl_status;
+    int rc = IMPL_File_read_ordered_c(fh, buf, count, datatype, &impl_status);
+    MPI_Status_to_WRAP_Status(&impl_status, status);
+    return rc;
 }
 
 int WRAP_File_read_ordered_end(MPI_File fh, void *buf, WRAP_Status *status)
 {
-    return IMPL_File_read_ordered_end(fh, buf, status);
+    MPI_Status impl_status;
+    int rc = IMPL_File_read_ordered_end(fh, buf, &impl_status);
+    MPI_Status_to_WRAP_Status(&impl_status, status);
+    return rc;
 }
 
 int WRAP_File_read_shared(MPI_File fh, void *buf, int count, MPI_Datatype datatype, WRAP_Status *status)
 {
-    return IMPL_File_read_shared(fh, buf, count, datatype, status);
+    MPI_Status impl_status;
+    int rc = IMPL_File_read_shared(fh, buf, count, datatype, &impl_status);
+    MPI_Status_to_WRAP_Status(&impl_status, status);
+    return rc;
 }
 
 int WRAP_File_read_shared_c(MPI_File fh, void *buf, IMPL_Count count, MPI_Datatype datatype, WRAP_Status *status)
 {
-    return IMPL_File_read_shared_c(fh, buf, count, datatype, status);
+    MPI_Status impl_status;
+    int rc = IMPL_File_read_shared_c(fh, buf, count, datatype, &impl_status);
+    MPI_Status_to_WRAP_Status(&impl_status, status);
+    return rc;
 }
 
 int WRAP_File_seek(MPI_File fh, IMPL_Offset offset, int whence)
@@ -1734,27 +1779,37 @@ int WRAP_Get_c(void *origin_addr, IMPL_Count origin_count, MPI_Datatype origin_d
 
 int WRAP_Get_count(const WRAP_Status *status, MPI_Datatype datatype, int *count)
 {
-    return IMPL_Get_count(status, datatype, count);
+    MPI_Status impl_status;
+    WRAP_Status_to_MPI_Status(status, &impl_status);
+    return IMPL_Get_count(&impl_status, datatype, count);
 }
 
 int WRAP_Get_count_c(const WRAP_Status *status, MPI_Datatype datatype, IMPL_Count *count)
 {
-    return IMPL_Get_count_c(status, datatype, count);
+    MPI_Status impl_status;
+    WRAP_Status_to_MPI_Status(status, &impl_status);
+    return IMPL_Get_count_c(&impl_status, datatype, count);
 }
 
 int WRAP_Get_elements(const WRAP_Status *status, MPI_Datatype datatype, int *count)
 {
-    return IMPL_Get_elements(status, datatype, count);
+    MPI_Status impl_status;
+    WRAP_Status_to_MPI_Status(status, &impl_status);
+    return IMPL_Get_elements(&impl_status, datatype, count);
 }
 
 int WRAP_Get_elements_c(const WRAP_Status *status, MPI_Datatype datatype, IMPL_Count *count)
 {
-    return IMPL_Get_elements_c(status, datatype, count);
+    MPI_Status impl_status;
+    WRAP_Status_to_MPI_Status(status, &impl_status);
+    return IMPL_Get_elements_c(&impl_status, datatype, count);
 }
 
 int WRAP_Get_elements_x(const WRAP_Status *status, MPI_Datatype datatype, IMPL_Count *count)
 {
-    return IMPL_Get_elements_x(status, datatype, count);
+    MPI_Status impl_status;
+    WRAP_Status_to_MPI_Status(status, &impl_status);
+    return IMPL_Get_elements_x(&impl_status, datatype, count);
 }
 
 int WRAP_Graph_create(MPI_Comm comm_old, int nnodes, const int indx[], const int edges[], int reorder, MPI_Comm *comm_graph)
@@ -2889,7 +2944,9 @@ int WRAP_Test(MPI_Request *request, int *flag, WRAP_Status *status)
 
 int WRAP_Test_cancelled(const WRAP_Status *status, int *flag)
 {
-    return IMPL_Test_cancelled(status, flag);
+    MPI_Status impl_status;
+    WRAP_Status_to_MPI_Status(status, &impl_status);
+    return IMPL_Test_cancelled(&impl_status, flag);
 }
 
 int WRAP_Testall(int count, MPI_Request array_of_requests[], int *flag, WRAP_Status array_of_statuses[])
