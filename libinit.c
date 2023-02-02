@@ -91,6 +91,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
         char lib_version[16384] = {0};
         int  lib_version_length;
         rc = MUK_Get_library_version(lib_version, &lib_version_length);
+        memset(&lib_version[128],0,16384-128);
         printf("MPI_Get_library_version = %s\n", lib_version);
 
         char * pos;
@@ -198,20 +199,10 @@ int MPI_Abort(MUK_Comm comm, int errorcode)
 
 int MPI_Comm_rank(MUK_Comm comm, int * rank)
 {
-    if (whose_mpi == OMPI) {
-        return MUK_Comm_rank(comm, rank);
-    } else if (whose_mpi == MPICH) {
-        return MUK_Comm_rank(comm, rank);
-    }
-    return 0;
+    return MUK_Comm_rank(comm, rank);
 }
 
 int MPI_Comm_size(MUK_Comm comm, int * size)
 {
-    if (whose_mpi == OMPI) {
-        return MUK_Comm_size(comm, size);
-    } else if (whose_mpi == MPICH) {
-        return MUK_Comm_size(comm, size);
-    }
-    return 0;
+    return MUK_Comm_size(comm, size);
 }
