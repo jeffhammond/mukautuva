@@ -120,9 +120,9 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
 
     char * prename;
     if (whose_mpi == OMPI) {
-        prename = "ompi-predefined.so";
+        prename = "ompi-wrap.so";
     } else if (whose_mpi == MPICH) {
-        prename = "mpich-predefined.so";
+        prename = "mpich-wrap.so";
     }
 
     void * p = dlopen(prename, RTLD_LAZY);

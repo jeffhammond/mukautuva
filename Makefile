@@ -29,7 +29,7 @@ header.o: header.c mpi.h
 libmuk.a: libinit.o #wrapmuk.o
 	$(AR) $(ARFLAGS) $@ $^
 
-libmuk.so: libinit.o mpich-predefined.so ompi-predefined.so
+libmuk.so: libinit.o mpich-wrap.so ompi-wrap.so
 	$(CC) $(SOFLAGS) $^ -o $@
 
 libmukompi.so: loadompi.o wrapompi.o
@@ -74,16 +74,22 @@ wrapompi.o: wrapompi.c muk-mpi-typedefs.h muk-mpi-functions.h
 wrapompi.i: wrapompi.c muk-mpi-typedefs.h muk-mpi-functions.h
 	$(OMPICC) $(CFLAGS) -E $< -o $@
 
-mpich-predefined.so: mpich-predefined.o
+mpich-wrap.so: mpich-predefined.o mpich-functions.o
 	$(MPICHCC) $(SOFLAGS) $^ -o $@
 
-ompi-predefined.so: ompi-predefined.o
+ompi-wrap.so: ompi-predefined.o ompi-functions.o
 	$(OMPICC) $(SOFLAGS) $^ -o $@
 
 mpich-predefined.o: impl-predefined.c
 	$(MPICHCC) $(CFLAGS) -c $< -o $@
 
 ompi-predefined.o: impl-predefined.c
+	$(OMPICC) $(CFLAGS) -c $< -o $@
+
+mpich-functions.o: impl-functions.c
+	$(MPICHCC) $(CFLAGS) -c $< -o $@
+
+ompi-functions.o: impl-functions.c
 	$(OMPICC) $(CFLAGS) -c $< -o $@
 
 clean:
