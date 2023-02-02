@@ -625,6 +625,7 @@ int WRAP_Load_functions(void * restrict h, int major, int minor)
 
 // status conversion
 
+#include <stdlib.h>
 #include <string.h>
 
 static inline void WRAP_Status_to_MPI_Status(const WRAP_Status * w, MPI_Status * m)
@@ -3003,22 +3004,38 @@ int WRAP_Status_f2f08(const MPI_Fint *f_status, WRAP_F08_status *f08_status)
 
 int WRAP_Status_set_cancelled(WRAP_Status *status, int flag)
 {
-    return IMPL_Status_set_cancelled(status, flag);
+    MPI_Status impl_status;
+    WRAP_Status_to_MPI_Status(status, &impl_status);
+    int rc = IMPL_Status_set_cancelled(&impl_status, flag);
+    MPI_Status_to_WRAP_Status(&impl_status, status);
+    return rc;
 }
 
 int WRAP_Status_set_elements(WRAP_Status *status, MPI_Datatype datatype, int count)
 {
-    return IMPL_Status_set_elements(status, datatype, count);
+    MPI_Status impl_status;
+    WRAP_Status_to_MPI_Status(status, &impl_status);
+    int rc = IMPL_Status_set_elements(&impl_status, datatype, count);
+    MPI_Status_to_WRAP_Status(&impl_status, status);
+    return rc;
 }
 
 int WRAP_Status_set_elements_c(WRAP_Status *status, MPI_Datatype datatype, IMPL_Count count)
 {
-    return IMPL_Status_set_elements_c(status, datatype, count);
+    MPI_Status impl_status;
+    WRAP_Status_to_MPI_Status(status, &impl_status);
+    int rc = IMPL_Status_set_elements_c(&impl_status, datatype, count);
+    MPI_Status_to_WRAP_Status(&impl_status, status);
+    return rc;
 }
 
 int WRAP_Status_set_elements_x(WRAP_Status *status, MPI_Datatype datatype, IMPL_Count count)
 {
-    return IMPL_Status_set_elements_x(status, datatype, count);
+    MPI_Status impl_status;
+    WRAP_Status_to_MPI_Status(status, &impl_status);
+    int rc = IMPL_Status_set_elements_x(&impl_status, datatype, count);
+    MPI_Status_to_WRAP_Status(&impl_status, status);
+    return rc;
 }
 
 int WRAP_Test(MPI_Request *request, int *flag, WRAP_Status *status)
@@ -3038,7 +3055,22 @@ int WRAP_Test_cancelled(const WRAP_Status *status, int *flag)
 
 int WRAP_Testall(int count, MPI_Request array_of_requests[], int *flag, WRAP_Status array_of_statuses[])
 {
-    return IMPL_Testall(count, array_of_requests, flag, array_of_statuses);
+    MPI_Status * impl_statuses = malloc(count * sizeof(MPI_Count));
+    if (impl_statuses) return MPI_ERR_INTERN;
+
+    for (int i=0; i<count; i++) {
+        WRAP_Status_to_MPI_Status(&array_of_statuses[i], &impl_statuses[i]);
+    }
+
+    int rc = IMPL_Testall(count, array_of_requests, flag, impl_statuses);
+
+    for (int i=0; i<count; i++) {
+        MPI_Status_to_WRAP_Status(&impl_statuses[i], &array_of_statuses[i]);
+    }
+
+    free(impl_statuses);
+
+    return rc;
 }
 
 int WRAP_Testany(int count, MPI_Request array_of_requests[], int *indx, int *flag, WRAP_Status *status)
@@ -3051,15 +3083,27 @@ int WRAP_Testany(int count, MPI_Request array_of_requests[], int *indx, int *fla
 
 int WRAP_Testsome(int incount, MPI_Request array_of_requests[], int *outcount, int array_of_indices[], WRAP_Status array_of_statuses[])
 {
-    return IMPL_Testsome(incount, array_of_requests, outcount, array_of_indices, array_of_statuses);
+    MPI_Status * impl_statuses = malloc(incount * sizeof(MPI_Count));
+    if (impl_statuses) return MPI_ERR_INTERN;
+
+    for (int i=0; i<incount; i++) {
+        WRAP_Status_to_MPI_Status(&array_of_statuses[i], &impl_statuses[i]);
+    }
+
+    int rc = IMPL_Testsome(incount, array_of_requests, outcount, array_of_indices, impl_statuses);
+
+    for (int i=0; i<incount; i++) {
+        MPI_Status_to_WRAP_Status(&impl_statuses[i], &array_of_statuses[i]);
+    }
+
+    free(impl_statuses);
+
+    return rc;
 }
 
 int WRAP_Topo_test(MPI_Comm comm, int *status)
 {
-    MPI_Status impl_status;
-    int rc = IMPL_Topo_test(comm, &impl_status);
-    MPI_Status_to_WRAP_Status(&impl_status, status);
-    return rc;
+    return IMPL_Topo_test(comm, status);
 }
 
 int WRAP_Type_commit(MPI_Datatype *datatype)
@@ -3372,7 +3416,22 @@ int WRAP_Wait(MPI_Request *request, WRAP_Status *status)
 
 int WRAP_Waitall(int count, MPI_Request array_of_requests[], WRAP_Status array_of_statuses[])
 {
-    return IMPL_Waitall(count, array_of_requests, array_of_statuses);
+    MPI_Status * impl_statuses = malloc(count * sizeof(MPI_Count));
+    if (impl_statuses) return MPI_ERR_INTERN;
+
+    for (int i=0; i<count; i++) {
+        WRAP_Status_to_MPI_Status(&array_of_statuses[i], &impl_statuses[i]);
+    }
+
+    int rc = IMPL_Waitall(count, array_of_requests, impl_statuses);
+
+    for (int i=0; i<count; i++) {
+        MPI_Status_to_WRAP_Status(&impl_statuses[i], &array_of_statuses[i]);
+    }
+
+    free(impl_statuses);
+
+    return rc;
 }
 
 int WRAP_Waitany(int count, MPI_Request array_of_requests[], int *indx, WRAP_Status *status)
@@ -3385,7 +3444,22 @@ int WRAP_Waitany(int count, MPI_Request array_of_requests[], int *indx, WRAP_Sta
 
 int WRAP_Waitsome(int incount, MPI_Request array_of_requests[], int *outcount, int array_of_indices[], WRAP_Status array_of_statuses[])
 {
-    return IMPL_Waitsome(incount, array_of_requests, outcount, array_of_indices, array_of_statuses);
+    MPI_Status * impl_statuses = malloc(incount * sizeof(MPI_Count));
+    if (impl_statuses) return MPI_ERR_INTERN;
+
+    for (int i=0; i<incount; i++) {
+        WRAP_Status_to_MPI_Status(&array_of_statuses[i], &impl_statuses[i]);
+    }
+
+    int rc = IMPL_Waitsome(incount, array_of_requests, outcount, array_of_indices, impl_statuses);
+
+    for (int i=0; i<incount; i++) {
+        MPI_Status_to_WRAP_Status(&impl_statuses[i], &array_of_statuses[i]);
+    }
+
+    free(impl_statuses);
+
+    return rc;
 }
 
 int WRAP_Win_allocate(IMPL_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, void *baseptr, MPI_Win *win)
