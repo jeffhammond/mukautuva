@@ -57,6 +57,8 @@ int (*MUK_Abort)(MUK_Comm comm, int errorcode);
 
 extern MUK_Comm MPI_COMM_WORLD;
 
+int (*WRAP_Load_functions)(void * restrict h, int major, int minor);
+
 // alkaa = start
 static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
 {
@@ -71,7 +73,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     }
     printf("soname = %s\n", soname);
 
-    void * h = dlopen(soname, RTLD_LAZY);
+    void * h = dlopen(soname, RTLD_LAZY | RTLD_LOCAL);
     if (h == NULL) {
         printf("dlopen of %s failed: %s\n", soname, dlerror() );
         abort();
@@ -85,24 +87,32 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
         rc = MUK_Init_thread(argc,argv,requested,provided);
     }
 
+    char * wrapname;
     // figure out which library i am using
     MUK_Get_library_version = MUK_DLSYM(h,"MPI_Get_library_version");
     {
         char lib_version[16384] = {0};
         int  lib_version_length;
         rc = MUK_Get_library_version(lib_version, &lib_version_length);
-        memset(&lib_version[128],0,16384-128);
-        printf("MPI_Get_library_version = %s\n", lib_version);
+        //printf("MPI_Get_library_version = %s\n", lib_version);
 
         char * pos;
         pos = strstr(lib_version, "Open MPI");
         if (pos != NULL) {
             whose_mpi = OMPI;
+            printf("Open-MPI\n");
         }
         pos = strstr(lib_version, "MPICH");
         if (pos != NULL) {
             whose_mpi = MPICH;
+            printf("MPICH\n");
         }
+    if (whose_mpi == OMPI) {
+        wrapname = "ompi-wrap.so";
+    } else if (whose_mpi == MPICH) {
+        wrapname = "mpich-wrap.so";
+    }
+
     }
 
     // these are ABI-agnostic and important, so why not load them now...
@@ -117,27 +127,22 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MUK_Get_version = MUK_DLSYM(h,"MPI_Get_version");
     rc = MUK_Get_version(&major, &minor);
 
-
-    char * prename;
-    if (whose_mpi == OMPI) {
-        prename = "ompi-wrap.so";
-    } else if (whose_mpi == MPICH) {
-        prename = "mpich-wrap.so";
-    }
-
-    void * p = dlopen(prename, RTLD_LAZY);
-    if (p == NULL) {
-        printf("dlopen of %s failed: %s\n", prename, dlerror() );
+    void * wrap_so_handle = dlopen(wrapname, RTLD_LAZY);
+    if (wrap_so_handle == NULL) {
+        printf("dlopen of %s failed: %s\n", wrapname, dlerror() );
         abort();
     }
-    MPI_COMM_WORLD = MUK_DLSYM(p,"IMPL_COMM_WORLD");
+    MPI_COMM_WORLD = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_WORLD");
     printf("libinit: MPI_COMM_WORLD=%lx\n", (intptr_t)MPI_COMM_WORLD);
     printf("libinit: MPI_COMM_WORLD=%d\n", *(int*)MPI_COMM_WORLD);
 
     // now we are hacking
-    MUK_Abort = MUK_DLSYM(p,"IMPL_Abort");
-    MUK_Comm_rank = MUK_DLSYM(p,"IMPL_Comm_rank");
-    MUK_Comm_size = MUK_DLSYM(p,"IMPL_Comm_size");
+    MUK_Abort = MUK_DLSYM(wrap_so_handle,"WRAP_Abort");
+    MUK_Comm_rank = MUK_DLSYM(wrap_so_handle,"WRAP_Comm_rank");
+    MUK_Comm_size = MUK_DLSYM(wrap_so_handle,"WRAP_Comm_size");
+
+    WRAP_Load_functions = MUK_DLSYM(wrap_so_handle,"WRAP_Load_functions");
+    rc = WRAP_Load_functions(h,major,minor);
 
     return rc;
 }
