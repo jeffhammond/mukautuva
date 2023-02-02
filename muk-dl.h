@@ -14,7 +14,7 @@ static inline void * MUK_DLSYM(void * restrict handle, const char * restrict sym
 {
     void * fp = dlsym(handle, symbol);
     if (fp == NULL) {
-        printf("MUK_DLSYM: failed to find %s - %s\n", symbol, dlerror() );
+        //printf("MUK_DLSYM: failed to find %s - %s\n", symbol, dlerror() );
     }
     return fp;
 }

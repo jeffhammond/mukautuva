@@ -133,8 +133,6 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
         abort();
     }
     MPI_COMM_WORLD = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_WORLD");
-    printf("libinit: MPI_COMM_WORLD=%lx\n", (intptr_t)MPI_COMM_WORLD);
-    printf("libinit: MPI_COMM_WORLD=%d\n", *(int*)MPI_COMM_WORLD);
 
     // now we are hacking
     MUK_Abort = MUK_DLSYM(wrap_so_handle,"WRAP_Abort");
