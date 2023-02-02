@@ -116,10 +116,6 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MUK_Get_version = MUK_DLSYM(h,"MPI_Get_version");
     rc = MUK_Get_version(&major, &minor);
 
-    // now we are hacking
-    MUK_Abort = MUK_DLSYM(h,"MPI_Abort");
-    MUK_Comm_rank = MUK_DLSYM(h,"MPI_Comm_rank");
-    MUK_Comm_size = MUK_DLSYM(h,"MPI_Comm_size");
 
     char * prename;
     if (whose_mpi == OMPI) {
@@ -136,6 +132,11 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MPI_COMM_WORLD = MUK_DLSYM(p,"IMPL_COMM_WORLD");
     printf("libinit: MPI_COMM_WORLD=%lx\n", (intptr_t)MPI_COMM_WORLD);
     printf("libinit: MPI_COMM_WORLD=%d\n", *(int*)MPI_COMM_WORLD);
+
+    // now we are hacking
+    MUK_Abort = MUK_DLSYM(p,"IMPL_Abort");
+    MUK_Comm_rank = MUK_DLSYM(p,"IMPL_Comm_rank");
+    MUK_Comm_size = MUK_DLSYM(p,"IMPL_Comm_size");
 
     return rc;
 }
@@ -198,18 +199,19 @@ int MPI_Abort(MUK_Comm comm, int errorcode)
 int MPI_Comm_rank(MUK_Comm comm, int * rank)
 {
     if (whose_mpi == OMPI) {
-        void * ompi_comm = *(void**)comm;
-        printf("OMPI comm=0x%lx\n", (intptr_t)comm);
-        return MUK_Comm_rank(ompi_comm, rank);
+        return MUK_Comm_rank(comm, rank);
     } else if (whose_mpi == MPICH) {
-        int mpich_comm = *(int*)comm;
-        printf("MPICH comm=0x%x\n", mpich_comm);
-        return MUK_Comm_rank(mpich_comm, rank);
+        return MUK_Comm_rank(comm, rank);
     }
     return 0;
 }
 
 int MPI_Comm_size(MUK_Comm comm, int * size)
 {
-    return MUK_Comm_rank(comm, size);
+    if (whose_mpi == OMPI) {
+        return MUK_Comm_size(comm, size);
+    } else if (whose_mpi == MPICH) {
+        return MUK_Comm_size(comm, size);
+    }
+    return 0;
 }
