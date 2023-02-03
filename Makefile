@@ -95,4 +95,5 @@ ompi-functions.o: impl-functions.c
 clean:
 	-rm -f *.o *.x *.s *.a *.i *.so
 	-rm -rf *.dSYM
+	-rm -rf *.btr # backtrace
 
