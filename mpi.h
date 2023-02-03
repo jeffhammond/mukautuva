@@ -54,69 +54,69 @@ typedef int MPI_Delete_function(MPI_Comm comm, int keyval, void *attribute_val, 
 
 // predefined handles
 
-MPI_Request MPI_REQUEST_NULL;
+extern MPI_Request MPI_REQUEST_NULL;
 
-MPI_Errhandler MPI_ERRHANDLER_NULL;
+extern MPI_Errhandler MPI_ERRHANDLER_NULL;
 
-MPI_Info MPI_INFO_NULL;
+extern MPI_Info MPI_INFO_NULL;
 
-MPI_Win MPI_WIN_NULL;
+extern MPI_Win MPI_WIN_NULL;
 
-MPI_File MPI_FILE_NULL;
+extern MPI_File MPI_FILE_NULL;
 
-MPI_Comm MPI_COMM_NULL;
-MPI_Comm MPI_COMM_WORLD;
-MPI_Comm MPI_COMM_SELF;
+extern MPI_Comm MPI_COMM_NULL;
+extern MPI_Comm MPI_COMM_WORLD;
+extern MPI_Comm MPI_COMM_SELF;
 
-MPI_Group MPI_GROUP_NULL;
-MPI_Group MPI_GROUP_EMPTY;
+extern MPI_Group MPI_GROUP_NULL;
+extern MPI_Group MPI_GROUP_EMPTY;
 
-MPI_Message MPI_MESSAGE_NULL;
-MPI_Message MPI_MESSAGE_NO_PROC;
+extern MPI_Message MPI_MESSAGE_NULL;
+extern MPI_Message MPI_MESSAGE_NO_PROC;
 
-MPI_Op MPI_OP_NULL;
-MPI_Op MPI_MAX;
-MPI_Op MPI_MIN;
-MPI_Op MPI_SUM;
-MPI_Op MPI_PROD;
-MPI_Op MPI_LAND;
-MPI_Op MPI_BAND;
-MPI_Op MPI_LOR;
-MPI_Op MPI_BOR;
-MPI_Op MPI_LXOR;
-MPI_Op MPI_BXOR;
-MPI_Op MPI_MAXLOC;
-MPI_Op MPI_MINLOC;
-MPI_Op MPI_REPLACE;
-MPI_Op MPI_NO_OP;
+extern MPI_Op MPI_OP_NULL;
+extern MPI_Op MPI_MAX;
+extern MPI_Op MPI_MIN;
+extern MPI_Op MPI_SUM;
+extern MPI_Op MPI_PROD;
+extern MPI_Op MPI_LAND;
+extern MPI_Op MPI_BAND;
+extern MPI_Op MPI_LOR;
+extern MPI_Op MPI_BOR;
+extern MPI_Op MPI_LXOR;
+extern MPI_Op MPI_BXOR;
+extern MPI_Op MPI_MAXLOC;
+extern MPI_Op MPI_MINLOC;
+extern MPI_Op MPI_REPLACE;
+extern MPI_Op MPI_NO_OP;
 
-MPI_Datatype MPI_DATATYPE_NULL;
-MPI_Datatype MPI_BYTE;
-MPI_Datatype MPI_PACKED;
-MPI_Datatype MPI_CHAR;
-MPI_Datatype MPI_SHORT;
-MPI_Datatype MPI_INT;
-MPI_Datatype MPI_LONG;
-MPI_Datatype MPI_FLOAT;
-MPI_Datatype MPI_DOUBLE;
-MPI_Datatype MPI_LONG_DOUBLE;
-MPI_Datatype MPI_UNSIGNED_CHAR;
-MPI_Datatype MPI_SIGNED_CHAR;
-MPI_Datatype MPI_UNSIGNED_SHORT;
-MPI_Datatype MPI_UNSIGNED_LONG;
-MPI_Datatype MPI_UNSIGNED;
-MPI_Datatype MPI_FLOAT_INT;
-MPI_Datatype MPI_DOUBLE_INT;
-MPI_Datatype MPI_LONG_DOUBLE_INT;
-MPI_Datatype MPI_LONG_INT;
-MPI_Datatype MPI_SHORT_INT;
-MPI_Datatype MPI_2INT;
-MPI_Datatype MPI_WCHAR;
-MPI_Datatype MPI_LONG_LONG_INT;
-MPI_Datatype MPI_LONG_LONG;
-MPI_Datatype MPI_UNSIGNED_LONG_LONG;
-MPI_Datatype MPI_2COMPLEX;
-MPI_Datatype MPI_2DOUBLE_COMPLEX;
+extern MPI_Datatype MPI_DATATYPE_NULL;
+extern MPI_Datatype MPI_BYTE;
+extern MPI_Datatype MPI_PACKED;
+extern MPI_Datatype MPI_CHAR;
+extern MPI_Datatype MPI_SHORT;
+extern MPI_Datatype MPI_INT;
+extern MPI_Datatype MPI_LONG;
+extern MPI_Datatype MPI_FLOAT;
+extern MPI_Datatype MPI_DOUBLE;
+extern MPI_Datatype MPI_LONG_DOUBLE;
+extern MPI_Datatype MPI_UNSIGNED_CHAR;
+extern MPI_Datatype MPI_SIGNED_CHAR;
+extern MPI_Datatype MPI_UNSIGNED_SHORT;
+extern MPI_Datatype MPI_UNSIGNED_LONG;
+extern MPI_Datatype MPI_UNSIGNED;
+extern MPI_Datatype MPI_FLOAT_INT;
+extern MPI_Datatype MPI_DOUBLE_INT;
+extern MPI_Datatype MPI_LONG_DOUBLE_INT;
+extern MPI_Datatype MPI_LONG_INT;
+extern MPI_Datatype MPI_SHORT_INT;
+extern MPI_Datatype MPI_2INT;
+extern MPI_Datatype MPI_WCHAR;
+extern MPI_Datatype MPI_LONG_LONG_INT;
+extern MPI_Datatype MPI_LONG_LONG;
+extern MPI_Datatype MPI_UNSIGNED_LONG_LONG;
+extern MPI_Datatype MPI_2COMPLEX;
+extern MPI_Datatype MPI_2DOUBLE_COMPLEX;
 
 // functions
 
