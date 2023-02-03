@@ -16,10 +16,10 @@ int main(int argc, char* argv[])
 
     if (np==3) MPI_Abort(MPI_COMM_SELF,np);
 
-    MPI_Comm dup;
-    MPI_Comm_dup(MPI_COMM_WORLD,&dup);
+    MPI_Comm dup = MPI_COMM_WORLD;
+    //MPI_Comm_dup(MPI_COMM_WORLD,&dup);
     MPI_Barrier(dup);
-    MPI_Comm_free(&dup);
+    //MPI_Comm_free(&dup);
 
     rc = MPI_Finalize();
 
