@@ -2364,14 +2364,14 @@ int WRAP_Get(void *origin_addr, int origin_count, MPI_Datatype *origin_datatype,
     return IMPL_Get(origin_addr, origin_count, *origin_datatype, target_rank, target_disp, target_count, *target_datatype, *win);
 }
 
-int WRAP_Get_accumulate(const void *origin_addr, int origin_count, MPI_Datatype *origin_datatype, void *result_addr, int result_count, MPI_Datatype result_datatype, int target_rank, IMPL_Aint target_disp, int target_count, MPI_Datatype *target_datatype, MPI_Op op, MPI_Win *win)
+int WRAP_Get_accumulate(const void *origin_addr, int origin_count, MPI_Datatype *origin_datatype, void *result_addr, int result_count, MPI_Datatype *result_datatype, int target_rank, IMPL_Aint target_disp, int target_count, MPI_Datatype *target_datatype, MPI_Op op, MPI_Win *win)
 {
-    return IMPL_Get_accumulate(origin_addr, origin_count, *origin_datatype, result_addr, result_count, result_datatype, target_rank, target_disp, target_count, *target_datatype, op, *win);
+    return IMPL_Get_accumulate(origin_addr, origin_count, *origin_datatype, result_addr, result_count, *result_datatype, target_rank, target_disp, target_count, *target_datatype, op, *win);
 }
 
-int WRAP_Get_accumulate_c(const void *origin_addr, IMPL_Count origin_count, MPI_Datatype *origin_datatype, void *result_addr, IMPL_Count result_count, MPI_Datatype result_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype *target_datatype, MPI_Op op, MPI_Win *win)
+int WRAP_Get_accumulate_c(const void *origin_addr, IMPL_Count origin_count, MPI_Datatype *origin_datatype, void *result_addr, IMPL_Count result_count, MPI_Datatype *result_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype *target_datatype, MPI_Op op, MPI_Win *win)
 {
-    return IMPL_Get_accumulate_c(origin_addr, origin_count, *origin_datatype, result_addr, result_count, result_datatype, target_rank, target_disp, target_count, *target_datatype, op, *win);
+    return IMPL_Get_accumulate_c(origin_addr, origin_count, *origin_datatype, result_addr, result_count, *result_datatype, target_rank, target_disp, target_count, *target_datatype, op, *win);
 }
 
 int WRAP_Get_address(const void *location, IMPL_Aint *address)
@@ -3307,14 +3307,14 @@ int WRAP_Rget(void *origin_addr, int origin_count, MPI_Datatype *origin_datatype
     return IMPL_Rget(origin_addr, origin_count, *origin_datatype, target_rank, target_disp, target_count, *target_datatype, *win, request);
 }
 
-int WRAP_Rget_accumulate(const void *origin_addr, int origin_count, MPI_Datatype *origin_datatype, void *result_addr, int result_count, MPI_Datatype result_datatype, int target_rank, IMPL_Aint target_disp, int target_count, MPI_Datatype *target_datatype, MPI_Op op, MPI_Win *win, MPI_Request *request)
+int WRAP_Rget_accumulate(const void *origin_addr, int origin_count, MPI_Datatype *origin_datatype, void *result_addr, int result_count, MPI_Datatype *result_datatype, int target_rank, IMPL_Aint target_disp, int target_count, MPI_Datatype *target_datatype, MPI_Op op, MPI_Win *win, MPI_Request *request)
 {
-    return IMPL_Rget_accumulate(origin_addr, origin_count, *origin_datatype, result_addr, result_count, result_datatype, target_rank, target_disp, target_count, *target_datatype, op, *win, request);
+    return IMPL_Rget_accumulate(origin_addr, origin_count, *origin_datatype, result_addr, result_count, *result_datatype, target_rank, target_disp, target_count, *target_datatype, op, *win, request);
 }
 
-int WRAP_Rget_accumulate_c(const void *origin_addr, IMPL_Count origin_count, MPI_Datatype *origin_datatype, void *result_addr, IMPL_Count result_count, MPI_Datatype result_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype *target_datatype, MPI_Op op, MPI_Win *win, MPI_Request *request)
+int WRAP_Rget_accumulate_c(const void *origin_addr, IMPL_Count origin_count, MPI_Datatype *origin_datatype, void *result_addr, IMPL_Count result_count, MPI_Datatype *result_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype *target_datatype, MPI_Op op, MPI_Win *win, MPI_Request *request)
 {
-    return IMPL_Rget_accumulate_c(origin_addr, origin_count, *origin_datatype, result_addr, result_count, result_datatype, target_rank, target_disp, target_count, *target_datatype, op, *win, request);
+    return IMPL_Rget_accumulate_c(origin_addr, origin_count, *origin_datatype, result_addr, result_count, *result_datatype, target_rank, target_disp, target_count, *target_datatype, op, *win, request);
 }
 
 int WRAP_Rget_c(void *origin_addr, IMPL_Count origin_count, MPI_Datatype *origin_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype *target_datatype, MPI_Win *win, MPI_Request *request)
