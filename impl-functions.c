@@ -1556,6 +1556,7 @@ int WRAP_Comm_connect(const char *port_name, MPI_Info *info, int root, MPI_Comm 
 
 int WRAP_Comm_create(MPI_Comm *comm, MPI_Group *group, MPI_Comm **newcomm)
 {
+    *newcomm = malloc(sizeof(MPI_Comm*));
     return IMPL_Comm_create(*comm, *group, *newcomm);
 }
 
@@ -1571,6 +1572,7 @@ int WRAP_Comm_create_from_group(MPI_Group *group, const char *stringtag, MPI_Inf
 
 int WRAP_Comm_create_group(MPI_Comm *comm, MPI_Group *group, int tag, MPI_Comm **newcomm)
 {
+    *newcomm = malloc(sizeof(MPI_Comm*));
     return IMPL_Comm_create_group(*comm, *group, tag, *newcomm);
 }
 
@@ -1591,17 +1593,21 @@ int WRAP_Comm_disconnect(MPI_Comm **comm)
 
 int WRAP_Comm_dup(MPI_Comm *comm, MPI_Comm **newcomm)
 {
+    *newcomm = malloc(sizeof(MPI_Comm*));
     return IMPL_Comm_dup(*comm, *newcomm);
 }
 
 int WRAP_Comm_dup_with_info(MPI_Comm *comm, MPI_Info *info, MPI_Comm **newcomm)
 {
+    *newcomm = malloc(sizeof(MPI_Comm*));
     return IMPL_Comm_dup_with_info(*comm, *info, *newcomm);
 }
 
 int WRAP_Comm_free(MPI_Comm **comm)
 {
-    return IMPL_Comm_free(*comm);
+    int rc = IMPL_Comm_free(*comm);
+    free(*comm);
+    return rc;
 }
 
 int WRAP_Comm_free_keyval(int *comm_keyval)
@@ -1686,11 +1692,13 @@ int WRAP_Comm_set_name(MPI_Comm *comm, const char *comm_name)
 
 int WRAP_Comm_split(MPI_Comm *comm, int color, int key, MPI_Comm **newcomm)
 {
+    *newcomm = malloc(sizeof(MPI_Comm*));
     return IMPL_Comm_split(*comm, color, key, *newcomm);
 }
 
 int WRAP_Comm_split_type(MPI_Comm *comm, int split_type, int key, MPI_Info *info, MPI_Comm **newcomm)
 {
+    *newcomm = malloc(sizeof(MPI_Comm*));
     return IMPL_Comm_split_type(*comm, split_type, key, *info, *newcomm);
 }
 
