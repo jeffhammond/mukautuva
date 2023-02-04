@@ -787,9 +787,26 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
         printf("dlopen of %s failed: %s\n", wrapname, dlerror() );
         abort();
     }
-    MPI_COMM_WORLD = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_WORLD");
 
-    // now we are hacking
+    MPI_REQUEST_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_REQUEST_NULL");
+
+    MPI_ERRHANDLER_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_ERRHANDLER_NULL");
+
+    MPI_INFO_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_INFO_NULL");
+
+    MPI_WIN_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_WIN_NULL");
+
+    MPI_FILE_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_FILE_NULL");
+
+
+    MPI_COMM_NULL  = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_NULL");
+    MPI_COMM_WORLD = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_WORLD");
+    MPI_COMM_SELF  = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_SELF");
+
+    MPI_GROUP_NULL  = MUK_DLSYM(wrap_so_handle,"IMPL_GROUP_NULL");
+    MPI_GROUP_EMPTY = MUK_DLSYM(wrap_so_handle,"IMPL_GROUP_EMPTY");
+
+    // all the functions
     MUK_Abort = MUK_DLSYM(wrap_so_handle,"WRAP_Abort");
     MUK_Comm_rank = MUK_DLSYM(wrap_so_handle,"WRAP_Comm_rank");
     MUK_Comm_size = MUK_DLSYM(wrap_so_handle,"WRAP_Comm_size");
@@ -1346,7 +1363,6 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MUK_Win_unlock = MUK_DLSYM(wrap_so_handle, "WRAP_Win_unlock");
     MUK_Win_unlock_all = MUK_DLSYM(wrap_so_handle, "WRAP_Win_unlock_all");
     MUK_Win_wait = MUK_DLSYM(wrap_so_handle, "WRAP_Win_wait");
-
 
     WRAP_Load_functions = MUK_DLSYM(wrap_so_handle,"WRAP_Load_functions");
     rc = WRAP_Load_functions(h,major,minor);
