@@ -46,6 +46,8 @@ extern MPI_Group IMPL_GROUP_NULL ;
 extern MPI_Group IMPL_GROUP_EMPTY;
 extern MPI_Message IMPL_MESSAGE_NULL;
 extern MPI_Message IMPL_MESSAGE_NO_PROC;
+extern MPI_Status* IMPL_STATUS_IGNORE;
+extern MPI_Status* IMPL_STATUSES_IGNORE;
 
 int (*IMPL_Comm_rank)(MPI_Comm comm, int *rank);
 int (*IMPL_Comm_size)(MPI_Comm comm, int *size);
@@ -1222,6 +1224,10 @@ static inline void WRAP_Status_to_MPI_Status(const WRAP_Status * w, MPI_Status *
 
 static inline void MPI_Status_to_WRAP_Status(const MPI_Status * m, WRAP_Status * w)
 {
+    if ((intptr_t)w == (intptr_t)IMPL_STATUS_IGNORE) {
+        return;
+    }
+
     w->MPI_SOURCE = m->MPI_SOURCE;
     w->MPI_TAG    = m->MPI_TAG;
     w->MPI_ERROR  = m->MPI_ERROR;

@@ -629,6 +629,9 @@ int (*MUK_Win_unlock)(int rank, MUK_Win win);
 int (*MUK_Win_unlock_all)(MUK_Win win);
 int (*MUK_Win_wait)(MUK_Win win);
 
+MUK_Status * MPI_STATUS_IGNORE;
+MUK_Status * MPI_STATUSES_IGNORE;
+
 MUK_Request MPI_REQUEST_NULL;
 
 MUK_Errhandler MPI_ERRHANDLER_NULL;
@@ -785,6 +788,12 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
 
     MPI_GROUP_NULL  = MUK_DLSYM(wrap_so_handle,"IMPL_GROUP_NULL");
     MPI_GROUP_EMPTY = MUK_DLSYM(wrap_so_handle,"IMPL_GROUP_EMPTY");
+
+    void ** pMPI_STATUS_IGNORE   = MUK_DLSYM(wrap_so_handle,"IMPL_STATUS_IGNORE");
+    void ** pMPI_STATUSES_IGNORE = MUK_DLSYM(wrap_so_handle,"IMPL_STATUSES_IGNORE");
+    MPI_STATUS_IGNORE   = *pMPI_STATUS_IGNORE;
+    MPI_STATUSES_IGNORE = *pMPI_STATUSES_IGNORE;
+    //printf("libint:  MPI_STATUS_IGNORE = %p\n",MPI_STATUS_IGNORE);
 
     // all the functions
     MUK_Abort = MUK_DLSYM(wrap_so_handle,"WRAP_Abort");

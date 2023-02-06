@@ -32,6 +32,9 @@ MPI_Group IMPL_GROUP_EMPTY = MPI_GROUP_EMPTY;
 MPI_Message IMPL_MESSAGE_NULL = MPI_MESSAGE_NULL;
 MPI_Message IMPL_MESSAGE_NO_PROC = MPI_MESSAGE_NO_PROC;
 
+MPI_Status* IMPL_STATUS_IGNORE = MPI_STATUS_IGNORE;
+MPI_Status* IMPL_STATUSES_IGNORE = MPI_STATUSES_IGNORE;
+
 #if 0
 int impl_mpi_comm_type_shared(void) { return MPI_COMM_TYPE_SHARED; }
 int impl_mpi_comm_type_hw_guided(void) { return MPI_COMM_TYPE_HW_GUIDED; }

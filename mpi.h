@@ -28,6 +28,9 @@ typedef struct
 }
 MPI_Status;
 
+extern MPI_Status * MPI_STATUS_IGNORE;
+extern MPI_Status * MPI_STATUSES_IGNORE;
+
 // callback typedefs
 typedef void MPI_User_function(void *invec, void *inoutvec, int *len, MPI_Datatype *datatype);
 typedef void MPI_User_function_c(void *invec, void *inoutvec, MPI_Count *len, MPI_Datatype *datatype);
