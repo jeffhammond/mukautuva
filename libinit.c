@@ -779,7 +779,6 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
 
     MPI_FILE_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_FILE_NULL");
 
-
     MPI_COMM_NULL  = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_NULL");
     MPI_COMM_WORLD = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_WORLD");
     MPI_COMM_SELF  = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_SELF");
