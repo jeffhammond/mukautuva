@@ -23,7 +23,15 @@ int main(int argc, char* argv[])
 
         MPI_Ibarrier(MPI_COMM_WORLD,&r);
         MPI_Waitall(1,&r,MPI_STATUS_IGNORE);
+    }
 
+    {
+        int buffer[2] = { me };
+        MPI_Request r[2];
+        MPI_Isend(&buffer[0], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[0]);
+        MPI_Irecv(&buffer[1], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[1]);
+        MPI_Waitall(2,r,MPI_STATUS_IGNORE);
+#if 0
         // this does not set index properly
         int index = 1<<30;
         MPI_Ibarrier(MPI_COMM_WORLD,&r);
@@ -35,6 +43,7 @@ int main(int argc, char* argv[])
         while (!flag) {
             MPI_Test(&r,&flag,MPI_STATUS_IGNORE);
         }
+#endif
     }
 
     if (me==0) printf("all done\n");

@@ -693,8 +693,6 @@ MUK_Datatype MPI_WCHAR;
 MUK_Datatype MPI_LONG_LONG_INT;
 MUK_Datatype MPI_LONG_LONG;
 MUK_Datatype MPI_UNSIGNED_LONG_LONG;
-MUK_Datatype MPI_2COMPLEX;
-MUK_Datatype MPI_2DOUBLE_COMPLEX;
 
 int (*WRAP_Load_functions)(void * restrict h, int major, int minor);
 
@@ -785,6 +783,32 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MPI_COMM_NULL  = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_NULL");
     MPI_COMM_WORLD = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_WORLD");
     MPI_COMM_SELF  = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_SELF");
+
+    MPI_DATATYPE_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_DATATYPE_NULL");
+    MPI_BYTE = MUK_DLSYM(wrap_so_handle,"IMPL_BYTE");
+    MPI_PACKED = MUK_DLSYM(wrap_so_handle,"IMPL_PACKED");
+    MPI_CHAR = MUK_DLSYM(wrap_so_handle,"IMPL_CHAR");
+    MPI_SHORT = MUK_DLSYM(wrap_so_handle,"IMPL_SHORT");
+    MPI_INT = MUK_DLSYM(wrap_so_handle,"IMPL_INT");
+    MPI_LONG = MUK_DLSYM(wrap_so_handle,"IMPL_LONG");
+    MPI_FLOAT = MUK_DLSYM(wrap_so_handle,"IMPL_FLOAT");
+    MPI_DOUBLE = MUK_DLSYM(wrap_so_handle,"IMPL_DOUBLE");
+    MPI_LONG_DOUBLE = MUK_DLSYM(wrap_so_handle,"IMPL_LONG_DOUBLE");
+    MPI_UNSIGNED_CHAR = MUK_DLSYM(wrap_so_handle,"IMPL_UNSIGNED_CHAR");
+    MPI_SIGNED_CHAR = MUK_DLSYM(wrap_so_handle,"IMPL_SIGNED_CHAR");
+    MPI_UNSIGNED_SHORT = MUK_DLSYM(wrap_so_handle,"IMPL_UNSIGNED_SHORT");
+    MPI_UNSIGNED_LONG = MUK_DLSYM(wrap_so_handle,"IMPL_UNSIGNED_LONG");
+    MPI_UNSIGNED = MUK_DLSYM(wrap_so_handle,"IMPL_UNSIGNED");
+    MPI_FLOAT_INT = MUK_DLSYM(wrap_so_handle,"IMPL_FLOAT_INT");
+    MPI_DOUBLE_INT = MUK_DLSYM(wrap_so_handle,"IMPL_DOUBLE_INT");
+    MPI_LONG_DOUBLE_INT = MUK_DLSYM(wrap_so_handle,"IMPL_LONG_DOUBLE_INT");
+    MPI_LONG_INT = MUK_DLSYM(wrap_so_handle,"IMPL_LONG_INT");
+    MPI_SHORT_INT = MUK_DLSYM(wrap_so_handle,"IMPL_SHORT_INT");
+    MPI_2INT = MUK_DLSYM(wrap_so_handle,"IMPL_2INT");
+    MPI_WCHAR = MUK_DLSYM(wrap_so_handle,"IMPL_WCHAR");
+    MPI_LONG_LONG_INT = MUK_DLSYM(wrap_so_handle,"IMPL_LONG_LONG_INT");
+    MPI_LONG_LONG = MUK_DLSYM(wrap_so_handle,"IMPL_LONG_LONG");
+    MPI_UNSIGNED_LONG_LONG = MUK_DLSYM(wrap_so_handle,"IMPL_UNSIGNED_LONG_LONG");
 
     MPI_GROUP_NULL  = MUK_DLSYM(wrap_so_handle,"IMPL_GROUP_NULL");
     MPI_GROUP_EMPTY = MUK_DLSYM(wrap_so_handle,"IMPL_GROUP_EMPTY");

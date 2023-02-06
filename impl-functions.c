@@ -2704,6 +2704,7 @@ int WRAP_Ialltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[], const 
 int WRAP_Ibarrier(MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request*));
+    MUK_Warning("WRAP_Ibarrier: request=%p *request=%p\n", request, *request);
     return IMPL_Ibarrier(*comm, *request);
 }
 
@@ -3836,6 +3837,7 @@ int WRAP_Test(MPI_Request **request, int *flag, WRAP_Status *status)
     MPI_Status impl_status;
     int rc = IMPL_Test(*request, flag, &impl_status);
     if (flag) {
+        MUK_Warning("WRAP_Test: request=%p *request=%p\n", request, *request);
         free(*request);
         *request = &IMPL_REQUEST_NULL;
         MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -4336,6 +4338,7 @@ int WRAP_Waitany(int count, MPI_Request* array_of_requests[], int *indx, WRAP_St
     MPI_Status impl_status;
 
     int rc = IMPL_Waitany(count, impl_requests, indx, &impl_status);
+    printf("WRAP_Waitany: indx=%d\n", *indx);
     // If the list contains no active handles (list has length zero or all entries are null or inactive), then the call returns
     // immediately with index = MPI_UNDEFINED, and an empty status.
     if (*indx == MPI_UNDEFINED) {
