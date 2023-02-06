@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
     MPI_Barrier(MPI_COMM_WORLD);
     usleep(1);
 
-    if (0)
+    if (1)
     {
         MPI_Barrier(MPI_COMM_WORLD);
         fflush(0);
@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
         MPI_Waitall(1,&r,MPI_STATUS_IGNORE);
     }
 
-    if (0)
+    if (1)
     {
         MPI_Barrier(MPI_COMM_WORLD);
         fflush(0);
@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
         MPI_Waitall(2,r,MPI_STATUS_IGNORE);
     }
 
-    if (0)
+    if (1)
     {
         MPI_Barrier(MPI_COMM_WORLD);
         fflush(0);
@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
                 me, s.MPI_SOURCE, s.MPI_TAG, s.MPI_ERROR, rcount);
     }
 
-    if (0)
+    if (1)
     {
         MPI_Barrier(MPI_COMM_WORLD);
         fflush(0);
@@ -100,6 +100,7 @@ int main(int argc, char* argv[])
                 me, s.MPI_SOURCE, s.MPI_TAG, rcount);
     }
 
+    if (1)
     {
         MPI_Barrier(MPI_COMM_WORLD);
         fflush(0);

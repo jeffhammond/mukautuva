@@ -3871,6 +3871,10 @@ int WRAP_Testall(int count, MPI_Request* array_of_requests[], int *flag, WRAP_St
                 free(array_of_requests[i]);
                 array_of_requests[i] = &IMPL_REQUEST_NULL;
             }
+        }
+    }
+    if ((intptr_t)array_of_statuses != (intptr_t)IMPL_STATUSES_IGNORE) {
+        for (int i=0; i<count; i++) {
             MPI_Status_to_WRAP_Status(&impl_statuses[i], &array_of_statuses[i]);
         }
     }
@@ -3937,7 +3941,12 @@ int WRAP_Testsome(int incount, MPI_Request* array_of_requests[], int *outcount, 
                 free(array_of_requests[j]);
                 array_of_requests[i] = &IMPL_REQUEST_NULL;
             }
-            MPI_Status_to_WRAP_Status(&impl_statuses[j], &array_of_statuses[j]);
+        }
+        if ((intptr_t)array_of_statuses != (intptr_t)IMPL_STATUSES_IGNORE) {
+            for (int i=0; i<incount; i++) {
+                const int j = array_of_indices[i];
+                MPI_Status_to_WRAP_Status(&impl_statuses[j], &array_of_statuses[j]);
+            }
         }
     }
 
@@ -4316,11 +4325,11 @@ int WRAP_Waitall(int count, MPI_Request* array_of_requests[], WRAP_Status array_
             free(array_of_requests[i]);
             array_of_requests[i] = &IMPL_REQUEST_NULL;
         }
-#if 0
-        MUK_Warning("WRAP_Waitall: SOURCE=%d, TAG=%d, ERROR=%d\n",
-                    impl_statuses[i].MPI_SOURCE, impl_statuses[i].MPI_TAG, impl_statuses[i].MPI_ERROR);
-#endif
-        MPI_Status_to_WRAP_Status(&impl_statuses[i], &array_of_statuses[i]);
+    }
+    if ((intptr_t)array_of_statuses != (intptr_t)IMPL_STATUSES_IGNORE) {
+        for (int i=0; i<count; i++) {
+            MPI_Status_to_WRAP_Status(&impl_statuses[i], &array_of_statuses[i]);
+        }
     }
 
     free(impl_requests);
@@ -4383,7 +4392,12 @@ int WRAP_Waitsome(int incount, MPI_Request* array_of_requests[], int *outcount, 
                 free(array_of_requests[j]);
                 array_of_requests[j] = &IMPL_REQUEST_NULL;
             }
-            MPI_Status_to_WRAP_Status(&impl_statuses[j], &array_of_statuses[j]);
+        }
+        if ((intptr_t)array_of_statuses != (intptr_t)IMPL_STATUSES_IGNORE) {
+            for (int i=0; i<incount; i++) {
+                const int j = array_of_indices[i];
+                MPI_Status_to_WRAP_Status(&impl_statuses[j], &array_of_statuses[j]);
+            }
         }
     }
 
