@@ -4033,21 +4033,25 @@ int WRAP_Waitsome(int incount, MPI_Request array_of_requests[], int *outcount, i
 
 int WRAP_Win_allocate(IMPL_Aint size, int disp_unit, MPI_Info *info, MPI_Comm *comm, void *baseptr, MPI_Win **win)
 {
+    *win = malloc(sizeof(MPI_Win*));
     return IMPL_Win_allocate(size, disp_unit, *info, *comm, baseptr, *win);
 }
 
 int WRAP_Win_allocate_c(IMPL_Aint size, IMPL_Aint disp_unit, MPI_Info *info, MPI_Comm *comm, void *baseptr, MPI_Win **win)
 {
+    *win = malloc(sizeof(MPI_Win*));
     return IMPL_Win_allocate_c(size, disp_unit, *info, *comm, baseptr, *win);
 }
 
 int WRAP_Win_allocate_shared(IMPL_Aint size, int disp_unit, MPI_Info *info, MPI_Comm *comm, void *baseptr, MPI_Win **win)
 {
+    *win = malloc(sizeof(MPI_Win*));
     return IMPL_Win_allocate_shared(size, disp_unit, *info, *comm, baseptr, *win);
 }
 
 int WRAP_Win_allocate_shared_c(IMPL_Aint size, IMPL_Aint disp_unit, MPI_Info *info, MPI_Comm *comm, void *baseptr, MPI_Win **win)
 {
+    *win = malloc(sizeof(MPI_Win*));
     return IMPL_Win_allocate_shared_c(size, disp_unit, *info, *comm, baseptr, *win);
 }
 
@@ -4068,16 +4072,19 @@ int WRAP_Win_complete(MPI_Win *win)
 
 int WRAP_Win_create(void *base, IMPL_Aint size, int disp_unit, MPI_Info *info, MPI_Comm *comm, MPI_Win **win)
 {
+    *win = malloc(sizeof(MPI_Win*));
     return IMPL_Win_create(base, size, disp_unit, *info, *comm, *win);
 }
 
 int WRAP_Win_create_c(void *base, IMPL_Aint size, IMPL_Aint disp_unit, MPI_Info *info, MPI_Comm *comm, MPI_Win **win)
 {
+    *win = malloc(sizeof(MPI_Win*));
     return IMPL_Win_create_c(base, size, disp_unit, *info, *comm, *win);
 }
 
 int WRAP_Win_create_dynamic(MPI_Info *info, MPI_Comm *comm, MPI_Win **win)
 {
+    *win = malloc(sizeof(MPI_Win*));
     return IMPL_Win_create_dynamic(*info, *comm, *win);
 }
 
@@ -4128,7 +4135,9 @@ int WRAP_Win_flush_local_all(MPI_Win *win)
 
 int WRAP_Win_free(MPI_Win **win)
 {
-    return IMPL_Win_free(*win);
+    int rc = IMPL_Win_free(*win);
+    free(*win);
+    return rc;
 }
 
 int WRAP_Win_free_keyval(int *win_keyval)

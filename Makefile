@@ -15,7 +15,7 @@ ARFLAGS	= -r
 
 all: libs tests
 
-tests: header.o testinit.x testcomm.x
+tests: header.o testinit.x testcomm.x testwin.x
 
 libs: libmuk.a libmuk.so
 
