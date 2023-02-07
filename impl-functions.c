@@ -4350,7 +4350,7 @@ int WRAP_Waitany(int count, MPI_Request* array_of_requests[], int *indx, WRAP_St
     MPI_Status impl_status;
 
     int rc = IMPL_Waitany(count, impl_requests, indx, &impl_status);
-    printf("WRAP_Waitany: indx=%d\n", *indx);
+
     // If the list contains no active handles (list has length zero or all entries are null or inactive), then the call returns
     // immediately with index = MPI_UNDEFINED, and an empty status.
     if (*indx == MPI_UNDEFINED) {

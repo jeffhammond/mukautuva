@@ -107,11 +107,6 @@ int main(int argc, char* argv[])
         MPI_Wait(&r[1],&s);
         MPI_Wait(&r[0],MPI_STATUS_IGNORE);
 
-        // Error codes belonging to the error class MPI_ERR_IN_STATUS should be returned
-        // only by the MPI completion functions that take arrays of MPI_Status. For the
-        // functions that take a single MPI_Status argument, the error code is returned
-        // by the function, and the value of the MPI_ERROR field in the MPI_Status argument
-        // is undefined (see 3.2.5).
         int rcount = -3;
         MPI_Get_count(&s, MPI_INT, &rcount);
         if ((s.MPI_SOURCE != me) || (s.MPI_TAG != 99) || (rcount != 1)) {
@@ -136,16 +131,11 @@ int main(int argc, char* argv[])
         MPI_Irecv(&buffer[1], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[1]);
         MPI_Waitall(2,r,s);
 
-        // Error codes belonging to the error class MPI_ERR_IN_STATUS should be returned
-        // only by the MPI completion functions that take arrays of MPI_Status. For the
-        // functions that take a single MPI_Status argument, the error code is returned
-        // by the function, and the value of the MPI_ERROR field in the MPI_Status argument
-        // is undefined (see 3.2.5).
         int rcount = -3;
         MPI_Get_count(&s[1], MPI_INT, &rcount);
-        if ((s[1].MPI_SOURCE != me) || (s[1].MPI_TAG != 99) || (s[1].MPI_ERROR != 0) || (rcount != 1)) {
-            printf("[%d]: SOURCE=%d TAG=%d ERROR=%d count=%d\n",
-                    me, s[1].MPI_SOURCE, s[1].MPI_TAG, s[1].MPI_ERROR, rcount);
+        if ((s[1].MPI_SOURCE != me) || (s[1].MPI_TAG != 99) || (rcount != 1)) {
+            printf("[%d]: SOURCE=%d TAG=%d count=%d\n",
+                    me, s[1].MPI_SOURCE, s[1].MPI_TAG, rcount);
             MPI_Abort(MPI_COMM_WORLD,1);
         }
     }
@@ -169,17 +159,12 @@ int main(int argc, char* argv[])
             MPI_Testall(2,r,&flag,s);
         }
 
-        // Error codes belonging to the error class MPI_ERR_IN_STATUS should be returned
-        // only by the MPI completion functions that take arrays of MPI_Status. For the
-        // functions that take a single MPI_Status argument, the error code is returned
-        // by the function, and the value of the MPI_ERROR field in the MPI_Status argument
-        // is undefined (see 3.2.5).
         int rcount = -3;
         MPI_Get_count(&s[1], MPI_INT, &rcount);
-        if ((s[1].MPI_SOURCE != me) || (s[1].MPI_TAG != 99) || (s[1].MPI_ERROR != 0) || (rcount != 1)) {
-            printf("[%d]: SOURCE=%d TAG=%d ERROR=%d count=%d\n",
-                    me, s[1].MPI_SOURCE, s[1].MPI_TAG, s[1].MPI_ERROR, rcount);
-            //MPI_Abort(MPI_COMM_WORLD,1);
+        if ((s[1].MPI_SOURCE != me) || (s[1].MPI_TAG != 99) || (rcount != 1)) {
+            printf("[%d]: SOURCE=%d TAG=%d count=%d\n",
+                    me, s[1].MPI_SOURCE, s[1].MPI_TAG, rcount);
+            MPI_Abort(MPI_COMM_WORLD,1);
         }
     }
 
@@ -201,16 +186,169 @@ int main(int argc, char* argv[])
         MPI_Request * r = malloc(2 * n * sizeof(MPI_Request));
 
         for (int i=0; i<n; i++) {
-            //printf("Isend+Irecv on %d\n", i);
             MPI_Isend(&buffer[i], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[i]);
             MPI_Irecv(&buffer[n+i], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[n+i]);
         }
-        for (int i=0; i<2*n; i++) {
-            //printf("Wait on %d\n", i);
-            MPI_Wait(&r[i],MPI_STATUSES_IGNORE);
-        }
-        //MPI_Waitall(2*n,r,MPI_STATUSES_IGNORE);
+        MPI_Waitall(2*n,r,MPI_STATUSES_IGNORE);
 
+        free(buffer);
+        free(r);
+    }
+
+    if (1)
+    {
+        MPI_Barrier(MPI_COMM_WORLD);
+        fflush(0);
+        if (me==0) printf("Isend+Irecv+Testall\n");
+        fflush(0);
+
+        // MPICH fails around 131072 (https://github.com/pmodels/mpich/issues/6389)
+        const int n = 100000;
+
+        int * buffer = malloc(2 * n * sizeof(int));
+        for (int i=0; i<n; i++) {
+            buffer[i]   =  i;    // send
+            buffer[n+i] = -1000; // recv 
+        }    
+        MPI_Request * r = malloc(2 * n * sizeof(MPI_Request));
+
+        for (int i=0; i<n; i++) {
+            MPI_Isend(&buffer[i], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[i]);
+            MPI_Irecv(&buffer[n+i], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[n+i]);
+        }
+        int flag = 0;
+        while (!flag) {
+            MPI_Testall(2*n,r,&flag,MPI_STATUSES_IGNORE);
+        }
+
+        free(buffer);
+        free(r);
+    }
+
+    if (1)
+    {
+        MPI_Barrier(MPI_COMM_WORLD);
+        fflush(0);
+        if (me==0) printf("Isend+Irecv+Waitany\n");
+        fflush(0);
+
+        const int n = 1000;
+
+        int * buffer = malloc(2 * n * sizeof(int));
+        for (int i=0; i<n; i++) {
+            buffer[i]   =  i;    // send
+            buffer[n+i] = -1000; // recv 
+        }    
+        MPI_Request * r = malloc(2 * n * sizeof(MPI_Request));
+
+        for (int i=0; i<n; i++) {
+            MPI_Isend(&buffer[i], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[i]);
+            MPI_Irecv(&buffer[n+i], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[n+i]);
+        }
+
+        int indx=-3, done=0;
+        while (done < 2*n) {
+            MPI_Waitany(2*n,r,&indx,MPI_STATUSES_IGNORE);
+            done++;
+        }
+
+        free(buffer);
+        free(r);
+    }
+
+    if (1)
+    {
+        MPI_Barrier(MPI_COMM_WORLD);
+        fflush(0);
+        if (me==0) printf("Isend+Irecv+Testany\n");
+        fflush(0);
+
+        const int n = 1000;
+
+        int * buffer = malloc(2 * n * sizeof(int));
+        for (int i=0; i<n; i++) {
+            buffer[i]   =  i;    // send
+            buffer[n+i] = -1000; // recv 
+        }    
+        MPI_Request * r = malloc(2 * n * sizeof(MPI_Request));
+
+        for (int i=0; i<n; i++) {
+            MPI_Isend(&buffer[i], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[i]);
+            MPI_Irecv(&buffer[n+i], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[n+i]);
+        }
+
+        int flag=0, indx=-3, done=0;
+        while (done < 2*n) {
+            MPI_Testany(2*n,r,&indx,&flag,MPI_STATUSES_IGNORE);
+            if (flag) done++;
+        }
+
+        free(buffer);
+        free(r);
+    }
+
+    if (1)
+    {
+        MPI_Barrier(MPI_COMM_WORLD);
+        fflush(0);
+        if (me==0) printf("Isend+Irecv+Waitsome\n");
+        fflush(0);
+
+        const int n = 1000;
+
+        int * buffer = malloc(2 * n * sizeof(int));
+        for (int i=0; i<n; i++) {
+            buffer[i]   =  i;    // send
+            buffer[n+i] = -1000; // recv 
+        }    
+        MPI_Request * r = malloc(2 * n * sizeof(MPI_Request));
+
+        for (int i=0; i<n; i++) {
+            MPI_Isend(&buffer[i], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[i]);
+            MPI_Irecv(&buffer[n+i], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[n+i]);
+        }
+
+        int done=0, outcount=0;
+        int * indx = malloc(2 * n * sizeof(int));
+        while (done < 2*n) {
+            MPI_Waitsome(2*n,r,&outcount,indx,MPI_STATUSES_IGNORE);
+            done += outcount;
+        }
+
+        free(indx);
+        free(buffer);
+        free(r);
+    }
+
+    if (1)
+    {
+        MPI_Barrier(MPI_COMM_WORLD);
+        fflush(0);
+        if (me==0) printf("Isend+Irecv+Testsome\n");
+        fflush(0);
+
+        const int n = 1000;
+
+        int * buffer = malloc(2 * n * sizeof(int));
+        for (int i=0; i<n; i++) {
+            buffer[i]   =  i;    // send
+            buffer[n+i] = -1000; // recv 
+        }    
+        MPI_Request * r = malloc(2 * n * sizeof(MPI_Request));
+
+        for (int i=0; i<n; i++) {
+            MPI_Isend(&buffer[i], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[i]);
+            MPI_Irecv(&buffer[n+i], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[n+i]);
+        }
+
+        int done=0, outcount=0;
+        int * indx = malloc(2 * n * sizeof(int));
+        while (done < 2*n) {
+            MPI_Testsome(2*n,r,&outcount,indx,MPI_STATUSES_IGNORE);
+            done += outcount;
+        }
+
+        free(indx);
         free(buffer);
         free(r);
     }
