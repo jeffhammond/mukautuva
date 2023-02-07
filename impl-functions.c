@@ -3945,7 +3945,7 @@ int WRAP_Testsome(int incount, MPI_Request* array_of_requests[], int *outcount, 
             const int j = array_of_indices[i];
             if (impl_requests[j] == MPI_REQUEST_NULL) {
                 free(array_of_requests[j]);
-                array_of_requests[i] = &IMPL_REQUEST_NULL;
+                array_of_requests[j] = &IMPL_REQUEST_NULL;
             }
         }
     

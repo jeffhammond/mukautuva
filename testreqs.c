@@ -320,7 +320,7 @@ int main(int argc, char* argv[])
         free(r);
     }
 
-    if (0)
+    if (1)
     {
         MPI_Barrier(MPI_COMM_WORLD);
         fflush(0);
@@ -346,7 +346,6 @@ int main(int argc, char* argv[])
         while (done < 2*n) {
             MPI_Testsome(2*n,r,&outcount,indx,MPI_STATUSES_IGNORE);
             done += outcount;
-            printf("done=%d\n",done);
         }
 
         free(indx);
