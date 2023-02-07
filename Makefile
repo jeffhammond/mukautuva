@@ -22,8 +22,10 @@ libs: libmuk.a libmuk.so
 %.x: %.c libmuk.so mpi.h
 	$(CC) $(CFLAGS) $< -L. -lmuk -o $@
 
+MPI_H = mpi.h mpi-predefined.h mpi-prototypes.h mpi-typedefs.h
+
 # this just tests if mpi.h can be compiled without errors
-header.o: header.c mpi.h
+header.o: header.c $(MPI_H)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 libmuk.a: libinit.o
