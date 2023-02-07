@@ -4,4 +4,6 @@ CC=gcc
 
 MUKPATH=/home/jhammond/mukautuva
 
-${CC} -I${MUKPATH} $@ -L${MUKPATH} -lmuk
+# rpath does not solve the problem of the impl-wrap.so location
+# LD_LIBRARY_PATH is required
+${CC} -I${MUKPATH} $@ -L${MUKPATH} -lmuk #-Wl,-rpath=${MUKPATH}
