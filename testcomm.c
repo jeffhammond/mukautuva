@@ -26,12 +26,10 @@ int main(int argc, char* argv[])
     MPI_Barrier(split);
     MPI_Comm_free(&split);
 
-#if 0
     MPI_Comm shared;
     MPI_Comm_split_type(MPI_COMM_WORLD,MPI_COMM_TYPE_SHARED,0,MPI_INFO_NULL,&shared);
     MPI_Barrier(shared);
     MPI_Comm_free(&shared);
-#endif
 
     rc = MPI_Finalize();
 
