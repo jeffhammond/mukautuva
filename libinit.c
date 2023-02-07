@@ -810,6 +810,22 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MPI_LONG_LONG = MUK_DLSYM(wrap_so_handle,"IMPL_LONG_LONG");
     MPI_UNSIGNED_LONG_LONG = MUK_DLSYM(wrap_so_handle,"IMPL_UNSIGNED_LONG_LONG");
 
+    MPI_OP_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_OP_NULL");
+    MPI_MAX = MUK_DLSYM(wrap_so_handle,"IMPL_MAX");
+    MPI_MIN = MUK_DLSYM(wrap_so_handle,"IMPL_MIN");
+    MPI_SUM = MUK_DLSYM(wrap_so_handle,"IMPL_SUM");
+    MPI_PROD = MUK_DLSYM(wrap_so_handle,"IMPL_PROD");
+    MPI_LAND = MUK_DLSYM(wrap_so_handle,"IMPL_LAND");
+    MPI_BAND = MUK_DLSYM(wrap_so_handle,"IMPL_BAND");
+    MPI_LOR = MUK_DLSYM(wrap_so_handle,"IMPL_LOR");
+    MPI_BOR = MUK_DLSYM(wrap_so_handle,"IMPL_BOR");
+    MPI_LXOR = MUK_DLSYM(wrap_so_handle,"IMPL_LXOR");
+    MPI_BXOR = MUK_DLSYM(wrap_so_handle,"IMPL_BXOR");
+    MPI_MAXLOC = MUK_DLSYM(wrap_so_handle,"IMPL_MAXLOC");
+    MPI_MINLOC = MUK_DLSYM(wrap_so_handle,"IMPL_MINLOC");
+    MPI_REPLACE = MUK_DLSYM(wrap_so_handle,"IMPL_REPLACE");
+    MPI_NO_OP = MUK_DLSYM(wrap_so_handle,"IMPL_NO_OP");
+
     MPI_GROUP_NULL  = MUK_DLSYM(wrap_so_handle,"IMPL_GROUP_NULL");
     MPI_GROUP_EMPTY = MUK_DLSYM(wrap_so_handle,"IMPL_GROUP_EMPTY");
 
