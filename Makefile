@@ -15,7 +15,12 @@ ARFLAGS	= -r
 
 all: libs tests
 
-tests: header.o testinit.x testcomm.x testwin.x testreqs.x
+tests: header.o testinit.x testcomm.x testwin.x testreqs.x testcoll.x
+
+other: testmalloc.x
+
+testmalloc.x: testmalloc.c
+	$(OMPICC) $(CFLAGS) $< -o $@
 
 libs: libmuk.a libmuk.so
 
