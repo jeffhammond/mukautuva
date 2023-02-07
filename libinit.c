@@ -342,9 +342,10 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MPI_ERR_LASTCODE = *pMPI_ERR_LASTCODE;
 
     // Buffer Address Constants
-    // TODO this may need the STATUS_IGNORE trick
-    MPI_BOTTOM = MUK_DLSYM(wrap_so_handle,"IMPL_BOTTOM");
-    MPI_IN_PLACE = MUK_DLSYM(wrap_so_handle,"IMPL_IN_PLACE");
+    void ** pMPI_BOTTOM   = MUK_DLSYM(wrap_so_handle,"IMPL_BOTTOM");
+    MPI_BOTTOM = *pMPI_BOTTOM;
+    void ** pMPI_IN_PLACE = MUK_DLSYM(wrap_so_handle,"IMPL_IN_PLACE");
+    MPI_IN_PLACE = *pMPI_IN_PLACE;
 
     // Assorted Constants
     int* pMPI_PROC_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_PROC_NULL");
