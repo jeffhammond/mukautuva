@@ -629,9 +629,14 @@ int (*MUK_Win_unlock)(int rank, MUK_Win win);
 int (*MUK_Win_unlock_all)(MUK_Win win);
 int (*MUK_Win_wait)(MUK_Win win);
 
+// special values
 MUK_Status * MPI_STATUS_IGNORE;
 MUK_Status * MPI_STATUSES_IGNORE;
 
+int MPI_ANY_TAG;
+int MPI_ANY_SOURCE;
+
+// predefined handles
 MUK_Request MPI_REQUEST_NULL;
 
 MUK_Errhandler MPI_ERRHANDLER_NULL;
@@ -693,6 +698,8 @@ MUK_Datatype MPI_WCHAR;
 MUK_Datatype MPI_LONG_LONG_INT;
 MUK_Datatype MPI_LONG_LONG;
 MUK_Datatype MPI_UNSIGNED_LONG_LONG;
+
+// end of type stuff
 
 int (*WRAP_Load_functions)(void * restrict h, int major, int minor);
 
@@ -834,6 +841,12 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MPI_STATUS_IGNORE   = *pMPI_STATUS_IGNORE;
     MPI_STATUSES_IGNORE = *pMPI_STATUSES_IGNORE;
     //printf("libint:  MPI_STATUS_IGNORE = %p\n",MPI_STATUS_IGNORE);
+
+    int * pMPI_ANY_SOURCE = MUK_DLSYM(wrap_so_handle,"IMPL_ANY_SOURCE");
+    int * pMPI_ANY_TAG    = MUK_DLSYM(wrap_so_handle,"IMPL_ANY_TAG");
+    MPI_ANY_SOURCE = *pMPI_ANY_SOURCE;
+    MPI_ANY_TAG    = *pMPI_ANY_TAG;
+    //printf("libinit: MPI_ANY_SOURCE = %d MPI_ANY_TAG = %d\n", MPI_ANY_SOURCE, MPI_ANY_TAG);
 
     // all the functions
     MUK_Abort = MUK_DLSYM(wrap_so_handle,"WRAP_Abort");

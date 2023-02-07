@@ -28,8 +28,12 @@ typedef struct
 }
 MPI_Status;
 
+// special values
 extern MPI_Status * MPI_STATUS_IGNORE;
 extern MPI_Status * MPI_STATUSES_IGNORE;
+
+extern int MPI_ANY_TAG;
+extern int MPI_ANY_SOURCE;
 
 // callback typedefs
 typedef void MPI_User_function(void *invec, void *inoutvec, int *len, MPI_Datatype *datatype);
