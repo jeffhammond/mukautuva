@@ -135,20 +135,37 @@ int main(int argc, char* argv[])
         }
     }
 
+    if (1)
     {
-#if 0
-        // this does not set index properly
-        int index = 1<<30;
-        MPI_Ibarrier(MPI_COMM_WORLD,&r);
-        MPI_Waitany(1,&r,&index,MPI_STATUS_IGNORE);
-        printf("index=%d\n", index);
+        MPI_Barrier(MPI_COMM_WORLD);
+        fflush(0);
+        if (me==0) printf("Isend+Irecv+Testall(s)\n");
+        fflush(0);
+
+        int buffer[2] = { me };
+        MPI_Request r[2] = { MPI_REQUEST_NULL };
+        MPI_Status s[2];
+        memset(&s,255,2*sizeof(MPI_Status));
+        MPI_Isend(&buffer[0], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[0]);
+        MPI_Irecv(&buffer[1], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[1]);
 
         int flag = 0;
-        MPI_Ibarrier(MPI_COMM_WORLD,&r);
         while (!flag) {
-            MPI_Test(&r,&flag,MPI_STATUS_IGNORE);
+            MPI_Testall(2,r,&flag,s);
         }
-#endif
+
+        // Error codes belonging to the error class MPI_ERR_IN_STATUS should be returned
+        // only by the MPI completion functions that take arrays of MPI_Status. For the
+        // functions that take a single MPI_Status argument, the error code is returned
+        // by the function, and the value of the MPI_ERROR field in the MPI_Status argument
+        // is undefined (see 3.2.5).
+        int rcount = -3;
+        MPI_Get_count(&s[1], MPI_INT, &rcount);
+        if ((s[1].MPI_SOURCE != me) || (s[1].MPI_TAG != 99) || (s[1].MPI_ERROR != 0) || (rcount != 1)) {
+            printf("[%d]: SOURCE=%d TAG=%d ERROR=%d count=%d\n",
+                    me, s[1].MPI_SOURCE, s[1].MPI_TAG, s[1].MPI_ERROR, rcount);
+            MPI_Abort(MPI_COMM_WORLD,1);
+        }
     }
 
     fflush(0);
