@@ -27,15 +27,31 @@ int main(int argc, char* argv[])
     {
         MPI_Barrier(MPI_COMM_WORLD);
         fflush(0);
-        if (me==0) printf("Ibarrier\n");
+        if (me==0) printf("Ibarrier+...\n");
         fflush(0);
 
         MPI_Request r;
+        int flag;
+
         MPI_Ibarrier(MPI_COMM_WORLD,&r);
         MPI_Wait(&r,MPI_STATUS_IGNORE);
 
         MPI_Ibarrier(MPI_COMM_WORLD,&r);
         MPI_Waitall(1,&r,MPI_STATUS_IGNORE);
+
+#if 1
+        MPI_Ibarrier(MPI_COMM_WORLD,&r);
+        flag = 0;
+        while (!flag) {
+            MPI_Test(&r,&flag,MPI_STATUS_IGNORE);
+        }
+#endif
+
+        MPI_Ibarrier(MPI_COMM_WORLD,&r);
+        flag = 0;
+        while (!flag) {
+            MPI_Testall(1,&r,&flag,MPI_STATUS_IGNORE);
+        }
     }
 
     if (1)

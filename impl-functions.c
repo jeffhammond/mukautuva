@@ -1225,7 +1225,6 @@ static inline void WRAP_Status_to_MPI_Status(const WRAP_Status * w, MPI_Status *
 static inline void MPI_Status_to_WRAP_Status(const MPI_Status * m, WRAP_Status * w)
 {
     if ((intptr_t)w == (intptr_t)IMPL_STATUS_IGNORE) {
-        //MUK_Warning("STATUS_IGNORE\n");
         return;
     }
 
@@ -3834,12 +3833,12 @@ int WRAP_Status_set_elements_x(WRAP_Status *status, MPI_Datatype *datatype, IMPL
 
 int WRAP_Test(MPI_Request **request, int *flag, WRAP_Status *status)
 {
+    const bool ignore = (intptr_t)status == (intptr_t)IMPL_STATUS_IGNORE;
     MPI_Status impl_status;
-    int rc = IMPL_Test(*request, flag, &impl_status);
-    if (flag) {
+    int rc = IMPL_Test(*request, flag, ignore ? MPI_STATUS_IGNORE : &impl_status);
+    if (*flag) {
         free(*request);
-        *request = &IMPL_REQUEST_NULL;
-        MPI_Status_to_WRAP_Status(&impl_status, status);
+        if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     }
     return rc;
 }
@@ -3865,7 +3864,7 @@ int WRAP_Testall(int count, MPI_Request* array_of_requests[], int *flag, WRAP_St
 
     int rc = IMPL_Testall(count, impl_requests, flag, impl_statuses);
 
-    if (flag) {
+    if (*flag) {
         for (int i=0; i<count; i++) {
             if (impl_requests[i] == MPI_REQUEST_NULL) {
                 free(array_of_requests[i]);
@@ -3898,7 +3897,7 @@ int WRAP_Testany(int count, MPI_Request* array_of_requests[], int *indx, int *fl
 
     int rc = IMPL_Testany(count, impl_requests, indx, flag, &impl_status);
 
-    if (flag) {
+    if (*flag) {
         // If the array contains no active handles then the call returns immediately with flag = true,
         // index = MPI_UNDEFINED, and an empty status.
         if (*indx == MPI_UNDEFINED) {
@@ -4293,9 +4292,10 @@ int WRAP_Unpublish_name(const char *service_name, MPI_Info *info, const char *po
 
 int WRAP_Wait(MPI_Request **request, WRAP_Status *status)
 {
+    const bool ignore = (intptr_t)status == (intptr_t)IMPL_STATUS_IGNORE;
     MPI_Status impl_status;
-    int rc = IMPL_Wait(*request, &impl_status);
-    MPI_Status_to_WRAP_Status(&impl_status, status);
+    int rc = IMPL_Wait(*request, ignore ? MPI_STATUS_IGNORE : &impl_status);
+    if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     if (**request == MPI_REQUEST_NULL) {
         free(*request);
         *request = &IMPL_REQUEST_NULL;

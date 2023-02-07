@@ -2,10 +2,11 @@
 #define MUK_DL_H
 
 #include <stdio.h>
-//#include <stdlib.h>
+#include <stdlib.h>
 #include <stddef.h>
 #include <stdint.h>
-//#include <string.h>
+#include <stdbool.h>
+#include <string.h>
 
 #include <dlfcn.h>
 
