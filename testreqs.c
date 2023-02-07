@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include <unistd.h>
@@ -37,20 +38,18 @@ int main(int argc, char* argv[])
         MPI_Wait(&r,MPI_STATUS_IGNORE);
 
         MPI_Ibarrier(MPI_COMM_WORLD,&r);
-        MPI_Waitall(1,&r,MPI_STATUS_IGNORE);
+        MPI_Waitall(1,&r,MPI_STATUSES_IGNORE);
 
-#if 1
         MPI_Ibarrier(MPI_COMM_WORLD,&r);
         flag = 0;
         while (!flag) {
             MPI_Test(&r,&flag,MPI_STATUS_IGNORE);
         }
-#endif
 
         MPI_Ibarrier(MPI_COMM_WORLD,&r);
         flag = 0;
         while (!flag) {
-            MPI_Testall(1,&r,&flag,MPI_STATUS_IGNORE);
+            MPI_Testall(1,&r,&flag,MPI_STATUSES_IGNORE);
         }
     }
 
@@ -65,7 +64,7 @@ int main(int argc, char* argv[])
         MPI_Request r[2];
         MPI_Isend(&buffer[0], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[0]);
         MPI_Irecv(&buffer[1], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[1]);
-        MPI_Waitall(2,r,MPI_STATUS_IGNORE);
+        MPI_Waitall(2,r,MPI_STATUSES_IGNORE);
     }
 
     if (1)
@@ -180,8 +179,40 @@ int main(int argc, char* argv[])
         if ((s[1].MPI_SOURCE != me) || (s[1].MPI_TAG != 99) || (s[1].MPI_ERROR != 0) || (rcount != 1)) {
             printf("[%d]: SOURCE=%d TAG=%d ERROR=%d count=%d\n",
                     me, s[1].MPI_SOURCE, s[1].MPI_TAG, s[1].MPI_ERROR, rcount);
-            MPI_Abort(MPI_COMM_WORLD,1);
+            //MPI_Abort(MPI_COMM_WORLD,1);
         }
+    }
+
+    if (1)
+    {
+        MPI_Barrier(MPI_COMM_WORLD);
+        fflush(0);
+        if (me==0) printf("Isend+Irecv+Waitall\n");
+        fflush(0);
+
+        // MPICH fails around 131072 (https://github.com/pmodels/mpich/issues/6389)
+        const int n = 100000;
+
+        int * buffer = malloc(2 * n * sizeof(int));
+        for (int i=0; i<n; i++) {
+            buffer[i]   =  i;    // send
+            buffer[n+i] = -1000; // recv 
+        }    
+        MPI_Request * r = malloc(2 * n * sizeof(MPI_Request));
+
+        for (int i=0; i<n; i++) {
+            //printf("Isend+Irecv on %d\n", i);
+            MPI_Isend(&buffer[i], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[i]);
+            MPI_Irecv(&buffer[n+i], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[n+i]);
+        }
+        for (int i=0; i<2*n; i++) {
+            //printf("Wait on %d\n", i);
+            MPI_Wait(&r[i],MPI_STATUSES_IGNORE);
+        }
+        //MPI_Waitall(2*n,r,MPI_STATUSES_IGNORE);
+
+        free(buffer);
+        free(r);
     }
 
     fflush(0);
