@@ -96,79 +96,6 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
         abort();
     }
 
-#if 0
-    MPI_REQUEST_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_REQUEST_NULL");
-
-    MPI_ERRHANDLER_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_ERRHANDLER_NULL");
-
-    MPI_INFO_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_INFO_NULL");
-
-    MPI_WIN_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_WIN_NULL");
-
-    MPI_FILE_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_FILE_NULL");
-
-    MPI_COMM_NULL  = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_NULL");
-    MPI_COMM_WORLD = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_WORLD");
-    MPI_COMM_SELF  = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_SELF");
-
-    MPI_DATATYPE_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_DATATYPE_NULL");
-    MPI_BYTE = MUK_DLSYM(wrap_so_handle,"IMPL_BYTE");
-    MPI_PACKED = MUK_DLSYM(wrap_so_handle,"IMPL_PACKED");
-    MPI_CHAR = MUK_DLSYM(wrap_so_handle,"IMPL_CHAR");
-    MPI_SHORT = MUK_DLSYM(wrap_so_handle,"IMPL_SHORT");
-    MPI_INT = MUK_DLSYM(wrap_so_handle,"IMPL_INT");
-    MPI_LONG = MUK_DLSYM(wrap_so_handle,"IMPL_LONG");
-    MPI_FLOAT = MUK_DLSYM(wrap_so_handle,"IMPL_FLOAT");
-    MPI_DOUBLE = MUK_DLSYM(wrap_so_handle,"IMPL_DOUBLE");
-    MPI_LONG_DOUBLE = MUK_DLSYM(wrap_so_handle,"IMPL_LONG_DOUBLE");
-    MPI_UNSIGNED_CHAR = MUK_DLSYM(wrap_so_handle,"IMPL_UNSIGNED_CHAR");
-    MPI_SIGNED_CHAR = MUK_DLSYM(wrap_so_handle,"IMPL_SIGNED_CHAR");
-    MPI_UNSIGNED_SHORT = MUK_DLSYM(wrap_so_handle,"IMPL_UNSIGNED_SHORT");
-    MPI_UNSIGNED_LONG = MUK_DLSYM(wrap_so_handle,"IMPL_UNSIGNED_LONG");
-    MPI_UNSIGNED = MUK_DLSYM(wrap_so_handle,"IMPL_UNSIGNED");
-    MPI_FLOAT_INT = MUK_DLSYM(wrap_so_handle,"IMPL_FLOAT_INT");
-    MPI_DOUBLE_INT = MUK_DLSYM(wrap_so_handle,"IMPL_DOUBLE_INT");
-    MPI_LONG_DOUBLE_INT = MUK_DLSYM(wrap_so_handle,"IMPL_LONG_DOUBLE_INT");
-    MPI_LONG_INT = MUK_DLSYM(wrap_so_handle,"IMPL_LONG_INT");
-    MPI_SHORT_INT = MUK_DLSYM(wrap_so_handle,"IMPL_SHORT_INT");
-    MPI_2INT = MUK_DLSYM(wrap_so_handle,"IMPL_2INT");
-    MPI_WCHAR = MUK_DLSYM(wrap_so_handle,"IMPL_WCHAR");
-    MPI_LONG_LONG_INT = MUK_DLSYM(wrap_so_handle,"IMPL_LONG_LONG_INT");
-    MPI_LONG_LONG = MUK_DLSYM(wrap_so_handle,"IMPL_LONG_LONG");
-    MPI_UNSIGNED_LONG_LONG = MUK_DLSYM(wrap_so_handle,"IMPL_UNSIGNED_LONG_LONG");
-
-    MPI_OP_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_OP_NULL");
-    MPI_MAX = MUK_DLSYM(wrap_so_handle,"IMPL_MAX");
-    MPI_MIN = MUK_DLSYM(wrap_so_handle,"IMPL_MIN");
-    MPI_SUM = MUK_DLSYM(wrap_so_handle,"IMPL_SUM");
-    MPI_PROD = MUK_DLSYM(wrap_so_handle,"IMPL_PROD");
-    MPI_LAND = MUK_DLSYM(wrap_so_handle,"IMPL_LAND");
-    MPI_BAND = MUK_DLSYM(wrap_so_handle,"IMPL_BAND");
-    MPI_LOR = MUK_DLSYM(wrap_so_handle,"IMPL_LOR");
-    MPI_BOR = MUK_DLSYM(wrap_so_handle,"IMPL_BOR");
-    MPI_LXOR = MUK_DLSYM(wrap_so_handle,"IMPL_LXOR");
-    MPI_BXOR = MUK_DLSYM(wrap_so_handle,"IMPL_BXOR");
-    MPI_MAXLOC = MUK_DLSYM(wrap_so_handle,"IMPL_MAXLOC");
-    MPI_MINLOC = MUK_DLSYM(wrap_so_handle,"IMPL_MINLOC");
-    MPI_REPLACE = MUK_DLSYM(wrap_so_handle,"IMPL_REPLACE");
-    MPI_NO_OP = MUK_DLSYM(wrap_so_handle,"IMPL_NO_OP");
-
-    MPI_GROUP_NULL  = MUK_DLSYM(wrap_so_handle,"IMPL_GROUP_NULL");
-    MPI_GROUP_EMPTY = MUK_DLSYM(wrap_so_handle,"IMPL_GROUP_EMPTY");
-
-    void ** pMPI_STATUS_IGNORE   = MUK_DLSYM(wrap_so_handle,"IMPL_STATUS_IGNORE");
-    void ** pMPI_STATUSES_IGNORE = MUK_DLSYM(wrap_so_handle,"IMPL_STATUSES_IGNORE");
-    MPI_STATUS_IGNORE   = *pMPI_STATUS_IGNORE;
-    MPI_STATUSES_IGNORE = *pMPI_STATUSES_IGNORE;
-    //printf("libint:  MPI_STATUS_IGNORE = %p\n",MPI_STATUS_IGNORE);
-
-    int * pMPI_ANY_SOURCE = MUK_DLSYM(wrap_so_handle,"IMPL_ANY_SOURCE");
-    int * pMPI_ANY_TAG    = MUK_DLSYM(wrap_so_handle,"IMPL_ANY_TAG");
-    MPI_ANY_SOURCE = *pMPI_ANY_SOURCE;
-    MPI_ANY_TAG    = *pMPI_ANY_TAG;
-    //printf("libinit: MPI_ANY_SOURCE = %d MPI_ANY_TAG = %d\n", MPI_ANY_SOURCE, MPI_ANY_TAG);
-#endif
-
     // error codes
     int* pMPI_SUCCESS = MUK_DLSYM(wrap_so_handle,"IMPL_SUCCESS");
     MPI_SUCCESS = *pMPI_SUCCESS;
@@ -258,10 +185,10 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MPI_ERR_NO_SUCH_FILE = *pMPI_ERR_NO_SUCH_FILE;
     int* pMPI_ERR_PORT = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_PORT");
     MPI_ERR_PORT = *pMPI_ERR_PORT;
-    #if MPI_VERSION >= 4
+#if MPI_VERSION >= 4
     int* pMPI_ERR_PROC_ABORTED = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_PROC_ABORTED");
     MPI_ERR_PROC_ABORTED = *pMPI_ERR_PROC_ABORTED;
-    #endif
+#endif
     int* pMPI_ERR_QUOTA = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_QUOTA");
     MPI_ERR_QUOTA = *pMPI_ERR_QUOTA;
     int* pMPI_ERR_READ_ONLY = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_READ_ONLY");
@@ -280,10 +207,10 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MPI_ERR_RMA_FLAVOR = *pMPI_ERR_RMA_FLAVOR;
     int* pMPI_ERR_SERVICE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_SERVICE");
     MPI_ERR_SERVICE = *pMPI_ERR_SERVICE;
-    #if MPI_VERSION >= 4
+#if MPI_VERSION >= 4
     int* pMPI_ERR_SESSION = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_SESSION");
     MPI_ERR_SESSION = *pMPI_ERR_SESSION;
-    #endif
+#endif
     int* pMPI_ERR_SIZE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_SIZE");
     MPI_ERR_SIZE = *pMPI_ERR_SIZE;
     int* pMPI_ERR_SPAWN = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_SPAWN");
@@ -292,24 +219,24 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MPI_ERR_UNSUPPORTED_DATAREP = *pMPI_ERR_UNSUPPORTED_DATAREP;
     int* pMPI_ERR_UNSUPPORTED_OPERATION = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_UNSUPPORTED_OPERATION");
     MPI_ERR_UNSUPPORTED_OPERATION = *pMPI_ERR_UNSUPPORTED_OPERATION;
-    #if MPI_VERSION >= 4
+#if MPI_VERSION >= 4
     int* pMPI_ERR_VALUE_TOO_LARGE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_VALUE_TOO_LARGE");
     MPI_ERR_VALUE_TOO_LARGE = *pMPI_ERR_VALUE_TOO_LARGE;
-    #endif
+#endif
     int* pMPI_ERR_WIN = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_WIN");
     MPI_ERR_WIN = *pMPI_ERR_WIN;
     int* pMPI_T_ERR_CANNOT_INIT = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_CANNOT_INIT");
     MPI_T_ERR_CANNOT_INIT = *pMPI_T_ERR_CANNOT_INIT;
-    #if 0
+#if 0
     int* pMPI_T_ERR_NOT_ACCESSIBLE = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_NOT_ACCESSIBLE");
     MPI_T_ERR_NOT_ACCESSIBLE = *pMPI_T_ERR_NOT_ACCESSIBLE;
-    #endif
+#endif
     int* pMPI_T_ERR_NOT_INITIALIZED = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_NOT_INITIALIZED");
     MPI_T_ERR_NOT_INITIALIZED = *pMPI_T_ERR_NOT_INITIALIZED;
-    #if MPI_VERSION >= 4
+#if MPI_VERSION >= 4
     int* pMPI_T_ERR_NOT_SUPPORTED = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_NOT_SUPPORTED");
     MPI_T_ERR_NOT_SUPPORTED = *pMPI_T_ERR_NOT_SUPPORTED;
-    #endif
+#endif
     int* pMPI_T_ERR_MEMORY = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_MEMORY");
     MPI_T_ERR_MEMORY = *pMPI_T_ERR_MEMORY;
     int* pMPI_T_ERR_INVALID = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_INVALID");
@@ -368,9 +295,10 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MPI_ROOT = *pMPI_ROOT;
 
     // No Process Message Handle
-    MPI_MESSAGE_NO_PROC = MUK_DLSYM(wrap_so_handle,"IMPL_MESSAGE_NO_PROC");
+    void ** pMPI_MESSAGE_NO_PROC = MUK_DLSYM(wrap_so_handle,"IMPL_MESSAGE_NO_PROC");
+    MPI_MESSAGE_NO_PROC = *pMPI_MESSAGE_NO_PROC;
 
-    #if 0
+#if 0
     //Fortran status array size and reserved index values (C only)
     int* pMPI_F_STATUS_SIZE = MUK_DLSYM(wrap_so_handle,"IMPL_F_STATUS_SIZE");
     MPI_F_STATUS_SIZE = *pMPI_F_STATUS_SIZE;
@@ -388,7 +316,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MPI_INTEGER_KIND = *pMPI_INTEGER_KIND;
     int* pMPI_OFFSET_KIND = MUK_DLSYM(wrap_so_handle,"IMPL_OFFSET_KIND");
     MPI_OFFSET_KIND = *pMPI_OFFSET_KIND;
-    #endif
+#endif
 
     // Error-handling specifiers
     MPI_ERRORS_ARE_FATAL = MUK_DLSYM(wrap_so_handle,"IMPL_ERRORS_ARE_FATAL");
@@ -398,82 +326,82 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MPI_ERRORS_RETURN = MUK_DLSYM(wrap_so_handle,"IMPL_ERRORS_RETURN");
 
     // Named Predefined Datatypes
-    MPI_CHAR = MUK_DLSYM(wrap_so_handle,"IMPL_CHAR");
-    MPI_SHORT = MUK_DLSYM(wrap_so_handle,"IMPL_SHORT");
-    MPI_INT = MUK_DLSYM(wrap_so_handle,"IMPL_INT");
-    MPI_LONG = MUK_DLSYM(wrap_so_handle,"IMPL_LONG");
-    MPI_LONG_LONG_INT = MUK_DLSYM(wrap_so_handle,"IMPL_LONG_LONG_INT");
-    MPI_LONG_LONG = MUK_DLSYM(wrap_so_handle,"IMPL_LONG_LONG");
-    MPI_SIGNED_CHAR = MUK_DLSYM(wrap_so_handle,"IMPL_SIGNED_CHAR");
-    MPI_UNSIGNED_CHAR = MUK_DLSYM(wrap_so_handle,"IMPL_UNSIGNED_CHAR");
-    MPI_UNSIGNED_SHORT = MUK_DLSYM(wrap_so_handle,"IMPL_UNSIGNED_SHORT");
-    MPI_UNSIGNED = MUK_DLSYM(wrap_so_handle,"IMPL_UNSIGNED");
-    MPI_UNSIGNED_LONG = MUK_DLSYM(wrap_so_handle,"IMPL_UNSIGNED_LONG");
-    MPI_UNSIGNED_LONG_LONG = MUK_DLSYM(wrap_so_handle,"IMPL_UNSIGNED_LONG_LONG");
-    MPI_FLOAT = MUK_DLSYM(wrap_so_handle,"IMPL_FLOAT");
-    MPI_DOUBLE = MUK_DLSYM(wrap_so_handle,"IMPL_DOUBLE");
-    MPI_LONG_DOUBLE = MUK_DLSYM(wrap_so_handle,"IMPL_LONG_DOUBLE");
-    MPI_WCHAR = MUK_DLSYM(wrap_so_handle,"IMPL_WCHAR");
-    MPI_C_BOOL = MUK_DLSYM(wrap_so_handle,"IMPL_C_BOOL");
+    MPI_CHAR = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_CHAR",MPI_DATATYPE_NULL);
+    MPI_SHORT = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_SHORT",MPI_DATATYPE_NULL);
+    MPI_INT = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_INT",MPI_DATATYPE_NULL);
+    MPI_LONG = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_LONG",MPI_DATATYPE_NULL);
+    MPI_LONG_LONG_INT = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_LONG_LONG_INT",MPI_DATATYPE_NULL);
+    MPI_LONG_LONG = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_LONG_LONG",MPI_DATATYPE_NULL);
+    MPI_SIGNED_CHAR = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_SIGNED_CHAR",MPI_DATATYPE_NULL);
+    MPI_UNSIGNED_CHAR = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_UNSIGNED_CHAR",MPI_DATATYPE_NULL);
+    MPI_UNSIGNED_SHORT = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_UNSIGNED_SHORT",MPI_DATATYPE_NULL);
+    MPI_UNSIGNED = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_UNSIGNED",MPI_DATATYPE_NULL);
+    MPI_UNSIGNED_LONG = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_UNSIGNED_LONG",MPI_DATATYPE_NULL);
+    MPI_UNSIGNED_LONG_LONG = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_UNSIGNED_LONG_LONG",MPI_DATATYPE_NULL);
+    MPI_FLOAT = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_FLOAT",MPI_DATATYPE_NULL);
+    MPI_DOUBLE = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_DOUBLE",MPI_DATATYPE_NULL);
+    MPI_LONG_DOUBLE = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_LONG_DOUBLE",MPI_DATATYPE_NULL);
+    MPI_WCHAR = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_WCHAR",MPI_DATATYPE_NULL);
+    MPI_C_BOOL = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_C_BOOL",MPI_DATATYPE_NULL);
 
-    MPI_INT8_T = MUK_DLSYM(wrap_so_handle,"IMPL_INT8_T");
-    MPI_INT16_T = MUK_DLSYM(wrap_so_handle,"IMPL_INT16_T");
-    MPI_INT32_T = MUK_DLSYM(wrap_so_handle,"IMPL_INT32_T");
-    MPI_INT64_T = MUK_DLSYM(wrap_so_handle,"IMPL_INT64_T");
-    MPI_UINT8_T = MUK_DLSYM(wrap_so_handle,"IMPL_UINT8_T");
-    MPI_UINT16_T = MUK_DLSYM(wrap_so_handle,"IMPL_UINT16_T");
-    MPI_UINT32_T = MUK_DLSYM(wrap_so_handle,"IMPL_UINT32_T");
-    MPI_UINT64_T = MUK_DLSYM(wrap_so_handle,"IMPL_UINT64_T");
-    MPI_AINT = MUK_DLSYM(wrap_so_handle,"IMPL_AINT");
-    MPI_COUNT = MUK_DLSYM(wrap_so_handle,"IMPL_COUNT");
-    MPI_OFFSET = MUK_DLSYM(wrap_so_handle,"IMPL_OFFSET");
-    MPI_C_COMPLEX = MUK_DLSYM(wrap_so_handle,"IMPL_C_COMPLEX");
-    MPI_C_FLOAT_COMPLEX = MUK_DLSYM(wrap_so_handle,"IMPL_C_FLOAT_COMPLEX");
-    MPI_C_DOUBLE_COMPLEX = MUK_DLSYM(wrap_so_handle,"IMPL_C_DOUBLE_COMPLEX");
-    MPI_C_LONG_DOUBLE_COMPLEX = MUK_DLSYM(wrap_so_handle,"IMPL_C_LONG_DOUBLE_COMPLEX");
+    MPI_INT8_T = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_INT8_T",MPI_DATATYPE_NULL);
+    MPI_INT16_T = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_INT16_T",MPI_DATATYPE_NULL);
+    MPI_INT32_T = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_INT32_T",MPI_DATATYPE_NULL);
+    MPI_INT64_T = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_INT64_T",MPI_DATATYPE_NULL);
+    MPI_UINT8_T = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_UINT8_T",MPI_DATATYPE_NULL);
+    MPI_UINT16_T = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_UINT16_T",MPI_DATATYPE_NULL);
+    MPI_UINT32_T = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_UINT32_T",MPI_DATATYPE_NULL);
+    MPI_UINT64_T = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_UINT64_T",MPI_DATATYPE_NULL);
+    MPI_AINT = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_AINT",MPI_DATATYPE_NULL);
+    MPI_COUNT = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_COUNT",MPI_DATATYPE_NULL);
+    MPI_OFFSET = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_OFFSET",MPI_DATATYPE_NULL);
+    MPI_C_COMPLEX = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_C_COMPLEX",MPI_DATATYPE_NULL);
+    MPI_C_FLOAT_COMPLEX = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_C_FLOAT_COMPLEX",MPI_DATATYPE_NULL);
+    MPI_C_DOUBLE_COMPLEX = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_C_DOUBLE_COMPLEX",MPI_DATATYPE_NULL);
+    MPI_C_LONG_DOUBLE_COMPLEX = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_C_LONG_DOUBLE_COMPLEX",MPI_DATATYPE_NULL);
 
-    MPI_BYTE = MUK_DLSYM(wrap_so_handle,"IMPL_BYTE");
-    MPI_PACKED = MUK_DLSYM(wrap_so_handle,"IMPL_PACKED");
+    MPI_BYTE = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_BYTE",MPI_DATATYPE_NULL);
+    MPI_PACKED = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_PACKED",MPI_DATATYPE_NULL);
 
-    MPI_INTEGER = MUK_DLSYM(wrap_so_handle,"IMPL_INTEGER");
-    MPI_REAL = MUK_DLSYM(wrap_so_handle,"IMPL_REAL");
-    MPI_DOUBLE_PRECISION = MUK_DLSYM(wrap_so_handle,"IMPL_DOUBLE_PRECISION");
-    MPI_COMPLEX = MUK_DLSYM(wrap_so_handle,"IMPL_COMPLEX");
-    MPI_LOGICAL = MUK_DLSYM(wrap_so_handle,"IMPL_LOGICAL");
-    MPI_CHARACTER = MUK_DLSYM(wrap_so_handle,"IMPL_CHARACTER");
+    MPI_INTEGER = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_INTEGER",MPI_DATATYPE_NULL);
+    MPI_REAL = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_REAL",MPI_DATATYPE_NULL);
+    MPI_DOUBLE_PRECISION = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_DOUBLE_PRECISION",MPI_DATATYPE_NULL);
+    MPI_COMPLEX = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_COMPLEX",MPI_DATATYPE_NULL);
+    MPI_LOGICAL = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_LOGICAL",MPI_DATATYPE_NULL);
+    MPI_CHARACTER = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_CHARACTER",MPI_DATATYPE_NULL);
 
-    MPI_CXX_BOOL = MUK_DLSYM(wrap_so_handle,"IMPL_CXX_BOOL");
-    MPI_CXX_FLOAT_COMPLEX = MUK_DLSYM(wrap_so_handle,"IMPL_CXX_FLOAT_COMPLEX");
-    MPI_CXX_DOUBLE_COMPLEX = MUK_DLSYM(wrap_so_handle,"IMPL_CXX_DOUBLE_COMPLEX");
-    MPI_CXX_LONG_DOUBLE_COMPLEX = MUK_DLSYM(wrap_so_handle,"IMPL_CXX_LONG_DOUBLE_COMPLEX");
+    MPI_CXX_BOOL = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_CXX_BOOL",MPI_DATATYPE_NULL);
+    MPI_CXX_FLOAT_COMPLEX = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_CXX_FLOAT_COMPLEX",MPI_DATATYPE_NULL);
+    MPI_CXX_DOUBLE_COMPLEX = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_CXX_DOUBLE_COMPLEX",MPI_DATATYPE_NULL);
+    MPI_CXX_LONG_DOUBLE_COMPLEX = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_CXX_LONG_DOUBLE_COMPLEX",MPI_DATATYPE_NULL);
 
-    #if 0
-    MPI_DOUBLE_COMPLEX = MUK_DLSYM(wrap_so_handle,"IMPL_DOUBLE_COMPLEX");
-    MPI_INTEGER1 = MUK_DLSYM(wrap_so_handle,"IMPL_INTEGER1");
-    MPI_INTEGER2 = MUK_DLSYM(wrap_so_handle,"IMPL_INTEGER2");
-    MPI_INTEGER4 = MUK_DLSYM(wrap_so_handle,"IMPL_INTEGER4");
-    MPI_INTEGER8 = MUK_DLSYM(wrap_so_handle,"IMPL_INTEGER8");
-    MPI_INTEGER16 = MUK_DLSYM(wrap_so_handle,"IMPL_INTEGER16");
-    MPI_REAL2 = MUK_DLSYM(wrap_so_handle,"IMPL_REAL2");
-    MPI_REAL4 = MUK_DLSYM(wrap_so_handle,"IMPL_REAL4");
-    MPI_REAL8 = MUK_DLSYM(wrap_so_handle,"IMPL_REAL8");
-    MPI_REAL16 = MUK_DLSYM(wrap_so_handle,"IMPL_REAL16");
-    MPI_COMPLEX4 = MUK_DLSYM(wrap_so_handle,"IMPL_COMPLEX4");
-    MPI_COMPLEX8 = MUK_DLSYM(wrap_so_handle,"IMPL_COMPLEX8");
-    MPI_COMPLEX16 = MUK_DLSYM(wrap_so_handle,"IMPL_COMPLEX16");
-    MPI_COMPLEX32 = MUK_DLSYM(wrap_so_handle,"IMPL_COMPLEX32");
-    #endif
+#if 0
+    MPI_DOUBLE_COMPLEX = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_DOUBLE_COMPLEX",MPI_DATATYPE_NULL);
+    MPI_INTEGER1 = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_INTEGER1",MPI_DATATYPE_NULL);
+    MPI_INTEGER2 = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_INTEGER2",MPI_DATATYPE_NULL);
+    MPI_INTEGER4 = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_INTEGER4",MPI_DATATYPE_NULL);
+    MPI_INTEGER8 = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_INTEGER8",MPI_DATATYPE_NULL);
+    MPI_INTEGER16 = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_INTEGER16",MPI_DATATYPE_NULL);
+    MPI_REAL2 = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_REAL2",MPI_DATATYPE_NULL);
+    MPI_REAL4 = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_REAL4",MPI_DATATYPE_NULL);
+    MPI_REAL8 = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_REAL8",MPI_DATATYPE_NULL);
+    MPI_REAL16 = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_REAL16",MPI_DATATYPE_NULL);
+    MPI_COMPLEX4 = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_COMPLEX4",MPI_DATATYPE_NULL);
+    MPI_COMPLEX8 = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_COMPLEX8",MPI_DATATYPE_NULL);
+    MPI_COMPLEX16 = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_COMPLEX16",MPI_DATATYPE_NULL);
+    MPI_COMPLEX32 = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_COMPLEX32",MPI_DATATYPE_NULL);
+#endif
 
-    MPI_FLOAT_INT = MUK_DLSYM(wrap_so_handle,"IMPL_FLOAT_INT");
-    MPI_DOUBLE_INT = MUK_DLSYM(wrap_so_handle,"IMPL_DOUBLE_INT");
-    MPI_LONG_INT = MUK_DLSYM(wrap_so_handle,"IMPL_LONG_INT");
-    MPI_2INT = MUK_DLSYM(wrap_so_handle,"IMPL_2INT");
-    MPI_SHORT_INT = MUK_DLSYM(wrap_so_handle,"IMPL_SHORT_INT");
-    MPI_LONG_DOUBLE_INT = MUK_DLSYM(wrap_so_handle,"IMPL_LONG_DOUBLE_INT");
+    MPI_FLOAT_INT = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_FLOAT_INT",MPI_DATATYPE_NULL);
+    MPI_DOUBLE_INT = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_DOUBLE_INT",MPI_DATATYPE_NULL);
+    MPI_LONG_INT = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_LONG_INT",MPI_DATATYPE_NULL);
+    MPI_2INT = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_2INT",MPI_DATATYPE_NULL);
+    MPI_SHORT_INT = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_SHORT_INT",MPI_DATATYPE_NULL);
+    MPI_LONG_DOUBLE_INT = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_LONG_DOUBLE_INT",MPI_DATATYPE_NULL);
 
-    MPI_2REAL = MUK_DLSYM(wrap_so_handle,"IMPL_2REAL");
-    MPI_2DOUBLE_PRECISION = MUK_DLSYM(wrap_so_handle,"IMPL_2DOUBLE_PRECISION");
-    MPI_2INTEGER = MUK_DLSYM(wrap_so_handle,"IMPL_2INTEGER");
+    MPI_2REAL = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_2REAL",MPI_DATATYPE_NULL);
+    MPI_2DOUBLE_PRECISION = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_2DOUBLE_PRECISION",MPI_DATATYPE_NULL);
+    MPI_2INTEGER = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_2INTEGER",MPI_DATATYPE_NULL);
 
     // Reserved communicators
     MPI_COMM_WORLD = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_WORLD");
@@ -482,12 +410,12 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     // Communicator split type constants
     int* pMPI_COMM_TYPE_SHARED = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_TYPE_SHARED");
     MPI_COMM_TYPE_SHARED = *pMPI_COMM_TYPE_SHARED;
-    #if MPI_VERSION >= 4
+#if MPI_VERSION >= 4
     int* pMPI_COMM_TYPE_HW_UNGUIDED = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_TYPE_HW_UNGUIDED");
     MPI_COMM_TYPE_HW_UNGUIDED = *pMPI_COMM_TYPE_HW_UNGUIDED;
     int* pMPI_COMM_TYPE_HW_GUIDED = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_TYPE_HW_GUIDED");
     MPI_COMM_TYPE_HW_GUIDED = *pMPI_COMM_TYPE_HW_GUIDED;
-    #endif
+#endif
 
     // Results of communicator and group comparisons
     int* pMPI_IDENT = MUK_DLSYM(wrap_so_handle,"IMPL_IDENT");
@@ -538,9 +466,9 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MPI_ERRHANDLER_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_ERRHANDLER_NULL");
     MPI_FILE_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_FILE_NULL");
     MPI_INFO_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_INFO_NULL");
-    #if MPI_VERSION >= 4
+#if MPI_VERSION >= 4
     MPI_SESSION_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_SESSION_NULL");
-    #endif
+#endif
     MPI_WIN_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_WIN_NULL");
     MPI_MESSAGE_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_MESSAGE_NULL");
 

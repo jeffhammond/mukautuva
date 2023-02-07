@@ -1,6 +1,15 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <unistd.h>
+
+#ifdef NOWRAP
+#include <mpi.h>
+#else
 #include "mpi.h"
+#endif
 
 #define N 10
 
@@ -12,7 +21,7 @@ int main(int argc, char* argv[])
     int me, np;
     MPI_Comm_rank(MPI_COMM_WORLD,&me);
     MPI_Comm_size(MPI_COMM_WORLD,&np);
-    printf("i am %d of %d\n", me, np);
+    printf("I am %d of %d\n", me, np);
 
     {
         int x[N];
@@ -43,8 +52,11 @@ int main(int argc, char* argv[])
         }
         printf("\n");
     }
+
     fflush(0);
+    usleep(1);
     MPI_Barrier(MPI_COMM_WORLD);
+    if (me==0) printf("all done\n");
 
     rc = MPI_Finalize();
 

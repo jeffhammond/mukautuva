@@ -1587,9 +1587,9 @@ int WRAP_Comm_call_errhandler(MPI_Comm *comm, int errorcode)
     return IMPL_Comm_call_errhandler(*comm, errorcode);
 }
 
-int WRAP_Comm_compare(MPI_Comm comm1, MPI_Comm comm2, int *result)
+int WRAP_Comm_compare(MPI_Comm *comm1, MPI_Comm *comm2, int *result)
 {
-    return IMPL_Comm_compare(comm1, comm2, result);
+    return IMPL_Comm_compare(*comm1, *comm2, result);
 }
 
 int WRAP_Comm_connect(const char *port_name, MPI_Info *info, int root, MPI_Comm *comm, MPI_Comm **newcomm)

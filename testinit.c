@@ -1,5 +1,15 @@
 #include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <unistd.h>
+
+#ifdef NOWRAP
+#include <mpi.h>
+#else
 #include "mpi.h"
+#endif
 
 int main(int argc, char* argv[])
 {
@@ -13,6 +23,8 @@ int main(int argc, char* argv[])
     printf("is final? %d\n", flag);
     rc = MPI_Is_thread_main(&flag);
     printf("is thread main? %d\n", flag);
+
+    printf("all done\n");
 
     rc = MPI_Finalize();
 
