@@ -13,3 +13,6 @@
 #define MPI_MAX_PSET_NAME_LEN           256
 #define MPI_MAX_INFO_KEY                255
 #define MPI_MAX_INFO_VAL               1024
+
+#define MPI_VERSION 5
+#define MPI_SUBVERSION 0
