@@ -1225,6 +1225,7 @@ static inline void WRAP_Status_to_MPI_Status(const WRAP_Status * w, MPI_Status *
 static inline void MPI_Status_to_WRAP_Status(const MPI_Status * m, WRAP_Status * w)
 {
     if ((intptr_t)w == (intptr_t)IMPL_STATUS_IGNORE) {
+        MUK_Warning("MPI_Status_to_WRAP_Status passed STATUS_IGNORE\n");
         return;
     }
 
@@ -3854,15 +3855,18 @@ int WRAP_Testall(int count, MPI_Request* array_of_requests[], int *flag, WRAP_St
 {
     MPI_Request * impl_requests = malloc(count * sizeof(MPI_Request));
     if (impl_requests == NULL) return MPI_ERR_INTERN;
-
     for (int i=0; i<count; i++) {
         impl_requests[i] = *array_of_requests[i];
     }
 
-    MPI_Status * impl_statuses = malloc(count * sizeof(MPI_Status));
-    if (impl_statuses == NULL) return MPI_ERR_INTERN;
+    const bool ignore = (intptr_t)array_of_statuses == (intptr_t)IMPL_STATUSES_IGNORE;
+    MPI_Status * impl_statuses;
+    if (!ignore) {
+        impl_statuses = malloc(count * sizeof(MPI_Status));
+        if (impl_statuses == NULL) return MPI_ERR_INTERN;
+    }
 
-    int rc = IMPL_Testall(count, impl_requests, flag, impl_statuses);
+    int rc = IMPL_Testall(count, impl_requests, flag, ignore ? MPI_STATUSES_IGNORE : impl_statuses);
 
     if (*flag) {
         for (int i=0; i<count; i++) {
@@ -3872,14 +3876,14 @@ int WRAP_Testall(int count, MPI_Request* array_of_requests[], int *flag, WRAP_St
             }
         }
     }
-    if ((intptr_t)array_of_statuses != (intptr_t)IMPL_STATUSES_IGNORE) {
+    free(impl_requests);
+
+    if (!ignore) {
         for (int i=0; i<count; i++) {
             MPI_Status_to_WRAP_Status(&impl_statuses[i], &array_of_statuses[i]);
         }
+        free(impl_statuses);
     }
-
-    free(impl_requests);
-    free(impl_statuses);
 
     return rc;
 }
@@ -3888,26 +3892,29 @@ int WRAP_Testany(int count, MPI_Request* array_of_requests[], int *indx, int *fl
 {
     MPI_Request * impl_requests = malloc(count * sizeof(MPI_Request));
     if (impl_requests == NULL) return MPI_ERR_INTERN;
-
     for (int i=0; i<count; i++) {
         impl_requests[i] = *array_of_requests[i];
     }
 
+    const bool ignore = (intptr_t)status == (intptr_t)IMPL_STATUS_IGNORE;
     MPI_Status impl_status;
 
-    int rc = IMPL_Testany(count, impl_requests, indx, flag, &impl_status);
+    int rc = IMPL_Testany(count, impl_requests, indx, flag, ignore ? MPI_STATUS_IGNORE : &impl_status);
 
     if (*flag) {
         // If the array contains no active handles then the call returns immediately with flag = true,
         // index = MPI_UNDEFINED, and an empty status.
-        if (*indx == MPI_UNDEFINED) {
-            return rc;
+        if (*indx != MPI_UNDEFINED) {
+
+            if (impl_requests[*indx] == MPI_REQUEST_NULL) {
+                free(array_of_requests[*indx]);
+                array_of_requests[*indx] = &IMPL_REQUEST_NULL;
+            }
+
+            if (!ignore) {
+                MPI_Status_to_WRAP_Status(&impl_status, status);
+            }
         }
-        if (impl_requests[*indx] == MPI_REQUEST_NULL) {
-            free(array_of_requests[*indx]);
-            array_of_requests[*indx] = &IMPL_REQUEST_NULL;
-        }
-        MPI_Status_to_WRAP_Status(&impl_status, status);
     }
 
     free(impl_requests);
@@ -3919,21 +3926,21 @@ int WRAP_Testsome(int incount, MPI_Request* array_of_requests[], int *outcount, 
 {
     MPI_Request * impl_requests = malloc(incount * sizeof(MPI_Request));
     if (impl_requests == NULL) return MPI_ERR_INTERN;
-
     for (int i=0; i<incount; i++) {
         impl_requests[i] = *array_of_requests[i];
     }
 
-    MPI_Status * impl_statuses = malloc(incount * sizeof(MPI_Status));
-    if (impl_statuses == NULL) return MPI_ERR_INTERN;
-
-    int rc = IMPL_Testsome(incount, impl_requests, outcount, array_of_indices, impl_statuses);
-
-    if (*outcount == 0 || *outcount == MPI_UNDEFINED) {
-        return rc;
+    const bool ignore = (intptr_t)array_of_statuses == (intptr_t)IMPL_STATUSES_IGNORE;
+    MPI_Status * impl_statuses;
+    if (!ignore) {
+        impl_statuses = malloc(incount * sizeof(MPI_Status));
+        if (impl_statuses == NULL) return MPI_ERR_INTERN;
     }
 
-    if (*outcount > 0) {
+    int rc = IMPL_Testsome(incount, impl_requests, outcount, array_of_indices, ignore ? MPI_STATUSES_IGNORE : impl_statuses);
+
+    if ((*outcount > 0) && (*outcount != MPI_UNDEFINED)) {
+
         for (int i=0; i<*outcount; i++) {
             const int j = array_of_indices[i];
             if (impl_requests[j] == MPI_REQUEST_NULL) {
@@ -3941,7 +3948,8 @@ int WRAP_Testsome(int incount, MPI_Request* array_of_requests[], int *outcount, 
                 array_of_requests[i] = &IMPL_REQUEST_NULL;
             }
         }
-        if ((intptr_t)array_of_statuses != (intptr_t)IMPL_STATUSES_IGNORE) {
+    
+        if (!ignore) {
             for (int i=0; i<incount; i++) {
                 const int j = array_of_indices[i];
                 MPI_Status_to_WRAP_Status(&impl_statuses[j], &array_of_statuses[j]);
@@ -3949,8 +3957,11 @@ int WRAP_Testsome(int incount, MPI_Request* array_of_requests[], int *outcount, 
         }
     }
 
+    if (!ignore) {
+        free(impl_statuses);
+    }
+
     free(impl_requests);
-    free(impl_statuses);
 
     return rc;
 }
@@ -4294,12 +4305,18 @@ int WRAP_Wait(MPI_Request **request, WRAP_Status *status)
 {
     const bool ignore = (intptr_t)status == (intptr_t)IMPL_STATUS_IGNORE;
     MPI_Status impl_status;
+
     int rc = IMPL_Wait(*request, ignore ? MPI_STATUS_IGNORE : &impl_status);
-    if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
+
     if (**request == MPI_REQUEST_NULL) {
         free(*request);
         *request = &IMPL_REQUEST_NULL;
     }
+
+    if (!ignore) {
+        MPI_Status_to_WRAP_Status(&impl_status, status);
+    }
+
     return rc;
 }
 
@@ -4307,15 +4324,18 @@ int WRAP_Waitall(int count, MPI_Request* array_of_requests[], WRAP_Status array_
 {
     MPI_Request * impl_requests = malloc(count * sizeof(MPI_Request));
     if (impl_requests == NULL) return MPI_ERR_INTERN;
-
     for (int i=0; i<count; i++) {
         impl_requests[i] = *array_of_requests[i];
     }
 
-    MPI_Status * impl_statuses = malloc(count * sizeof(MPI_Status));
-    if (impl_statuses == NULL) return MPI_ERR_INTERN;
+    const bool ignore = (intptr_t)array_of_statuses == (intptr_t)IMPL_STATUSES_IGNORE;
+    MPI_Status * impl_statuses;
+    if (!ignore) {
+        impl_statuses  = malloc(count * sizeof(MPI_Status));
+        if (impl_statuses == NULL) return MPI_ERR_INTERN;
+    }
 
-    int rc = IMPL_Waitall(count, impl_requests, impl_statuses);
+    int rc = IMPL_Waitall(count, impl_requests, ignore ? MPI_STATUSES_IGNORE : impl_statuses);
 
     // Active persistent requests are marked inactive. Requests of any other type are
     // deallocated and the corresponding handles in the array are set to MPI_REQUEST_NULL.
@@ -4326,14 +4346,14 @@ int WRAP_Waitall(int count, MPI_Request* array_of_requests[], WRAP_Status array_
             array_of_requests[i] = &IMPL_REQUEST_NULL;
         }
     }
-    if ((intptr_t)array_of_statuses != (intptr_t)IMPL_STATUSES_IGNORE) {
+    free(impl_requests);
+
+    if (!ignore) {
         for (int i=0; i<count; i++) {
             MPI_Status_to_WRAP_Status(&impl_statuses[i], &array_of_statuses[i]);
         }
+        free(impl_statuses);
     }
-
-    free(impl_requests);
-    free(impl_statuses);
 
     return rc;
 }
@@ -4342,25 +4362,28 @@ int WRAP_Waitany(int count, MPI_Request* array_of_requests[], int *indx, WRAP_St
 {
     MPI_Request * impl_requests = malloc(count * sizeof(MPI_Request));
     if (impl_requests == NULL) return MPI_ERR_INTERN;
-
     for (int i=0; i<count; i++) {
         impl_requests[i] = *array_of_requests[i];
     }
 
+    const bool ignore = (intptr_t)status == (intptr_t)IMPL_STATUS_IGNORE;
     MPI_Status impl_status;
 
-    int rc = IMPL_Waitany(count, impl_requests, indx, &impl_status);
+    int rc = IMPL_Waitany(count, impl_requests, indx, ignore ? MPI_STATUS_IGNORE : &impl_status);
 
     // If the list contains no active handles (list has length zero or all entries are null or inactive), then the call returns
     // immediately with index = MPI_UNDEFINED, and an empty status.
-    if (*indx == MPI_UNDEFINED) {
-        return rc;
+    if (*indx != MPI_UNDEFINED) {
+
+        if (impl_requests[*indx] == MPI_REQUEST_NULL) {
+            free(array_of_requests[*indx]);
+            array_of_requests[*indx] = &IMPL_REQUEST_NULL;
+        }
+
+        if (!ignore) {
+            MPI_Status_to_WRAP_Status(&impl_status, status);
+        }
     }
-    if (impl_requests[*indx] == MPI_REQUEST_NULL) {
-        free(array_of_requests[*indx]);
-        array_of_requests[*indx] = &IMPL_REQUEST_NULL;
-    }
-    MPI_Status_to_WRAP_Status(&impl_status, status);
 
     free(impl_requests);
 
@@ -4371,21 +4394,21 @@ int WRAP_Waitsome(int incount, MPI_Request* array_of_requests[], int *outcount, 
 {
     MPI_Request * impl_requests = malloc(incount * sizeof(MPI_Request));
     if (impl_requests == NULL) return MPI_ERR_INTERN;
-
     for (int i=0; i<incount; i++) {
         impl_requests[i] = *array_of_requests[i];
     }
 
-    MPI_Status * impl_statuses = malloc(incount * sizeof(MPI_Status));
-    if (impl_statuses == NULL) return MPI_ERR_INTERN;
-
-    int rc = IMPL_Waitsome(incount, impl_requests, outcount, array_of_indices, impl_statuses);
-
-    if (*outcount == 0 || *outcount == MPI_UNDEFINED) {
-        return rc;
+    const bool ignore = (intptr_t)array_of_statuses == (intptr_t)IMPL_STATUSES_IGNORE;
+    MPI_Status * impl_statuses;
+    if (!ignore) {
+        impl_statuses = malloc(incount * sizeof(MPI_Status));
+        if (impl_statuses == NULL) return MPI_ERR_INTERN;
     }
 
-    if (*outcount > 0) {
+    int rc = IMPL_Waitsome(incount, impl_requests, outcount, array_of_indices, ignore ? MPI_STATUSES_IGNORE : impl_statuses);
+
+    if ((*outcount > 0) && (*outcount != MPI_UNDEFINED)) {
+
         for (int i=0; i<*outcount; i++) {
             const int j = array_of_indices[i];
             if (impl_requests[j] == MPI_REQUEST_NULL) {
@@ -4393,16 +4416,21 @@ int WRAP_Waitsome(int incount, MPI_Request* array_of_requests[], int *outcount, 
                 array_of_requests[j] = &IMPL_REQUEST_NULL;
             }
         }
-        if ((intptr_t)array_of_statuses != (intptr_t)IMPL_STATUSES_IGNORE) {
+
+        if (!ignore) {
             for (int i=0; i<incount; i++) {
                 const int j = array_of_indices[i];
                 MPI_Status_to_WRAP_Status(&impl_statuses[j], &array_of_statuses[j]);
             }
+            free(impl_statuses);
         }
     }
 
+    if (!ignore) {
+        free(impl_statuses);
+    }
+
     free(impl_requests);
-    free(impl_statuses);
 
     return rc;
 }
