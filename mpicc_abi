@@ -1,0 +1,7 @@
+#!/bin/bash
+
+CC=gcc
+
+MUKPATH=/home/jhammond/mukautuva
+
+${CC} -I${MUKPATH} $@ -L${MUKPATH} -lmuk
