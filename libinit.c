@@ -88,6 +88,8 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MUK_Is_thread_main = MUK_DLSYM(h,"MPI_Is_thread_main");
     MUK_Query_thread = MUK_DLSYM(h,"MPI_Query_thread");
     MUK_Get_processor_name = MUK_DLSYM(h,"MPI_Get_processor_name");
+    MUK_Wtime = MUK_DLSYM(h,"MPI_Wtime");
+    MUK_Wtick = MUK_DLSYM(h,"MPI_Wtick");
 
     int major, minor;
     MUK_Get_version = MUK_DLSYM(h,"MPI_Get_version");
@@ -4049,3 +4051,5 @@ int MPI_Win_wait(MPI_Win win)
     return MUK_Win_wait(win);
 }
 
+double MPI_Wtime(void) { return MUK_Wtime(); }
+double MPI_Wtick(void) { return MUK_Wtick(); }

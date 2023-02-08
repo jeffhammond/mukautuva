@@ -1,3 +1,6 @@
+double (*MUK_Wtime)(void);
+double (*MUK_Wtick)(void);
+
 int (*MUK_Init)(int *argc, char ***argv);
 int (*MUK_Init_thread)(int *argc, char ***argv, int required, int *provided);
 int (*MUK_Initialized)(int *flag);
