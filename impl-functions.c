@@ -2827,21 +2827,21 @@ int WRAP_Grequest_start(MPI_Grequest_query_function *query_fn, MPI_Grequest_free
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Group_compare(MPI_Group group1, MPI_Group group2, int *result)
+int WRAP_Group_compare(MPI_Group *group1, MPI_Group *group2, int *result)
 {
-    int rc = IMPL_Group_compare(group1, group2, result);
+    int rc = IMPL_Group_compare(*group1, *group2, result);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Group_difference(MPI_Group group1, MPI_Group group2, MPI_Group *newgroup)
+int WRAP_Group_difference(MPI_Group *group1, MPI_Group *group2, MPI_Group **newgroup)
 {
-    int rc = IMPL_Group_difference(group1, group2, newgroup);
+    int rc = IMPL_Group_difference(*group1, *group2, *newgroup);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Group_excl(MPI_Group *group, int n, const int ranks[], MPI_Group *newgroup)
+int WRAP_Group_excl(MPI_Group *group, int n, const int ranks[], MPI_Group **newgroup)
 {
-    int rc = IMPL_Group_excl(*group, n, ranks, newgroup);
+    int rc = IMPL_Group_excl(*group, n, ranks, *newgroup);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -2854,34 +2854,34 @@ int WRAP_Group_free(MPI_Group **group)
 }
 
 #if MPI_VERSION >= 4
-int WRAP_Group_from_session_pset(MPI_Session *session, const char *pset_name, MPI_Group *newgroup)
+int WRAP_Group_from_session_pset(MPI_Session *session, const char *pset_name, MPI_Group **newgroup)
 {
-    int rc = IMPL_Group_from_session_pset(*session, pset_name, newgroup);
+    int rc = IMPL_Group_from_session_pset(*session, pset_name, *newgroup);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 #endif
 
-int WRAP_Group_incl(MPI_Group *group, int n, const int ranks[], MPI_Group *newgroup)
+int WRAP_Group_incl(MPI_Group *group, int n, const int ranks[], MPI_Group **newgroup)
 {
-    int rc = IMPL_Group_incl(*group, n, ranks, newgroup);
+    int rc = IMPL_Group_incl(*group, n, ranks, *newgroup);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Group_intersection(MPI_Group group1, MPI_Group group2, MPI_Group *newgroup)
+int WRAP_Group_intersection(MPI_Group *group1, MPI_Group *group2, MPI_Group **newgroup)
 {
-    int rc = IMPL_Group_intersection(group1, group2, newgroup);
+    int rc = IMPL_Group_intersection(*group1, *group2, *newgroup);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Group_range_excl(MPI_Group *group, int n, int ranges[][3], MPI_Group *newgroup)
+int WRAP_Group_range_excl(MPI_Group *group, int n, int ranges[][3], MPI_Group **newgroup)
 {
-    int rc = IMPL_Group_range_excl(*group, n, ranges, newgroup);
+    int rc = IMPL_Group_range_excl(*group, n, ranges, *newgroup);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Group_range_incl(MPI_Group *group, int n, int ranges[][3], MPI_Group *newgroup)
+int WRAP_Group_range_incl(MPI_Group *group, int n, int ranges[][3], MPI_Group **newgroup)
 {
-    int rc = IMPL_Group_range_incl(*group, n, ranges, newgroup);
+    int rc = IMPL_Group_range_incl(*group, n, ranges, *newgroup);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -2897,15 +2897,15 @@ int WRAP_Group_size(MPI_Group *group, int *size)
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Group_translate_ranks(MPI_Group group1, int n, const int ranks1[], MPI_Group group2, int ranks2[])
+int WRAP_Group_translate_ranks(MPI_Group *group1, int n, const int ranks1[], MPI_Group *group2, int ranks2[])
 {
-    int rc = IMPL_Group_translate_ranks(group1, n, ranks1, group2, ranks2);
+    int rc = IMPL_Group_translate_ranks(*group1, n, ranks1, *group2, ranks2);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Group_union(MPI_Group group1, MPI_Group group2, MPI_Group *newgroup)
+int WRAP_Group_union(MPI_Group *group1, MPI_Group *group2, MPI_Group **newgroup)
 {
-    int rc = IMPL_Group_union(group1, group2, newgroup);
+    int rc = IMPL_Group_union(*group1, *group2, *newgroup);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
