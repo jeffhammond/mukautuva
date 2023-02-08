@@ -40,7 +40,14 @@ int main(int argc, char* argv[])
     MPI_Barrier(split);
 
     MPI_Comm_compare(MPI_COMM_WORLD,split,&result);
-    if (result != MPI_SIMILAR) MPI_Abort(MPI_COMM_WORLD,result);
+    if (np > 1 && result != MPI_SIMILAR) {
+        printf("result=%d, MPI_CONGRUENT=%d MPI_SIMILAR=%d\n", result, MPI_CONGRUENT, MPI_SIMILAR);
+        MPI_Abort(MPI_COMM_WORLD,result);
+    }
+    else if (np == 1 && result != MPI_CONGRUENT) {
+        printf("result=%d, MPI_CONGRUENT=%d MPI_SIMILAR=%d\n", result, MPI_CONGRUENT, MPI_SIMILAR);
+        MPI_Abort(MPI_COMM_WORLD,result);
+    }
 
     MPI_Comm oddeven;
     MPI_Comm_split(MPI_COMM_WORLD,me%2,me,&oddeven);
@@ -56,7 +63,6 @@ int main(int argc, char* argv[])
     MPI_Comm_free(&dup);
     MPI_Comm_free(&split);
     MPI_Comm_free(&shared);
-
 
     fflush(0);
     usleep(1);
