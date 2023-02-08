@@ -1269,7 +1269,7 @@ static inline int MODE_MUK_TO_IMPL(int mode_muk)
     else if (mode_muk == MUK_MODE_SEQUENTIAL)      { return MPI_MODE_SEQUENTIAL; }
     else if (mode_muk == MUK_MODE_UNIQUE_OPEN)     { return MPI_MODE_UNIQUE_OPEN; }
     else if (mode_muk == MUK_MODE_WRONLY)          { return MPI_MODE_WRONLY; }
-    else                                           { return 0; }
+    else                                           { return mode_muk; }
 }
 
 // status conversion
@@ -1783,7 +1783,7 @@ int WRAP_Comm_create_from_group(MPI_Group *group, const char *stringtag, MPI_Inf
 int WRAP_Comm_create_group(MPI_Comm *comm, MPI_Group *group, int tag, MPI_Comm **newcomm)
 {
     *newcomm = malloc(sizeof(MPI_Comm));
-    int rc = IMPL_Comm_create_group(*comm, *group, TAG_MUK_TO_IMPL(tag), *newcomm);
+    int rc = IMPL_Comm_create_group(*comm, *group, tag, *newcomm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -2873,12 +2873,14 @@ int WRAP_Group_compare(MPI_Group *group1, MPI_Group *group2, int *result)
 
 int WRAP_Group_difference(MPI_Group *group1, MPI_Group *group2, MPI_Group **newgroup)
 {
+    *newgroup = malloc(sizeof(MPI_Group));
     int rc = IMPL_Group_difference(*group1, *group2, *newgroup);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Group_excl(MPI_Group *group, int n, const int ranks[], MPI_Group **newgroup)
 {
+    *newgroup = malloc(sizeof(MPI_Group));
     int rc = IMPL_Group_excl(*group, n, ranks, *newgroup);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
@@ -2894,6 +2896,7 @@ int WRAP_Group_free(MPI_Group **group)
 #if MPI_VERSION >= 4
 int WRAP_Group_from_session_pset(MPI_Session *session, const char *pset_name, MPI_Group **newgroup)
 {
+    *newgroup = malloc(sizeof(MPI_Group));
     int rc = IMPL_Group_from_session_pset(*session, pset_name, *newgroup);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
@@ -2901,24 +2904,28 @@ int WRAP_Group_from_session_pset(MPI_Session *session, const char *pset_name, MP
 
 int WRAP_Group_incl(MPI_Group *group, int n, const int ranks[], MPI_Group **newgroup)
 {
+    *newgroup = malloc(sizeof(MPI_Group));
     int rc = IMPL_Group_incl(*group, n, ranks, *newgroup);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Group_intersection(MPI_Group *group1, MPI_Group *group2, MPI_Group **newgroup)
 {
+    *newgroup = malloc(sizeof(MPI_Group));
     int rc = IMPL_Group_intersection(*group1, *group2, *newgroup);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Group_range_excl(MPI_Group *group, int n, int ranges[][3], MPI_Group **newgroup)
 {
+    *newgroup = malloc(sizeof(MPI_Group));
     int rc = IMPL_Group_range_excl(*group, n, ranges, *newgroup);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Group_range_incl(MPI_Group *group, int n, int ranges[][3], MPI_Group **newgroup)
 {
+    *newgroup = malloc(sizeof(MPI_Group));
     int rc = IMPL_Group_range_incl(*group, n, ranges, *newgroup);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
@@ -2943,6 +2950,7 @@ int WRAP_Group_translate_ranks(MPI_Group *group1, int n, const int ranks1[], MPI
 
 int WRAP_Group_union(MPI_Group *group1, MPI_Group *group2, MPI_Group **newgroup)
 {
+    *newgroup = malloc(sizeof(MPI_Group));
     int rc = IMPL_Group_union(*group1, *group2, *newgroup);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
@@ -5115,6 +5123,7 @@ int WRAP_Win_detach(MPI_Win *win, const void *base)
 
 int WRAP_Win_fence(int assert, MPI_Win *win)
 {
+    //printf("assert = %d %d\n", assert, MODE_MUK_TO_IMPL(assert));
     int rc = IMPL_Win_fence(MODE_MUK_TO_IMPL(assert), *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }

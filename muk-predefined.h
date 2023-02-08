@@ -183,20 +183,21 @@ enum {
 
 // Mode Constants
 enum {
-    MUK_MODE_APPEND,
-    MUK_MODE_CREATE,
-    MUK_MODE_DELETE_ON_CLOSE,
-    MUK_MODE_EXCL,
-    MUK_MODE_NOCHECK,
-    MUK_MODE_NOPRECEDE,
-    MUK_MODE_NOPUT,
-    MUK_MODE_NOSTORE,
-    MUK_MODE_NOSUCCEED,
-    MUK_MODE_RDONLY,
-    MUK_MODE_RDWR,
-    MUK_MODE_SEQUENTIAL,
-    MUK_MODE_UNIQUE_OPEN,
-    MUK_MODE_WRONLY
+    // none of these should be 0
+    MUK_MODE_APPEND             = 1,
+    MUK_MODE_CREATE             = 2,
+    MUK_MODE_DELETE_ON_CLOSE    = 3,
+    MUK_MODE_EXCL               = 4,
+    MUK_MODE_NOCHECK            = 5,
+    MUK_MODE_NOPRECEDE          = 6,
+    MUK_MODE_NOPUT              = 7,
+    MUK_MODE_NOSTORE            = 8,
+    MUK_MODE_NOSUCCEED          = 9,
+    MUK_MODE_RDONLY             = 10,
+    MUK_MODE_RDWR               = 11,
+    MUK_MODE_SEQUENTIAL         = 12,
+    MUK_MODE_UNIQUE_OPEN        = 13,
+    MUK_MODE_WRONLY             = 14
 };
 
 // Datatype Decoding Constants
