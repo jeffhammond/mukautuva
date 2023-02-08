@@ -1684,7 +1684,7 @@ int WRAP_Cart_coords(MPI_Comm *comm, int rank, int maxdims, int coords[])
 
 int WRAP_Cart_create(MPI_Comm comm_old, int ndims, const int dims[], const int periods[], int reorder, MPI_Comm **comm_cart)
 {
-    *comm_cart = malloc(sizeof(MPI_Comm*));
+    *comm_cart = malloc(sizeof(MPI_Comm));
     int rc = IMPL_Cart_create(comm_old, ndims, dims, periods, reorder, *comm_cart);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
@@ -3284,21 +3284,24 @@ int WRAP_Info_set(MPI_Info *info, const char *key, const char *value)
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Intercomm_create(MPI_Comm local_comm, int local_leader, MPI_Comm peer_comm, int remote_leader, int tag, MPI_Comm *newintercomm)
+int WRAP_Intercomm_create(MPI_Comm *local_comm, int local_leader, MPI_Comm *peer_comm, int remote_leader, int tag, MPI_Comm **newintercomm)
 {
-    int rc = IMPL_Intercomm_create(local_comm, local_leader, peer_comm, remote_leader, TAG_MUK_TO_IMPL(tag), newintercomm);
+    *newintercomm = malloc(sizeof(MPI_Comm));
+    int rc = IMPL_Intercomm_create(*local_comm, local_leader, *peer_comm, remote_leader, TAG_MUK_TO_IMPL(tag), *newintercomm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Intercomm_create_from_groups(MPI_Group local_group, int local_leader, MPI_Group remote_group, int remote_leader, const char *stringtag, MPI_Info *info, MPI_Errhandler *errhandler, MPI_Comm *newintercomm)
+int WRAP_Intercomm_create_from_groups(MPI_Group *local_group, int local_leader, MPI_Group *remote_group, int remote_leader, const char *stringtag, MPI_Info *info, MPI_Errhandler *errhandler, MPI_Comm **newintercomm)
 {
-    int rc = IMPL_Intercomm_create_from_groups(local_group, local_leader, remote_group, remote_leader, stringtag, *info, *errhandler, newintercomm);
+    *newintercomm = malloc(sizeof(MPI_Comm));
+    int rc = IMPL_Intercomm_create_from_groups(*local_group, local_leader, *remote_group, remote_leader, stringtag, *info, *errhandler, *newintercomm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Intercomm_merge(MPI_Comm intercomm, int high, MPI_Comm *newintracomm)
+int WRAP_Intercomm_merge(MPI_Comm *intercomm, int high, MPI_Comm **newintracomm)
 {
-    int rc = IMPL_Intercomm_merge(intercomm, high, newintracomm);
+    *newintracomm = malloc(sizeof(MPI_Comm));
+    int rc = IMPL_Intercomm_merge(*intercomm, high, *newintracomm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
