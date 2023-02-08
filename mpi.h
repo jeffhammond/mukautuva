@@ -1,5 +1,9 @@
+#ifndef MUK_MPI_H
+#define MUK_MPI_H
+
 #include "mpi-typedefs.h"
 #define MUK_EXTERN extern
+#define MUK_CONST const
 #include "mpi-predefined.h"
 #include "mpi-prototypes.h"
 
@@ -16,3 +20,5 @@
 
 #define MPI_VERSION 5
 #define MPI_SUBVERSION 0
+
+#endif

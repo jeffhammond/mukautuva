@@ -1,3 +1,6 @@
+#ifndef MUK_MPI_PROTOTYPES_H
+#define MUK_MPI_PROTOTYPES_H
+
 #if 0
 int MPI_Status_f082c(const MPI_F08_status *f08_status, MPI_Status *c_status);
 int MPI_Status_f082f(const MPI_F08_status *f08_status, MPI_Fint *f_status);
@@ -567,3 +570,4 @@ int MPI_File_iwrite_shared_c(MPI_File fh, const void *buf, MPI_Count count, MPI_
 int MPI_File_get_type_extent_c(MPI_File fh, MPI_Datatype datatype, MPI_Count *extent);
 int MPI_Register_datarep_c(const char *datarep, MPI_Datarep_conversion_function_c *read_conversion_fn, MPI_Datarep_conversion_function_c *write_conversion_fn, MPI_Datarep_extent_function *dtype_file_extent_fn, void *extra_state);
 
+#endif

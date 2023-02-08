@@ -13,6 +13,7 @@ Which_MPI_e whose_mpi = UNKNOWN;
 
 #include "mpi-typedefs.h"
 #define MUK_EXTERN
+#define MUK_CONST
 #include "mpi-predefined.h"
 #include "mpi-prototypes.h"
 

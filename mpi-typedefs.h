@@ -1,3 +1,6 @@
+#ifndef MUK_MPI_TYPEDEFS_H
+#define MUK_MPI_TYPEDEFS_H
+
 #include <stddef.h>
 
 // basic typedefs
@@ -51,3 +54,5 @@ typedef int MPI_Datarep_conversion_function_c(void *userbuf, MPI_Datatype dataty
 // these are deprecated
 typedef int MPI_Copy_function(MPI_Comm oldcomm, int keyval, void *extra_state, void *attribute_val_in, void *attribute_val_out, int *flag);
 typedef int MPI_Delete_function(MPI_Comm comm, int keyval, void *attribute_val, void *extra_state);
+
+#endif
