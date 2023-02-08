@@ -1273,6 +1273,24 @@ static inline int MODE_MUK_TO_IMPL(int mode_muk)
 }
 
 // status conversion
+static inline int KEY_MUK_TO_IMPL(int key_muk)
+{
+         if (key_muk == MUK_TAG_UB)            { return MPI_TAG_UB; }
+    else if (key_muk == MUK_IO)                { return MPI_IO; }
+    else if (key_muk == MUK_HOST)              { return MPI_HOST; }
+    else if (key_muk == MUK_WTIME_IS_GLOBAL)   { return MPI_WTIME_IS_GLOBAL; }
+    else if (key_muk == MUK_APPNUM)            { return MPI_APPNUM; }
+    else if (key_muk == MUK_LASTUSEDCODE)      { return MPI_LASTUSEDCODE; }
+    else if (key_muk == MUK_UNIVERSE_SIZE)     { return MPI_UNIVERSE_SIZE; }
+    else if (key_muk == MUK_WIN_BASE)          { return MPI_WIN_BASE; }
+    else if (key_muk == MUK_WIN_DISP_UNIT)     { return MPI_WIN_DISP_UNIT; }
+    else if (key_muk == MUK_WIN_SIZE)          { return MPI_WIN_SIZE; }
+    else if (key_muk == MUK_WIN_CREATE_FLAVOR) { return MPI_WIN_CREATE_FLAVOR; }
+    else if (key_muk == MUK_WIN_MODEL)         { return MPI_WIN_MODEL; }
+    else                                       { return key_muk; }
+}
+
+// status conversion
 
 #include <stdlib.h>
 #include <string.h>
@@ -1280,7 +1298,7 @@ static inline int MODE_MUK_TO_IMPL(int mode_muk)
 static inline void WRAP_Status_to_MPI_Status(const WRAP_Status * w, MPI_Status * m)
 {
     if ((intptr_t)w == (intptr_t)IMPL_STATUS_IGNORE) {
-        MUK_Warning("MPI_Status_to_WRAP_Status passed STATUS_IGNORE\n");
+        //MUK_Warning("MPI_Status_to_WRAP_Status passed STATUS_IGNORE\n");
         return;
     }
 
@@ -1300,7 +1318,7 @@ static inline void WRAP_Status_to_MPI_Status(const WRAP_Status * w, MPI_Status *
 static inline void MPI_Status_to_WRAP_Status(const MPI_Status * m, WRAP_Status * w)
 {
     if ((intptr_t)w == (intptr_t)IMPL_STATUS_IGNORE) {
-        MUK_Warning("MPI_Status_to_WRAP_Status passed STATUS_IGNORE\n");
+        //MUK_Warning("MPI_Status_to_WRAP_Status passed STATUS_IGNORE\n");
         return;
     }
 
@@ -1817,7 +1835,7 @@ int WRAP_Comm_free_keyval(int *comm_keyval)
 
 int WRAP_Comm_get_attr(MPI_Comm *comm, int comm_keyval, void *attribute_val, int *flag)
 {
-    int rc = IMPL_Comm_get_attr(*comm, comm_keyval, attribute_val, flag);
+    int rc = IMPL_Comm_get_attr(*comm, KEY_MUK_TO_IMPL(comm_keyval), attribute_val, flag);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3094,7 +3112,7 @@ int WRAP_Improbe(int source, int tag, MPI_Comm *comm, int *flag, MPI_Message **m
 {
     MPI_Status impl_status;
     *message = malloc(sizeof(MPI_Message));
-    int rc = IMPL_Improbe(source, TAG_MUK_TO_IMPL(tag), *comm, flag, *message, &impl_status);
+    int rc = IMPL_Improbe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, flag, *message, &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
@@ -3279,7 +3297,7 @@ int WRAP_Intercomm_merge(MPI_Comm intercomm, int high, MPI_Comm *newintracomm)
 int WRAP_Iprobe(int source, int tag, MPI_Comm *comm, int *flag, WRAP_Status *status)
 {
     MPI_Status impl_status;
-    int rc = IMPL_Iprobe(source, TAG_MUK_TO_IMPL(tag), *comm, flag, &impl_status);
+    int rc = IMPL_Iprobe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, flag, &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
@@ -3473,7 +3491,7 @@ int WRAP_Lookup_name(const char *service_name, MPI_Info *info, char *port_name)
 int WRAP_Mprobe(int source, int tag, MPI_Comm *comm, MPI_Message **message, WRAP_Status *status)
 {
     MPI_Status impl_status;
-    int rc = IMPL_Mprobe(source, TAG_MUK_TO_IMPL(tag), *comm, *message, &impl_status);
+    int rc = IMPL_Mprobe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, *message, &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
@@ -3753,7 +3771,7 @@ int WRAP_Precv_init(void *buf, int partitions, IMPL_Count count, MPI_Datatype *d
 int WRAP_Probe(int source, int tag, MPI_Comm *comm, WRAP_Status *status)
 {
     MPI_Status impl_status;
-    int rc = IMPL_Probe(source, TAG_MUK_TO_IMPL(tag), *comm, &impl_status);
+    int rc = IMPL_Probe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
@@ -5127,7 +5145,15 @@ int WRAP_Win_free_keyval(int *win_keyval)
 
 int WRAP_Win_get_attr(MPI_Win *win, int win_keyval, void *attribute_val, int *flag)
 {
-    int rc = IMPL_Win_get_attr(*win, win_keyval, attribute_val, flag);
+    int rc = IMPL_Win_get_attr(*win, KEY_MUK_TO_IMPL(win_keyval), attribute_val, flag);
+
+    // this is the only place this is needed, so we inline it
+    if (**(int**)attribute_val == MPI_WIN_SEPARATE) {
+        **(int**)attribute_val = MUK_WIN_SEPARATE;
+    } else if (**(int**)attribute_val == MPI_WIN_UNIFIED) {
+        **(int**)attribute_val = MUK_WIN_UNIFIED;
+    }
+
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -5159,7 +5185,14 @@ int WRAP_Win_get_name(MPI_Win *win, char *win_name, int *resultlen)
 
 int WRAP_Win_lock(int lock_type, int rank, int assert, MPI_Win *win)
 {
-    int rc = IMPL_Win_lock(lock_type, rank, MODE_MUK_TO_IMPL(assert), *win);
+    // this is the only place this is used so we inline it
+    int impl_type;
+    if (lock_type == MUK_LOCK_EXCLUSIVE) {
+        impl_type = MPI_LOCK_EXCLUSIVE;
+    } else if (lock_type == MUK_LOCK_SHARED) {
+        impl_type = MPI_LOCK_SHARED;
+    }
+    int rc = IMPL_Win_lock(impl_type, rank, MODE_MUK_TO_IMPL(assert), *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
