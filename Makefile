@@ -15,7 +15,7 @@ ARFLAGS	= -r
 
 all: libs tests
 
-tests: header.o testinit.x testcomm.x testwin.x testreqs.x testcoll.x testconstants.x
+tests: header.o testinit.x testcomm.x testwin.x testreqs.x testcoll.x testconstants.x testgroup.x
 
 other: testmalloc.x
 
