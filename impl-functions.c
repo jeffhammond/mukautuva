@@ -1205,6 +1205,53 @@ int WRAP_Load_functions(void * restrict h, int major, int minor)
     return 0;
 }
 
+// constant conversions
+
+// defined in impl-predefined.c
+int ERROR_CODE_IMPL_TO_MUK(int error_c);
+int ERROR_CODE_MUK_TO_IMPL(int error_muk);
+
+static inline int RANK_MUK_TO_IMPL(int rank_muk)
+{
+    if (rank_muk >= 0) {
+        return rank_muk;
+    }
+    else if (rank_muk == MUK_PROC_NULL) {
+        return MPI_PROC_NULL;
+    }
+    else if (rank_muk == MUK_ANY_SOURCE) {
+        return MPI_ANY_SOURCE;
+    }
+    else if (rank_muk == MUK_ROOT) {
+        return MPI_ROOT;
+    }
+    else {
+#if 1
+        MUK_Warning("RANK_MUK_TO_IMPL rank=%d\n", rank_muk);
+#endif
+        return rank_muk;
+    }
+}
+
+static inline int TAG_MUK_TO_IMPL(int tag_muk)
+{
+    if (tag_muk == MUK_ANY_TAG) {
+        return MPI_ANY_TAG;
+    } else {
+        return tag_muk;
+    }
+}
+
+// status conversion
+static inline int UNDEFINED_IMPL_TO_MUK(int i)
+{
+    if (i == MPI_UNDEFINED) {
+        return MUK_UNDEFINED;
+    } else {
+        return i;
+    }
+}
+
 // status conversion
 
 #include <stdlib.h>
@@ -1212,6 +1259,11 @@ int WRAP_Load_functions(void * restrict h, int major, int minor)
 
 static inline void WRAP_Status_to_MPI_Status(const WRAP_Status * w, MPI_Status * m)
 {
+    if ((intptr_t)w == (intptr_t)IMPL_STATUS_IGNORE) {
+        MUK_Warning("MPI_Status_to_WRAP_Status passed STATUS_IGNORE\n");
+        return;
+    }
+
     m->MPI_SOURCE = w->MPI_SOURCE;
     m->MPI_TAG    = w->MPI_TAG;
     m->MPI_ERROR  = w->MPI_ERROR;
@@ -1243,39 +1295,6 @@ static inline void MPI_Status_to_WRAP_Status(const MPI_Status * m, WRAP_Status *
 #else
 #error Need MPI_Status ABI support
 #endif
-}
-
-// constant conversions (defined in impl-predefined.c)
-
-int ERROR_CODE_IMPL_TO_MUK(int error_c);
-int ERROR_CODE_MUK_TO_IMPL(int error_muk);
-
-static inline int RANK_MUK_TO_IMPL(int rank_muk)
-{
-    if (rank_muk >= 0) return rank_muk;
-
-    if (rank_muk == MUK_PROC_NULL) {
-        return MPI_PROC_NULL;
-    }
-    else if (rank_muk == MUK_ANY_SOURCE) {
-        return MPI_ANY_SOURCE;
-    }
-    else if (rank_muk == MUK_ROOT) {
-        return MPI_ROOT;
-    }
-    else {
-        MUK_Warning("RANK_MUK_TO_IMPL rank=%d\n", rank_muk);
-        return rank_muk;
-    }
-}
-
-static inline int TAG_MUK_TO_IMPL(int tag_muk)
-{
-    if (tag_muk == MUK_ANY_TAG) {
-        return MPI_ANY_TAG;
-    } else {
-        return tag_muk;
-    }
 }
 
 int WRAP_Abort(MPI_Comm *comm, int errorcode)
@@ -1565,27 +1584,27 @@ int WRAP_Bcast_init_c(void *buffer, IMPL_Count count, MPI_Datatype *datatype, in
 
 int WRAP_Bsend(const void *buf, int count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm)
 {
-    int rc = IMPL_Bsend(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm);
+    int rc = IMPL_Bsend(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Bsend_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm)
 {
-    int rc = IMPL_Bsend_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm);
+    int rc = IMPL_Bsend_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Bsend_init(const void *buf, int count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Bsend_init(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm, *request);
+    int rc = IMPL_Bsend_init(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Bsend_init_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Bsend_init_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm, *request);
+    int rc = IMPL_Bsend_init_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -1726,7 +1745,7 @@ int WRAP_Comm_create_from_group(MPI_Group *group, const char *stringtag, MPI_Inf
 int WRAP_Comm_create_group(MPI_Comm *comm, MPI_Group *group, int tag, MPI_Comm **newcomm)
 {
     *newcomm = malloc(sizeof(MPI_Comm));
-    int rc = IMPL_Comm_create_group(*comm, *group, tag, *newcomm);
+    int rc = IMPL_Comm_create_group(*comm, *group, TAG_MUK_TO_IMPL(tag), *newcomm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -2722,6 +2741,7 @@ int WRAP_Get_count(const WRAP_Status *status, MPI_Datatype *datatype, int *count
     MPI_Status impl_status;
     WRAP_Status_to_MPI_Status(status, &impl_status);
     int rc = IMPL_Get_count(&impl_status, *datatype, count);
+    *count = UNDEFINED_IMPL_TO_MUK(*count);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -2738,6 +2758,7 @@ int WRAP_Get_elements(const WRAP_Status *status, MPI_Datatype *datatype, int *co
     MPI_Status impl_status;
     WRAP_Status_to_MPI_Status(status, &impl_status);
     int rc = IMPL_Get_elements(&impl_status, *datatype, count);
+    *count = UNDEFINED_IMPL_TO_MUK(*count);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -2996,14 +3017,14 @@ int WRAP_Ibcast_c(void *buffer, IMPL_Count count, MPI_Datatype *datatype, int ro
 int WRAP_Ibsend(const void *buf, int count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Ibsend(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm, *request);
+    int rc = IMPL_Ibsend(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Ibsend_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Ibsend_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm, *request);
+    int rc = IMPL_Ibsend_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3053,7 +3074,7 @@ int WRAP_Improbe(int source, int tag, MPI_Comm *comm, int *flag, MPI_Message **m
 {
     MPI_Status impl_status;
     *message = malloc(sizeof(MPI_Message));
-    int rc = IMPL_Improbe(source, tag, *comm, flag, *message, &impl_status);
+    int rc = IMPL_Improbe(source, TAG_MUK_TO_IMPL(tag), *comm, flag, *message, &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
@@ -3219,7 +3240,7 @@ int WRAP_Info_set(MPI_Info *info, const char *key, const char *value)
 
 int WRAP_Intercomm_create(MPI_Comm local_comm, int local_leader, MPI_Comm peer_comm, int remote_leader, int tag, MPI_Comm *newintercomm)
 {
-    int rc = IMPL_Intercomm_create(local_comm, local_leader, peer_comm, remote_leader, tag, newintercomm);
+    int rc = IMPL_Intercomm_create(local_comm, local_leader, peer_comm, remote_leader, TAG_MUK_TO_IMPL(tag), newintercomm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3238,7 +3259,7 @@ int WRAP_Intercomm_merge(MPI_Comm intercomm, int high, MPI_Comm *newintracomm)
 int WRAP_Iprobe(int source, int tag, MPI_Comm *comm, int *flag, WRAP_Status *status)
 {
     MPI_Status impl_status;
-    int rc = IMPL_Iprobe(source, tag, *comm, flag, &impl_status);
+    int rc = IMPL_Iprobe(source, TAG_MUK_TO_IMPL(tag), *comm, flag, &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
@@ -3246,14 +3267,14 @@ int WRAP_Iprobe(int source, int tag, MPI_Comm *comm, int *flag, WRAP_Status *sta
 int WRAP_Irecv(void *buf, int count, MPI_Datatype *datatype, int source, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Irecv(buf, count, *datatype, RANK_MUK_TO_IMPL(source), tag, *comm, *request);
+    int rc = IMPL_Irecv(buf, count, *datatype, RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Irecv_c(void *buf, IMPL_Count count, MPI_Datatype *datatype, int source, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Irecv_c(buf, count, *datatype, RANK_MUK_TO_IMPL(source), tag, *comm, *request);
+    int rc = IMPL_Irecv_c(buf, count, *datatype, RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3302,14 +3323,14 @@ int WRAP_Ireduce_scatter_c(const void *sendbuf, void *recvbuf, const IMPL_Count 
 int WRAP_Irsend(const void *buf, int count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Irsend(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm, *request);
+    int rc = IMPL_Irsend(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Irsend_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Irsend_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm, *request);
+    int rc = IMPL_Irsend_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3358,14 +3379,14 @@ int WRAP_Iscatterv_c(const void *sendbuf, const IMPL_Count sendcounts[], const I
 int WRAP_Isend(const void *buf, int count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Isend(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm, *request);
+    int rc = IMPL_Isend(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Isend_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Isend_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm, *request);
+    int rc = IMPL_Isend_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3400,14 +3421,14 @@ int WRAP_Isendrecv_replace_c(void *buf, IMPL_Count count, MPI_Datatype *datatype
 int WRAP_Issend(const void *buf, int count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Issend(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm, *request);
+    int rc = IMPL_Issend(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Issend_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Issend_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm, *request);
+    int rc = IMPL_Issend_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3432,7 +3453,7 @@ int WRAP_Lookup_name(const char *service_name, MPI_Info *info, char *port_name)
 int WRAP_Mprobe(int source, int tag, MPI_Comm *comm, MPI_Message **message, WRAP_Status *status)
 {
     MPI_Status impl_status;
-    int rc = IMPL_Mprobe(source, tag, *comm, *message, &impl_status);
+    int rc = IMPL_Mprobe(source, TAG_MUK_TO_IMPL(tag), *comm, *message, &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
@@ -3662,6 +3683,7 @@ int WRAP_Pack_external_size_c(const char *datarep, IMPL_Count incount, MPI_Datat
 int WRAP_Pack_size(int incount, MPI_Datatype *datatype, MPI_Comm *comm, int *size)
 {
     int rc = IMPL_Pack_size(incount, *datatype, *comm, size);
+    *size = UNDEFINED_IMPL_TO_MUK(*size);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3704,14 +3726,14 @@ int WRAP_Pready_range(int partition_low, int partition_high, MPI_Request *reques
 int WRAP_Precv_init(void *buf, int partitions, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Precv_init(buf, partitions, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm, *info, *request);
+    int rc = IMPL_Precv_init(buf, partitions, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Probe(int source, int tag, MPI_Comm *comm, WRAP_Status *status)
 {
     MPI_Status impl_status;
-    int rc = IMPL_Probe(source, tag, *comm, &impl_status);
+    int rc = IMPL_Probe(source, TAG_MUK_TO_IMPL(tag), *comm, &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
@@ -3719,7 +3741,7 @@ int WRAP_Probe(int source, int tag, MPI_Comm *comm, WRAP_Status *status)
 int WRAP_Psend_init(const void *buf, int partitions, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Psend_init(buf, partitions, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm, *info, *request);
+    int rc = IMPL_Psend_init(buf, partitions, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3758,7 +3780,7 @@ int WRAP_Raccumulate_c(const void *origin_addr, IMPL_Count origin_count, MPI_Dat
 int WRAP_Recv(void *buf, int count, MPI_Datatype *datatype, int source, int tag, MPI_Comm *comm, WRAP_Status *status)
 {
     MPI_Status impl_status;
-    int rc = IMPL_Recv(buf, count, *datatype, RANK_MUK_TO_IMPL(source), tag, *comm, &impl_status);
+    int rc = IMPL_Recv(buf, count, *datatype, RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
@@ -3766,7 +3788,7 @@ int WRAP_Recv(void *buf, int count, MPI_Datatype *datatype, int source, int tag,
 int WRAP_Recv_c(void *buf, IMPL_Count count, MPI_Datatype *datatype, int source, int tag, MPI_Comm *comm, WRAP_Status *status)
 {
     MPI_Status impl_status;
-    int rc = IMPL_Recv_c(buf, count, *datatype, RANK_MUK_TO_IMPL(source), tag, *comm, &impl_status);
+    int rc = IMPL_Recv_c(buf, count, *datatype, RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
@@ -3774,14 +3796,14 @@ int WRAP_Recv_c(void *buf, IMPL_Count count, MPI_Datatype *datatype, int source,
 int WRAP_Recv_init(void *buf, int count, MPI_Datatype *datatype, int source, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Recv_init(buf, count, *datatype, RANK_MUK_TO_IMPL(source), tag, *comm, *request);
+    int rc = IMPL_Recv_init(buf, count, *datatype, RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Recv_init_c(void *buf, IMPL_Count count, MPI_Datatype *datatype, int source, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Recv_init_c(buf, count, *datatype, RANK_MUK_TO_IMPL(source), tag, *comm, *request);
+    int rc = IMPL_Recv_init_c(buf, count, *datatype, RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3951,27 +3973,27 @@ int WRAP_Rput_c(const void *origin_addr, IMPL_Count origin_count, MPI_Datatype *
 
 int WRAP_Rsend(const void *buf, int count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm)
 {
-    int rc = IMPL_Rsend(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm);
+    int rc = IMPL_Rsend(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Rsend_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm)
 {
-    int rc = IMPL_Rsend_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm);
+    int rc = IMPL_Rsend_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Rsend_init(const void *buf, int count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Rsend_init(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm, *request);
+    int rc = IMPL_Rsend_init(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Rsend_init_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Rsend_init_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm, *request);
+    int rc = IMPL_Rsend_init_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4055,27 +4077,27 @@ int WRAP_Scatterv_init_c(const void *sendbuf, const IMPL_Count sendcounts[], con
 
 int WRAP_Send(const void *buf, int count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm)
 {
-    int rc = IMPL_Send(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm);
+    int rc = IMPL_Send(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Send_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm)
 {
-    int rc = IMPL_Send_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm);
+    int rc = IMPL_Send_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Send_init(const void *buf, int count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Send_init(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm, *request);
+    int rc = IMPL_Send_init(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Send_init_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Send_init_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm, *request);
+    int rc = IMPL_Send_init_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4178,27 +4200,27 @@ int WRAP_Session_set_errhandler(MPI_Session *session, MPI_Errhandler *errhandler
 
 int WRAP_Ssend(const void *buf, int count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm)
 {
-    int rc = IMPL_Ssend(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm);
+    int rc = IMPL_Ssend(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Ssend_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm)
 {
-    int rc = IMPL_Ssend_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm);
+    int rc = IMPL_Ssend_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Ssend_init(const void *buf, int count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Ssend_init(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm, *request);
+    int rc = IMPL_Ssend_init(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Ssend_init_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Ssend_init_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), tag, *comm, *request);
+    int rc = IMPL_Ssend_init_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4358,6 +4380,8 @@ int WRAP_Testany(int count, MPI_Request* array_of_requests[], int *indx, int *fl
 
     free(impl_requests);
 
+    *indx = UNDEFINED_IMPL_TO_MUK(*indx);
+
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4447,6 +4471,7 @@ int WRAP_Type_create_darray_c(int size, int rank, int ndims, const IMPL_Count ar
 
 int WRAP_Type_create_f90_complex(int p, int r, MPI_Datatype **newtype)
 {
+    // TODO handle MPI_UNDEFINED here
     *newtype = malloc(sizeof(MPI_Datatype));
     int rc = IMPL_Type_create_f90_complex(p, r, *newtype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -4454,6 +4479,7 @@ int WRAP_Type_create_f90_complex(int p, int r, MPI_Datatype **newtype)
 
 int WRAP_Type_create_f90_integer(int r, MPI_Datatype **newtype)
 {
+    // TODO handle MPI_UNDEFINED here
     *newtype = malloc(sizeof(MPI_Datatype));
     int rc = IMPL_Type_create_f90_integer(r, *newtype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -4461,6 +4487,7 @@ int WRAP_Type_create_f90_integer(int r, MPI_Datatype **newtype)
 
 int WRAP_Type_create_f90_real(int p, int r, MPI_Datatype **newtype)
 {
+    // TODO handle MPI_UNDEFINED here
     *newtype = malloc(sizeof(MPI_Datatype));
     int rc = IMPL_Type_create_f90_real(p, r, *newtype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -4636,6 +4663,8 @@ int WRAP_Type_get_envelope_c(MPI_Datatype *datatype, IMPL_Count *num_integers, I
 int WRAP_Type_get_extent(MPI_Datatype *datatype, IMPL_Aint *lb, IMPL_Aint *extent)
 {
     int rc = IMPL_Type_get_extent(*datatype, lb, extent);
+    *lb     = UNDEFINED_IMPL_TO_MUK(*lb);
+    *extent = UNDEFINED_IMPL_TO_MUK(*extent);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4728,6 +4757,7 @@ int WRAP_Type_set_name(MPI_Datatype *datatype, const char *type_name)
 int WRAP_Type_size(MPI_Datatype *datatype, int *size)
 {
     int rc = IMPL_Type_size(*datatype, size);
+    *size = UNDEFINED_IMPL_TO_MUK(*size);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4885,6 +4915,8 @@ int WRAP_Waitany(int count, MPI_Request* array_of_requests[], int *indx, WRAP_St
     }
 
     free(impl_requests);
+
+    *indx = UNDEFINED_IMPL_TO_MUK(*indx);
 
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
