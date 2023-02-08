@@ -4623,15 +4623,29 @@ int WRAP_Type_create_struct_c(IMPL_Count count, const IMPL_Count array_of_blockl
 
 int WRAP_Type_create_subarray(int ndims, const int array_of_sizes[], const int array_of_subsizes[], const int array_of_starts[], int order, MPI_Datatype *oldtype, MPI_Datatype **newtype)
 {
+    int impl_order;
+    if (order == MUK_ORDER_C) {
+        impl_order = MPI_ORDER_C;
+    }
+    else if (order == MUK_ORDER_FORTRAN) {
+        impl_order = MPI_ORDER_FORTRAN;
+    }
     *newtype = malloc(sizeof(MPI_Datatype));
-    int rc = IMPL_Type_create_subarray(ndims, array_of_sizes, array_of_subsizes, array_of_starts, order, *oldtype, *newtype);
+    int rc = IMPL_Type_create_subarray(ndims, array_of_sizes, array_of_subsizes, array_of_starts, impl_order, *oldtype, *newtype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_create_subarray_c(int ndims, const IMPL_Count array_of_sizes[], const IMPL_Count array_of_subsizes[], const IMPL_Count array_of_starts[], int order, MPI_Datatype *oldtype, MPI_Datatype **newtype)
 {
+    int impl_order;
+    if (order == MUK_ORDER_C) {
+        impl_order = MPI_ORDER_C;
+    }
+    else if (order == MUK_ORDER_FORTRAN) {
+        impl_order = MPI_ORDER_FORTRAN;
+    }
     *newtype = malloc(sizeof(MPI_Datatype));
-    int rc = IMPL_Type_create_subarray_c(ndims, array_of_sizes, array_of_subsizes, array_of_starts, order, *oldtype, *newtype);
+    int rc = IMPL_Type_create_subarray_c(ndims, array_of_sizes, array_of_subsizes, array_of_starts, impl_order, *oldtype, *newtype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
