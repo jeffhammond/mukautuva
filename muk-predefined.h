@@ -98,7 +98,8 @@ enum {
     MUK_ANY_TAG    = -5
 };
 enum {
-    MUK_UNDEFINED  = -6
+    // MUK, MPICH and OMPI agree on this
+    MUK_UNDEFINED  = -32766
 };
 enum {
     MUK_BSEND_OVERHEAD = 128
