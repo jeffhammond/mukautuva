@@ -1269,6 +1269,15 @@ static inline int RANK_MUK_TO_IMPL(int rank_muk)
     }
 }
 
+static inline int TAG_MUK_TO_IMPL(int tag_muk)
+{
+    if (tag_muk == MUK_ANY_TAG) {
+        return MPI_ANY_TAG;
+    } else {
+        return tag_muk;
+    }
+}
+
 int WRAP_Abort(MPI_Comm *comm, int errorcode)
 {
     int rc = IMPL_Abort(*comm, errorcode);
