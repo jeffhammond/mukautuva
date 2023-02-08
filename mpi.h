@@ -3,7 +3,6 @@
 
 #include "mpi-typedefs.h"
 #define MUK_EXTERN extern
-#define MUK_CONST const
 #include "mpi-predefined.h"
 #include "mpi-prototypes.h"
 

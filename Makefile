@@ -5,8 +5,8 @@ MPICHCC=/usr/bin/mpicc.mpich
 
 CC	= gcc
 CFLAGS	= -g3 -O0 -Wall -Wextra -Werror
-#CFLAGS	+= -ferror-limit=3 # Clang
-CFLAGS	+= -fmax-errors=3 # GCC
+#CFLAGS	+= -ferror-limit=5 # Clang
+CFLAGS	+= -fmax-errors=5 # GCC
 CFLAGS	+= -fPIC
 SOFLAGS	= -shared
 
@@ -15,7 +15,7 @@ ARFLAGS	= -r
 
 all: libs tests
 
-tests: header.o testinit.x testcomm.x testwin.x testreqs.x testcoll.x
+tests: header.o testinit.x testcomm.x testwin.x testreqs.x testcoll.x testconstants.x
 
 other: testmalloc.x
 
@@ -27,7 +27,7 @@ libs: libmuk.a libmuk.so
 %.x: %.c libmuk.so mpi.h
 	$(CC) $(CFLAGS) $< -L. -lmuk -o $@
 
-MPI_H = mpi.h mpi-predefined.h mpi-prototypes.h mpi-typedefs.h
+MPI_H = mpi.h mpi-predefined.h mpi-prototypes.h mpi-typedefs.h muk-predefined.h
 
 # this just tests if mpi.h can be compiled without errors
 header.o: header.c $(MPI_H)
@@ -39,10 +39,10 @@ libmuk.a: libinit.o
 libmuk.so: libinit.o mpich-wrap.so ompi-wrap.so
 	$(CC) $(SOFLAGS) $^ -o $@
 
-libinit.o: libinit.c muk.h muk-dl.h #muk-mpi-typedefs.h muk-mpi-functions.h
+libinit.o: libinit.c muk.h muk-dl.h $(MPI_H)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-libinit.i: libinit.c muk.h muk-dl.h #muk-mpi-typedefs.h muk-mpi-functions.h
+libinit.i: libinit.c muk.h muk-dl.h $(MPI_H)
 	$(CC) $(CFLAGS) -E $< -o $@
 
 mpich-wrap.so: mpich-predefined.o mpich-functions.o mpich-debug.o
@@ -51,10 +51,10 @@ mpich-wrap.so: mpich-predefined.o mpich-functions.o mpich-debug.o
 ompi-wrap.so: ompi-predefined.o ompi-functions.o ompi-debug.o
 	$(OMPICC) $(SOFLAGS) $^ -o $@
 
-mpich-predefined.o: impl-predefined.c
+mpich-predefined.o: impl-predefined.c muk-predefined.h
 	$(MPICHCC) $(CFLAGS) -c $< -o $@
 
-ompi-predefined.o: impl-predefined.c
+ompi-predefined.o: impl-predefined.c muk-predefined.h
 	$(OMPICC) $(CFLAGS) -c $< -o $@
 
 mpich-functions.o: impl-functions.c

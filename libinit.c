@@ -13,7 +13,6 @@ Which_MPI_e whose_mpi = UNKNOWN;
 
 #include "mpi-typedefs.h"
 #define MUK_EXTERN
-#define MUK_CONST
 #include "mpi-predefined.h"
 #include "mpi-prototypes.h"
 
@@ -97,6 +96,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
         abort();
     }
 
+#if 0
     // error codes
     int* pMPI_SUCCESS = MUK_DLSYM(wrap_so_handle,"IMPL_SUCCESS");
     MPI_SUCCESS = *pMPI_SUCCESS;
@@ -268,6 +268,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MPI_T_ERR_PVAR_NO_ATOMIC = *pMPI_T_ERR_PVAR_NO_ATOMIC;
     int* pMPI_ERR_LASTCODE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_LASTCODE");
     MPI_ERR_LASTCODE = *pMPI_ERR_LASTCODE;
+#endif
 
     // Buffer Address Constants
     void ** pMPI_BOTTOM   = MUK_DLSYM(wrap_so_handle,"IMPL_BOTTOM");
@@ -275,6 +276,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     void ** pMPI_IN_PLACE = MUK_DLSYM(wrap_so_handle,"IMPL_IN_PLACE");
     MPI_IN_PLACE = *pMPI_IN_PLACE;
 
+#if 0
     // Assorted Constants
     int* pMPI_PROC_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_PROC_NULL");
     MPI_PROC_NULL = *pMPI_PROC_NULL;
@@ -294,6 +296,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MPI_LOCK_SHARED = *pMPI_LOCK_SHARED;
     int* pMPI_ROOT = MUK_DLSYM(wrap_so_handle,"IMPL_ROOT");
     MPI_ROOT = *pMPI_ROOT;
+#endif
 
     // No Process Message Handle
     void ** pMPI_MESSAGE_NO_PROC = MUK_DLSYM(wrap_so_handle,"IMPL_MESSAGE_NO_PROC");
@@ -408,6 +411,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MPI_COMM_WORLD = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_WORLD");
     MPI_COMM_SELF = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_SELF");
 
+#if 0
     // Communicator split type constants
     int* pMPI_COMM_TYPE_SHARED = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_TYPE_SHARED");
     MPI_COMM_TYPE_SHARED = *pMPI_COMM_TYPE_SHARED;
@@ -417,7 +421,9 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     int* pMPI_COMM_TYPE_HW_GUIDED = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_TYPE_HW_GUIDED");
     MPI_COMM_TYPE_HW_GUIDED = *pMPI_COMM_TYPE_HW_GUIDED;
 #endif
+#endif
 
+#if 0
     // Results of communicator and group comparisons
     int* pMPI_IDENT = MUK_DLSYM(wrap_so_handle,"IMPL_IDENT");
     MPI_IDENT = *pMPI_IDENT;
@@ -427,11 +433,13 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MPI_SIMILAR = *pMPI_SIMILAR;
     int* pMPI_UNEQUAL = MUK_DLSYM(wrap_so_handle,"IMPL_UNEQUAL");
     MPI_UNEQUAL = *pMPI_UNEQUAL;
+#endif
 
     // Environmental inquiry info key
     MPI_Info* pMPI_INFO_ENV = MUK_DLSYM(wrap_so_handle,"IMPL_INFO_ENV");
     MPI_INFO_ENV = *pMPI_INFO_ENV;
 
+#if 0
     // Environmental inquiry keys
     int* pMPI_TAG_UB = MUK_DLSYM(wrap_so_handle,"IMPL_TAG_UB");
     MPI_TAG_UB = *pMPI_TAG_UB;
@@ -441,6 +449,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MPI_HOST = *pMPI_HOST;
     int* pMPI_WTIME_IS_GLOBAL = MUK_DLSYM(wrap_so_handle,"IMPL_WTIME_IS_GLOBAL");
     MPI_WTIME_IS_GLOBAL = *pMPI_WTIME_IS_GLOBAL;
+#endif
 
     // Collective Operations
     MPI_MAX = MUK_DLSYM(wrap_so_handle,"IMPL_MAX");
@@ -476,6 +485,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     // Empty group
     MPI_GROUP_EMPTY = MUK_DLSYM(wrap_so_handle,"IMPL_GROUP_EMPTY");
 
+#if 0
     // Topologies
     int* pMPI_GRAPH = MUK_DLSYM(wrap_so_handle,"IMPL_GRAPH");
     MPI_GRAPH = *pMPI_GRAPH;
@@ -483,12 +493,14 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MPI_CART = *pMPI_CART;
     int* pMPI_DIST_GRAPH = MUK_DLSYM(wrap_so_handle,"IMPL_DIST_GRAPH");
     MPI_DIST_GRAPH = *pMPI_DIST_GRAPH;
+#endif
 
     // Predefined functions
     // TODO
     // Deprecated predefined functions
     // TODO
 
+#if 0
     // Predefined Attribute Keys
     int* pMPI_APPNUM = MUK_DLSYM(wrap_so_handle,"IMPL_APPNUM");
     MPI_APPNUM = *pMPI_APPNUM;
@@ -628,6 +640,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MPI_TYPECLASS_INTEGER = *pMPI_TYPECLASS_INTEGER;
     int* pMPI_TYPECLASS_REAL = MUK_DLSYM(wrap_so_handle,"IMPL_TYPECLASS_REAL");
     MPI_TYPECLASS_REAL = *pMPI_TYPECLASS_REAL;
+#endif
 
     // Constants Specifying Empty or Ignored Input
     MPI_ARGVS_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_ARGVS_NULL");
