@@ -182,5 +182,6 @@ static int all_constants [] = {
 
 int main(void)
 {
-  return MPI_SUCCESS;
+    (void)all_constants;
+    return MPI_SUCCESS;
 }

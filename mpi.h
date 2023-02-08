@@ -1,6 +1,9 @@
 #ifndef MUK_MPI_H
 #define MUK_MPI_H
 
+#define MPI_VERSION 5
+#define MPI_SUBVERSION 0
+
 #include "mpi-typedefs.h"
 #define MUK_EXTERN extern
 #include "mpi-predefined.h"
@@ -16,8 +19,5 @@
 #define MPI_MAX_PSET_NAME_LEN           256
 #define MPI_MAX_INFO_KEY                255
 #define MPI_MAX_INFO_VAL               1024
-
-#define MPI_VERSION 5
-#define MPI_SUBVERSION 0
 
 #endif
