@@ -3,6 +3,7 @@
 
 // error codes
 enum {
+    MUK_SUCCESS                         =  0,
     MUK_ERR_BUFFER                      =  1,
     MUK_ERR_COUNT                       =  2,
     MUK_ERR_TYPE                        =  3,
@@ -112,14 +113,17 @@ enum {
 
 //Fortran status array size and reserved index values (C only)
 enum {
-    MUK_F_STATUS_SIZE,
-    MUK_F_SOURCE,
-    MUK_F_TAG,
-    MUK_F_ERROR,
-    MUK_ADDRESS_KIND,
-    MUK_COUNT_KIND,
-    MUK_INTEGER_KIND,
-    MUK_OFFSET_KIND
+    // 256-bit Status is proposed
+    MUK_F_STATUS_SIZE   = 8,
+    // the public fields should come first
+    MUK_F_SOURCE        = 0,
+    MUK_F_TAG           = 1,
+    MUK_F_ERROR         = 2,
+    // ignore Fortran for now
+    MUK_ADDRESS_KIND    = -1,
+    MUK_COUNT_KIND      = -1,
+    MUK_INTEGER_KIND    = -1,
+    MUK_OFFSET_KIND     = -1
 };
 
 // Communicator split type constants
@@ -131,29 +135,27 @@ enum {
 
 // Results of communicator and group comparisons
 enum {
-    MUK_IDENT,
-    MUK_CONGRUENT,
-    MUK_SIMILAR,
-    MUK_UNEQUAL
-};
-
-// Environmental inquiry keys
-enum {
-    MUK_TAG_UB,
-    MUK_IO,
-    MUK_HOST,
-    MUK_WTIME_IS_GLOBAL
+    // MPICH and OMPI agree on this
+    MUK_IDENT       = 0,
+    MUK_CONGRUENT   = 1,
+    MUK_SIMILAR     = 2,
+    MUK_UNEQUAL     = 3
 };
 
 // Topologies
 enum {
-    MUK_GRAPH,
-    MUK_CART,
-    MUK_DIST_GRAPH
+    MUK_GRAPH       = -200,
+    MUK_CART        = -201,
+    MUK_DIST_GRAPH  = -202
 };
 
-// Predefined Attribute Keys
 enum {
+    // Environmental inquiry keys
+    MUK_TAG_UB,
+    MUK_IO,
+    MUK_HOST,
+    MUK_WTIME_IS_GLOBAL,
+    // Predefined Attribute Keys
     MUK_APPNUM,
     MUK_LASTUSEDCODE,
     MUK_UNIVERSE_SIZE,
@@ -166,16 +168,17 @@ enum {
 
 // MPI Window Create Flavors
 enum {
-    MUK_WIN_FLAVOR_CREATE,
-    MUK_WIN_FLAVOR_ALLOCATE,
-    MUK_WIN_FLAVOR_DYNAMIC,
-    MUK_WIN_FLAVOR_SHARED
+    // MPICH and OMPI agree on this
+    MUK_WIN_FLAVOR_CREATE   = 1,
+    MUK_WIN_FLAVOR_ALLOCATE = 2,
+    MUK_WIN_FLAVOR_DYNAMIC  = 3,
+    MUK_WIN_FLAVOR_SHARED   = 4
 };
 
 // MPI Window Models
 enum {
-    MUK_WIN_SEPARATE,
-    MUK_WIN_UNIFIED
+    MUK_WIN_SEPARATE = -300,
+    MUK_WIN_UNIFIED  = -301
 };
 
 // Mode Constants
@@ -218,10 +221,11 @@ enum {
 
 // Threads Constants
 enum {
-    MUK_THREAD_FUNNELED,
-    MUK_THREAD_MULTIPLE,
-    MUK_THREAD_SERIALIZED,
-    MUK_THREAD_SINGLE
+    // MPICH and OMPI agree on this
+    MUK_THREAD_SINGLE       = 0,
+    MUK_THREAD_FUNNELED     = 1,
+    MUK_THREAD_MULTIPLE     = 2,
+    MUK_THREAD_SERIALIZED   = 3
 };
 
 enum {

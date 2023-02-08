@@ -23,6 +23,7 @@ Which_MPI_e whose_mpi = UNKNOWN;
 // end of type stuff
 
 int (*WRAP_Load_functions)(void * restrict h, int major, int minor);
+int (*WRAP_CODE_IMPL_TO_MUK)(int error_c);
 
 // alkaa = start
 static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
@@ -98,6 +99,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
         abort();
     }
 
+#if 0
     // error codes
     // MPI_SUCCESS is defined to be 0 and thus is omitted
     int* pIMPL_ERR_BUFFER = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_BUFFER");
@@ -268,6 +270,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     IMPL_T_ERR_PVAR_NO_ATOMIC = *pIMPL_T_ERR_PVAR_NO_ATOMIC;
     int* pIMPL_ERR_LASTCODE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_LASTCODE");
     IMPL_ERR_LASTCODE = *pIMPL_ERR_LASTCODE;
+#endif
 
     // Buffer Address Constants
     void ** pMPI_BOTTOM   = MUK_DLSYM(wrap_so_handle,"IMPL_BOTTOM");
@@ -1215,57 +1218,71 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     WRAP_Load_functions = MUK_DLSYM(wrap_so_handle,"WRAP_Load_functions");
     rc = WRAP_Load_functions(h,major,minor);
 
+    WRAP_CODE_IMPL_TO_MUK = MUK_DLSYM(wrap_so_handle,"ERROR_CODE_IMPL_TO_MUK");
+
     return rc;
 }
 
 int MPI_Init(int * argc, char *** argv)
 {
-    return MUK_Alkaa(argc,argv,-1,NULL);
+    int rc = MUK_Alkaa(argc,argv,-1,NULL);
+    return WRAP_CODE_IMPL_TO_MUK(rc);
 }
 
 int MPI_Init_thread(int * argc, char *** argv, int requested, int * provided)
 {
-    return MUK_Alkaa(argc,argv,requested,provided);
+    // no thread conversion here because MUK, MPICH and OMPI all agree
+    int rc = MUK_Alkaa(argc,argv,requested,provided);
+    return WRAP_CODE_IMPL_TO_MUK(rc);
 }
 
 int MPI_Get_library_version(char *version, int *resultlen)
 {
-    return MUK_Get_library_version(version, resultlen);
+    int rc = MUK_Get_library_version(version, resultlen);
+    return WRAP_CODE_IMPL_TO_MUK(rc);
 }
 
 int MPI_Finalize(void)
 {
-    return MUK_Finalize();
+    int rc = MUK_Finalize();
+    return WRAP_CODE_IMPL_TO_MUK(rc);
 }
 
 int MPI_Finalized(int * flag)
 {
-    return MUK_Finalized(flag);
+    int rc = MUK_Finalized(flag);
+    return WRAP_CODE_IMPL_TO_MUK(rc);
 }
 
 int MPI_Initialized(int * flag)
 {
-    return MUK_Initialized(flag);
+    int rc = MUK_Initialized(flag);
+    return WRAP_CODE_IMPL_TO_MUK(rc);
 }
 
 int MPI_Is_thread_main(int * flag)
 {
-    return MUK_Is_thread_main(flag);
+    int rc = MUK_Is_thread_main(flag);
+    return WRAP_CODE_IMPL_TO_MUK(rc);
 }
 
 int MPI_Query_thread(int * provided)
 {
-    return MUK_Query_thread(provided);
+    // no thread conversion here because MUK, MPICH and OMPI all agree
+    int rc = MUK_Query_thread(provided);
+    return WRAP_CODE_IMPL_TO_MUK(rc);
 }
 
 int MPI_Get_processor_name(char *name, int *resultlen)
 {
-    return MUK_Get_processor_name(name, resultlen);
+    int rc = MUK_Get_processor_name(name, resultlen);
+    return WRAP_CODE_IMPL_TO_MUK(rc);
 }
 
 int MPI_Get_version(int * major, int * minor)
 {
-    return MUK_Get_version(major, minor);
+    int rc = MUK_Get_version(major, minor);
+    return WRAP_CODE_IMPL_TO_MUK(rc);
 }
 
 int MPI_Abort(MPI_Comm comm, int errorcode)

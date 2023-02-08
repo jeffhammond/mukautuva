@@ -1,3 +1,9 @@
+# My Tests
+
+```
+for t in testcoll.x  testcomm.x testinit.x testreqs.x testwin.x ; do ./test.sh ./$t ; done
+```
+
 # MPICH Test Suite
 
 This does not work.
