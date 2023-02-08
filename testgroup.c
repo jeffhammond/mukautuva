@@ -106,6 +106,27 @@ int main(int argc, char* argv[])
         MPI_Abort(MPI_COMM_WORLD,1);
     }
 
+    int * ranks1 = malloc(np * sizeof(int));
+    for (int i=0; i<np; i++) ranks1[i] = i;
+    int * ranks2 = malloc(np * sizeof(int));
+    MPI_Group_translate_ranks(group_world,np,ranks1,group2,ranks2);
+
+    int errors = 0;
+    errors += (ranks2[0] != MPI_UNDEFINED);
+    for (int i=1; i<np; i++) {
+        errors += (ranks2[i] != (i-1));
+    }
+    if (errors > 0) {
+        printf("%d: errors = %d ranks2 = ", me, errors);
+        for (int i=0; i<np; i++) printf("%d,",ranks2[i]);
+        printf("\n");
+        if (me==0) printf("MPI_UNDEFINED = %d\n", MPI_UNDEFINED);
+        fflush(0);
+        usleep(1);
+    }
+    free(ranks2);
+    MPI_Barrier(MPI_COMM_WORLD);
+
     MPI_Group_free(&union1);
     MPI_Group_free(&diff);
     MPI_Group_free(&group2);
