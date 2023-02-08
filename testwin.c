@@ -23,20 +23,25 @@ int main(int argc, char* argv[])
     MPI_Comm_size(MPI_COMM_WORLD,&np);
     printf("I am %d of %d\n", me, np);
 
-    if (np==3) MPI_Abort(MPI_COMM_SELF,np);
-
     MPI_Win a, as, c, cd;
     void *ba, *bas;
+    char bc;
 
-    MPI_Win_allocate(0,1,MPI_INFO_NULL,MPI_COMM_WORLD,&ba,&a);
+    MPI_Win_allocate(1,1,MPI_INFO_NULL,MPI_COMM_WORLD,&ba,&a);
     MPI_Win_fence(0,a);
     MPI_Win_free(&a);
 
-    MPI_Win_allocate_shared(0,1,MPI_INFO_NULL,MPI_COMM_SELF,&bas,&as);
+    // this is broken because OMPI sucks
+#if 0
+    MPI_Win_allocate_shared(8,8,MPI_INFO_NULL,MPI_COMM_WORLD,&bas,&as);
     MPI_Win_fence(0,as);
     MPI_Win_free(&as);
+#else
+    (void)as;
+    (void)bas;
+#endif
 
-    MPI_Win_create(NULL,0,1,MPI_INFO_NULL,MPI_COMM_WORLD,&c);
+    MPI_Win_create(&bc,1,1,MPI_INFO_NULL,MPI_COMM_WORLD,&c);
     MPI_Win_fence(0,c);
     MPI_Win_free(&c);
 
