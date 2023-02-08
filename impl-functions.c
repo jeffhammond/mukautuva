@@ -4613,6 +4613,7 @@ int WRAP_Type_dup(MPI_Datatype *oldtype, MPI_Datatype **newtype)
 int WRAP_Type_extent(MPI_Datatype *datatype, IMPL_Aint *extent)
 {
     int rc = IMPL_Type_extent(*datatype, extent);
+    *extent = UNDEFINED_IMPL_TO_MUK(*extent);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4733,6 +4734,7 @@ int WRAP_Type_indexed_c(IMPL_Count count, const IMPL_Count array_of_blocklengths
 int WRAP_Type_lb(MPI_Datatype *datatype, IMPL_Aint *displacement)
 {
     int rc = IMPL_Type_lb(*datatype, displacement);
+    *displacement = UNDEFINED_IMPL_TO_MUK(*displacement);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4783,6 +4785,7 @@ int WRAP_Type_struct(int count, int array_of_blocklengths[], IMPL_Aint array_of_
 int WRAP_Type_ub(MPI_Datatype *datatype, IMPL_Aint *displacement)
 {
     int rc = IMPL_Type_ub(*datatype, displacement);
+    *displacement = UNDEFINED_IMPL_TO_MUK(*displacement);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
