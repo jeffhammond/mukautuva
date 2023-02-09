@@ -4,7 +4,12 @@
 #include "mpi.h"
 #endif
 
-static int all_constants [] = {
+// clearly, not ALL of them yet...
+static MPI_Datatype all_datatype_constants [] = {
+     MPI_CHAR, MPI_SHORT, MPI_INT, MPI_LONG, MPI_LONG_LONG, MPI_FLOAT, MPI_DOUBLE
+};
+
+static int all_integer_constants [] = {
     MPI_SUCCESS,
     MPI_ERR_BUFFER,
     MPI_ERR_COUNT,
@@ -182,6 +187,7 @@ static int all_constants [] = {
 
 int main(void)
 {
-    (void)all_constants;
+    (void)all_integer_constants;
+    (void)all_datatype_constants;
     return MPI_SUCCESS;
 }
