@@ -51,6 +51,9 @@ int main(int argc, char* argv[])
     MPI_Win_fence(0,cd);
     MPI_Win_detach(cd,&b);
     MPI_Win_free(&cd);
+    if (cd != MPI_WIN_NULL) {
+        printf("win null? %d\n",cd==MPI_WIN_NULL);
+    }
 
     fflush(0);
     usleep(1);
