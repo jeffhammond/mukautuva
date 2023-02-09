@@ -5,9 +5,16 @@
 #endif
 
 // clearly, not ALL of them yet...
+static MPI_Comm all_comm_constants [] = {
+    MPI_COMM_WORLD
+};
+
+#if 0
+// clearly, not ALL of them yet...
 static MPI_Datatype all_datatype_constants [] = {
      MPI_CHAR, MPI_SHORT, MPI_INT, MPI_LONG, MPI_LONG_LONG, MPI_FLOAT, MPI_DOUBLE
 };
+#endif
 
 static int all_integer_constants [] = {
     MPI_SUCCESS,
@@ -188,6 +195,9 @@ static int all_integer_constants [] = {
 int main(void)
 {
     (void)all_integer_constants;
+    (void)all_comm_constants;
+#if 0
     (void)all_datatype_constants;
+#endif
     return MPI_SUCCESS;
 }
