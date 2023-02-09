@@ -133,6 +133,10 @@ int main(int argc, char* argv[])
     MPI_Group_free(&group1);
     MPI_Group_free(&group_world);
 
+    if (group_world != MPI_GROUP_NULL) {
+        printf("freed group is not null\n");
+    }
+
     fflush(0);
     usleep(1);
     MPI_Barrier(MPI_COMM_WORLD);
