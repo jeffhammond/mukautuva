@@ -1,7 +1,7 @@
 # My Tests
 
 ```
-for t in testcoll.x  testcomm.x testinit.x testreqs.x testwin.x testgroup.x testtypes.x ; do ./test.sh ./$t ; done
+for t in testcoll.x testcomm.x testinit.x testreqs.x testwin.x testgroup.x testtypes.x ; do ./test.sh ./$t ; done
 ```
 
 # OSU MPI Tests
