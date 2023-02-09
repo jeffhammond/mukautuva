@@ -9,17 +9,17 @@ typedef ptrdiff_t MPI_Count;
 typedef ptrdiff_t MPI_Offset;
 
 // handle typedefs
-typedef struct __MPI_Comm__ * MPI_Comm;
-typedef struct __MPI_Datatype__ * MPI_Datatype;
-typedef struct __MPI_Errhandler__ * MPI_Errhandler;
-typedef struct __MPI_File__ * MPI_File;
-typedef struct __MPI_Group__ * MPI_Group;
-typedef struct __MPI_Info__ * MPI_Info;
-typedef struct __MPI_Message__ * MPI_Message;
-typedef struct __MPI_Op__ * MPI_Op;
-typedef struct __MPI_Request__ * MPI_Request;
-typedef struct __MPI_Session__ * MPI_Session;
-typedef struct __MPI_Win__ * MPI_Win;
+typedef struct MPI_ABI_Comm * MPI_Comm;
+typedef struct MPI_ABI_Datatype * MPI_Datatype;
+typedef struct MPI_ABI_Errhandler * MPI_Errhandler;
+typedef struct MPI_ABI_File * MPI_File;
+typedef struct MPI_ABI_Group * MPI_Group;
+typedef struct MPI_ABI_Info * MPI_Info;
+typedef struct MPI_ABI_Message * MPI_Message;
+typedef struct MPI_ABI_Op * MPI_Op;
+typedef struct MPI_ABI_Request * MPI_Request;
+typedef struct MPI_ABI_Session * MPI_Session;
+typedef struct MPI_ABI_Win * MPI_Win;
 
 // status typedef
 typedef struct
