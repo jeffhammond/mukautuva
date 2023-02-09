@@ -13,12 +13,14 @@
 
 int main(int argc, char* argv[])
 {
-    int rc;
+    int rc, flag;
+    rc = MPI_Initialized(&flag);
+    printf("is init? %d\n", flag);
+
     rc = MPI_Init(&argc,&argv);
 
     double t0 = MPI_Wtime();
 
-    int flag;
     rc = MPI_Initialized(&flag);
     printf("is init? %d\n", flag);
     rc = MPI_Finalized(&flag);
@@ -30,9 +32,12 @@ int main(int argc, char* argv[])
 
     printf("dt=%lf\n",t1-t0);
 
-    printf("all done\n");
-
     rc = MPI_Finalize();
+
+    rc = MPI_Finalized(&flag);
+    printf("is final? %d\n", flag);
+
+    printf("all done\n");
 
     return rc;
 }
