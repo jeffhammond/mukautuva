@@ -12,10 +12,15 @@
 Which_MPI_e whose_mpi = UNKNOWN;
 
 #include "mpi-constants.h"
+
+#define MUK_INTERNAL
+#include "mpi-handle-typedefs.h"
+
 #include "mpi-typedefs.h"
+
 #define MUK_EXTERN
-#define INTERNAL
 #include "mpi-predefined.h"
+
 #include "mpi-prototypes.h"
 
 #include "muk-function-pointers.h"
