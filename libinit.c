@@ -11,6 +11,7 @@
 
 Which_MPI_e whose_mpi = UNKNOWN;
 
+#include "mpi-constants.h"
 #include "mpi-typedefs.h"
 #define MUK_EXTERN
 #include "mpi-predefined.h"
@@ -303,8 +304,10 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
 #endif
 
     // No Process Message Handle
-    void ** pMPI_MESSAGE_NO_PROC = MUK_DLSYM(wrap_so_handle,"IMPL_MESSAGE_NO_PROC");
-    MPI_MESSAGE_NO_PROC = *pMPI_MESSAGE_NO_PROC;
+    //void ** pMPI_MESSAGE_NO_PROC = MUK_DLSYM(wrap_so_handle,"IMPL_MESSAGE_NO_PROC");
+    //MPI_MESSAGE_NO_PROC = *pMPI_MESSAGE_NO_PROC;
+    MPI_MESSAGE_NO_PROC = MUK_DLSYM(wrap_so_handle,"IMPL_MESSAGE_NO_PROC");
+
 
 #if 0
     //Fortran status array size and reserved index values (C only)
@@ -440,8 +443,9 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
 #endif
 
     // Environmental inquiry info key
-    MPI_Info* pMPI_INFO_ENV = MUK_DLSYM(wrap_so_handle,"IMPL_INFO_ENV");
-    MPI_INFO_ENV = *pMPI_INFO_ENV;
+    //MPI_Info* pMPI_INFO_ENV = MUK_DLSYM(wrap_so_handle,"IMPL_INFO_ENV");
+    //MPI_INFO_ENV = *pMPI_INFO_ENV;
+    MPI_INFO_ENV = MUK_DLSYM(wrap_so_handle,"IMPL_INFO_ENV");
 
 #if 0
     // Environmental inquiry keys
@@ -488,6 +492,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
 
     // Empty group
     MPI_GROUP_EMPTY = MUK_DLSYM(wrap_so_handle,"IMPL_GROUP_EMPTY");
+    //printf("libint: MPI_GROUP_EMPTY=%p *MPI_GROUP_EMPTY=%lx\n", MPI_GROUP_EMPTY, (intptr_t)*(void**)MPI_GROUP_EMPTY);
 
 #if 0
     // Topologies
@@ -1240,6 +1245,12 @@ int MPI_Init_thread(int * argc, char *** argv, int requested, int * provided)
 
 int MPI_Get_library_version(char *version, int *resultlen)
 {
+    // calling this function before MPI initialization is allowed.
+    // we should dlopen the MPI implementation when this is called,
+    // but that is not what we are implementing for now.
+    if (MUK_Get_library_version == NULL) {
+        *resultlen = 1 + sprintf(version,"MUKAUTUVA: the underlying MPI library is not initialized.\n");
+    }
     int rc = MUK_Get_library_version(version, resultlen);
     return WRAP_CODE_IMPL_TO_MUK(rc);
 }
@@ -1252,12 +1263,22 @@ int MPI_Finalize(void)
 
 int MPI_Finalized(int * flag)
 {
+    // calling this function before MPI initialization is allowed.
+    if (MUK_Finalized == NULL) {
+        *flag = 0;
+        return MPI_SUCCESS;
+    }
     int rc = MUK_Finalized(flag);
     return WRAP_CODE_IMPL_TO_MUK(rc);
 }
 
 int MPI_Initialized(int * flag)
 {
+    // calling this function before MPI initialization is allowed.
+    if (MUK_Initialized == NULL) {
+        *flag = 0;
+        return MPI_SUCCESS;
+    }
     int rc = MUK_Initialized(flag);
     return WRAP_CODE_IMPL_TO_MUK(rc);
 }
@@ -1283,6 +1304,13 @@ int MPI_Get_processor_name(char *name, int *resultlen)
 
 int MPI_Get_version(int * major, int * minor)
 {
+    // calling this function before MPI initialization is allowed.
+    // we should dlopen the MPI implementation when this is called,
+    // but that is not what we are implementing for now.
+    if (MUK_Get_version == NULL) {
+        *major = MPI_VERSION;
+        *minor = MPI_SUBVERSION;
+    }
     int rc = MUK_Get_version(major, minor);
     return WRAP_CODE_IMPL_TO_MUK(rc);
 }

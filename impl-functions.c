@@ -44,8 +44,11 @@ extern MPI_Comm IMPL_COMM_NULL;
 //extern MPI_Comm IMPL_COMM_WORLD;
 //extern MPI_Comm IMPL_COMM_SELF;
 extern MPI_Group IMPL_GROUP_NULL;
-//extern MPI_Group IMPL_GROUP_EMPTY;
+extern MPI_Group IMPL_GROUP_EMPTY;
 extern MPI_Message IMPL_MESSAGE_NULL;
+#if MPI_VERSION >= 4
+extern MPI_Session IMPL_SESSION_NULL;
+#endif
 //extern MPI_Message IMPL_MESSAGE_NO_PROC;
 extern MPI_Status* IMPL_STATUS_IGNORE;
 extern MPI_Status* IMPL_STATUSES_IGNORE;
@@ -1868,6 +1871,10 @@ int WRAP_Comm_group(MPI_Comm *comm, MPI_Group **group)
 {
     *group = malloc(sizeof(MPI_Group));
     int rc = IMPL_Comm_group(*comm, *group);
+#if DEBUG
+    printf("WRAP_Comm_group group=%p *group=%p **group=%lx MPI_GROUP_NULL=%lx\n",
+            group,*group,(uintptr_t)**group,(uintptr_t)MPI_GROUP_NULL);
+#endif
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -2887,6 +2894,10 @@ int WRAP_Group_excl(MPI_Group *group, int n, const int ranks[], MPI_Group **newg
 
 int WRAP_Group_free(MPI_Group **group)
 {
+#ifdef DEBUG
+    printf("WRAP_Group_free group=%p *group=%p **group=%lx MPI_GROUP_EMPTY=%lx IMPL_GROUP_EMPTY=%lx\n",
+            group,*group,(uintptr_t)**group,(uintptr_t)MPI_GROUP_EMPTY,(uintptr_t)IMPL_GROUP_EMPTY);
+#endif
     int rc = IMPL_Group_free(*group);
     free(*group);
     *group = &IMPL_GROUP_NULL;
@@ -2944,7 +2955,30 @@ int WRAP_Group_size(MPI_Group *group, int *size)
 
 int WRAP_Group_translate_ranks(MPI_Group *group1, int n, const int ranks1[], MPI_Group *group2, int ranks2[])
 {
+#ifdef DEBUG
+    int me;
+    IMPL_Comm_rank(MPI_COMM_WORLD,&me);
+
+    int offset = 0;
+    char * buf = calloc(1000000,1);
+    offset += 1+sprintf(&buf[offset],"%d: ",me);
+    offset += 1+sprintf(&buf[offset],"n=%d ", n);
+    offset += 1+sprintf(&buf[offset],"ranks1[] = %p = ", ranks1);
+    for (int i=0; i<n; i++) {
+        offset += 1+sprintf(&buf[offset],"%d,", ranks1[i]);
+    }
+#endif
     int rc = IMPL_Group_translate_ranks(*group1, n, ranks1, *group2, ranks2);
+#ifdef DEBUG
+    offset += 1+sprintf(&buf[offset],"ranks2[] = %p = ", ranks2);
+    for (int i=0; i<n; i++) {
+        offset += 1+sprintf(&buf[offset],"%d,", ranks2[i]);
+    }
+    offset += 1+sprintf(&buf[offset],"\n");
+    for (int i=0; i<offset; i++) printf("%c",buf[i]);
+    fflush(0);
+    free(buf);
+#endif
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4199,6 +4233,8 @@ int WRAP_Session_create_errhandler(MPI_Session_errhandler_function *session_errh
 int WRAP_Session_finalize(MPI_Session **session)
 {
     int rc = IMPL_Session_finalize(*session);
+    free(*session);
+    *session = &IMPL_SESSION_NULL;
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4236,6 +4272,7 @@ int WRAP_Session_get_pset_info(MPI_Session *session, const char *pset_name, MPI_
 
 int WRAP_Session_init(MPI_Info *info, MPI_Errhandler *errhandler, MPI_Session **session)
 {
+    *session = malloc(sizeof(MPI_Session));
     int rc = IMPL_Session_init(*info, *errhandler, *session);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
@@ -4348,6 +4385,7 @@ int WRAP_Test(MPI_Request **request, int *flag, WRAP_Status *status)
     int rc = IMPL_Test(*request, flag, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (*flag) {
         free(*request);
+        *request = &IMPL_REQUEST_NULL;
         if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     }
     return ERROR_CODE_IMPL_TO_MUK(rc);
