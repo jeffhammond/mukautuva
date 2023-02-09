@@ -64,6 +64,10 @@ int main(int argc, char* argv[])
     MPI_Comm_free(&split);
     MPI_Comm_free(&shared);
 
+    if (dup != MPI_COMM_NULL) {
+        printf("freed window is not null\n");
+    }
+
     fflush(0);
     usleep(1);
     MPI_Barrier(MPI_COMM_WORLD);
