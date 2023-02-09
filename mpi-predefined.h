@@ -233,7 +233,14 @@ MUK_EXTERN MPI_Datatype MPI_2DOUBLE_PRECISION;
 MUK_EXTERN MPI_Datatype MPI_2INTEGER;
 
 // Reserved communicators
-MUK_EXTERN MPI_Comm MPI_COMM_WORLD;
+//MUK_EXTERN MPI_Comm MPI_COMM_WORLD;
+#ifndef INTERNAL
+extern struct MPI_ABI_Comm muk_mpi_comm_world;
+#else
+void* muk_mpi_comm_world;
+#endif
+#define MUK_PREDEFINED_GLOBAL(type, global) ((type) ((void *) &(global)))
+#define MPI_COMM_WORLD MUK_PREDEFINED_GLOBAL( MPI_Comm, muk_mpi_comm_world)
 MUK_EXTERN MPI_Comm MPI_COMM_SELF;
 
 // Communicator split type constants

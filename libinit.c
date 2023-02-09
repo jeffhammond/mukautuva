@@ -14,6 +14,7 @@ Which_MPI_e whose_mpi = UNKNOWN;
 #include "mpi-constants.h"
 #include "mpi-typedefs.h"
 #define MUK_EXTERN
+#define INTERNAL
 #include "mpi-predefined.h"
 #include "mpi-prototypes.h"
 
@@ -415,7 +416,11 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MPI_2INTEGER = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_2INTEGER",MPI_DATATYPE_NULL);
 
     // Reserved communicators
-    MPI_COMM_WORLD = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_WORLD");
+    //MPI_COMM_WORLD = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_WORLD");
+    //muk_mpi_comm_world = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_WORLD");
+    void ** pmuk_mpi_comm_world = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_WORLD");
+    muk_mpi_comm_world = *pmuk_mpi_comm_world;
+
     MPI_COMM_SELF = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_SELF");
 
 #if 0
