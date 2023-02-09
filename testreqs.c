@@ -51,6 +51,10 @@ int main(int argc, char* argv[])
         while (!flag) {
             MPI_Testall(1,&r,&flag,MPI_STATUSES_IGNORE);
         }
+
+        if (r != MPI_REQUEST_NULL) {
+            printf("freed request is not null\n");
+        }
     }
 
     if (1)
