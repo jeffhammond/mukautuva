@@ -1,7 +1,15 @@
 # My Tests
 
 ```
-for t in testcoll.x  testcomm.x testinit.x testreqs.x testwin.x ; do ./test.sh ./$t ; done
+for t in testcoll.x  testcomm.x testinit.x testreqs.x testwin.x testgroup.x testtypes.x ; do ./test.sh ./$t ; done
+```
+
+# OSU MPI Tests
+
+```
+wget https://mvapich.cse.ohio-state.edu/download/mvapich/osu-micro-benchmarks-7.0.1.tar.gz
+cd osu*
+./configure CC=gcc CXX=g++ CFLAGS=-g3 --enable-g  CPPFLAGS=-I/home/jhammond/mukautuva LDFLAGS=-L/home/jhammond/mukautuva LIBS=-lmuk && make -j8
 ```
 
 # ARMCI-MPI
