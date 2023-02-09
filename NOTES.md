@@ -6,6 +6,8 @@ for t in testcoll.x  testcomm.x testinit.x testreqs.x testwin.x testgroup.x test
 
 # OSU MPI Tests
 
+Many tests fails because MUK datatypes do not work as initializers yet.
+
 ```
 wget https://mvapich.cse.ohio-state.edu/download/mvapich/osu-micro-benchmarks-7.0.1.tar.gz
 cd osu*
