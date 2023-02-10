@@ -110,16 +110,12 @@ int ERROR_CODE_IMPL_TO_MUK(int error_c)
 {
     if (error_c == 0) return 0;
 
-    int finalized;
-    IMPL_Finalized(&finalized);
-
+    int error;
     // "To make it possible for an application to interpret an error code,
     //  the routine MPI_ERROR_CLASS converts any error code into one of a
     //  small set of standard error codes, called error classes."
-    int error;
-    if (!finalized) {
-        IMPL_Error_class(error_c, &error);
-    }
+    // MPI_Error_class is one of the functions that can be called after MPI_Finalize.
+    IMPL_Error_class(error_c, &error);
 
     // If, for some reason, you need to known the actual error returned from
     // the MPI library, and not just the class, enable the following code.

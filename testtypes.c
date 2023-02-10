@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
     MPI_Barrier(MPI_COMM_WORLD);
     usleep(1);
 
-    for (int t; t<(int)(sizeof(types)/sizeof(types[0])); t++)
+    for (int t=0; t<(int)(sizeof(types)/sizeof(types[0])); t++)
     {
         MPI_Datatype type = types[t];
 

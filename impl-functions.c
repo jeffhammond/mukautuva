@@ -1947,7 +1947,7 @@ int WRAP_Comm_split(MPI_Comm *comm, int color, int key, MPI_Comm **newcomm)
 int WRAP_Comm_split_type(MPI_Comm *comm, int split_type, int key, MPI_Info *info, MPI_Comm **newcomm)
 {
     // this is the only place this conversion is required, so just inline it
-    int impl_type;
+    int impl_type = MPI_UNDEFINED;
     if (split_type == MUK_COMM_TYPE_SHARED) {
         impl_type = MPI_COMM_TYPE_SHARED;
     }
@@ -4672,7 +4672,7 @@ int WRAP_Type_create_struct_c(IMPL_Count count, const IMPL_Count array_of_blockl
 
 int WRAP_Type_create_subarray(int ndims, const int array_of_sizes[], const int array_of_subsizes[], const int array_of_starts[], int order, MPI_Datatype *oldtype, MPI_Datatype **newtype)
 {
-    int impl_order;
+    int impl_order = MPI_UNDEFINED;
     if (order == MUK_ORDER_C) {
         impl_order = MPI_ORDER_C;
     }
@@ -4686,7 +4686,7 @@ int WRAP_Type_create_subarray(int ndims, const int array_of_sizes[], const int a
 
 int WRAP_Type_create_subarray_c(int ndims, const IMPL_Count array_of_sizes[], const IMPL_Count array_of_subsizes[], const IMPL_Count array_of_starts[], int order, MPI_Datatype *oldtype, MPI_Datatype **newtype)
 {
-    int impl_order;
+    int impl_order = MPI_UNDEFINED;
     if (order == MUK_ORDER_C) {
         impl_order = MPI_ORDER_C;
     }
@@ -5250,7 +5250,7 @@ int WRAP_Win_get_name(MPI_Win *win, char *win_name, int *resultlen)
 int WRAP_Win_lock(int lock_type, int rank, int assert, MPI_Win *win)
 {
     // this is the only place this is used so we inline it
-    int impl_type;
+    int impl_type = MPI_UNDEFINED;
     if (lock_type == MUK_LOCK_EXCLUSIVE) {
         impl_type = MPI_LOCK_EXCLUSIVE;
     } else if (lock_type == MUK_LOCK_SHARED) {
