@@ -156,6 +156,7 @@ int main(int argc, char* argv[])
 
     if (group_world != MPI_GROUP_NULL) {
         printf("freed group is not null\n");
+        MPI_Abort(MPI_COMM_WORLD,1);
     }
 
     fflush(0);
