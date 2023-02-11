@@ -17,7 +17,22 @@ int main(int argc, char* argv[])
     rc = MPI_Initialized(&flag);
     printf("is init? %d\n", flag);
 
+    int major, minor;
+    rc = MPI_Get_version(&major,&minor);
+    printf("BEFORE major=%d, minor=%d\n", major, minor);
+
+    int len;
+    char version[MPI_MAX_LIBRARY_VERSION_STRING];
+    rc = MPI_Get_library_version(version,&len);
+    printf("BEFORE version=%s\n", version);
+
     rc = MPI_Init(&argc,&argv);
+
+    rc = MPI_Get_version(&major,&minor);
+    printf("AFTER major=%d, minor=%d\n", major, minor);
+
+    rc = MPI_Get_library_version(version,&len);
+    printf("AFTER version=%s\n", version);
 
     double t0 = MPI_Wtime();
 
