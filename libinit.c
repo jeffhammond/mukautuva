@@ -11,6 +11,8 @@
 
 Which_MPI_e whose_mpi = UNKNOWN;
 
+#include "mpi-constants.h"
+
 #define MUK_INTERNAL
 #include "mpi-handle-typedefs.h"
 
@@ -1547,7 +1549,9 @@ int MPI_Get_library_version(char *version, int *resultlen)
     // we should dlopen the MPI implementation when this is called,
     // but that is not what we are implementing for now.
     if (MUK_Get_library_version == NULL) {
-        *resultlen = 1 + sprintf(version,"MUKAUTUVA: the underlying MPI library is not initialized.\n");
+        *resultlen = snprintf(version,MPI_MAX_LIBRARY_VERSION_STRING,
+                              "MUKAUTUVA: the underlying MPI library is not initialized.\n");
+        return MPI_SUCCESS;
     }
     int rc = MUK_Get_library_version(version, resultlen);
     return WRAP_CODE_IMPL_TO_MUK(rc);
