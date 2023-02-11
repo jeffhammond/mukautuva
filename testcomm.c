@@ -60,12 +60,19 @@ int main(int argc, char* argv[])
     MPI_Comm_split_type(MPI_COMM_WORLD,MPI_COMM_TYPE_SHARED,0,MPI_INFO_NULL,&shared);
     MPI_Barrier(shared);
 
-    MPI_Comm_free(&dup);
     MPI_Comm_free(&split);
-    MPI_Comm_free(&shared);
 
+    MPI_Comm_free(&shared);
+    if (shared != MPI_COMM_NULL) {
+        printf("freed window is not null\n");
+        MPI_Abort(MPI_COMM_WORLD,1);
+    }
+
+    // disconnect is the same as free except it synchronizes
+    MPI_Comm_disconnect(&dup);
     if (dup != MPI_COMM_NULL) {
         printf("freed window is not null\n");
+        MPI_Abort(MPI_COMM_WORLD,1);
     }
 
     fflush(0);
