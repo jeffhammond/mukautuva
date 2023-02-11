@@ -3,8 +3,8 @@
 OMPICC=/usr/bin/mpicc.openmpi
 MPICHCC=/usr/bin/mpicc.mpich
 
-CC	= gcc
-CFLAGS	= -g3 -O0 -Wall -Wextra -Werror
+CC	= gcc-12
+CFLAGS	= -g3 -O3 -Wall -Wextra -Werror # -Wpedantic
 #CFLAGS	+= -ferror-limit=5 # Clang
 CFLAGS	+= -fmax-errors=5 # GCC
 CFLAGS	+= -fPIC

@@ -4408,7 +4408,7 @@ int WRAP_Testall(int count, MPI_Request* array_of_requests[], int *flag, WRAP_St
     }
 
     const bool ignore = (intptr_t)array_of_statuses == (intptr_t)IMPL_STATUSES_IGNORE;
-    MPI_Status * impl_statuses;
+    MPI_Status * impl_statuses = NULL;
     if (!ignore) {
         impl_statuses = malloc(count * sizeof(MPI_Status));
         if (impl_statuses == NULL) return MPI_ERR_INTERN;
@@ -4481,7 +4481,7 @@ int WRAP_Testsome(int incount, MPI_Request* array_of_requests[], int *outcount, 
     }
 
     const bool ignore = (intptr_t)array_of_statuses == (intptr_t)IMPL_STATUSES_IGNORE;
-    MPI_Status * impl_statuses;
+    MPI_Status * impl_statuses = NULL;
     if (!ignore) {
         impl_statuses = malloc(incount * sizeof(MPI_Status));
         if (impl_statuses == NULL) return MPI_ERR_INTERN;
@@ -4962,7 +4962,7 @@ int WRAP_Waitall(int count, MPI_Request* array_of_requests[], WRAP_Status array_
     }
 
     const bool ignore = (intptr_t)array_of_statuses == (intptr_t)IMPL_STATUSES_IGNORE;
-    MPI_Status * impl_statuses;
+    MPI_Status * impl_statuses = NULL;
     if (!ignore) {
         impl_statuses  = malloc(count * sizeof(MPI_Status));
         if (impl_statuses == NULL) return MPI_ERR_INTERN;
@@ -5034,7 +5034,7 @@ int WRAP_Waitsome(int incount, MPI_Request* array_of_requests[], int *outcount, 
     }
 
     const bool ignore = (intptr_t)array_of_statuses == (intptr_t)IMPL_STATUSES_IGNORE;
-    MPI_Status * impl_statuses;
+    MPI_Status * impl_statuses = NULL;
     if (!ignore) {
         impl_statuses = malloc(incount * sizeof(MPI_Status));
         if (impl_statuses == NULL) return MPI_ERR_INTERN;

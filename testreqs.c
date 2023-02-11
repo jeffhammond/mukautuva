@@ -36,14 +36,29 @@ int main(int argc, char* argv[])
 
         MPI_Ibarrier(MPI_COMM_WORLD,&r);
         MPI_Wait(&r,MPI_STATUS_IGNORE);
+        if (r != MPI_REQUEST_NULL) {
+            printf("freed request is not null\n");
+            printf("%d: request=0x%lx MPI_REQUEST_NULL=0x%lx\n", me, (intptr_t)r, (intptr_t)MPI_REQUEST_NULL);
+            MPI_Abort(MPI_COMM_WORLD,1);
+        }
 
         MPI_Ibarrier(MPI_COMM_WORLD,&r);
         MPI_Waitall(1,&r,MPI_STATUSES_IGNORE);
+        if (r != MPI_REQUEST_NULL) {
+            printf("freed request is not null\n");
+            printf("%d: request=0x%lx MPI_REQUEST_NULL=0x%lx\n", me, (intptr_t)r, (intptr_t)MPI_REQUEST_NULL);
+            MPI_Abort(MPI_COMM_WORLD,1);
+        }
 
         MPI_Ibarrier(MPI_COMM_WORLD,&r);
         flag = 0;
         while (!flag) {
             MPI_Test(&r,&flag,MPI_STATUS_IGNORE);
+        }
+        if (r != MPI_REQUEST_NULL) {
+            printf("freed request is not null\n");
+            printf("%d: request=0x%lx MPI_REQUEST_NULL=0x%lx\n", me, (intptr_t)r, (intptr_t)MPI_REQUEST_NULL);
+            MPI_Abort(MPI_COMM_WORLD,1);
         }
 
         MPI_Ibarrier(MPI_COMM_WORLD,&r);
@@ -51,9 +66,10 @@ int main(int argc, char* argv[])
         while (!flag) {
             MPI_Testall(1,&r,&flag,MPI_STATUSES_IGNORE);
         }
-
         if (r != MPI_REQUEST_NULL) {
             printf("freed request is not null\n");
+            printf("%d: request=0x%lx MPI_REQUEST_NULL=0x%lx\n", me, (intptr_t)r, (intptr_t)MPI_REQUEST_NULL);
+            MPI_Abort(MPI_COMM_WORLD,1);
         }
     }
 

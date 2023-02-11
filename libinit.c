@@ -30,6 +30,18 @@ Which_MPI_e whose_mpi = UNKNOWN;
 int (*WRAP_Load_functions)(void * restrict h, int major, int minor);
 int (*WRAP_CODE_IMPL_TO_MUK)(int error_c);
 
+// I need these for null handle versions.
+// The impl layer sets *handle = &IMPL_HANDLE_NULL,
+// which is pmuk_mpi_handle_null.  Then I detect
+// that and change it to MUK_HANDLE_NULL.
+void ** pmuk_mpi_request_null = NULL;
+static inline void MUK_REQUEST_NULLIFY(MPI_Request * r)
+{
+    if (*r == pmuk_mpi_request_null) {
+        *r = &muk_mpi_request_null;
+    }
+}
+
 // alkaa = start
 static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
 {
@@ -58,7 +70,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
         rc = MUK_Init_thread(argc,argv,requested,provided);
     }
 
-    char * wrapname;
+    char * wrapname = "/dev/null";
     // figure out which library i am using
     MUK_Get_library_version = MUK_DLSYM(h,"MPI_Get_library_version");
     {
@@ -668,8 +680,16 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     void ** pmuk_mpi_datatype_null = MUK_DLSYM(wrap_so_handle,"IMPL_DATATYPE_NULL");
     muk_mpi_datatype_null = *pmuk_mpi_datatype_null;
     //    MPI_REQUEST_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_REQUEST_NULL");
-    void ** pmuk_mpi_request_null = MUK_DLSYM(wrap_so_handle,"IMPL_REQUEST_NULL");
+    pmuk_mpi_request_null = MUK_DLSYM(wrap_so_handle,"IMPL_REQUEST_NULL");
     muk_mpi_request_null = *pmuk_mpi_request_null;
+    // This is the address inside the impl SO, i.e. &IMPL_REQUEST_NULL
+    //printf("libinit: pmuk_mpi_request_null=%p\n",pmuk_mpi_request_null);
+    // This is the value inside of the impl SO - the actual type with MPICH
+    // is int so dereferencing pmuk_mpi_request_null is bad.
+    //printf("libinit:  muk_mpi_request_null=%p\n",muk_mpi_request_null);
+    // This is the value of MPI_REQUEST_NULL that the application sees - use it.
+    // MPI_REQUEST_NULL = &muk_mpi_request_null
+    //printf("libinit: &muk_mpi_request_null=%p\n",&muk_mpi_request_null);
     //    MPI_OP_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_OP_NULL");
     void ** pmuk_mpi_op_null = MUK_DLSYM(wrap_so_handle,"IMPL_OP_NULL");
     muk_mpi_op_null = *pmuk_mpi_op_null;
@@ -1894,7 +1914,8 @@ int MPI_Comm_dup_with_info(MPI_Comm comm, MPI_Info info, MPI_Comm *newcomm)
 
 int MPI_Comm_free(MPI_Comm *comm)
 {
-    return MUK_Comm_free(comm);
+    int rc = MUK_Comm_free(comm);
+    return rc;
 }
 
 int MPI_Comm_free_keyval(int *comm_keyval)
@@ -3456,7 +3477,9 @@ int MPI_Register_datarep_c(const char *datarep, MPI_Datarep_conversion_function_
 
 int MPI_Request_free(MPI_Request *request)
 {
-    return MUK_Request_free(request);
+    int rc = MUK_Request_free(request);
+    MUK_REQUEST_NULLIFY(request);
+    return rc;
 }
 
 int MPI_Request_get_status(MPI_Request request, int *flag, MPI_Status *status)
@@ -3733,7 +3756,9 @@ int MPI_Status_set_elements_x(MPI_Status *status, MPI_Datatype datatype, MPI_Cou
 
 int MPI_Test(MPI_Request *request, int *flag, MPI_Status *status)
 {
-    return MUK_Test(request, flag, status);
+    int rc = MUK_Test(request, flag, status);
+    MUK_REQUEST_NULLIFY(request);
+    return rc;
 }
 
 int MPI_Test_cancelled(const MPI_Status *status, int *flag)
@@ -3743,17 +3768,29 @@ int MPI_Test_cancelled(const MPI_Status *status, int *flag)
 
 int MPI_Testall(int count, MPI_Request array_of_requests[], int *flag, MPI_Status array_of_statuses[])
 {
-    return MUK_Testall(count, array_of_requests, flag, array_of_statuses);
+    int rc = MUK_Testall(count, array_of_requests, flag, array_of_statuses);
+    for (int i=0; i<count; i++) {
+        MUK_REQUEST_NULLIFY(&array_of_requests[i]);
+    }
+    return rc;
 }
 
 int MPI_Testany(int count, MPI_Request array_of_requests[], int *indx, int *flag, MPI_Status *status)
 {
-    return MUK_Testany(count, array_of_requests, indx, flag, status);
+    int rc = MUK_Testany(count, array_of_requests, indx, flag, status);
+    for (int i=0; i<count; i++) {
+        MUK_REQUEST_NULLIFY(&array_of_requests[i]);
+    }
+    return rc;
 }
 
 int MPI_Testsome(int incount, MPI_Request array_of_requests[], int *outcount, int array_of_indices[], MPI_Status array_of_statuses[])
 {
-    return MUK_Testsome(incount, array_of_requests, outcount, array_of_indices, array_of_statuses);
+    int rc = MUK_Testsome(incount, array_of_requests, outcount, array_of_indices, array_of_statuses);
+    for (int i=0; i<incount; i++) {
+        MUK_REQUEST_NULLIFY(&array_of_requests[i]);
+    }
+    return rc;
 }
 
 int MPI_Topo_test(MPI_Comm comm, int *status)
@@ -4063,22 +4100,36 @@ int MPI_Unpublish_name(const char *service_name, MPI_Info info, const char *port
 
 int MPI_Wait(MPI_Request *request, MPI_Status *status)
 {
-    return MUK_Wait(request, status);
+    int rc = MUK_Wait(request, status);
+    MUK_REQUEST_NULLIFY(request);
+    return rc;
 }
 
 int MPI_Waitall(int count, MPI_Request array_of_requests[], MPI_Status array_of_statuses[])
 {
-    return MUK_Waitall(count, array_of_requests, array_of_statuses);
+    int rc = MUK_Waitall(count, array_of_requests, array_of_statuses);
+    for (int i=0; i<count; i++) {
+        MUK_REQUEST_NULLIFY(&array_of_requests[i]);
+    }
+    return rc;
 }
 
 int MPI_Waitany(int count, MPI_Request array_of_requests[], int *indx, MPI_Status *status)
 {
-    return MUK_Waitany(count, array_of_requests, indx, status);
+    int rc = MUK_Waitany(count, array_of_requests, indx, status);
+    for (int i=0; i<count; i++) {
+        MUK_REQUEST_NULLIFY(&array_of_requests[i]);
+    }
+    return rc;
 }
 
 int MPI_Waitsome(int incount, MPI_Request array_of_requests[], int *outcount, int array_of_indices[], MPI_Status array_of_statuses[])
 {
-    return MUK_Waitsome(incount, array_of_requests, outcount, array_of_indices, array_of_statuses);
+    int rc = MUK_Waitsome(incount, array_of_requests, outcount, array_of_indices, array_of_statuses);
+    for (int i=0; i<incount; i++) {
+        MUK_REQUEST_NULLIFY(&array_of_requests[i]);
+    }
+    return rc;
 }
 
 int MPI_Win_allocate(MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, void *baseptr, MPI_Win *win)
