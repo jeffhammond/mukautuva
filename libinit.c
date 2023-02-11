@@ -34,11 +34,83 @@ int (*WRAP_CODE_IMPL_TO_MUK)(int error_c);
 // The impl layer sets *handle = &IMPL_HANDLE_NULL,
 // which is pmuk_mpi_handle_null.  Then I detect
 // that and change it to MUK_HANDLE_NULL.
+// WARNING: these functions have zero type safety (void**) so check carefully.
 void ** pmuk_mpi_request_null = NULL;
-static inline void MUK_REQUEST_NULLIFY(MPI_Request * r)
+static inline void MUK_REQUEST_NULLIFY(MPI_Request * h)
 {
-    if (*r == pmuk_mpi_request_null) {
-        *r = &muk_mpi_request_null;
+    if (*h == pmuk_mpi_request_null) {
+        *h = &muk_mpi_request_null;
+    }
+}
+
+void ** pmuk_mpi_group_null = NULL;
+static inline void MUK_GROUP_NULLIFY(MPI_Group * h)
+{
+    if (*h == pmuk_mpi_group_null) {
+        *h = &muk_mpi_group_null;
+    }
+}
+void ** pmuk_mpi_comm_null = NULL;
+static inline void MUK_COMM_NULLIFY(MPI_Comm * h)
+{
+    if (*h == pmuk_mpi_comm_null) {
+        *h = &muk_mpi_comm_null;
+    }
+}
+void ** pmuk_mpi_datatype_null = NULL;
+static inline void MUK_DATATYPE_NULLIFY(MPI_Datatype * h)
+{
+    if (*h == pmuk_mpi_datatype_null) {
+        *h = &muk_mpi_datatype_null;
+    }
+}
+void ** pmuk_mpi_op_null = NULL;
+static inline void MUK_OP_NULLIFY(MPI_Op * h)
+{
+    if (*h == pmuk_mpi_op_null) {
+        *h = &muk_mpi_op_null;
+    }
+}
+void ** pmuk_mpi_errhandler_null = NULL;
+static inline void MUK_ERRHANDLER_NULLIFY(MPI_Errhandler * h)
+{
+    if (*h == pmuk_mpi_errhandler_null) {
+        *h = &muk_mpi_errhandler_null;
+    }
+}
+void ** pmuk_mpi_file_null = NULL;
+static inline void MUK_FILE_NULLIFY(MPI_File * h)
+{
+    if (*h == pmuk_mpi_file_null) {
+        *h = &muk_mpi_file_null;
+    }
+}
+void ** pmuk_mpi_info_null = NULL;
+static inline void MUK_INFO_NULLIFY(MPI_Info * h)
+{
+    if (*h == pmuk_mpi_info_null) {
+        *h = &muk_mpi_info_null;
+    }
+}
+void ** pmuk_mpi_session_null = NULL;
+static inline void MUK_SESSION_NULLIFY(MPI_Session * h)
+{
+    if (*h == pmuk_mpi_session_null) {
+        *h = &muk_mpi_session_null;
+    }
+}
+void ** pmuk_mpi_win_null = NULL;
+static inline void MUK_WIN_NULLIFY(MPI_Win * h)
+{
+    if (*h == pmuk_mpi_win_null) {
+        *h = &muk_mpi_win_null;
+    }
+}
+void ** pmuk_mpi_message_null = NULL;
+static inline void MUK_MESSAGE_NULLIFY(MPI_Message * h)
+{
+    if (*h == pmuk_mpi_message_null) {
+        *h = &muk_mpi_message_null;
     }
 }
 
@@ -207,10 +279,10 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     IMPL_ERR_NO_SUCH_FILE = *pIMPL_ERR_NO_SUCH_FILE;
     int* pIMPL_ERR_PORT = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_PORT");
     IMPL_ERR_PORT = *pIMPL_ERR_PORT;
-#if MPI_VERSION >= 4
-    int* pIMPL_ERR_PROC_ABORTED = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_PROC_ABORTED");
-    IMPL_ERR_PROC_ABORTED = *pIMPL_ERR_PROC_ABORTED;
-#endif
+    if (major >= 4) {
+        int* pIMPL_ERR_PROC_ABORTED = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_PROC_ABORTED");
+        IMPL_ERR_PROC_ABORTED = *pIMPL_ERR_PROC_ABORTED;
+    }
     int* pIMPL_ERR_QUOTA = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_QUOTA");
     IMPL_ERR_QUOTA = *pIMPL_ERR_QUOTA;
     int* pIMPL_ERR_READ_ONLY = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_READ_ONLY");
@@ -229,10 +301,10 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     IMPL_ERR_RMA_FLAVOR = *pIMPL_ERR_RMA_FLAVOR;
     int* pIMPL_ERR_SERVICE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_SERVICE");
     IMPL_ERR_SERVICE = *pIMPL_ERR_SERVICE;
-#if MPI_VERSION >= 4
-    int* pIMPL_ERR_SESSION = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_SESSION");
-    IMPL_ERR_SESSION = *pIMPL_ERR_SESSION;
-#endif
+    if (major >= 4) {
+        int* pIMPL_ERR_SESSION = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_SESSION");
+        IMPL_ERR_SESSION = *pIMPL_ERR_SESSION;
+    }
     int* pIMPL_ERR_SIZE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_SIZE");
     IMPL_ERR_SIZE = *pIMPL_ERR_SIZE;
     int* pIMPL_ERR_SPAWN = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_SPAWN");
@@ -241,24 +313,24 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     IMPL_ERR_UNSUPPORTED_DATAREP = *pIMPL_ERR_UNSUPPORTED_DATAREP;
     int* pIMPL_ERR_UNSUPPORTED_OPERATION = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_UNSUPPORTED_OPERATION");
     IMPL_ERR_UNSUPPORTED_OPERATION = *pIMPL_ERR_UNSUPPORTED_OPERATION;
-#if MPI_VERSION >= 4
-    int* pIMPL_ERR_VALUE_TOO_LARGE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_VALUE_TOO_LARGE");
-    IMPL_ERR_VALUE_TOO_LARGE = *pIMPL_ERR_VALUE_TOO_LARGE;
-#endif
+    if (major >= 4) {
+        int* pIMPL_ERR_VALUE_TOO_LARGE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_VALUE_TOO_LARGE");
+        IMPL_ERR_VALUE_TOO_LARGE = *pIMPL_ERR_VALUE_TOO_LARGE;
+    }
     int* pIMPL_ERR_WIN = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_WIN");
     IMPL_ERR_WIN = *pIMPL_ERR_WIN;
     int* pIMPL_T_ERR_CANNOT_INIT = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_CANNOT_INIT");
     IMPL_T_ERR_CANNOT_INIT = *pIMPL_T_ERR_CANNOT_INIT;
-#if 0
-    int* pIMPL_T_ERR_NOT_ACCESSIBLE = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_NOT_ACCESSIBLE");
-    IMPL_T_ERR_NOT_ACCESSIBLE = *pIMPL_T_ERR_NOT_ACCESSIBLE;
-#endif
+    if (major >= 4) {
+        int* pIMPL_T_ERR_NOT_ACCESSIBLE = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_NOT_ACCESSIBLE");
+        IMPL_T_ERR_NOT_ACCESSIBLE = *pIMPL_T_ERR_NOT_ACCESSIBLE;
+    }
     int* pIMPL_T_ERR_NOT_INITIALIZED = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_NOT_INITIALIZED");
     IMPL_T_ERR_NOT_INITIALIZED = *pIMPL_T_ERR_NOT_INITIALIZED;
-#if MPI_VERSION >= 4
-    int* pIMPL_T_ERR_NOT_SUPPORTED = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_NOT_SUPPORTED");
-    IMPL_T_ERR_NOT_SUPPORTED = *pIMPL_T_ERR_NOT_SUPPORTED;
-#endif
+    if (major >= 4) {
+        int* pIMPL_T_ERR_NOT_SUPPORTED = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_NOT_SUPPORTED");
+        IMPL_T_ERR_NOT_SUPPORTED = *pIMPL_T_ERR_NOT_SUPPORTED;
+    }
     int* pIMPL_T_ERR_MEMORY = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_MEMORY");
     IMPL_T_ERR_MEMORY = *pIMPL_T_ERR_MEMORY;
     int* pIMPL_T_ERR_INVALID = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_INVALID");
@@ -351,11 +423,11 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     //    MPI_ERRORS_ARE_FATAL = MUK_DLSYM(wrap_so_handle,"IMPL_ERRORS_ARE_FATAL");
     void ** pmuk_mpi_errors_are_fatal = MUK_DLSYM(wrap_so_handle,"IMPL_ERRORS_ARE_FATAL");
     muk_mpi_errors_are_fatal = *pmuk_mpi_errors_are_fatal;
-#if 0 && MPI_VERSION >= 4
-    //    MPI_ERRORS_ABORT = MUK_DLSYM(wrap_so_handle,"IMPL_ERRORS_ABORT");
-    void ** pmuk_mpi_errors_abort = MUK_DLSYM(wrap_so_handle,"IMPL_ERRORS_ABORT");
-    muk_mpi_errors_abort = *pmuk_mpi_errors_abort;
-#endif
+    if (major >= 4) {
+        //    MPI_ERRORS_ABORT = MUK_DLSYM(wrap_so_handle,"IMPL_ERRORS_ABORT");
+        void ** pmuk_mpi_errors_abort = MUK_DLSYM(wrap_so_handle,"IMPL_ERRORS_ABORT");
+        muk_mpi_errors_abort = *pmuk_mpi_errors_abort;
+    }
     //    MPI_ERRORS_RETURN = MUK_DLSYM(wrap_so_handle,"IMPL_ERRORS_RETURN");
     void ** pmuk_mpi_errors_return = MUK_DLSYM(wrap_so_handle,"IMPL_ERRORS_RETURN");
     muk_mpi_errors_return = *pmuk_mpi_errors_return;
@@ -586,12 +658,12 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     // Communicator split type constants
     int* pMPI_COMM_TYPE_SHARED = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_TYPE_SHARED");
     MPI_COMM_TYPE_SHARED = *pMPI_COMM_TYPE_SHARED;
-#if MPI_VERSION >= 4
-    int* pMPI_COMM_TYPE_HW_UNGUIDED = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_TYPE_HW_UNGUIDED");
-    MPI_COMM_TYPE_HW_UNGUIDED = *pMPI_COMM_TYPE_HW_UNGUIDED;
-    int* pMPI_COMM_TYPE_HW_GUIDED = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_TYPE_HW_GUIDED");
-    MPI_COMM_TYPE_HW_GUIDED = *pMPI_COMM_TYPE_HW_GUIDED;
-#endif
+    if (major >= 4) {
+        int* pMPI_COMM_TYPE_HW_UNGUIDED = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_TYPE_HW_UNGUIDED");
+        MPI_COMM_TYPE_HW_UNGUIDED = *pMPI_COMM_TYPE_HW_UNGUIDED;
+        int* pMPI_COMM_TYPE_HW_GUIDED = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_TYPE_HW_GUIDED");
+        MPI_COMM_TYPE_HW_GUIDED = *pMPI_COMM_TYPE_HW_GUIDED;
+    }
 #endif
 
 #if 0
@@ -671,13 +743,13 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
 
     // Null Handles
     //    MPI_GROUP_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_GROUP_NULL");
-    void ** pmuk_mpi_group_null = MUK_DLSYM(wrap_so_handle,"IMPL_GROUP_NULL");
+    pmuk_mpi_group_null = MUK_DLSYM(wrap_so_handle,"IMPL_GROUP_NULL");
     muk_mpi_group_null = *pmuk_mpi_group_null;
     //    MPI_COMM_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_NULL");
-    void ** pmuk_mpi_comm_null = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_NULL");
+    pmuk_mpi_comm_null = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_NULL");
     muk_mpi_comm_null = *pmuk_mpi_comm_null;
     //    MPI_DATATYPE_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_DATATYPE_NULL");
-    void ** pmuk_mpi_datatype_null = MUK_DLSYM(wrap_so_handle,"IMPL_DATATYPE_NULL");
+    pmuk_mpi_datatype_null = MUK_DLSYM(wrap_so_handle,"IMPL_DATATYPE_NULL");
     muk_mpi_datatype_null = *pmuk_mpi_datatype_null;
     //    MPI_REQUEST_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_REQUEST_NULL");
     pmuk_mpi_request_null = MUK_DLSYM(wrap_so_handle,"IMPL_REQUEST_NULL");
@@ -691,27 +763,27 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     // MPI_REQUEST_NULL = &muk_mpi_request_null
     //printf("libinit: &muk_mpi_request_null=%p\n",&muk_mpi_request_null);
     //    MPI_OP_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_OP_NULL");
-    void ** pmuk_mpi_op_null = MUK_DLSYM(wrap_so_handle,"IMPL_OP_NULL");
+    pmuk_mpi_op_null = MUK_DLSYM(wrap_so_handle,"IMPL_OP_NULL");
     muk_mpi_op_null = *pmuk_mpi_op_null;
     //    MPI_ERRHANDLER_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_ERRHANDLER_NULL");
-    void ** pmuk_mpi_errhandler_null = MUK_DLSYM(wrap_so_handle,"IMPL_ERRHANDLER_NULL");
+    pmuk_mpi_errhandler_null = MUK_DLSYM(wrap_so_handle,"IMPL_ERRHANDLER_NULL");
     muk_mpi_errhandler_null = *pmuk_mpi_errhandler_null;
     //    MPI_FILE_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_FILE_NULL");
-    void ** pmuk_mpi_file_null = MUK_DLSYM(wrap_so_handle,"IMPL_FILE_NULL");
+    pmuk_mpi_file_null = MUK_DLSYM(wrap_so_handle,"IMPL_FILE_NULL");
     muk_mpi_file_null = *pmuk_mpi_file_null;
     //    MPI_INFO_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_INFO_NULL");
-    void ** pmuk_mpi_info_null = MUK_DLSYM(wrap_so_handle,"IMPL_INFO_NULL");
+    pmuk_mpi_info_null = MUK_DLSYM(wrap_so_handle,"IMPL_INFO_NULL");
     muk_mpi_info_null = *pmuk_mpi_info_null;
-#if 0 && MPI_VERSION >= 4
-    //    MPI_SESSION_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_SESSION_NULL");
-    void ** pmuk_mpi_session_null = MUK_DLSYM(wrap_so_handle,"IMPL_SESSION_NULL");
-    muk_mpi_session_null = *pmuk_mpi_session_null;
-#endif
+    if (major >= 4) {
+        //    MPI_SESSION_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_SESSION_NULL");
+        pmuk_mpi_session_null = MUK_DLSYM(wrap_so_handle,"IMPL_SESSION_NULL");
+        muk_mpi_session_null = *pmuk_mpi_session_null;
+    }
     //    MPI_WIN_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_WIN_NULL");
-    void ** pmuk_mpi_win_null = MUK_DLSYM(wrap_so_handle,"IMPL_WIN_NULL");
+    pmuk_mpi_win_null = MUK_DLSYM(wrap_so_handle,"IMPL_WIN_NULL");
     muk_mpi_win_null = *pmuk_mpi_win_null;
     //    MPI_MESSAGE_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_MESSAGE_NULL");
-    void ** pmuk_mpi_message_null = MUK_DLSYM(wrap_so_handle,"IMPL_MESSAGE_NULL");
+    pmuk_mpi_message_null = MUK_DLSYM(wrap_so_handle,"IMPL_MESSAGE_NULL");
     muk_mpi_message_null = *pmuk_mpi_message_null;
 
     // Empty group
@@ -1899,7 +1971,9 @@ int MPI_Comm_delete_attr(MPI_Comm comm, int comm_keyval)
 
 int MPI_Comm_disconnect(MPI_Comm *comm)
 {
-    return MUK_Comm_disconnect(comm);
+    int rc = MUK_Comm_disconnect(comm);
+    MUK_COMM_NULLIFY(comm);
+    return rc;
 }
 
 int MPI_Comm_dup(MPI_Comm comm, MPI_Comm *newcomm)
@@ -1915,6 +1989,7 @@ int MPI_Comm_dup_with_info(MPI_Comm comm, MPI_Info info, MPI_Comm *newcomm)
 int MPI_Comm_free(MPI_Comm *comm)
 {
     int rc = MUK_Comm_free(comm);
+    MUK_COMM_NULLIFY(comm);
     return rc;
 }
 
@@ -2050,7 +2125,9 @@ int MPI_Errhandler_create(MPI_Comm_errhandler_function *comm_errhandler_fn, MPI_
 
 int MPI_Errhandler_free(MPI_Errhandler *errhandler)
 {
-    return MUK_Errhandler_free(errhandler);
+    int rc = MUK_Errhandler_free(errhandler);
+    MUK_ERRHANDLER_NULLIFY(errhandler);
+    return rc;
 }
 
 int MPI_Errhandler_get(MPI_Comm comm, MPI_Errhandler *errhandler)
@@ -2105,7 +2182,9 @@ int MPI_File_call_errhandler(MPI_File fh, int errorcode)
 
 int MPI_File_close(MPI_File *fh)
 {
-    return MUK_File_close(fh);
+    int rc = MUK_File_close(fh);
+    MUK_FILE_NULLIFY(fh);
+    return rc;
 }
 
 int MPI_File_create_errhandler(MPI_File_errhandler_function *file_errhandler_fn, MPI_Errhandler *errhandler)
@@ -2690,7 +2769,9 @@ int MPI_Group_excl(MPI_Group group, int n, const int ranks[], MPI_Group *newgrou
 
 int MPI_Group_free(MPI_Group *group)
 {
-    return MUK_Group_free(group);
+    int rc = MUK_Group_free(group);
+    MUK_GROUP_NULLIFY(group);
+    return rc;
 }
 
 int MPI_Group_from_session_pset(MPI_Session session, const char *pset_name, MPI_Group *newgroup)
@@ -2860,12 +2941,16 @@ int MPI_Improbe(int source, int tag, MPI_Comm comm, int *flag, MPI_Message *mess
 
 int MPI_Imrecv(void *buf, int count, MPI_Datatype datatype, MPI_Message *message, MPI_Request *request)
 {
-    return MUK_Imrecv(buf, count, datatype, message, request);
+    int rc = MUK_Imrecv(buf, count, datatype, message, request);
+    MUK_MESSAGE_NULLIFY(message);
+    return rc;
 }
 
 int MPI_Imrecv_c(void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Message *message, MPI_Request *request)
 {
-    return MUK_Imrecv_c(buf, count, datatype, message, request);
+    int rc = MUK_Imrecv_c(buf, count, datatype, message, request);
+    MUK_MESSAGE_NULLIFY(message);
+    return rc;
 }
 
 int MPI_Ineighbor_allgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request)
@@ -2940,7 +3025,9 @@ int MPI_Info_dup(MPI_Info info, MPI_Info *newinfo)
 
 int MPI_Info_free(MPI_Info *info)
 {
-    return MUK_Info_free(info);
+    int rc = MUK_Info_free(info);
+    MUK_INFO_NULLIFY(info);
+    return rc;
 }
 
 int MPI_Info_get(MPI_Info info, const char *key, int valuelen, char *value, int *flag)
@@ -3137,12 +3224,16 @@ int MPI_Mprobe(int source, int tag, MPI_Comm comm, MPI_Message *message, MPI_Sta
 
 int MPI_Mrecv(void *buf, int count, MPI_Datatype datatype, MPI_Message *message, MPI_Status *status)
 {
-    return MUK_Mrecv(buf, count, datatype, message, status);
+    int rc = MUK_Mrecv(buf, count, datatype, message, status);
+    MUK_MESSAGE_NULLIFY(message);
+    return rc;
 }
 
 int MPI_Mrecv_c(void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Message *message, MPI_Status *status)
 {
-    return MUK_Mrecv_c(buf, count, datatype, message, status);
+    int rc = MUK_Mrecv_c(buf, count, datatype, message, status);
+    MUK_MESSAGE_NULLIFY(message);
+    return rc;
 }
 
 int MPI_Neighbor_allgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
@@ -3262,7 +3353,9 @@ int MPI_Op_create_c(MPI_User_function_c *user_fn, int commute, MPI_Op *op)
 
 int MPI_Op_free(MPI_Op *op)
 {
-    return MUK_Op_free(op);
+    int rc = MUK_Op_free(op);
+    MUK_OP_NULLIFY(op);
+    return rc;
 }
 
 int MPI_Open_port(MPI_Info info, char *port_name)
@@ -3649,7 +3742,9 @@ int MPI_Session_create_errhandler(MPI_Session_errhandler_function *session_errha
 
 int MPI_Session_finalize(MPI_Session *session)
 {
-    return MUK_Session_finalize(session);
+    int rc = MUK_Session_finalize(session);
+    MUK_SESSION_NULLIFY(session);
+    return rc;
 }
 
 int MPI_Session_get_errhandler(MPI_Session session, MPI_Errhandler *errhandler)
@@ -3930,7 +4025,9 @@ int MPI_Type_extent(MPI_Datatype datatype, MPI_Aint *extent)
 
 int MPI_Type_free(MPI_Datatype *datatype)
 {
-    return MUK_Type_free(datatype);
+    int rc = MUK_Type_free(datatype);
+    MUK_DATATYPE_NULLIFY(datatype);
+    return rc;
 }
 
 int MPI_Type_free_keyval(int *type_keyval)
@@ -4229,7 +4326,9 @@ int MPI_Win_flush_local_all(MPI_Win win)
 
 int MPI_Win_free(MPI_Win *win)
 {
-    return MUK_Win_free(win);
+    int rc = MUK_Win_free(win);
+    MUK_WIN_NULLIFY(win);
+    return rc;
 }
 
 int MPI_Win_free_keyval(int *win_keyval)

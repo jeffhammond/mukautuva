@@ -161,7 +161,7 @@ extern struct MPI_ABI_Errhandler muk_mpi_errors_are_fatal;
 #endif
 #define MPI_ERRORS_ARE_FATAL (MPI_Errhandler)&muk_mpi_errors_are_fatal
 
-#if MPI_VERSION >= 4
+#if 1 //MPI_VERSION >= 4
 #ifdef MUK_INTERNAL
 void* muk_mpi_errors_abort;
 #else
@@ -418,7 +418,6 @@ void* muk_mpi_packed;
 extern struct MPI_ABI_Datatype muk_mpi_packed;
 #endif
 #define MPI_PACKED (MPI_Datatype)&muk_mpi_packed
-
 
 #ifdef MUK_INTERNAL
 void* muk_mpi_integer;
@@ -863,15 +862,15 @@ extern struct MPI_ABI_Info muk_mpi_info_null;
 #endif
 #define MPI_INFO_NULL (MPI_Info)&muk_mpi_info_null
 
-#if MPI_VERSION >= 4
+#if 1 //MPI_VERSION >= 4
 #ifdef MUK_INTERNAL
 void* muk_mpi_session_null;
 #else
 extern struct MPI_ABI_Session muk_mpi_session_null;
 #endif
 #define MPI_SESSION_NULL (MPI_Session)&muk_mpi_session_null
-
 #endif
+
 #ifdef MUK_INTERNAL
 void* muk_mpi_win_null;
 #else

@@ -1805,6 +1805,8 @@ int WRAP_Comm_delete_attr(MPI_Comm *comm, int comm_keyval)
 int WRAP_Comm_disconnect(MPI_Comm **comm)
 {
     int rc = IMPL_Comm_disconnect(*comm);
+    free(*comm);
+    *comm = &IMPL_COMM_NULL;
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
