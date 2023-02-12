@@ -226,8 +226,8 @@ enum {
     // MPICH and OMPI agree on this
     MUK_THREAD_SINGLE       = 0,
     MUK_THREAD_FUNNELED     = 1,
-    MUK_THREAD_MULTIPLE     = 2,
-    MUK_THREAD_SERIALIZED   = 3
+    MUK_THREAD_SERIALIZED   = 2,
+    MUK_THREAD_MULTIPLE     = 3
 };
 
 enum {

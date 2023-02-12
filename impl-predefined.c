@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <assert.h>
 #include <mpi.h>
 #include "muk-predefined.h"
 
@@ -449,11 +450,20 @@ int IMPL_COMM_TYPE_HW_UNGUIDED = MPI_COMM_TYPE_HW_UNGUIDED;
 int IMPL_COMM_TYPE_HW_GUIDED = MPI_COMM_TYPE_HW_GUIDED;
 #endif
 
+// we avoid converting thread levels because every known implementation uses
+// the same values for them, but we explicitly verify the assumption here.
+#if ( __STDC_VERSION__ >= 201112L)
+_Static_assert( (int)MUK_IDENT     == (int) MPI_IDENT     );
+_Static_assert( (int)MUK_CONGRUENT == (int) MPI_CONGRUENT );
+_Static_assert( (int)MUK_SIMILAR   == (int) MPI_SIMILAR   );
+_Static_assert( (int)MUK_UNEQUAL   == (int) MPI_UNEQUAL   );
+#endif
+
 // Results of communicator and group comparisons
-int IMPL_IDENT = MPI_IDENT;
+int IMPL_IDENT     = MPI_IDENT;
 int IMPL_CONGRUENT = MPI_CONGRUENT;
-int IMPL_SIMILAR = MPI_SIMILAR;
-int IMPL_UNEQUAL = MPI_UNEQUAL;
+int IMPL_SIMILAR   = MPI_SIMILAR;
+int IMPL_UNEQUAL   = MPI_UNEQUAL;
 
 // Environmental inquiry info key
 MPI_Info IMPL_INFO_ENV = MPI_INFO_ENV;
@@ -582,6 +592,15 @@ int COMBINER_CODE_IMPL_TO_MUK(int in)
     else if (in == MPI_COMBINER_VECTOR)         { return MUK_COMBINER_VECTOR; }
     else                                        { return MUK_UNDEFINED; }
 }
+
+// we avoid converting thread levels because every known implementation uses
+// the same values for them, but we explicitly verify the assumption here.
+#if ( __STDC_VERSION__ >= 201112L)
+_Static_assert( (int)MUK_THREAD_FUNNELED   == (int)MPI_THREAD_FUNNELED   );
+_Static_assert( (int)MUK_THREAD_MULTIPLE   == (int)MPI_THREAD_MULTIPLE   );
+_Static_assert( (int)MUK_THREAD_SERIALIZED == (int)MPI_THREAD_SERIALIZED );
+_Static_assert( (int)MUK_THREAD_SINGLE     == (int)MPI_THREAD_SINGLE     );
+#endif
 
 // Threads Constants
 int IMPL_THREAD_FUNNELED = MPI_THREAD_FUNNELED;
