@@ -17,6 +17,10 @@ Run tests:
 for t in `find . -type f -executable -print` ; do LD_LIBRARY_PATH=/home/jhammond/mukautuva mpirun -n 2 ./$t ; done
 ```
 
+At least one RMA test with Open-MPI requires `--mca osc ucx` (vader bug). https://github.com/jeffhammond/mukautuva/issues/2
+
+MPICH with OFI requires `RDMAV_FORK_SAFE=1`. https://github.com/jeffhammond/mukautuva/issues/3
+
 # ARMCI-MPI
 
 Clone as a subdirectory of `./mukautuva`:
