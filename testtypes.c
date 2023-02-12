@@ -13,6 +13,11 @@
 
 // these are not constants (yet)
 static MPI_Datatype types[] = { MPI_CHAR, MPI_SHORT, MPI_INT, MPI_LONG, MPI_LONG_LONG, MPI_FLOAT, MPI_DOUBLE };
+static size_t type_sizes[] = { sizeof(char), sizeof(short), sizeof(int), sizeof(long),
+                               sizeof(long long), sizeof(float), sizeof(double) };
+
+static char type_names[][20] = { "MPI_CHAR", "MPI_SHORT", "MPI_INT", "MPI_LONG",
+                                 "MPI_LONG_LONG_INT", "MPI_FLOAT", "MPI_DOUBLE" };
 
 int main(int argc, char* argv[])
 {
@@ -33,17 +38,20 @@ int main(int argc, char* argv[])
 
         int size;
         MPI_Type_size(type, &size);
-
-        if (me == 0) {
+        if ((size_t)size != type_sizes[t]) {
             printf("t=%d type=%p\n", t, type);
-
-            int len;
-            char name[MPI_MAX_OBJECT_NAME] = {0};
-            MPI_Type_get_name(type, name, &len);
-            printf("name=%s\n", name);
-
-            printf("size=%d\n", size);
+            MPI_Abort(MPI_COMM_WORLD,size);
         }
+
+        int len;
+        char name[MPI_MAX_OBJECT_NAME] = {0};
+        MPI_Type_get_name(type, name, &len);
+        int cmp = strcmp(name, type_names[t]);
+        if (cmp != 0) {
+            printf("name=%s\n", name);
+            MPI_Abort(MPI_COMM_WORLD,cmp);
+        }
+
         fflush(0);
         usleep(1);
         MPI_Barrier(MPI_COMM_WORLD);
@@ -102,6 +110,16 @@ int main(int argc, char* argv[])
         MPI_Datatype vector = MPI_DATATYPE_NULL;
         MPI_Type_vector(10, 10, 20, MPI_BYTE, &vector);
         MPI_Type_commit(&vector);
+
+        MPI_Type_set_name(vector,"vector: 10, 10, 20, MPI_BYTE");
+        int len;
+        char name[MPI_MAX_OBJECT_NAME] = {0};
+        MPI_Type_get_name(vector, name, &len);
+        int cmp = strcmp(name, "vector: 10, 10, 20, MPI_BYTE");
+        if (cmp != 0) {
+            printf("name=%s\n", name);
+            MPI_Abort(MPI_COMM_WORLD,cmp);
+        }
 
         int size;
         MPI_Type_size(vector, &size);
