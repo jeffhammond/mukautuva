@@ -140,6 +140,96 @@ int main(int argc, char* argv[])
         }
     }
 
+    {
+        MPI_Datatype subarray = MPI_DATATYPE_NULL;
+        int sizes[2]    = {20,20};
+        int subsizes[2] = {10,10};
+        int starts[2]   = {0,0};
+        MPI_Type_create_subarray(2, sizes, subsizes, starts, MPI_ORDER_FORTRAN, MPI_BYTE, &subarray);
+        MPI_Type_commit(&subarray);
+
+        int size;
+        MPI_Type_size(subarray, &size);
+        if (size != 100) {
+            printf("wrong: size=%d\n", size);
+            MPI_Abort(MPI_COMM_WORLD,size);
+        }
+
+        int psize;
+        MPI_Pack_size(1, subarray, MPI_COMM_SELF, &psize);
+        if (psize != 100) {
+            printf("wrong: pack size=%d\n", psize);
+            MPI_Abort(MPI_COMM_WORLD,psize);
+        }
+
+        MPI_Aint lb, extent;
+        MPI_Type_get_extent(subarray, &lb, &extent);
+        if (lb !=0 || extent != 400) {
+            printf("\n");
+            printf("wrong: lb=%zu extent=%ld\n", lb, extent);
+            MPI_Abort(MPI_COMM_WORLD,extent);
+        }
+
+        int ni, na, nd, combiner;
+        MPI_Type_get_envelope(subarray, &ni, &na, &nd, &combiner);
+        if (ni != 8 || na != 0 || nd != 1 || combiner != MPI_COMBINER_SUBARRAY) {
+            printf("get_envelope: ni=%d na=%d nd=%d combiner=%d\n", ni, na, nd, combiner);
+            printf("MPI_COMBINER_SUBARRAY = %d\n", MPI_COMBINER_SUBARRAY);
+            MPI_Abort(MPI_COMM_WORLD,combiner);
+        }
+
+        MPI_Type_free(&subarray);
+        if (subarray != MPI_DATATYPE_NULL) {
+            printf("freed handle is not null\n");
+            MPI_Abort(MPI_COMM_WORLD,1);
+        }
+    }
+
+    {
+        MPI_Datatype subarray = MPI_DATATYPE_NULL;
+        int sizes[2]    = {20,20};
+        int subsizes[2] = {10,10};
+        int starts[2]   = {0,0};
+        MPI_Type_create_subarray(2, sizes, subsizes, starts, MPI_ORDER_C, MPI_BYTE, &subarray);
+        MPI_Type_commit(&subarray);
+
+        int size;
+        MPI_Type_size(subarray, &size);
+        if (size != 100) {
+            printf("wrong: size=%d\n", size);
+            MPI_Abort(MPI_COMM_WORLD,size);
+        }
+
+        int psize;
+        MPI_Pack_size(1, subarray, MPI_COMM_SELF, &psize);
+        if (psize != 100) {
+            printf("wrong: pack size=%d\n", psize);
+            MPI_Abort(MPI_COMM_WORLD,psize);
+        }
+
+        MPI_Aint lb, extent;
+        MPI_Type_get_extent(subarray, &lb, &extent);
+        if (lb !=0 || extent != 400) {
+            printf("\n");
+            printf("wrong: lb=%zu extent=%ld\n", lb, extent);
+            MPI_Abort(MPI_COMM_WORLD,extent);
+        }
+
+        int ni, na, nd, combiner;
+        MPI_Type_get_envelope(subarray, &ni, &na, &nd, &combiner);
+        if (ni != 8 || na != 0 || nd != 1 || combiner != MPI_COMBINER_SUBARRAY) {
+            printf("get_envelope: ni=%d na=%d nd=%d combiner=%d\n", ni, na, nd, combiner);
+            printf("MPI_COMBINER_SUBARRAY = %d\n", MPI_COMBINER_SUBARRAY);
+            MPI_Abort(MPI_COMM_WORLD,combiner);
+        }
+
+        MPI_Type_free(&subarray);
+        if (subarray != MPI_DATATYPE_NULL) {
+            printf("freed handle is not null\n");
+            MPI_Abort(MPI_COMM_WORLD,1);
+        }
+    }
+
     fflush(0);
     usleep(1);
     MPI_Barrier(MPI_COMM_WORLD);
