@@ -59,12 +59,20 @@ int main(int argc, char* argv[])
     {
         MPI_Datatype contig = MPI_DATATYPE_NULL;
         MPI_Type_contiguous(100, MPI_BYTE, &contig);
+        MPI_Type_commit(&contig);
 
         int size;
         MPI_Type_size(contig, &size);
         if (size != 100) {
             printf("wrong: size=%d\n", size);
             MPI_Abort(MPI_COMM_WORLD,size);
+        }
+
+        int psize;
+        MPI_Pack_size(1, contig, MPI_COMM_SELF, &psize);
+        if (psize != 100) {
+            printf("wrong: pack size=%d\n", psize);
+            MPI_Abort(MPI_COMM_WORLD,psize);
         }
 
         MPI_Aint lb, extent;
@@ -80,11 +88,53 @@ int main(int argc, char* argv[])
         if (ni != 1 || na != 0 || nd != 1 || combiner != MPI_COMBINER_CONTIGUOUS) {
             printf("get_envelope: ni=%d na=%d nd=%d combiner=%d\n", ni, na, nd, combiner);
             printf("MPI_COMBINER_CONTIGUOUS = %d\n", MPI_COMBINER_CONTIGUOUS);
-            MPI_Abort(MPI_COMM_WORLD,extent);
+            MPI_Abort(MPI_COMM_WORLD,combiner);
         }
 
         MPI_Type_free(&contig);
         if (contig != MPI_DATATYPE_NULL) {
+            printf("freed handle is not null\n");
+            MPI_Abort(MPI_COMM_WORLD,1);
+        }
+    }
+
+    {
+        MPI_Datatype vector = MPI_DATATYPE_NULL;
+        MPI_Type_vector(10, 10, 20, MPI_BYTE, &vector);
+        MPI_Type_commit(&vector);
+
+        int size;
+        MPI_Type_size(vector, &size);
+        if (size != 100) {
+            printf("wrong: size=%d\n", size);
+            MPI_Abort(MPI_COMM_WORLD,size);
+        }
+
+        int psize;
+        MPI_Pack_size(1, vector, MPI_COMM_SELF, &psize);
+        if (psize != 100) {
+            printf("wrong: pack size=%d\n", psize);
+            MPI_Abort(MPI_COMM_WORLD,psize);
+        }
+
+        MPI_Aint lb, extent;
+        MPI_Type_get_extent(vector, &lb, &extent);
+        if (lb !=0 || extent != 190) {
+            printf("\n");
+            printf("wrong: lb=%zu extent=%ld\n", lb, extent);
+            MPI_Abort(MPI_COMM_WORLD,extent);
+        }
+
+        int ni, na, nd, combiner;
+        MPI_Type_get_envelope(vector, &ni, &na, &nd, &combiner);
+        if (ni != 3 || na != 0 || nd != 1 || combiner != MPI_COMBINER_VECTOR) {
+            printf("get_envelope: ni=%d na=%d nd=%d combiner=%d\n", ni, na, nd, combiner);
+            printf("MPI_COMBINER_VECTOR = %d\n", MPI_COMBINER_VECTOR);
+            MPI_Abort(MPI_COMM_WORLD,combiner);
+        }
+
+        MPI_Type_free(&vector);
+        if (vector != MPI_DATATYPE_NULL) {
             printf("freed handle is not null\n");
             MPI_Abort(MPI_COMM_WORLD,1);
         }
