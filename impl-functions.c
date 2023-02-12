@@ -4548,15 +4548,29 @@ int WRAP_Type_contiguous_c(IMPL_Count count, MPI_Datatype *oldtype, MPI_Datatype
 
 int WRAP_Type_create_darray(int size, int rank, int ndims, const int array_of_gsizes[], const int array_of_distribs[], const int array_of_dargs[], const int array_of_psizes[], int order, MPI_Datatype *oldtype, MPI_Datatype **newtype)
 {
+    int impl_order = MPI_UNDEFINED;
+    if (order == MUK_ORDER_C) {
+        impl_order = MPI_ORDER_C;
+    }
+    else if (order == MUK_ORDER_FORTRAN) {
+        impl_order = MPI_ORDER_FORTRAN;
+    }
     *newtype = malloc(sizeof(MPI_Datatype));
-    int rc = IMPL_Type_create_darray(size, rank, ndims, array_of_gsizes, array_of_distribs, array_of_dargs, array_of_psizes, order, *oldtype, *newtype);
+    int rc = IMPL_Type_create_darray(size, rank, ndims, array_of_gsizes, array_of_distribs, array_of_dargs, array_of_psizes, impl_order, *oldtype, *newtype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_create_darray_c(int size, int rank, int ndims, const IMPL_Count array_of_gsizes[], const int array_of_distribs[], const int array_of_dargs[], const int array_of_psizes[], int order, MPI_Datatype *oldtype, MPI_Datatype **newtype)
 {
+    int impl_order = MPI_UNDEFINED;
+    if (order == MUK_ORDER_C) {
+        impl_order = MPI_ORDER_C;
+    }
+    else if (order == MUK_ORDER_FORTRAN) {
+        impl_order = MPI_ORDER_FORTRAN;
+    }
     *newtype = malloc(sizeof(MPI_Datatype));
-    int rc = IMPL_Type_create_darray_c(size, rank, ndims, array_of_gsizes, array_of_distribs, array_of_dargs, array_of_psizes, order, *oldtype, *newtype);
+    int rc = IMPL_Type_create_darray_c(size, rank, ndims, array_of_gsizes, array_of_distribs, array_of_dargs, array_of_psizes, impl_order, *oldtype, *newtype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
