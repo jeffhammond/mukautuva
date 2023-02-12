@@ -4576,7 +4576,6 @@ int WRAP_Type_create_darray_c(int size, int rank, int ndims, const IMPL_Count ar
 
 int WRAP_Type_create_f90_complex(int p, int r, MPI_Datatype **newtype)
 {
-    // TODO handle MPI_UNDEFINED here
     *newtype = malloc(sizeof(MPI_Datatype));
     int rc = IMPL_Type_create_f90_complex(p, r, *newtype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -4584,7 +4583,6 @@ int WRAP_Type_create_f90_complex(int p, int r, MPI_Datatype **newtype)
 
 int WRAP_Type_create_f90_integer(int r, MPI_Datatype **newtype)
 {
-    // TODO handle MPI_UNDEFINED here
     *newtype = malloc(sizeof(MPI_Datatype));
     int rc = IMPL_Type_create_f90_integer(r, *newtype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -4592,7 +4590,6 @@ int WRAP_Type_create_f90_integer(int r, MPI_Datatype **newtype)
 
 int WRAP_Type_create_f90_real(int p, int r, MPI_Datatype **newtype)
 {
-    // TODO handle MPI_UNDEFINED here
     *newtype = malloc(sizeof(MPI_Datatype));
     int rc = IMPL_Type_create_f90_real(p, r, *newtype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
