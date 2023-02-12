@@ -11,11 +11,9 @@
 #include "mpi.h"
 #endif
 
-// these are not constants (yet)
 static MPI_Datatype types[] = { MPI_CHAR, MPI_SHORT, MPI_INT, MPI_LONG, MPI_LONG_LONG, MPI_FLOAT, MPI_DOUBLE };
 static size_t type_sizes[] = { sizeof(char), sizeof(short), sizeof(int), sizeof(long),
                                sizeof(long long), sizeof(float), sizeof(double) };
-
 static char type_names[][20] = { "MPI_CHAR", "MPI_SHORT", "MPI_INT", "MPI_LONG",
                                  "MPI_LONG_LONG_INT", "MPI_FLOAT", "MPI_DOUBLE" };
 
