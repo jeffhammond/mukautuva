@@ -1211,8 +1211,9 @@ int WRAP_Load_functions(void * restrict h, int major, int minor)
 // constant conversions
 
 // defined in impl-predefined.c
-int ERROR_CODE_IMPL_TO_MUK(int error_c);
-int ERROR_CODE_MUK_TO_IMPL(int error_muk);
+int ERROR_CODE_IMPL_TO_MUK(int);
+int ERROR_CODE_MUK_TO_IMPL(int);
+int COMBINER_CODE_IMPL_TO_MUK(int);
 
 static inline int RANK_MUK_TO_IMPL(int rank_muk)
 {
@@ -1225,6 +1226,7 @@ static inline int RANK_MUK_TO_IMPL(int rank_muk)
     else if (rank_muk == MUK_ANY_SOURCE) {
         return MPI_ANY_SOURCE;
     }
+    // this one only applies to intercomms
     else if (rank_muk == MUK_ROOT) {
         return MPI_ROOT;
     }
@@ -4755,12 +4757,14 @@ int WRAP_Type_get_contents_c(MPI_Datatype *datatype, IMPL_Count max_integers, IM
 int WRAP_Type_get_envelope(MPI_Datatype *datatype, int *num_integers, int *num_addresses, int *num_datatypes, int *combiner)
 {
     int rc = IMPL_Type_get_envelope(*datatype, num_integers, num_addresses, num_datatypes, combiner);
+    *combiner = COMBINER_CODE_IMPL_TO_MUK(*combiner);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_get_envelope_c(MPI_Datatype *datatype, IMPL_Count *num_integers, IMPL_Count *num_addresses, IMPL_Count *num_large_counts, IMPL_Count *num_datatypes, int *combiner)
 {
     int rc = IMPL_Type_get_envelope_c(*datatype, num_integers, num_addresses, num_large_counts, num_datatypes, combiner);
+    *combiner = COMBINER_CODE_IMPL_TO_MUK(*combiner);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 

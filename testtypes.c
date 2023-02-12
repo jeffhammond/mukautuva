@@ -11,13 +11,13 @@
 #include "mpi.h"
 #endif
 
+// these are not constants (yet)
+static MPI_Datatype types[] = { MPI_CHAR, MPI_SHORT, MPI_INT, MPI_LONG, MPI_LONG_LONG, MPI_FLOAT, MPI_DOUBLE };
+
 int main(int argc, char* argv[])
 {
     int rc;
     rc = MPI_Init(&argc,&argv);
-
-    // these are not constants (yet)
-    MPI_Datatype types[] = { MPI_CHAR, MPI_SHORT, MPI_INT, MPI_LONG, MPI_LONG_LONG, MPI_FLOAT, MPI_DOUBLE };
 
     int me, np;
     MPI_Comm_rank(MPI_COMM_WORLD,&me);

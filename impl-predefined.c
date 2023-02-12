@@ -562,6 +562,27 @@ int IMPL_COMBINER_STRUCT = MPI_COMBINER_STRUCT;
 int IMPL_COMBINER_SUBARRAY = MPI_COMBINER_SUBARRAY;
 int IMPL_COMBINER_VECTOR = MPI_COMBINER_VECTOR;
 
+int COMBINER_CODE_IMPL_TO_MUK(int in)
+{
+         if (in == MPI_COMBINER_CONTIGUOUS)     { return MUK_COMBINER_CONTIGUOUS; }
+    else if (in == MPI_COMBINER_DARRAY)         { return MUK_COMBINER_DARRAY; }
+    else if (in == MPI_COMBINER_DUP)            { return MUK_COMBINER_DUP; }
+    else if (in == MPI_COMBINER_F90_COMPLEX)    { return MUK_COMBINER_F90_COMPLEX; }
+    else if (in == MPI_COMBINER_F90_INTEGER)    { return MUK_COMBINER_F90_INTEGER; }
+    else if (in == MPI_COMBINER_F90_REAL)       { return MUK_COMBINER_F90_REAL; }
+    else if (in == MPI_COMBINER_HINDEXED)       { return MUK_COMBINER_HINDEXED; }
+    else if (in == MPI_COMBINER_HVECTOR)        { return MUK_COMBINER_HVECTOR; }
+    else if (in == MPI_COMBINER_INDEXED_BLOCK)  { return MUK_COMBINER_INDEXED_BLOCK; }
+    else if (in == MPI_COMBINER_HINDEXED_BLOCK) { return MUK_COMBINER_HINDEXED_BLOCK; }
+    else if (in == MPI_COMBINER_INDEXED)        { return MUK_COMBINER_INDEXED; }
+    else if (in == MPI_COMBINER_NAMED)          { return MUK_COMBINER_NAMED; }
+    else if (in == MPI_COMBINER_RESIZED)        { return MUK_COMBINER_RESIZED; }
+    else if (in == MPI_COMBINER_STRUCT)         { return MUK_COMBINER_STRUCT; }
+    else if (in == MPI_COMBINER_SUBARRAY)       { return MUK_COMBINER_SUBARRAY; }
+    else if (in == MPI_COMBINER_VECTOR)         { return MUK_COMBINER_VECTOR; }
+    else                                        { return MUK_UNDEFINED; }
+}
+
 // Threads Constants
 int IMPL_THREAD_FUNNELED = MPI_THREAD_FUNNELED;
 int IMPL_THREAD_MULTIPLE = MPI_THREAD_MULTIPLE;
