@@ -6,12 +6,15 @@ for t in testcoll.x testcomm.x testinit.x testreqs.x testwin.x testgroup.x testt
 
 # OSU MPI Tests
 
-Many tests fails because MUK datatypes do not work as initializers yet.
-
 ```
 wget https://mvapich.cse.ohio-state.edu/download/mvapich/osu-micro-benchmarks-7.0.1.tar.gz
 cd osu*
 ./configure CC=gcc CXX=g++ CFLAGS=-g3 --enable-g  CPPFLAGS=-I/home/jhammond/mukautuva LDFLAGS=-L/home/jhammond/mukautuva LIBS=-lmuk && make -j8
+```
+
+Run tests:
+```
+for t in `find . -type f -executable -print` ; do LD_LIBRARY_PATH=/home/jhammond/mukautuva mpirun -n 2 ./$t ; done
 ```
 
 # ARMCI-MPI
