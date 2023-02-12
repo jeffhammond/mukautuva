@@ -1295,6 +1295,9 @@ static inline int KEY_MUK_TO_IMPL(int key_muk)
     else                                       { return key_muk; }
 }
 
+static int ALLTOALLW_SETUP(const MPI_Comm * comm, const MPI_Datatype* sendtypes[], const MPI_Datatype* recvtypes[],
+                           MPI_Datatype* *impl_sendtypes, MPI_Datatype* *impl_recvtypes);
+
 // status conversion
 
 #include <stdlib.h>
@@ -1542,29 +1545,55 @@ int WRAP_Alltoallv_init_c(const void *sendbuf, const IMPL_Count sendcounts[], co
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Alltoallw(const void *sendbuf, const int sendcounts[], const int sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const int recvcounts[], const int rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm)
+int WRAP_Alltoallw(const void *sendbuf, const int sendcounts[], const int sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const int recvcounts[], const int rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm)
 {
-    int rc = IMPL_Alltoallw(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm);
+    MPI_Datatype * impl_sendtypes;
+    MPI_Datatype * impl_recvtypes;
+    int rc = ALLTOALLW_SETUP(comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
+    if (rc != MPI_SUCCESS) {
+        return ERROR_CODE_IMPL_TO_MUK(rc);
+    }
+    rc = IMPL_Alltoallw(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm);
+    free(impl_recvtypes);
+    free(impl_sendtypes);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Alltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm)
+int WRAP_Alltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm)
 {
-    int rc = IMPL_Alltoallw_c(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm);
+    MPI_Datatype * impl_sendtypes;
+    MPI_Datatype * impl_recvtypes;
+    int rc = ALLTOALLW_SETUP(comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
+    if (rc != MPI_SUCCESS) {
+        return ERROR_CODE_IMPL_TO_MUK(rc);
+    }
+    rc = IMPL_Alltoallw_c(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Alltoallw_init(const void *sendbuf, const int sendcounts[], const int sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const int recvcounts[], const int rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
+int WRAP_Alltoallw_init(const void *sendbuf, const int sendcounts[], const int sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const int recvcounts[], const int rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
+    MPI_Datatype * impl_sendtypes;
+    MPI_Datatype * impl_recvtypes;
+    int rc = ALLTOALLW_SETUP(comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
+    if (rc != MPI_SUCCESS) {
+        return ERROR_CODE_IMPL_TO_MUK(rc);
+    }
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Alltoallw_init(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm, *info, *request);
+    rc = IMPL_Alltoallw_init(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Alltoallw_init_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
+int WRAP_Alltoallw_init_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
+    MPI_Datatype * impl_sendtypes;
+    MPI_Datatype * impl_recvtypes;
+    int rc = ALLTOALLW_SETUP(comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
+    if (rc != MPI_SUCCESS) {
+        return ERROR_CODE_IMPL_TO_MUK(rc);
+    }
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Alltoallw_init_c(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm, *info, *request);
+    rc = IMPL_Alltoallw_init_c(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3063,17 +3092,29 @@ int WRAP_Ialltoallv_c(const void *sendbuf, const IMPL_Count sendcounts[], const 
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Ialltoallw(const void *sendbuf, const int sendcounts[], const int sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const int recvcounts[], const int rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm, MPI_Request **request)
+int WRAP_Ialltoallw(const void *sendbuf, const int sendcounts[], const int sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const int recvcounts[], const int rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm, MPI_Request **request)
 {
+    MPI_Datatype * impl_sendtypes;
+    MPI_Datatype * impl_recvtypes;
+    int rc = ALLTOALLW_SETUP(comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
+    if (rc != MPI_SUCCESS) {
+        return ERROR_CODE_IMPL_TO_MUK(rc);
+    }
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Ialltoallw(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm, *request);
+    rc = IMPL_Ialltoallw(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Ialltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm, MPI_Request **request)
+int WRAP_Ialltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm, MPI_Request **request)
 {
+    MPI_Datatype * impl_sendtypes;
+    MPI_Datatype * impl_recvtypes;
+    int rc = ALLTOALLW_SETUP(comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
+    if (rc != MPI_SUCCESS) {
+        return ERROR_CODE_IMPL_TO_MUK(rc);
+    }
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Ialltoallw_c(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm, *request);
+    rc = IMPL_Ialltoallw_c(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3237,17 +3278,29 @@ int WRAP_Ineighbor_alltoallv_c(const void *sendbuf, const IMPL_Count sendcounts[
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Ineighbor_alltoallw(const void *sendbuf, const int sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const int recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm, MPI_Request **request)
+int WRAP_Ineighbor_alltoallw(const void *sendbuf, const int sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const int recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm, MPI_Request **request)
 {
+    MPI_Datatype * impl_sendtypes;
+    MPI_Datatype * impl_recvtypes;
+    int rc = ALLTOALLW_SETUP(comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
+    if (rc != MPI_SUCCESS) {
+        return ERROR_CODE_IMPL_TO_MUK(rc);
+    }
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Ineighbor_alltoallw(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm, *request);
+    rc = IMPL_Ineighbor_alltoallw(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Ineighbor_alltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm, MPI_Request **request)
+int WRAP_Ineighbor_alltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm, MPI_Request **request)
 {
+    MPI_Datatype * impl_sendtypes;
+    MPI_Datatype * impl_recvtypes;
+    int rc = ALLTOALLW_SETUP(comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
+    if (rc != MPI_SUCCESS) {
+        return ERROR_CODE_IMPL_TO_MUK(rc);
+    }
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Ineighbor_alltoallw_c(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm, *request);
+    rc = IMPL_Ineighbor_alltoallw_c(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3669,29 +3722,53 @@ int WRAP_Neighbor_alltoallv_init_c(const void *sendbuf, const IMPL_Count sendcou
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Neighbor_alltoallw(const void *sendbuf, const int sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const int recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm)
+int WRAP_Neighbor_alltoallw(const void *sendbuf, const int sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const int recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm)
 {
-    int rc = IMPL_Neighbor_alltoallw(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm);
+    MPI_Datatype * impl_sendtypes;
+    MPI_Datatype * impl_recvtypes;
+    int rc = ALLTOALLW_SETUP(comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
+    if (rc != MPI_SUCCESS) {
+        return ERROR_CODE_IMPL_TO_MUK(rc);
+    }
+    rc = IMPL_Neighbor_alltoallw(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Neighbor_alltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm)
+int WRAP_Neighbor_alltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm)
 {
-    int rc = IMPL_Neighbor_alltoallw_c(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm);
+    MPI_Datatype * impl_sendtypes;
+    MPI_Datatype * impl_recvtypes;
+    int rc = ALLTOALLW_SETUP(comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
+    if (rc != MPI_SUCCESS) {
+        return ERROR_CODE_IMPL_TO_MUK(rc);
+    }
+    rc = IMPL_Neighbor_alltoallw_c(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Neighbor_alltoallw_init(const void *sendbuf, const int sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const int recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
+int WRAP_Neighbor_alltoallw_init(const void *sendbuf, const int sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const int recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
+    MPI_Datatype * impl_sendtypes;
+    MPI_Datatype * impl_recvtypes;
+    int rc = ALLTOALLW_SETUP(comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
+    if (rc != MPI_SUCCESS) {
+        return ERROR_CODE_IMPL_TO_MUK(rc);
+    }
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Neighbor_alltoallw_init(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm, *info, *request);
+    rc = IMPL_Neighbor_alltoallw_init(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Neighbor_alltoallw_init_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
+int WRAP_Neighbor_alltoallw_init_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
+    MPI_Datatype * impl_sendtypes;
+    MPI_Datatype * impl_recvtypes;
+    int rc = ALLTOALLW_SETUP(comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
+    if (rc != MPI_SUCCESS) {
+        return ERROR_CODE_IMPL_TO_MUK(rc);
+    }
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Neighbor_alltoallw_init_c(sendbuf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes, *comm, *info, *request);
+    rc = IMPL_Neighbor_alltoallw_init_c(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -5361,3 +5438,23 @@ int WRAP_Win_wait(MPI_Win *win)
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
+static int ALLTOALLW_SETUP(const MPI_Comm * comm, const MPI_Datatype* sendtypes[], const MPI_Datatype* recvtypes[],
+                           MPI_Datatype* *impl_sendtypes, MPI_Datatype* *impl_recvtypes)
+{
+    int np;
+    int rc = IMPL_Comm_size(*comm,&np);
+    if (rc != MPI_SUCCESS) {
+        return MPI_ERR_INTERN;
+    }
+    *impl_sendtypes = malloc(np * sizeof(MPI_Datatype));
+    if (impl_sendtypes == NULL) return MPI_ERR_INTERN;
+    for (int i=0; i<np; i++) {
+        (*impl_sendtypes)[i] = *(sendtypes[i]);
+    }
+    *impl_recvtypes = malloc(np * sizeof(MPI_Datatype));
+    if (impl_recvtypes == NULL) return MPI_ERR_INTERN;
+    for (int i=0; i<np; i++) {
+        (*impl_recvtypes)[i] = *(recvtypes[i]);
+    }
+    return MPI_SUCCESS;
+}
