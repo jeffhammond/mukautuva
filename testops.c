@@ -14,39 +14,35 @@
 static MPI_Op ops[] = { MPI_MIN, MPI_MAX, MPI_SUM,
                         MPI_BAND, MPI_BOR, MPI_BXOR };
 
-void my_reduce_op(void *invec, void *inoutvec, int *len, MPI_Datatype *datatype)
+void my_reduce_op(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
 {
-    printf("in=%p inout=%p len=%d type=%p\n", invec, inoutvec, *len, *datatype);
-
-    if ((intptr_t)*datatype == (intptr_t)*(void**)MPI_INT) {
-        printf("MPI_INT\n");
-    }
-    else if ((intptr_t)*datatype == (intptr_t)*(void**)MPI_DOUBLE) {
-        printf("MPI_DOUBLE\n");
-    }
-    else {
-        printf("*datatype=%p *MPI_INT=%p *MPI_DOUBLE=%p\n", *datatype, *(void**)MPI_INT, *(void**)MPI_DOUBLE);
-    }
-
+    printf("my: in=%p inout=%p *len=%d *datatype=%p\n", invec, inoutvec, *len, *datatype);
+    printf("my: MPI_INT=%p MPI_DOUBLE=%p\n", MPI_INT, MPI_DOUBLE);
+    printf("my: *MPI_INT=%p *MPI_DOUBLE=%p\n", *(void**)MPI_INT, *(void**)MPI_DOUBLE);
 
     for (int i=0; i<*len; i++) {
-        if ((intptr_t)*datatype == (intptr_t)*(void**)MPI_INT) {
+        if (*datatype == MPI_INT) {
+            printf("my: MPI_INT detected\n");
             ((int*)inoutvec)[i]    += ((int*)invec)[i];
         }
-        else if ((intptr_t)*datatype == (intptr_t)*(void**)MPI_DOUBLE) {
+        else if (*datatype == MPI_DOUBLE) {
+            printf("my: MPI_DOUBLE detected\n");
             ((double*)inoutvec)[i] += ((double*)invec)[i];
         }
         else {
-            goto oops;
+            printf("my: unsupported datatype\n");
         }
     }
 
-    return;
-
-    oops:
-        printf("unsupported datatype\n");
-
     fflush(0);
+}
+
+void wrap_reduce_op(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
+{
+    printf("wrap: in=%p inout=%p *len=%d *datatype=%p\n", invec, inoutvec, *len, *datatype);
+    printf("wrap: MPI_INT=%p MPI_DOUBLE=%p\n", MPI_INT, MPI_DOUBLE);
+    printf("wrap: *MPI_INT=%p *MPI_DOUBLE=%p\n", *(void**)MPI_INT, *(void**)MPI_DOUBLE);
+    my_reduce_op(invec, inoutvec, len, (MPI_Datatype*)&datatype);
 }
 
 int main(int argc, char* argv[])
@@ -62,6 +58,7 @@ int main(int argc, char* argv[])
     MPI_Barrier(MPI_COMM_WORLD);
     usleep(1);
 
+#if 0
     for (int o=0; o<(int)(sizeof(ops)/sizeof(ops[0])); o++)
     {
         MPI_Op op = ops[o];
@@ -107,24 +104,29 @@ int main(int argc, char* argv[])
         usleep(1);
         MPI_Barrier(MPI_COMM_WORLD);
     }
+#else
+    (void)ops;
+#endif
 
     {
+        printf("my_reduce_op=%p\n", my_reduce_op);
+
         MPI_Op custom = MPI_OP_NULL;
+        //rc = MPI_Op_create(&wrap_reduce_op, 0, &custom);
         rc = MPI_Op_create(&my_reduce_op, 0, &custom);
         if (rc != MPI_SUCCESS || custom == MPI_OP_NULL) {
             printf("MPI_Op_create failed\n");
             MPI_Abort(MPI_COMM_WORLD,rc);
-        } else {
-            printf("custom=%p\n", custom);
         }
 
-        int in = 1, out = 0;
+        int in = 10, out = -9999;
+        printf("&in=%p &out=%p\n", &in, &out);
         rc = MPI_Allreduce(&in, &out, 1, MPI_INT, custom, MPI_COMM_WORLD);
         if (rc != MPI_SUCCESS) {
             printf("MPI_Allreduce failed\n");
             MPI_Abort(MPI_COMM_WORLD,rc);
         }
-        printf("out = %d\n", out);
+        printf("in = %d out = %d ref = %d \n", in, out, in * np);
 
         MPI_Op_free(&custom);
         if (custom != MPI_OP_NULL) {

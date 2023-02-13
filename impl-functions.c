@@ -1469,6 +1469,10 @@ int WRAP_Alloc_mem(IMPL_Aint size, MPI_Info *info, void *baseptr)
 
 int WRAP_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm)
 {
+    char name[MPI_MAX_OBJECT_NAME] = {0};
+    snprintf(name,MPI_MAX_OBJECT_NAME,"%p",datatype);
+    printf("type name = %s\n", name);
+    IMPL_Type_set_name(*datatype,name);
     int rc = IMPL_Allreduce(sendbuf, recvbuf, count, *datatype, *op, *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
@@ -3778,10 +3782,29 @@ int WRAP_Op_commutative(MPI_Op *op, int *commute)
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Op_create(MPI_User_function *user_fn, int commute, MPI_Op **op)
+typedef void WRAP_User_function(void *invec, void *inoutvec, int *len, MPI_Datatype ** datatype);
+// not thread safe - hack that will be replaced by generating trampolines at runtime
+static WRAP_User_function * user_function_address;
+void trampoline(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
+{
+    int n;
+    char name[MPI_MAX_OBJECT_NAME] = {0};
+    IMPL_Type_get_name(*datatype,name,&n);
+    printf("type name = %s\n", name);
+    MPI_Datatype * ptr;
+    sscanf(name,"%p", &ptr);
+    printf("ptr = %p\n", ptr);
+    printf("trampoline: fn=%p in=%p inout=%p len=%d type=%p &type=%p *type=0x%lx\n",
+            user_function_address, invec, inoutvec, *len, datatype, &datatype, (intptr_t)(MPI_Datatype)*datatype);
+    user_function_address(invec,inoutvec,len,&ptr);
+}
+
+int WRAP_Op_create(WRAP_User_function *user_fn, int commute, MPI_Op **op)
 {
     *op = malloc(sizeof(MPI_Op));
-    int rc = IMPL_Op_create(user_fn, commute, *op);
+    user_function_address = user_fn;
+    int rc = IMPL_Op_create(trampoline, commute, *op);
+    //int rc = IMPL_Op_create(user_fn, commute, *op);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 

@@ -7,19 +7,21 @@ if [ `uname -s` == Darwin ] ; then
     OMPILIB=/opt/homebrew/Cellar/open-mpi/4.1.4_2/lib/libmpi.dylib
     MPICHRUN=/opt/homebrew/Cellar/mpich/4.1/bin/mpirun
     MPICHLIB=/opt/homebrew/Cellar/mpich/4.1/lib/libmpi.dylib
+    GDB=true
 else
     OPTS="--mca osc ucx"
     OMPIRUN=/usr/bin/mpirun.openmpi
     OMPILIB=/usr/lib/x86_64-linux-gnu/libmpi.so
     MPICHRUN=/usr/bin/mpirun.mpich
     MPICHLIB=/usr/lib/x86_64-linux-gnu/libmpich.so
+    GDB=gdb
 fi
 
-NP=4
+NP=2
 OPTS="${OPTS} -quiet"
 
 make -j $1 && \
 MPI_LIB=${OMPILIB} ${OMPIRUN} ${OPTS} -n ${NP} $1 || \
-MPI_LIB=${OMPILIB} ${OMPIRUN} ${OPTS} -n ${NP} gdb -ex "set width 1000" -ex "thread apply all bt" -ex run -ex bt -ex "set confirm off" -ex quit --args  $1 ; \
+MPI_LIB=${OMPILIB} ${OMPIRUN} ${OPTS} -n ${NP} ${GDB} -ex "set width 1000" -ex "thread apply all bt" -ex run -ex bt -ex "set confirm off" -ex quit --args  $1 ; \
 MPI_LIB=${MPICHLIB} ${MPICHRUN} -n ${NP} $1 || \
-MPI_LIB=${MPICHLIB} ${MPICHRUN} -n ${NP} gdb -ex "set width 1000" -ex "thread apply all bt" -ex run -ex bt -ex "set confirm off" -ex quit --args $1
+MPI_LIB=${MPICHLIB} ${MPICHRUN} -n ${NP} ${GDB} -ex "set width 1000" -ex "thread apply all bt" -ex run -ex bt -ex "set confirm off" -ex quit --args $1
