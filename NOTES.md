@@ -52,6 +52,11 @@ This does not work.
 ./configure FC=false CXX=g++ CC=gcc LIBS=-lmuk CPPFLAGS=-I$HOME/mukautuva LDFLAGS=-L$HOME/mukautuva --with-mpi=/dev/null MPICC=gcc MPICXX=g++ --enable-fortran=none
 ```
 
+Maybe...
+```sh
+./configure CC=gcc CFLAGS=-I${HOME}/mukautuva LDFLAGS="-L${HOME}/mukautuva" LIBS="-lmuk" --disable-cxx --disable-spawn --enable-strictmpi --disable-fortran MPICC=gcc MPICXX=false MPIFC=false CXX=g++ FC=gfortran
+```
+
 # Open-MPI Debug Build
 
 ```
