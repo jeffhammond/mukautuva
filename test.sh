@@ -13,7 +13,7 @@ else
 fi
 
 NP=4
-OPTS="--mca osc ucx"
+OPTS="-quiet --mca osc ucx"
 
 make -j $1 && \
 MPI_LIB=${OMPILIB} ${OMPIRUN} ${OPTS} -n ${NP} $1 || \
