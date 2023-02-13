@@ -1,16 +1,17 @@
 ifeq ($(shell uname),Darwin)
     OMPICC=/opt/homebrew/Cellar/open-mpi/4.1.4_2/bin/mpicc
     MPICHCC=/opt/homebrew/Cellar/mpich/4.1/bin/mpicc
+    CC=clang
+    CFLAGS=-ferror-limit=5 # Clang
+    CFLAGS+=-Wno-c2x-extensions
 else
     OMPICC=/usr/bin/mpicc.openmpi
     MPICHCC=/usr/bin/mpicc.mpich
+    CC=gcc
+    CFLAGS=-fmax-errors=5 # GCC
 endif
 
-CC	= clang
-CFLAGS	= -g3 -O3 -Wall -Wextra -Werror # -Wpedantic
-CFLAGS	+= -ferror-limit=5 # Clang
-#CFLAGS	+= -fmax-errors=5 # GCC
-CFLAGS	+= -Wno-c2x-extensions
+CFLAGS	+= -g3 -O3 -Wall -Wextra -Werror # -Wpedantic
 CFLAGS	+= -fPIC
 SOFLAGS	= -shared
 
