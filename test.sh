@@ -1,11 +1,14 @@
 #!/bin/bash
 
+set -x
+
 if [ `uname -s` == Darwin ] ; then
     OMPIRUN=/opt/homebrew/Cellar/open-mpi/4.1.4_2/bin/mpirun
-    OMPILIB=/opt/homebrew/Cellar/mpich/4.1/lib/libmpi.dylib
+    OMPILIB=/opt/homebrew/Cellar/open-mpi/4.1.4_2/lib/libmpi.dylib
     MPICHRUN=/opt/homebrew/Cellar/mpich/4.1/bin/mpirun
-    MPICHLIB=/opt/homebrew/Cellar/open-mpi/4.1.4_2/lib/libmpi.dylib
+    MPICHLIB=/opt/homebrew/Cellar/mpich/4.1/lib/libmpi.dylib
 else
+    OPTS="--mca osc ucx"
     OMPIRUN=/usr/bin/mpirun.openmpi
     OMPILIB=/usr/lib/x86_64-linux-gnu/libmpi.so
     MPICHRUN=/usr/bin/mpirun.mpich
@@ -13,7 +16,7 @@ else
 fi
 
 NP=4
-OPTS="-quiet --mca osc ucx"
+OPTS="${OPTS} -quiet"
 
 make -j $1 && \
 MPI_LIB=${OMPILIB} ${OMPIRUN} ${OPTS} -n ${NP} $1 || \

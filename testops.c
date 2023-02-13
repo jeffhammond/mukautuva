@@ -14,6 +14,41 @@
 static MPI_Op ops[] = { MPI_MIN, MPI_MAX, MPI_SUM,
                         MPI_BAND, MPI_BOR, MPI_BXOR };
 
+void my_reduce_op(void *invec, void *inoutvec, int *len, MPI_Datatype *datatype)
+{
+    printf("in=%p inout=%p len=%d type=%p\n", invec, inoutvec, *len, *datatype);
+
+    if ((intptr_t)*datatype == (intptr_t)*(void**)MPI_INT) {
+        printf("MPI_INT\n");
+    }
+    else if ((intptr_t)*datatype == (intptr_t)*(void**)MPI_DOUBLE) {
+        printf("MPI_DOUBLE\n");
+    }
+    else {
+        printf("*datatype=%p *MPI_INT=%p *MPI_DOUBLE=%p\n", *datatype, *(void**)MPI_INT, *(void**)MPI_DOUBLE);
+    }
+
+
+    for (int i=0; i<*len; i++) {
+        if ((intptr_t)*datatype == (intptr_t)*(void**)MPI_INT) {
+            ((int*)inoutvec)[i]    += ((int*)invec)[i];
+        }
+        else if ((intptr_t)*datatype == (intptr_t)*(void**)MPI_DOUBLE) {
+            ((double*)inoutvec)[i] += ((double*)invec)[i];
+        }
+        else {
+            goto oops;
+        }
+    }
+
+    return;
+
+    oops:
+        printf("unsupported datatype\n");
+
+    fflush(0);
+}
+
 int main(int argc, char* argv[])
 {
     int rc;
@@ -73,16 +108,30 @@ int main(int argc, char* argv[])
         MPI_Barrier(MPI_COMM_WORLD);
     }
 
-#if 0
     {
         MPI_Op custom = MPI_OP_NULL;
+        rc = MPI_Op_create(&my_reduce_op, 0, &custom);
+        if (rc != MPI_SUCCESS || custom == MPI_OP_NULL) {
+            printf("MPI_Op_create failed\n");
+            MPI_Abort(MPI_COMM_WORLD,rc);
+        } else {
+            printf("custom=%p\n", custom);
+        }
+
+        int in = 1, out = 0;
+        rc = MPI_Allreduce(&in, &out, 1, MPI_INT, custom, MPI_COMM_WORLD);
+        if (rc != MPI_SUCCESS) {
+            printf("MPI_Allreduce failed\n");
+            MPI_Abort(MPI_COMM_WORLD,rc);
+        }
+        printf("out = %d\n", out);
+
         MPI_Op_free(&custom);
         if (custom != MPI_OP_NULL) {
             printf("freed handle is not null\n");
             MPI_Abort(MPI_COMM_WORLD,1);
         }
     }
-#endif
 
     fflush(0);
     usleep(1);
