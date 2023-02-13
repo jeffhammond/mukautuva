@@ -1,12 +1,15 @@
-#OMPICC=/opt/homebrew/Cellar/open-mpi/4.1.4_2/bin/mpicc
-#MPICHCC=/opt/homebrew/Cellar/mpich/4.1/bin/mpicc
-OMPICC=/usr/bin/mpicc.openmpi
-MPICHCC=/usr/bin/mpicc.mpich
+ifeq ($(shell uname),Darwin)
+    OMPICC=/opt/homebrew/Cellar/open-mpi/4.1.4_2/bin/mpicc
+    MPICHCC=/opt/homebrew/Cellar/mpich/4.1/bin/mpicc
+else
+    OMPICC=/usr/bin/mpicc.openmpi
+    MPICHCC=/usr/bin/mpicc.mpich
+endif
 
-CC	= gcc-12
+CC	= clang
 CFLAGS	= -g3 -O3 -Wall -Wextra -Werror # -Wpedantic
-#CFLAGS	+= -ferror-limit=5 # Clang
-CFLAGS	+= -fmax-errors=5 # GCC
+CFLAGS	+= -ferror-limit=5 # Clang
+#CFLAGS	+= -fmax-errors=5 # GCC
 CFLAGS	+= -Wno-c2x-extensions
 CFLAGS	+= -fPIC
 SOFLAGS	= -shared
