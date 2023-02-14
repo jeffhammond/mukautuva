@@ -57,6 +57,54 @@ Maybe...
 ./configure CC=gcc CFLAGS=-I${HOME}/mukautuva LDFLAGS="-L${HOME}/mukautuva" LIBS="-lmuk" --disable-cxx --disable-spawn --enable-strictmpi --disable-fortran MPICC=gcc MPICXX=false MPIFC=false CXX=g++ FC=gfortran
 ```
 
+# Intel MPI Benchmarks
+
+```sh
+git clone https://github.com/intel/mpi-benchmarks.git IMB
+```
+
+```patch
+diff --git a/src_c/IMB_declare.h b/src_c/IMB_declare.h
+index 1ece4b1..7e065b7 100644
+--- a/src_c/IMB_declare.h
++++ b/src_c/IMB_declare.h
+@@ -68,7 +68,7 @@ For more documentation than found here, see
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+-#include <malloc.h>
++//#include <malloc.h>
+ #include <stddef.h>
+ #include <assert.h>
+ #include "IMB_appl_errors.h"
+diff --git a/src_c/Makefile b/src_c/Makefile
+index 2aa1ba5..043ef0e 100644
+--- a/src_c/Makefile
++++ b/src_c/Makefile
+@@ -48,7 +48,8 @@
+ #  ***************************************************************************
+
+ ifeq ($(origin CC),default)
+-CC=mpicc
++MUK=$(HOME)/Work/MPI/mukautuva
++CC=gcc -g3 -I$(MUK) -L$(MUK) -lmuk -Wno-unused-command-line-argument
+ endif
+
+ BINARY=IMB-$(TARGET)
+```
+
+```sh
+DYLD_LIBRARY_PATH=${HOME}/Work/MPI/mukautuva mpirun -n 2 ./IMB-RMA
+DYLD_LIBRARY_PATH=${HOME}/Work/MPI/mukautuva mpirun -n 2 ./IMB-NBC
+DYLD_LIBRARY_PATH=${HOME}/Work/MPI/mukautuva mpirun -n 2 ./IMB-MPI1
+DYLD_LIBRARY_PATH=${HOME}/Work/MPI/mukautuva mpirun -n 2 ./IMB-IO
+```
+
+IO tests fail:
+```
+Invalid amode value in MPI_File_open
+```
+
 # Open-MPI Debug Build
 
 ```
