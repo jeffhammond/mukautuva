@@ -1351,7 +1351,7 @@ void WRAP_Init_handle_key(void)
 {
     int rc = IMPL_Type_create_keyval(MPI_TYPE_NULL_COPY_FN, MPI_TYPE_NULL_DELETE_FN, &TYPE_HANDLE_KEY, NULL);
     if (rc != MPI_SUCCESS) {
-        printf("IMPL_Type_create_keyval(TYPE_HANDLE_KEY) failed: %d\n", rc);
+        MUK_Warning("IMPL_Type_create_keyval(TYPE_HANDLE_KEY) failed: %d\n", rc);
     }
 }
 
@@ -1362,7 +1362,7 @@ void WRAP_Finalize_handle_key(void)
         rc = IMPL_Type_free_keyval(&TYPE_HANDLE_KEY);
     }
     if (rc != MPI_SUCCESS) {
-        printf("IMPL_Type_free_keyval(TYPE_HANDLE_KEY) failed: %d\n", rc);
+        MUK_Warning("IMPL_Type_free_keyval(TYPE_HANDLE_KEY) failed: %d\n", rc);
     }
 }
 
@@ -1527,25 +1527,17 @@ int WRAP_Alloc_mem(IMPL_Aint size, MPI_Info *info, void *baseptr)
 int WRAP_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm)
 {
     int rc;
-#if 0
-    char name[MPI_MAX_OBJECT_NAME] = {0};
-    snprintf(name,MPI_MAX_OBJECT_NAME,"%p",datatype);
-    printf("type name = %s\n", name);
-    IMPL_Type_set_name(*datatype,name);
-#endif
     if (IS_PREDEFINED_OP(*op)) {
-        //printf("WRAP_Allreduce: predefined op=%p\n",op);
         rc = IMPL_Allreduce(sendbuf, recvbuf, count, *datatype, *op, *comm);
     }
     else {
-        //printf("WRAP_Allreduce: user-defined op=%p\n",op);
+        // Part 1: look up the user function associated with the MPI_Op argument
         WRAP_User_function * user_fn = NULL;
         op_fptr_pair_t * current = op_fptr_pair_list;
         if (op_fptr_pair_list == NULL) {
-            printf("WRAP_Allreduce: op_fptr_pair_list is NULL - this should be impossible.\n");
+            MUK_Warning("op_fptr_pair_list is NULL - this should be impossible.\n");
         }
         while (current) {
-            printf("current=%p current->op=%p op=%p\n", current, current->op, op);
             if (current->op == op) {
                 user_fn = current->fp;
                 break;
@@ -1553,19 +1545,44 @@ int WRAP_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *
             current = current->next;
         }
         if (user_fn == NULL) {
-            printf("WRAP_Allreduce: failed to find valid op<->fn mapping.\n");
+            MUK_Warning("failed to find valid op<->fn mapping.\n");
+            rc = MPI_ERR_INTERN;
+            goto end;
         }
+
+        // Part 2: duplicate the datatype so there can be no collision of keyvals
+        MPI_Datatype dup;
+        rc = IMPL_Type_dup(*datatype,&dup);
+        if (rc) {
+            MUK_Warning("Type_dup failed\n");
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+
+        // Part 3: bake the cookie
         reduce_trampoline_cookie_t * cookie = malloc(sizeof(reduce_trampoline_cookie_t));
         cookie->dt = datatype;
         cookie->fp = user_fn;
-        rc = IMPL_Type_set_attr(*datatype, TYPE_HANDLE_KEY, cookie);
-        if (rc != MPI_SUCCESS) {
-            return ERROR_CODE_IMPL_TO_MUK(rc);
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, cookie);
+        if (rc) {
+            MUK_Warning("Type_set_attr failed\n");
+            rc = MPI_ERR_INTERN;
+            goto end;
         }
-        //printf("WRAP_Allreduce: cookie=%p\n", cookie);
-        rc = IMPL_Allreduce(sendbuf, recvbuf, count, *datatype, *op, *comm);
+
+        // Part 4: do the reduction
+        rc = IMPL_Allreduce(sendbuf, recvbuf, count, dup, *op, *comm);
+
+        // Part 5: clean up
         free(cookie);
+        rc = IMPL_Type_free(&dup);
+        if (rc) {
+            MUK_Warning("Type_free failed\n");
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
     }
+    end:
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -2001,8 +2018,8 @@ int WRAP_Comm_group(MPI_Comm *comm, MPI_Group **group)
     *group = malloc(sizeof(MPI_Group));
     int rc = IMPL_Comm_group(*comm, *group);
 #if DEBUG
-    printf("WRAP_Comm_group group=%p *group=%p **group=%lx MPI_GROUP_NULL=%lx\n",
-            group,*group,(uintptr_t)**group,(uintptr_t)MPI_GROUP_NULL);
+    MUK_Warning("WRAP_Comm_group group=%p *group=%p **group=%lx MPI_GROUP_NULL=%lx\n",
+                group,*group,(uintptr_t)**group,(uintptr_t)MPI_GROUP_NULL);
 #endif
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
@@ -3024,8 +3041,8 @@ int WRAP_Group_excl(MPI_Group *group, int n, const int ranks[], MPI_Group **newg
 int WRAP_Group_free(MPI_Group **group)
 {
 #ifdef DEBUG
-    printf("WRAP_Group_free group=%p *group=%p **group=%lx MPI_GROUP_EMPTY=%lx IMPL_GROUP_EMPTY=%lx\n",
-            group,*group,(uintptr_t)**group,(uintptr_t)MPI_GROUP_EMPTY,(uintptr_t)IMPL_GROUP_EMPTY);
+    MUK_Warning("WRAP_Group_free group=%p *group=%p **group=%lx MPI_GROUP_EMPTY=%lx IMPL_GROUP_EMPTY=%lx\n",
+                group,*group,(uintptr_t)**group,(uintptr_t)MPI_GROUP_EMPTY,(uintptr_t)IMPL_GROUP_EMPTY);
 #endif
     int rc = IMPL_Group_free(*group);
     free(*group);
@@ -3880,35 +3897,20 @@ static WRAP_User_function * user_function_address;
 void trampoline(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
 {
     int rc;
-#if 0
-    int n;
-    char name[MPI_MAX_OBJECT_NAME] = {0};
-    IMPL_Type_get_name(*datatype,name,&n);
-    printf("type name = %s\n", name);
-    MPI_Datatype * ptr;
-    sscanf(name,"%p", &ptr);
-    printf("ptr = %p\n", ptr);
-    printf("trampoline: fn=%p in=%p inout=%p len=%d type=%p &type=%p *type=0x%lx\n",
-            user_function_address, invec, inoutvec, *len, datatype, &datatype, (intptr_t)(MPI_Datatype)*datatype);
-    user_function_address(invec,inoutvec,len,&dptr);
-#else
     int flag;
     reduce_trampoline_cookie_t * cookie = NULL;
     rc = IMPL_Type_get_attr(*datatype, TYPE_HANDLE_KEY, &cookie, &flag);
     if (rc != MPI_SUCCESS || !flag) {
-        printf("trampoline: IMPL_Type_get_attr failed: flag=%d rc=%d\n", flag, rc);
+        MUK_Warning("trampoline: IMPL_Type_get_attr failed: flag=%d rc=%d\n", flag, rc);
         MPI_Abort(MPI_COMM_SELF,rc);
     }
     MPI_Datatype       * dptr = NULL;
     WRAP_User_function * fptr = NULL;
     if (flag) {
-        printf("trampoline: cookie=%p\n", cookie);
         dptr = cookie->dt;
         fptr = cookie->fp;
-        printf("trampoline: cookie->dt=%p cookie->fp=%p\n", cookie->dt, cookie->fp);
     }
     (*fptr)(invec,inoutvec,len,&dptr);
-#endif
 }
 
 int WRAP_Op_create(WRAP_User_function *user_fn, int commute, MPI_Op **op)
@@ -3916,7 +3918,6 @@ int WRAP_Op_create(WRAP_User_function *user_fn, int commute, MPI_Op **op)
     *op = malloc(sizeof(MPI_Op));
     user_function_address = user_fn;
     int rc = IMPL_Op_create(trampoline, commute, *op);
-    //int rc = IMPL_Op_create(user_fn, commute, *op);
 
     // for now, leak this.  fix by freeing in Op_free.
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
@@ -3951,9 +3952,40 @@ int WRAP_Op_create_c(MPI_User_function_c *user_fn, int commute, MPI_Op **op)
 
 int WRAP_Op_free(MPI_Op **op)
 {
+    // Step 1: look up *op in the linked list
+    op_fptr_pair_t * current = op_fptr_pair_list;
+    if (op_fptr_pair_list == NULL) {
+        MUK_Warning("Op_free: op_fptr_pair_list is NULL - this should be impossible.\n");
+    }
+    while (current) {
+        if (current->op == *op) {
+            break;
+        }
+        current = current->next;
+    }
+
+    // Step 2: remove current from the list
+    if (current->prev == NULL) {
+        MUK_Assert(current == op_fptr_pair_list);
+        op_fptr_pair_list = current->next;
+        if (current->next != NULL) {
+            current->next->prev = NULL;
+        }
+    } else {
+        current->prev->next = current->next;
+        if (current->next != NULL) {
+            current->next->prev = current->prev;
+        }
+    }
+
+    // Step 3: free the memory
+    free(current);
+
+    // Step 4: free the op itself
     int rc = IMPL_Op_free(*op);
     free(*op);
     *op = &IMPL_OP_NULL;
+
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -5413,7 +5445,7 @@ int WRAP_Win_detach(MPI_Win *win, const void *base)
 
 int WRAP_Win_fence(int assert, MPI_Win *win)
 {
-    //printf("assert = %d %d\n", assert, MODE_MUK_TO_IMPL(assert));
+    //MUK_Warning("assert = %d %d\n", assert, MODE_MUK_TO_IMPL(assert));
     int rc = IMPL_Win_fence(MODE_MUK_TO_IMPL(assert), *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
