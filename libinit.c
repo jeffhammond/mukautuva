@@ -31,6 +31,8 @@ Which_MPI_e whose_mpi = UNKNOWN;
 
 int (*WRAP_Load_functions)(void * restrict h, int major, int minor);
 int (*WRAP_CODE_IMPL_TO_MUK)(int error_c);
+void (*WRAP_Init_handle_key)(void);
+void (*WRAP_Finalize_handle_key)(void);
 
 // I need these for null handle versions.
 // The impl layer sets *handle = &IMPL_HANDLE_NULL,
@@ -1527,6 +1529,10 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
 
     WRAP_CODE_IMPL_TO_MUK = MUK_DLSYM(wrap_so_handle,"ERROR_CODE_IMPL_TO_MUK");
 
+    WRAP_Init_handle_key = MUK_DLSYM(wrap_so_handle,"WRAP_Init_handle_key");
+    WRAP_Finalize_handle_key = MUK_DLSYM(wrap_so_handle,"WRAP_Finalize_handle_key");
+    WRAP_Init_handle_key();
+
     return rc;
 }
 
@@ -1559,6 +1565,9 @@ int MPI_Get_library_version(char *version, int *resultlen)
 
 int MPI_Finalize(void)
 {
+    if (WRAP_Finalize_handle_key != NULL) {
+        WRAP_Finalize_handle_key();
+    }
     int rc = MUK_Finalize();
     return WRAP_CODE_IMPL_TO_MUK(rc);
 }

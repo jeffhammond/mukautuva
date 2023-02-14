@@ -1343,6 +1343,63 @@ static inline void MPI_Status_to_WRAP_Status(const MPI_Status * m, WRAP_Status *
 #endif
 }
 
+// crazy stuff to support user-defined reductions
+
+int TYPE_HANDLE_KEY = MPI_KEYVAL_INVALID;
+
+void WRAP_Init_handle_key(void)
+{
+    int rc = IMPL_Type_create_keyval(MPI_TYPE_NULL_COPY_FN, MPI_TYPE_NULL_DELETE_FN, &TYPE_HANDLE_KEY, NULL);
+    if (rc != MPI_SUCCESS) {
+        printf("IMPL_Type_create_keyval(TYPE_HANDLE_KEY) failed: %d\n", rc);
+    }
+}
+
+void WRAP_Finalize_handle_key(void)
+{
+    int rc = MPI_SUCCESS;
+    if (TYPE_HANDLE_KEY != MPI_KEYVAL_INVALID) {
+        rc = IMPL_Type_free_keyval(&TYPE_HANDLE_KEY);
+    }
+    if (rc != MPI_SUCCESS) {
+        printf("IMPL_Type_free_keyval(TYPE_HANDLE_KEY) failed: %d\n", rc);
+    }
+}
+
+static bool IS_PREDEFINED_OP(MPI_Op op)
+{
+    return (op == MPI_MAX || op == MPI_MIN || op == MPI_SUM || op == MPI_PROD ||
+            op == MPI_LAND || op == MPI_LOR || op == MPI_LXOR ||
+            op == MPI_BAND || op == MPI_BOR || op == MPI_BXOR ||
+            op == MPI_MAXLOC || op == MPI_MINLOC ||
+            op == MPI_REPLACE || op == MPI_NO_OP);
+}
+
+typedef void WRAP_User_function(void *invec, void *inoutvec, int *len, MPI_Datatype ** datatype);
+
+typedef struct
+{
+    MPI_Datatype       * dt;
+    WRAP_User_function * fp;
+}
+reduce_trampoline_cookie_t;
+
+typedef struct op_fptr_pair_s
+{
+    // from MUK
+    MPI_Op             * op;
+    WRAP_User_function * fp;
+
+    // for the linked list
+    struct op_fptr_pair_s * next;
+    struct op_fptr_pair_s * prev;
+}
+op_fptr_pair_t;
+
+op_fptr_pair_t * op_fptr_pair_list = NULL;
+
+// WRAP->IMPL functions
+
 int WRAP_Abort(MPI_Comm *comm, int errorcode)
 {
     int rc = IMPL_Abort(*comm, errorcode);
@@ -1469,11 +1526,46 @@ int WRAP_Alloc_mem(IMPL_Aint size, MPI_Info *info, void *baseptr)
 
 int WRAP_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm)
 {
+    int rc;
+#if 0
     char name[MPI_MAX_OBJECT_NAME] = {0};
     snprintf(name,MPI_MAX_OBJECT_NAME,"%p",datatype);
     printf("type name = %s\n", name);
     IMPL_Type_set_name(*datatype,name);
-    int rc = IMPL_Allreduce(sendbuf, recvbuf, count, *datatype, *op, *comm);
+#endif
+    if (IS_PREDEFINED_OP(*op)) {
+        //printf("WRAP_Allreduce: predefined op=%p\n",op);
+        rc = IMPL_Allreduce(sendbuf, recvbuf, count, *datatype, *op, *comm);
+    }
+    else {
+        printf("WRAP_Allreduce: user-defined op=%p\n",op);
+        WRAP_User_function * user_fn = NULL;
+        op_fptr_pair_t * current = op_fptr_pair_list;
+        if (op_fptr_pair_list == NULL) {
+            printf("WRAP_Allreduce: op_fptr_pair_list is NULL - this should be impossible.\n");
+        }
+        while (current) {
+            printf("current=%p current->op=%p op=%p\n", current, current->op, op);
+            if (current->op == op) {
+                user_fn = current->fp;
+                break;
+            }
+            current = current->next;
+        }
+        if (user_fn == NULL) {
+            printf("WRAP_Allreduce: failed to find valid op<->fn mapping.\n");
+        }
+        reduce_trampoline_cookie_t * cookie = malloc(sizeof(reduce_trampoline_cookie_t));
+        cookie->dt = datatype;
+        cookie->fp = user_fn;
+        rc = IMPL_Type_set_attr(*datatype, TYPE_HANDLE_KEY, cookie);
+        if (rc != MPI_SUCCESS) {
+            return ERROR_CODE_IMPL_TO_MUK(rc);
+        }
+        printf("WRAP_Allreduce: cookie=%p\n", cookie);
+        rc = IMPL_Allreduce(sendbuf, recvbuf, count, *datatype, *op, *comm);
+        free(cookie);
+    }
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3782,11 +3874,13 @@ int WRAP_Op_commutative(MPI_Op *op, int *commute)
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-typedef void WRAP_User_function(void *invec, void *inoutvec, int *len, MPI_Datatype ** datatype);
 // not thread safe - hack that will be replaced by generating trampolines at runtime
 static WRAP_User_function * user_function_address;
+
 void trampoline(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
 {
+    int rc;
+#if 0
     int n;
     char name[MPI_MAX_OBJECT_NAME] = {0};
     IMPL_Type_get_name(*datatype,name,&n);
@@ -3796,7 +3890,25 @@ void trampoline(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
     printf("ptr = %p\n", ptr);
     printf("trampoline: fn=%p in=%p inout=%p len=%d type=%p &type=%p *type=0x%lx\n",
             user_function_address, invec, inoutvec, *len, datatype, &datatype, (intptr_t)(MPI_Datatype)*datatype);
-    user_function_address(invec,inoutvec,len,&ptr);
+    user_function_address(invec,inoutvec,len,&dptr);
+#else
+    int flag;
+    reduce_trampoline_cookie_t * cookie = NULL;
+    rc = IMPL_Type_get_attr(*datatype, TYPE_HANDLE_KEY, &cookie, &flag);
+    if (rc != MPI_SUCCESS || !flag) {
+        printf("trampoline: IMPL_Type_get_attr failed: flag=%d rc=%d\n", flag, rc);
+        MPI_Abort(MPI_COMM_SELF,rc);
+    }
+    MPI_Datatype       * dptr = NULL;
+    WRAP_User_function * fptr = NULL;
+    if (flag) {
+        printf("trampoline: cookie=%p\n", cookie);
+        dptr = cookie->dt;
+        fptr = cookie->fp;
+        printf("trampoline: cookie->dt=%p cookie->fp=%p\n", cookie->dt, cookie->fp);
+    }
+    (*fptr)(invec,inoutvec,len,&dptr);
+#endif
 }
 
 int WRAP_Op_create(WRAP_User_function *user_fn, int commute, MPI_Op **op)
@@ -3805,6 +3917,26 @@ int WRAP_Op_create(WRAP_User_function *user_fn, int commute, MPI_Op **op)
     user_function_address = user_fn;
     int rc = IMPL_Op_create(trampoline, commute, *op);
     //int rc = IMPL_Op_create(user_fn, commute, *op);
+
+    // for now, leak this.  fix by freeing in Op_free.
+    // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
+    op_fptr_pair_t * pair = malloc(sizeof(op_fptr_pair_t));
+    pair->op = *op;
+    pair->fp = user_fn;
+    pair->prev = NULL;
+    pair->next = NULL;
+
+    if (op_fptr_pair_list == NULL) {
+        op_fptr_pair_list = pair;
+    } else {
+        op_fptr_pair_t * parent = op_fptr_pair_list;
+        while (parent->next != NULL) {
+            parent = parent->next;
+        }
+        parent->next = pair;
+        pair->prev   = parent;
+    }
+
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 

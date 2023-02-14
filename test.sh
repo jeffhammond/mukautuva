@@ -17,7 +17,7 @@ else
     GDB=gdb
 fi
 
-NP=2
+NP=4
 OPTS="${OPTS} -quiet"
 
 make -j $1 && \
