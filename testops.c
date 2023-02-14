@@ -14,6 +14,47 @@
 static MPI_Op ops[] = { MPI_MIN, MPI_MAX, MPI_SUM,
                         MPI_BAND, MPI_BOR, MPI_BXOR };
 
+void my_reduce_op_1(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
+{
+    printf("my_reduce_op_1\n");
+    for (int i=0; i<*len; i++) {
+        if (*datatype == MPI_INT) {
+            ((int*)inoutvec)[i]    += ((int*)invec)[i];
+        }
+        else {
+            printf("my_reduce_op_1: unsupported datatype\n");
+        }
+    }
+    fflush(0);
+}
+
+void my_reduce_op_2(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
+{
+    printf("my_reduce_op_2\n");
+    for (int i=0; i<*len; i++) {
+        if (*datatype == MPI_INT) {
+            ((int*)inoutvec)[i]    += ((int*)invec)[i];
+        }
+        else {
+            printf("my_reduce_op_2: unsupported datatype\n");
+        }
+    }
+    fflush(0);
+}
+void my_reduce_op_3(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
+{
+    printf("my_reduce_op_3\n");
+    for (int i=0; i<*len; i++) {
+        if (*datatype == MPI_INT) {
+            ((int*)inoutvec)[i]    += ((int*)invec)[i];
+        }
+        else {
+            printf("my_reduce_op_3: unsupported datatype\n");
+        }
+    }
+    fflush(0);
+}
+
 void my_reduce_op(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
 {
     //printf("my_reduce_op: in=%p inout=%p *len=%d *datatype=%p\n", invec, inoutvec, *len, *datatype);
@@ -136,6 +177,77 @@ int main(int argc, char* argv[])
             MPI_Abort(MPI_COMM_WORLD,1);
         }
     }
+
+    {
+        printf("my_reduce_op_1=%p\n", my_reduce_op_1);
+        printf("my_reduce_op_2=%p\n", my_reduce_op_2);
+        printf("my_reduce_op_3=%p\n", my_reduce_op_3);
+
+        MPI_Op f1 = MPI_OP_NULL;
+        MPI_Op f2 = MPI_OP_NULL;
+        MPI_Op f3 = MPI_OP_NULL;
+
+        rc = MPI_Op_create(&my_reduce_op_1, 0, &f1);
+        if (rc != MPI_SUCCESS || f1 == MPI_OP_NULL) {
+            printf("MPI_Op_create failed\n");
+            MPI_Abort(MPI_COMM_WORLD,rc);
+        }
+
+        rc = MPI_Op_create(&my_reduce_op_2, 0, &f2);
+        if (rc != MPI_SUCCESS || f2 == MPI_OP_NULL) {
+            printf("MPI_Op_create failed\n");
+            MPI_Abort(MPI_COMM_WORLD,rc);
+        }
+
+        rc = MPI_Op_create(&my_reduce_op_3, 0, &f3);
+        if (rc != MPI_SUCCESS || f3 == MPI_OP_NULL) {
+            printf("MPI_Op_create failed\n");
+            MPI_Abort(MPI_COMM_WORLD,rc);
+        }
+
+        int in = 10, out = -9999;
+        rc = MPI_Allreduce(&in, &out, 1, MPI_INT, f1, MPI_COMM_WORLD);
+        if (rc != MPI_SUCCESS) {
+            printf("MPI_Allreduce 1 failed\n");
+            MPI_Abort(MPI_COMM_WORLD,rc);
+        }
+        printf("f1: in = %d out = %d ref = %d \n", in, out, in * np);
+
+        out = -1;
+        rc = MPI_Allreduce(&in, &out, 1, MPI_INT, f2, MPI_COMM_WORLD);
+        if (rc != MPI_SUCCESS) {
+            printf("MPI_Allreduce 2 failed\n");
+            MPI_Abort(MPI_COMM_WORLD,rc);
+        }
+        printf("f2: in = %d out = %d ref = %d \n", in, out, in * np);
+
+        out = -10;
+        rc = MPI_Allreduce(&in, &out, 1, MPI_INT, f3, MPI_COMM_WORLD);
+        if (rc != MPI_SUCCESS) {
+            printf("MPI_Allreduce 3 failed\n");
+            MPI_Abort(MPI_COMM_WORLD,rc);
+        }
+        printf("f3: in = %d out = %d ref = %d \n", in, out, in * np);
+
+        MPI_Op_free(&f1);
+        if (f1 != MPI_OP_NULL) {
+            printf("freed handle is not null\n");
+            MPI_Abort(MPI_COMM_WORLD,1);
+        }
+
+        MPI_Op_free(&f2);
+        if (f2 != MPI_OP_NULL) {
+            printf("freed handle is not null\n");
+            MPI_Abort(MPI_COMM_WORLD,2);
+        }
+
+        MPI_Op_free(&f3);
+        if (f3 != MPI_OP_NULL) {
+            printf("freed handle is not null\n");
+            MPI_Abort(MPI_COMM_WORLD,3);
+        }
+    }
+
 
     fflush(0);
     usleep(1);

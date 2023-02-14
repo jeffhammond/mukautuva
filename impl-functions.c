@@ -1538,7 +1538,7 @@ int WRAP_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *
         rc = IMPL_Allreduce(sendbuf, recvbuf, count, *datatype, *op, *comm);
     }
     else {
-        printf("WRAP_Allreduce: user-defined op=%p\n",op);
+        //printf("WRAP_Allreduce: user-defined op=%p\n",op);
         WRAP_User_function * user_fn = NULL;
         op_fptr_pair_t * current = op_fptr_pair_list;
         if (op_fptr_pair_list == NULL) {
@@ -1562,7 +1562,7 @@ int WRAP_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *
         if (rc != MPI_SUCCESS) {
             return ERROR_CODE_IMPL_TO_MUK(rc);
         }
-        printf("WRAP_Allreduce: cookie=%p\n", cookie);
+        //printf("WRAP_Allreduce: cookie=%p\n", cookie);
         rc = IMPL_Allreduce(sendbuf, recvbuf, count, *datatype, *op, *comm);
         free(cookie);
     }
