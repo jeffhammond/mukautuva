@@ -16,7 +16,6 @@ static MPI_Op ops[] = { MPI_MIN, MPI_MAX, MPI_SUM,
 
 void my_reduce_op_1(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
 {
-    printf("my_reduce_op_1\n");
     for (int i=0; i<*len; i++) {
         if (*datatype == MPI_INT) {
             ((int*)inoutvec)[i]    += ((int*)invec)[i];
@@ -30,7 +29,6 @@ void my_reduce_op_1(void *invec, void *inoutvec, int *len, MPI_Datatype * dataty
 
 void my_reduce_op_2(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
 {
-    printf("my_reduce_op_2\n");
     for (int i=0; i<*len; i++) {
         if (*datatype == MPI_INT) {
             ((int*)inoutvec)[i]    += ((int*)invec)[i];
@@ -43,7 +41,6 @@ void my_reduce_op_2(void *invec, void *inoutvec, int *len, MPI_Datatype * dataty
 }
 void my_reduce_op_3(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
 {
-    printf("my_reduce_op_3\n");
     for (int i=0; i<*len; i++) {
         if (*datatype == MPI_INT) {
             ((int*)inoutvec)[i]    += ((int*)invec)[i];
@@ -76,7 +73,7 @@ int main(int argc, char* argv[])
     int me, np;
     MPI_Comm_rank(MPI_COMM_WORLD,&me);
     MPI_Comm_size(MPI_COMM_WORLD,&np);
-    printf("I am %d of %d\n", me, np);
+    //printf("I am %d of %d\n", me, np);
     fflush(0);
     MPI_Barrier(MPI_COMM_WORLD);
     usleep(1);
@@ -118,7 +115,7 @@ int main(int argc, char* argv[])
         }
 
         if (out != ref) {
-            printf("%d: o=%d in=%d out=%d ref=%d\n", me, o, in, out, ref);
+            printf("%d: o=%d in=%d out=%d ref=%d\n", o, me, in, out, ref);
             MPI_Abort(MPI_COMM_WORLD,1);
         }
 
@@ -128,8 +125,6 @@ int main(int argc, char* argv[])
     }
 
     {
-        printf("my_reduce_op=%p\n", my_reduce_op);
-
         MPI_Op custom = MPI_OP_NULL;
         rc = MPI_Op_create(&my_reduce_op, 0, &custom);
         if (rc != MPI_SUCCESS || custom == MPI_OP_NULL) {
@@ -137,14 +132,16 @@ int main(int argc, char* argv[])
             MPI_Abort(MPI_COMM_WORLD,rc);
         }
 
-        int in = 10, out = -9999;
-        printf("&in=%p &out=%p\n", &in, &out);
+        int in = 10, out = -9999, ref = 10 * np;
         rc = MPI_Allreduce(&in, &out, 1, MPI_INT, custom, MPI_COMM_WORLD);
         if (rc != MPI_SUCCESS) {
             printf("MPI_Allreduce failed\n");
             MPI_Abort(MPI_COMM_WORLD,rc);
         }
-        printf("in = %d out = %d ref = %d \n", in, out, in * np);
+        if (out != ref) {
+            printf("%d: in=%d out=%d ref=%d\n", me, in, out, ref);
+            MPI_Abort(MPI_COMM_WORLD,1);
+        }
 
         MPI_Op_free(&custom);
         if (custom != MPI_OP_NULL) {
@@ -154,10 +151,6 @@ int main(int argc, char* argv[])
     }
 
     {
-        printf("my_reduce_op_1=%p\n", my_reduce_op_1);
-        printf("my_reduce_op_2=%p\n", my_reduce_op_2);
-        printf("my_reduce_op_3=%p\n", my_reduce_op_3);
-
         MPI_Op f1 = MPI_OP_NULL;
         MPI_Op f2 = MPI_OP_NULL;
         MPI_Op f3 = MPI_OP_NULL;
@@ -180,13 +173,16 @@ int main(int argc, char* argv[])
             MPI_Abort(MPI_COMM_WORLD,rc);
         }
 
-        int in = 10, out = -9999;
+        int in = 10, out = -9999, ref = 10 * np;
         rc = MPI_Allreduce(&in, &out, 1, MPI_INT, f1, MPI_COMM_WORLD);
         if (rc != MPI_SUCCESS) {
             printf("MPI_Allreduce 1 failed\n");
             MPI_Abort(MPI_COMM_WORLD,rc);
         }
-        printf("f1: in = %d out = %d ref = %d \n", in, out, in * np);
+        if (out != ref) {
+            printf("%d: in=%d out=%d ref=%d\n", me, in, out, ref);
+            MPI_Abort(MPI_COMM_WORLD,2);
+        }
 
         out = -1;
         rc = MPI_Allreduce(&in, &out, 1, MPI_INT, f2, MPI_COMM_WORLD);
@@ -194,7 +190,10 @@ int main(int argc, char* argv[])
             printf("MPI_Allreduce 2 failed\n");
             MPI_Abort(MPI_COMM_WORLD,rc);
         }
-        printf("f2: in = %d out = %d ref = %d \n", in, out, in * np);
+        if (out != ref) {
+            printf("%d: in=%d out=%d ref=%d\n", me, in, out, ref);
+            MPI_Abort(MPI_COMM_WORLD,3);
+        }
 
         out = -10;
         rc = MPI_Allreduce(&in, &out, 1, MPI_INT, f3, MPI_COMM_WORLD);
@@ -202,7 +201,10 @@ int main(int argc, char* argv[])
             printf("MPI_Allreduce 3 failed\n");
             MPI_Abort(MPI_COMM_WORLD,rc);
         }
-        printf("f3: in = %d out = %d ref = %d \n", in, out, in * np);
+        if (out != ref) {
+            printf("%d: in=%d out=%d ref=%d\n", me, in, out, ref);
+            MPI_Abort(MPI_COMM_WORLD,4);
+        }
 
         MPI_Op_free(&f3);
         if (f3 != MPI_OP_NULL) {
@@ -222,7 +224,6 @@ int main(int argc, char* argv[])
             MPI_Abort(MPI_COMM_WORLD,1);
         }
     }
-
 
     fflush(0);
     usleep(1);
