@@ -1524,6 +1524,23 @@ int WRAP_Alloc_mem(IMPL_Aint size, MPI_Info *info, void *baseptr)
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
+static WRAP_User_function * lookup_op_pair(MPI_Op * op)
+{
+    WRAP_User_function * user_fn = NULL;
+    op_fptr_pair_t * current = op_fptr_pair_list;
+    if (op_fptr_pair_list == NULL) {
+        MUK_Warning("op_fptr_pair_list is NULL - this should be impossible.\n");
+    }
+    while (current) {
+        if (current->op == op) {
+            user_fn = current->fp;
+            break;
+        }
+        current = current->next;
+    }
+    return user_fn;
+}
+
 int WRAP_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm)
 {
     int rc;
@@ -1532,18 +1549,7 @@ int WRAP_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *
     }
     else {
         // Part 1: look up the user function associated with the MPI_Op argument
-        WRAP_User_function * user_fn = NULL;
-        op_fptr_pair_t * current = op_fptr_pair_list;
-        if (op_fptr_pair_list == NULL) {
-            MUK_Warning("op_fptr_pair_list is NULL - this should be impossible.\n");
-        }
-        while (current) {
-            if (current->op == op) {
-                user_fn = current->fp;
-                break;
-            }
-            current = current->next;
-        }
+        WRAP_User_function * user_fn = lookup_op_pair(op);
         if (user_fn == NULL) {
             MUK_Warning("failed to find valid op<->fn mapping.\n");
             rc = MPI_ERR_INTERN;
@@ -1588,7 +1594,13 @@ int WRAP_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *
 
 int WRAP_Allreduce_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm)
 {
-    int rc = IMPL_Allreduce_c(sendbuf, recvbuf, count, *datatype, *op, *comm);
+    int rc;
+    if (IS_PREDEFINED_OP(*op)) {
+        rc = IMPL_Allreduce_c(sendbuf, recvbuf, count, *datatype, *op, *comm);
+    } else {
+        MUK_Warning("WRAP_Allreduce_c does not implement user-defined ops.\n");
+        rc = MPI_ERR_INTERN;
+    }
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4160,13 +4172,64 @@ int WRAP_Recv_init_c(void *buf, IMPL_Count count, MPI_Datatype *datatype, int so
 
 int WRAP_Reduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *datatype, MPI_Op *op, int root, MPI_Comm *comm)
 {
-    int rc = IMPL_Reduce(sendbuf, recvbuf, count, *datatype, *op, RANK_MUK_TO_IMPL(root), *comm);
+    int rc;
+    if (IS_PREDEFINED_OP(*op)) {
+        rc = IMPL_Reduce(sendbuf, recvbuf, count, *datatype, *op, RANK_MUK_TO_IMPL(root), *comm);
+    }
+    else {
+        // Part 1: look up the user function associated with the MPI_Op argument
+        WRAP_User_function * user_fn = lookup_op_pair(op);
+        if (user_fn == NULL) {
+            MUK_Warning("failed to find valid op<->fn mapping.\n");
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+
+        // Part 2: duplicate the datatype so there can be no collision of keyvals
+        MPI_Datatype dup;
+        rc = IMPL_Type_dup(*datatype,&dup);
+        if (rc) {
+            MUK_Warning("Type_dup failed\n");
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+
+        // Part 3: bake the cookie
+        reduce_trampoline_cookie_t * cookie = malloc(sizeof(reduce_trampoline_cookie_t));
+        cookie->dt = datatype;
+        cookie->fp = user_fn;
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, cookie);
+        if (rc) {
+            MUK_Warning("Type_set_attr failed\n");
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+
+        // Part 4: do the reduction
+        rc = IMPL_Reduce(sendbuf, recvbuf, count, dup, *op, RANK_MUK_TO_IMPL(root), *comm);
+
+        // Part 5: clean up
+        free(cookie);
+        rc = IMPL_Type_free(&dup);
+        if (rc) {
+            MUK_Warning("Type_free failed\n");
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+    }
+    end:
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Reduce_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype *datatype, MPI_Op *op, int root, MPI_Comm *comm)
 {
-    int rc = IMPL_Reduce_c(sendbuf, recvbuf, count, *datatype, *op, RANK_MUK_TO_IMPL(root), *comm);
+    int rc;
+    if (IS_PREDEFINED_OP(*op)) {
+        rc = IMPL_Reduce_c(sendbuf, recvbuf, count, *datatype, *op, RANK_MUK_TO_IMPL(root), *comm);
+    } else {
+        MUK_Warning("WRAP_Reduce_c does not implement user-defined ops.\n");
+        rc = MPI_ERR_INTERN;
+    }
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4198,19 +4261,116 @@ int WRAP_Reduce_local_c(const void *inbuf, void *inoutbuf, IMPL_Count count, MPI
 
 int WRAP_Reduce_scatter(const void *sendbuf, void *recvbuf, const int recvcounts[], MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm)
 {
-    int rc = IMPL_Reduce_scatter(sendbuf, recvbuf, recvcounts, *datatype, *op, *comm);
+    int rc;
+    if (IS_PREDEFINED_OP(*op)) {
+        rc = IMPL_Reduce_scatter(sendbuf, recvbuf, recvcounts, *datatype, *op, *comm);
+    }
+    else {
+        // Part 1: look up the user function associated with the MPI_Op argument
+        WRAP_User_function * user_fn = lookup_op_pair(op);
+        if (user_fn == NULL) {
+            MUK_Warning("failed to find valid op<->fn mapping.\n");
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+
+        // Part 2: duplicate the datatype so there can be no collision of keyvals
+        MPI_Datatype dup;
+        rc = IMPL_Type_dup(*datatype,&dup);
+        if (rc) {
+            MUK_Warning("Type_dup failed\n");
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+
+        // Part 3: bake the cookie
+        reduce_trampoline_cookie_t * cookie = malloc(sizeof(reduce_trampoline_cookie_t));
+        cookie->dt = datatype;
+        cookie->fp = user_fn;
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, cookie);
+        if (rc) {
+            MUK_Warning("Type_set_attr failed\n");
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+
+        // Part 4: do the reduction
+        rc = IMPL_Reduce_scatter(sendbuf, recvbuf, recvcounts, dup, *op, *comm);
+
+        // Part 5: clean up
+        free(cookie);
+        rc = IMPL_Type_free(&dup);
+        if (rc) {
+            MUK_Warning("Type_free failed\n");
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+    }
+    end:
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Reduce_scatter_block(const void *sendbuf, void *recvbuf, int recvcount, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm)
 {
-    int rc = IMPL_Reduce_scatter_block(sendbuf, recvbuf, recvcount, *datatype, *op, *comm);
+    int rc;
+    if (IS_PREDEFINED_OP(*op)) {
+        rc = IMPL_Reduce_scatter_block(sendbuf, recvbuf, recvcount, *datatype, *op, *comm);
+    }
+    else {
+        // Part 1: look up the user function associated with the MPI_Op argument
+        WRAP_User_function * user_fn = lookup_op_pair(op);
+        if (user_fn == NULL) {
+            MUK_Warning("failed to find valid op<->fn mapping.\n");
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+
+        // Part 2: duplicate the datatype so there can be no collision of keyvals
+        MPI_Datatype dup;
+        rc = IMPL_Type_dup(*datatype,&dup);
+        if (rc) {
+            MUK_Warning("Type_dup failed\n");
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+
+        // Part 3: bake the cookie
+        reduce_trampoline_cookie_t * cookie = malloc(sizeof(reduce_trampoline_cookie_t));
+        cookie->dt = datatype;
+        cookie->fp = user_fn;
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, cookie);
+        if (rc) {
+            MUK_Warning("Type_set_attr failed\n");
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+
+        // Part 4: do the reduction
+        rc = IMPL_Reduce_scatter_block(sendbuf, recvbuf, recvcount, dup, *op, *comm);
+
+        // Part 5: clean up
+        free(cookie);
+        rc = IMPL_Type_free(&dup);
+        if (rc) {
+            MUK_Warning("Type_free failed\n");
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+    }
+    end:
+    return ERROR_CODE_IMPL_TO_MUK(rc);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Reduce_scatter_block_c(const void *sendbuf, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm)
 {
-    int rc = IMPL_Reduce_scatter_block_c(sendbuf, recvbuf, recvcount, *datatype, *op, *comm);
+    int rc;
+    if (IS_PREDEFINED_OP(*op)) {
+        rc = IMPL_Reduce_scatter_block_c(sendbuf, recvbuf, recvcount, *datatype, *op, *comm);
+    } else {
+        MUK_Warning("WRAP_Reduce_scatter_block_c does not implement user-defined ops.\n");
+        rc = MPI_ERR_INTERN;
+    }
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4230,7 +4390,13 @@ int WRAP_Reduce_scatter_block_init_c(const void *sendbuf, void *recvbuf, IMPL_Co
 
 int WRAP_Reduce_scatter_c(const void *sendbuf, void *recvbuf, const IMPL_Count recvcounts[], MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm)
 {
-    int rc = IMPL_Reduce_scatter_c(sendbuf, recvbuf, recvcounts, *datatype, *op, *comm);
+    int rc;
+    if (IS_PREDEFINED_OP(*op)) {
+        rc = IMPL_Reduce_scatter_c(sendbuf, recvbuf, recvcounts, *datatype, *op, *comm);
+    } else {
+        MUK_Warning("WRAP_Reduce_scatter_c does not implement user-defined ops.\n");
+        rc = MPI_ERR_INTERN;
+    }
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
