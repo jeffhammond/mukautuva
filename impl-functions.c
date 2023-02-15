@@ -1398,6 +1398,97 @@ op_fptr_pair_t;
 
 op_fptr_pair_t * op_fptr_pair_list = NULL;
 
+static WRAP_User_function * lookup_op_pair(MPI_Op * op)
+{
+    WRAP_User_function * user_fn = NULL;
+    op_fptr_pair_t * current = op_fptr_pair_list;
+    if (op_fptr_pair_list == NULL) {
+        MUK_Warning("op_fptr_pair_list is NULL - this should be impossible.\n");
+    }
+    while (current) {
+        if (current->op == op) {
+            user_fn = current->fp;
+            break;
+        }
+        current = current->next;
+    }
+    return user_fn;
+}
+
+static void add_op_pair_to_list(WRAP_User_function *user_fn, MPI_Op *op)
+{
+    // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
+    op_fptr_pair_t * pair = malloc(sizeof(op_fptr_pair_t));
+    pair->op = op;
+    pair->fp = user_fn;
+    pair->prev = NULL;
+    pair->next = NULL;
+
+    if (op_fptr_pair_list == NULL) {
+        op_fptr_pair_list = pair;
+    } else {
+        op_fptr_pair_t * parent = op_fptr_pair_list;
+        while (parent->next != NULL) {
+            parent = parent->next;
+        }
+        parent->next = pair;
+        pair->prev   = parent;
+    }
+}
+
+
+static void remove_op_pair_from_list(MPI_Op *op)
+{
+    // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
+
+    // Step 1: look up op in the linked list
+    op_fptr_pair_t * current = op_fptr_pair_list;
+    if (op_fptr_pair_list == NULL) {
+        MUK_Warning("remove_op_pair_from_list: op_fptr_pair_list is NULL - this should be impossible.\n");
+    }
+    while (current) {
+        if (current->op == op) {
+            break;
+        }
+        current = current->next;
+    }
+
+    // Step 2: remove current from the list
+    if (current->prev == NULL) {
+        MUK_Assert(current == op_fptr_pair_list);
+        op_fptr_pair_list = current->next;
+        if (current->next != NULL) {
+            current->next->prev = NULL;
+        }
+    } else {
+        current->prev->next = current->next;
+        if (current->next != NULL) {
+            current->next->prev = current->prev;
+        }
+    }
+
+    // Step 3: free the memory
+    free(current);
+}
+
+
+// This is to implement the crude garbage collector for cookies
+// created by nonblocking reductions with user-defined ops,
+// which cannot be freed until the user function is called
+// (or else the lookup will segfault, obviously).
+typedef struct req_cookie_pair_s
+{
+    MPI_Request                * request;
+    reduce_trampoline_cookie_t * cookie;
+
+    // for the linked list
+    struct req_cookie_pair_s * next;
+    struct req_cookie_pair_s * prev;
+}
+req_cookie_pair_t;
+
+req_cookie_pair_t * req_cookie_pair_list = NULL;
+
 // WRAP->IMPL functions
 
 int WRAP_Abort(MPI_Comm *comm, int errorcode)
@@ -1522,23 +1613,6 @@ int WRAP_Alloc_mem(IMPL_Aint size, MPI_Info *info, void *baseptr)
 {
     int rc = IMPL_Alloc_mem(size, *info, baseptr);
     return ERROR_CODE_IMPL_TO_MUK(rc);
-}
-
-static WRAP_User_function * lookup_op_pair(MPI_Op * op)
-{
-    WRAP_User_function * user_fn = NULL;
-    op_fptr_pair_t * current = op_fptr_pair_list;
-    if (op_fptr_pair_list == NULL) {
-        MUK_Warning("op_fptr_pair_list is NULL - this should be impossible.\n");
-    }
-    while (current) {
-        if (current->op == op) {
-            user_fn = current->fp;
-            break;
-        }
-        current = current->next;
-    }
-    return user_fn;
 }
 
 int WRAP_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm)
@@ -3930,8 +4004,9 @@ int WRAP_Op_create(WRAP_User_function *user_fn, int commute, MPI_Op **op)
     *op = malloc(sizeof(MPI_Op));
     user_function_address = user_fn;
     int rc = IMPL_Op_create(trampoline, commute, *op);
-
-    // for now, leak this.  fix by freeing in Op_free.
+#if 1
+    add_op_pair_to_list(user_fn, *op);
+#else
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
     op_fptr_pair_t * pair = malloc(sizeof(op_fptr_pair_t));
     pair->op = *op;
@@ -3949,7 +4024,7 @@ int WRAP_Op_create(WRAP_User_function *user_fn, int commute, MPI_Op **op)
         parent->next = pair;
         pair->prev   = parent;
     }
-
+#endif
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3964,6 +4039,9 @@ int WRAP_Op_create_c(MPI_User_function_c *user_fn, int commute, MPI_Op **op)
 
 int WRAP_Op_free(MPI_Op **op)
 {
+#if 1
+    remove_op_pair_from_list(*op);
+#else
     // Step 1: look up *op in the linked list
     op_fptr_pair_t * current = op_fptr_pair_list;
     if (op_fptr_pair_list == NULL) {
@@ -3992,12 +4070,10 @@ int WRAP_Op_free(MPI_Op **op)
 
     // Step 3: free the memory
     free(current);
-
-    // Step 4: free the op itself
+#endif
     int rc = IMPL_Op_free(*op);
     free(*op);
     *op = &IMPL_OP_NULL;
-
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
