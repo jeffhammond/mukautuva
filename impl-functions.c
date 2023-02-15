@@ -1503,6 +1503,17 @@ static reduce_trampoline_cookie_t * bake_reduce_trampoline_cookie(MPI_Op * op, M
     return cookie;
 }
 
+static int cleanup_reduce_trampoline_cookie(reduce_trampoline_cookie_t * cookie, MPI_Datatype * dup)
+{
+    int rc;
+    free(cookie);
+    rc = IMPL_Type_free(dup);
+    if (rc) {
+        MUK_Warning("Type_free failed\n");
+    }
+    return rc;
+}
+
 // This is to implement the crude garbage collector for cookies
 // created by nonblocking reductions with user-defined ops,
 // which cannot be freed until the user function is called
@@ -1653,7 +1664,7 @@ int WRAP_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *
         rc = IMPL_Allreduce(sendbuf, recvbuf, count, *datatype, *op, *comm);
     }
     else {
-#if 1
+        // bake the cookie
         MPI_Datatype dup;
         reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(op, datatype, &dup);
         if (cookie == NULL) {
@@ -1661,46 +1672,20 @@ int WRAP_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *
             rc = MPI_ERR_INTERN;
             goto end;
         }
-#else
-        // Part 1: look up the user function associated with the MPI_Op argument
-        WRAP_User_function * user_fn = lookup_op_pair(op);
-        if (user_fn == NULL) {
-            MUK_Warning("failed to find valid op<->fn mapping.\n");
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
 
-        // Part 2: duplicate the datatype so there can be no collision of keyvals
-        MPI_Datatype dup;
-        rc = IMPL_Type_dup(*datatype,&dup);
-        if (rc) {
-            MUK_Warning("Type_dup failed\n");
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-
-        // Part 3: bake the cookie
-        reduce_trampoline_cookie_t * cookie = malloc(sizeof(reduce_trampoline_cookie_t));
-        cookie->dt = datatype;
-        cookie->fp = user_fn;
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, cookie);
-        if (rc) {
-            MUK_Warning("Type_set_attr failed\n");
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-#endif
         // do the reduction
         rc = IMPL_Allreduce(sendbuf, recvbuf, count, dup, *op, *comm);
 
-        // clean up
+#if 1
+        rc = cleanup_reduce_trampoline_cookie(cookie, &dup);
+#else
         free(cookie);
         rc = IMPL_Type_free(&dup);
         if (rc) {
             MUK_Warning("Type_free failed\n");
             rc = MPI_ERR_INTERN;
-            goto end;
         }
+#endif
     }
     end:
     return ERROR_CODE_IMPL_TO_MUK(rc);
