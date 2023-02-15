@@ -1436,7 +1436,6 @@ static void add_op_pair_to_list(WRAP_User_function *user_fn, MPI_Op *op)
     }
 }
 
-
 static void remove_op_pair_from_list(MPI_Op *op)
 {
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
@@ -1471,6 +1470,38 @@ static void remove_op_pair_from_list(MPI_Op *op)
     free(current);
 }
 
+static reduce_trampoline_cookie_t * bake_reduce_trampoline_cookie(MPI_Op * op, MPI_Datatype * datatype, MPI_Datatype * dup)
+{
+    int rc;
+
+    // Part 1: look up the user function associated with the MPI_Op argument
+    WRAP_User_function * user_fn = lookup_op_pair(op);
+    if (user_fn == NULL) {
+        MUK_Warning("bake_reduce_trampoline_cookie: failed to find valid op<->fn mapping.\n");
+        return NULL;
+    }
+
+    // Part 2: duplicate the datatype so there can be no collision of keyvals
+    rc = IMPL_Type_dup(*datatype,dup);
+    if (rc) {
+        MUK_Warning("bake_reduce_trampoline_cookie: Type_dup failed\n");
+        return NULL;
+    }
+
+    // Part 3: bake the cookie
+    reduce_trampoline_cookie_t * cookie = malloc(sizeof(reduce_trampoline_cookie_t));
+    cookie->dt = datatype;
+    cookie->fp = user_fn;
+    rc = IMPL_Type_set_attr(*dup, TYPE_HANDLE_KEY, cookie);
+    if (rc) {
+        MUK_Warning("bake_reduce_trampoline_cookie: Type_set_attr failed\n");
+        IMPL_Type_free(dup);
+        free(cookie);
+        return NULL;
+    }
+
+    return cookie;
+}
 
 // This is to implement the crude garbage collector for cookies
 // created by nonblocking reductions with user-defined ops,
@@ -1622,6 +1653,15 @@ int WRAP_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *
         rc = IMPL_Allreduce(sendbuf, recvbuf, count, *datatype, *op, *comm);
     }
     else {
+#if 1
+        MPI_Datatype dup;
+        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(op, datatype, &dup);
+        if (cookie == NULL) {
+            MUK_Warning("bake_reduce_trampoline_cookie failed.\n");
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+#else
         // Part 1: look up the user function associated with the MPI_Op argument
         WRAP_User_function * user_fn = lookup_op_pair(op);
         if (user_fn == NULL) {
@@ -1649,11 +1689,11 @@ int WRAP_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *
             rc = MPI_ERR_INTERN;
             goto end;
         }
-
-        // Part 4: do the reduction
+#endif
+        // do the reduction
         rc = IMPL_Allreduce(sendbuf, recvbuf, count, dup, *op, *comm);
 
-        // Part 5: clean up
+        // clean up
         free(cookie);
         rc = IMPL_Type_free(&dup);
         if (rc) {
