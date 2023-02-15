@@ -16,7 +16,7 @@ else
     MPICHRUN=/usr/bin/mpirun.mpich
     MPICHLIB=/usr/lib/x86_64-linux-gnu/libmpich.so
     DBG=gdb
-    DBGARGS="-ex "set width 1000" -ex "thread apply all bt" -ex run -ex bt -ex "set confirm off" -ex quit --args"
+    DBGARGS="-ex \"set width 1000\" -ex \"thread apply all bt\" -ex run -ex bt -ex \"set confirm off\" -ex quit --args"
 fi
 
 NP=2

@@ -20,8 +20,9 @@ ARFLAGS	= -r
 
 all: libs tests
 
-tests:  header.o testconstants.x testinit.x \
-	testcomm.x testwin.x testreqs.x testcoll.x testgroup.x testtypes.x testops.x
+RUNTESTS = testcoll.x testcomm.x testinit.x testreqs.x testwin.x testgroup.x testtypes.x testops.x
+
+tests: header.o testconstants.x $(RUNTESTS)
 
 other: testmalloc.x
 
@@ -74,6 +75,16 @@ mpich-debug.o: debug.c
 
 ompi-debug.o: debug.c
 	$(OMPICC) $(CFLAGS) -c $< -o $@
+
+check: $(RUNTESTS)
+	./test.sh ./testcoll.x
+	./test.sh ./testcomm.x
+	./test.sh ./testgroup.x
+	./test.sh ./testinit.x
+	./test.sh ./testops.x
+	./test.sh ./testreqs.x
+	./test.sh ./testtypes.x
+	./test.sh ./testwin.x
 
 clean:
 	-rm -f *.o *.x *.s *.a *.i *.so
