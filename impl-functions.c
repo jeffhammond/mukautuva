@@ -1503,15 +1503,13 @@ static reduce_trampoline_cookie_t * bake_reduce_trampoline_cookie(MPI_Op * op, M
     return cookie;
 }
 
-static int cleanup_reduce_trampoline_cookie(reduce_trampoline_cookie_t * cookie, MPI_Datatype * dup)
+static void cleanup_reduce_trampoline_cookie(reduce_trampoline_cookie_t * cookie, MPI_Datatype * dup)
 {
-    int rc;
     free(cookie);
-    rc = IMPL_Type_free(dup);
+    int rc = IMPL_Type_free(dup);
     if (rc) {
-        MUK_Warning("Type_free failed\n");
+        MUK_Warning("Type_free failed: %d\n",rc);
     }
-    return rc;
 }
 
 // This is to implement the crude garbage collector for cookies
@@ -1668,24 +1666,14 @@ int WRAP_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *
         MPI_Datatype dup;
         reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(op, datatype, &dup);
         if (cookie == NULL) {
-            MUK_Warning("bake_reduce_trampoline_cookie failed.\n");
+            MUK_Warning("WRAP_Allreduce: cookie failed to bake.\n");
             rc = MPI_ERR_INTERN;
             goto end;
         }
-
         // do the reduction
         rc = IMPL_Allreduce(sendbuf, recvbuf, count, dup, *op, *comm);
-
-#if 1
-        rc = cleanup_reduce_trampoline_cookie(cookie, &dup);
-#else
-        free(cookie);
-        rc = IMPL_Type_free(&dup);
-        if (rc) {
-            MUK_Warning("Type_free failed\n");
-            rc = MPI_ERR_INTERN;
-        }
-#endif
+        // cleanup
+        cleanup_reduce_trampoline_cookie(cookie, &dup);
     }
     end:
     return ERROR_CODE_IMPL_TO_MUK(rc);
