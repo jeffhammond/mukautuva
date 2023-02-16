@@ -1456,10 +1456,10 @@ static void remove_op_pair_from_list(MPI_Op *op)
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
 
     // Step 1: look up op in the linked list
-    op_fptr_pair_t * current = op_fptr_pair_list;
     if (op_fptr_pair_list == NULL) {
         MUK_Warning("remove_op_pair_from_list: op_fptr_pair_list is NULL - this should be impossible.\n");
     }
+    op_fptr_pair_t * current = op_fptr_pair_list;
     while (current) {
         if (current->op == op) {
             break;
@@ -1544,25 +1544,6 @@ req_cookie_pair_t;
 
 req_cookie_pair_t * req_cookie_pair_list = NULL;
 
-#if 0
-static reduce_trampoline_cookie_t * lookup_cookie_pair(MPI_Request * request)
-{
-    reduce_trampoline_cookie_t * cookie = NULL;
-    req_cookie_pair_t * current = req_cookie_pair_list;
-    if (req_cookie_pair_list == NULL) {
-        MUK_Warning("req_cookie_pair_list is NULL - this should be impossible.\n");
-    }
-    while (current) {
-        if (current->request == request) {
-            cookie = current->cookie;
-            break;
-        }
-        current = current->next;
-    }
-    return cookie;
-}
-#endif
-
 static void add_cookie_pair_to_list(MPI_Request * request, reduce_trampoline_cookie_t * cookie)
 {
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
@@ -1584,15 +1565,22 @@ static void add_cookie_pair_to_list(MPI_Request * request, reduce_trampoline_coo
     }
 }
 
-static void remove_cookie_pair_from_list(MPI_Request * request)
+// this is the only one of these functions that is called
+// in a performance-critical way (in a loop in e.g. Waitall)
+// so ideally it should be inlined.
+static inline void remove_cookie_pair_from_list(MPI_Request * request)
 {
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
 
+    // Step 0: it is likely that this will be null, because it is only
+    //         non-null when there is a outstanding nonblocking reduction
+    //         with a user-defined op.
+    if (req_cookie_pair_list == NULL) {
+        return;
+    }
+
     // Step 1: look up op in the linked list
     req_cookie_pair_t * current = req_cookie_pair_list;
-    if (req_cookie_pair_list == NULL) {
-        MUK_Warning("remove_cookie_from_list: req_cookie_pair_list is NULL - this should be impossible.\n");
-    }
     while (current) {
         if (current->request == request) {
             break;
@@ -5172,6 +5160,7 @@ int WRAP_Testall(int count, MPI_Request* array_of_requests[], int *flag, WRAP_St
     if (*flag) {
         for (int i=0; i<count; i++) {
             if (impl_requests[i] == MPI_REQUEST_NULL) {
+                remove_cookie_pair_from_list(array_of_requests[i]);
                 free(array_of_requests[i]);
                 array_of_requests[i] = &IMPL_REQUEST_NULL;
             }
@@ -5208,6 +5197,7 @@ int WRAP_Testany(int count, MPI_Request* array_of_requests[], int *indx, int *fl
         if (*indx != MPI_UNDEFINED) {
 
             if (impl_requests[*indx] == MPI_REQUEST_NULL) {
+                remove_cookie_pair_from_list(array_of_requests[*indx]);
                 free(array_of_requests[*indx]);
                 array_of_requests[*indx] = &IMPL_REQUEST_NULL;
             }
@@ -5247,6 +5237,7 @@ int WRAP_Testsome(int incount, MPI_Request* array_of_requests[], int *outcount, 
         for (int i=0; i<*outcount; i++) {
             const int j = array_of_indices[i];
             if (impl_requests[j] == MPI_REQUEST_NULL) {
+                remove_cookie_pair_from_list(array_of_requests[j]);
                 free(array_of_requests[j]);
                 array_of_requests[j] = &IMPL_REQUEST_NULL;
             }
@@ -5740,6 +5731,7 @@ int WRAP_Wait(MPI_Request **request, WRAP_Status *status)
     int rc = IMPL_Wait(*request, ignore ? MPI_STATUS_IGNORE : &impl_status);
 
     if (**request == MPI_REQUEST_NULL) {
+        remove_cookie_pair_from_list(*request);
         free(*request);
         *request = &IMPL_REQUEST_NULL;
     }
@@ -5773,6 +5765,7 @@ int WRAP_Waitall(int count, MPI_Request* array_of_requests[], WRAP_Status array_
     // The list may contain null or inactive handles. The call sets to empty the status of each such entry.
     for (int i=0; i<count; i++) {
         if (impl_requests[i] == MPI_REQUEST_NULL) {
+            remove_cookie_pair_from_list(array_of_requests[i]);
             free(array_of_requests[i]);
             array_of_requests[i] = &IMPL_REQUEST_NULL;
         }
@@ -5807,6 +5800,7 @@ int WRAP_Waitany(int count, MPI_Request* array_of_requests[], int *indx, WRAP_St
     if (*indx != MPI_UNDEFINED) {
 
         if (impl_requests[*indx] == MPI_REQUEST_NULL) {
+            remove_cookie_pair_from_list(array_of_requests[*indx]);
             free(array_of_requests[*indx]);
             array_of_requests[*indx] = &IMPL_REQUEST_NULL;
         }
@@ -5845,6 +5839,7 @@ int WRAP_Waitsome(int incount, MPI_Request* array_of_requests[], int *outcount, 
         for (int i=0; i<*outcount; i++) {
             const int j = array_of_indices[i];
             if (impl_requests[j] == MPI_REQUEST_NULL) {
+                remove_cookie_pair_from_list(array_of_requests[j]);
                 free(array_of_requests[j]);
                 array_of_requests[j] = &IMPL_REQUEST_NULL;
             }
