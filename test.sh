@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -x
+#set -x
 
 if [ `uname -s` == Darwin ] ; then
     OMPIRUN=/opt/homebrew/Cellar/open-mpi/4.1.4_2/bin/mpirun

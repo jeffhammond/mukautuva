@@ -1247,7 +1247,7 @@ static inline int TAG_MUK_TO_IMPL(int tag_muk)
     }
 }
 
-// status conversion
+// constant conversion
 static inline int UNDEFINED_IMPL_TO_MUK(int i)
 {
     if (i == MPI_UNDEFINED) {
@@ -1257,27 +1257,49 @@ static inline int UNDEFINED_IMPL_TO_MUK(int i)
     }
 }
 
-// status conversion
-static inline int MODE_MUK_TO_IMPL(int mode_muk)
+// mode constant conversion - this needs to handle multiple modes OR-ed together
+static inline int IO_MODE_MUK_TO_IMPL(int mode_muk)
 {
-         if (mode_muk == MUK_MODE_APPEND)          { return MPI_MODE_APPEND; }
-    else if (mode_muk == MUK_MODE_CREATE)          { return MPI_MODE_CREATE; }
-    else if (mode_muk == MUK_MODE_DELETE_ON_CLOSE) { return MPI_MODE_DELETE_ON_CLOSE; }
-    else if (mode_muk == MUK_MODE_EXCL)            { return MPI_MODE_EXCL; }
-    else if (mode_muk == MUK_MODE_NOCHECK)         { return MPI_MODE_NOCHECK; }
-    else if (mode_muk == MUK_MODE_NOPRECEDE)       { return MPI_MODE_NOPRECEDE; }
-    else if (mode_muk == MUK_MODE_NOPUT)           { return MPI_MODE_NOPUT; }
-    else if (mode_muk == MUK_MODE_NOSTORE)         { return MPI_MODE_NOSTORE; }
-    else if (mode_muk == MUK_MODE_NOSUCCEED)       { return MPI_MODE_NOSUCCEED; }
-    else if (mode_muk == MUK_MODE_RDONLY)          { return MPI_MODE_RDONLY; }
-    else if (mode_muk == MUK_MODE_RDWR)            { return MPI_MODE_RDWR; }
-    else if (mode_muk == MUK_MODE_SEQUENTIAL)      { return MPI_MODE_SEQUENTIAL; }
-    else if (mode_muk == MUK_MODE_UNIQUE_OPEN)     { return MPI_MODE_UNIQUE_OPEN; }
-    else if (mode_muk == MUK_MODE_WRONLY)          { return MPI_MODE_WRONLY; }
-    else                                           { return mode_muk; }
+    int mode_impl = 0;
+    if (mode_muk & MUK_MODE_APPEND)          { mode_impl |= MPI_MODE_APPEND; }
+    if (mode_muk & MUK_MODE_CREATE)          { mode_impl |= MPI_MODE_CREATE; }
+    if (mode_muk & MUK_MODE_DELETE_ON_CLOSE) { mode_impl |= MPI_MODE_DELETE_ON_CLOSE; }
+    if (mode_muk & MUK_MODE_EXCL)            { mode_impl |= MPI_MODE_EXCL; }
+    if (mode_muk & MUK_MODE_RDONLY)          { mode_impl |= MPI_MODE_RDONLY; }
+    if (mode_muk & MUK_MODE_RDWR)            { mode_impl |= MPI_MODE_RDWR; }
+    if (mode_muk & MUK_MODE_SEQUENTIAL)      { mode_impl |= MPI_MODE_SEQUENTIAL; }
+    if (mode_muk & MUK_MODE_UNIQUE_OPEN)     { mode_impl |= MPI_MODE_UNIQUE_OPEN; }
+    if (mode_muk & MUK_MODE_WRONLY)          { mode_impl |= MPI_MODE_WRONLY; }
+    return mode_impl;
+}
+static inline int IO_MODE_IMPL_TO_MUK(int mode_impl)
+{
+    int mode_muk = 0;
+    if (mode_impl & MUK_MODE_APPEND)          { mode_muk |= MPI_MODE_APPEND; }
+    if (mode_impl & MUK_MODE_CREATE)          { mode_muk |= MPI_MODE_CREATE; }
+    if (mode_impl & MUK_MODE_DELETE_ON_CLOSE) { mode_muk |= MPI_MODE_DELETE_ON_CLOSE; }
+    if (mode_impl & MUK_MODE_EXCL)            { mode_muk |= MPI_MODE_EXCL; }
+    if (mode_impl & MUK_MODE_RDONLY)          { mode_muk |= MPI_MODE_RDONLY; }
+    if (mode_impl & MUK_MODE_RDWR)            { mode_muk |= MPI_MODE_RDWR; }
+    if (mode_impl & MUK_MODE_SEQUENTIAL)      { mode_muk |= MPI_MODE_SEQUENTIAL; }
+    if (mode_impl & MUK_MODE_UNIQUE_OPEN)     { mode_muk |= MPI_MODE_UNIQUE_OPEN; }
+    if (mode_impl & MUK_MODE_WRONLY)          { mode_muk |= MPI_MODE_WRONLY; }
+    return mode_muk;
 }
 
-// status conversion
+// mode constant conversion - this needs to handle multiple modes OR-ed together
+static inline int RMA_MODE_MUK_TO_IMPL(int mode_muk)
+{
+    int mode_impl = 0;
+    if (mode_muk & MUK_MODE_NOCHECK)         { mode_impl |= MPI_MODE_NOCHECK; }
+    if (mode_muk & MUK_MODE_NOPRECEDE)       { mode_impl |= MPI_MODE_NOPRECEDE; }
+    if (mode_muk & MUK_MODE_NOPUT)           { mode_impl |= MPI_MODE_NOPUT; }
+    if (mode_muk & MUK_MODE_NOSTORE)         { mode_impl |= MPI_MODE_NOSTORE; }
+    if (mode_muk & MUK_MODE_NOSUCCEED)       { mode_impl |= MPI_MODE_NOSUCCEED; }
+    return mode_impl;
+}
+
+// predefined attribute conversion
 static inline int KEY_MUK_TO_IMPL(int key_muk)
 {
          if (key_muk == MUK_TAG_UB)            { return MPI_TAG_UB; }
@@ -1306,7 +1328,11 @@ static int ALLTOALLW_SETUP(const MPI_Comm * comm, const MPI_Datatype* sendtypes[
 static inline void WRAP_Status_to_MPI_Status(const WRAP_Status * w, MPI_Status * m)
 {
     if ((intptr_t)w == (intptr_t)IMPL_STATUS_IGNORE) {
-        //MUK_Warning("MPI_Status_to_WRAP_Status passed STATUS_IGNORE\n");
+        MUK_Warning("WRAP_Status_to_MPI_Status passed STATUS_IGNORE\n");
+        return;
+    }
+    if (w == NULL || m == NULL) {
+        MUK_Warning("WRAP_Status_to_MPI_Status passed NULL (w=%p m=%p)\n",w,m);
         return;
     }
 
@@ -1326,7 +1352,11 @@ static inline void WRAP_Status_to_MPI_Status(const WRAP_Status * w, MPI_Status *
 static inline void MPI_Status_to_WRAP_Status(const MPI_Status * m, WRAP_Status * w)
 {
     if ((intptr_t)w == (intptr_t)IMPL_STATUS_IGNORE) {
-        //MUK_Warning("MPI_Status_to_WRAP_Status passed STATUS_IGNORE\n");
+        MUK_Warning("MPI_Status_to_WRAP_Status passed STATUS_IGNORE\n");
+        return;
+    }
+    if (w == NULL || m == NULL) {
+        MUK_Warning("MPI_Status_to_WRAP_Status passed NULL (m=%p w=%p)\n",m,w);
         return;
     }
 
@@ -1456,10 +1486,10 @@ static void remove_op_pair_from_list(MPI_Op *op)
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
 
     // Step 1: look up op in the linked list
-    op_fptr_pair_t * current = op_fptr_pair_list;
     if (op_fptr_pair_list == NULL) {
         MUK_Warning("remove_op_pair_from_list: op_fptr_pair_list is NULL - this should be impossible.\n");
     }
+    op_fptr_pair_t * current = op_fptr_pair_list;
     while (current) {
         if (current->op == op) {
             break;
@@ -1544,23 +1574,6 @@ req_cookie_pair_t;
 
 req_cookie_pair_t * req_cookie_pair_list = NULL;
 
-static reduce_trampoline_cookie_t * lookup_cookie_pair(MPI_Request * request)
-{
-    reduce_trampoline_cookie_t * cookie = NULL;
-    req_cookie_pair_t * current = req_cookie_pair_list;
-    if (req_cookie_pair_list == NULL) {
-        MUK_Warning("req_cookie_pair_list is NULL - this should be impossible.\n");
-    }
-    while (current) {
-        if (current->request == request) {
-            cookie = current->cookie;
-            break;
-        }
-        current = current->next;
-    }
-    return cookie;
-}
-
 static void add_cookie_pair_to_list(MPI_Request * request, reduce_trampoline_cookie_t * cookie)
 {
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
@@ -1582,15 +1595,23 @@ static void add_cookie_pair_to_list(MPI_Request * request, reduce_trampoline_coo
     }
 }
 
+// this is the only one of these functions that is called
+// in a performance-critical way (in a loop in e.g. Waitall)
+// so ideally it should be inlined.
 static void remove_cookie_pair_from_list(MPI_Request * request)
 {
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
 
-    // Step 1: look up op in the linked list
-    req_cookie_pair_t * current = req_cookie_pair_list;
+    // Step 0: it is likely that this will be null, because it is only
+    //         non-null when there is a outstanding nonblocking reduction
+    //         with a user-defined op.
     if (req_cookie_pair_list == NULL) {
         MUK_Warning("remove_op_pair_from_list: req_cookie_pair_list is NULL - this should be impossible.\n");
+        return;
     }
+
+    // Step 1: look up op in the linked list
+    req_cookie_pair_t * current = req_cookie_pair_list;
     while (current) {
         if (current->request == request) {
             break;
@@ -1598,7 +1619,14 @@ static void remove_cookie_pair_from_list(MPI_Request * request)
         current = current->next;
     }
 
-    // Step 2: remove current from the list
+    // Step 2: free the cookie that we found
+    if (current->cookie != NULL) {
+        free(current->cookie);
+    } else {
+        printf("remove_cookie_from_list: current->cookie is NULL\n");
+    }
+
+    // Step 3: remove current from the list
     if (current->prev == NULL) {
         MUK_Assert(current == req_cookie_pair_list);
         req_cookie_pair_list = current->next;
@@ -1614,6 +1642,15 @@ static void remove_cookie_pair_from_list(MPI_Request * request)
 
     // Step 3: free the memory
     free(current);
+}
+
+static void cleanup_ireduce_trampoline_cookie(reduce_trampoline_cookie_t * cookie, MPI_Request * request, MPI_Datatype * dup)
+{
+    add_cookie_pair_to_list(request, cookie);
+    int rc = IMPL_Type_free(dup);
+    if (rc) {
+        printf("Type_free failed: %d\n",rc);
+    }
 }
 
 // WRAP->IMPL functions
@@ -2441,6 +2478,7 @@ int WRAP_File_delete(const char *filename, MPI_Info *info)
 int WRAP_File_get_amode(MPI_File *fh, int *amode)
 {
     int rc = IMPL_File_get_amode(*fh, amode);
+    *amode = IO_MODE_IMPL_TO_MUK(*amode);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -2655,7 +2693,7 @@ int WRAP_File_iwrite_shared_c(MPI_File *fh, const void *buf, IMPL_Count count, M
 int WRAP_File_open(MPI_Comm *comm, const char *filename, int amode, MPI_Info *info, MPI_File **fh)
 {
     *fh = malloc(sizeof(MPI_File));
-    int rc = IMPL_File_open(*comm, filename, amode, *info, *fh);
+    int rc = IMPL_File_open(*comm, filename, IO_MODE_MUK_TO_IMPL(amode), *info, *fh);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3351,8 +3389,26 @@ int WRAP_Iallgatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *
 
 int WRAP_Iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm, MPI_Request **request)
 {
+    int rc;
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Iallreduce(sendbuf, recvbuf, count, *datatype, *op, *comm, *request);
+    if (IS_PREDEFINED_OP(*op)) {
+        rc = IMPL_Iallreduce(sendbuf, recvbuf, count, *datatype, *op, *comm, *request);
+    }
+    else {
+        // bake the cookie
+        MPI_Datatype dup;
+        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(op, datatype, &dup);
+        if (cookie == NULL) {
+            printf("WRAP_Iallreduce: cookie failed to bake.\n");
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+        // do the reduction
+        rc = IMPL_Iallreduce(sendbuf, recvbuf, count, dup, *op, *comm, *request);
+        // cleanup
+        cleanup_ireduce_trampoline_cookie(cookie, *request, &dup);
+    }
+    end:
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3496,10 +3552,11 @@ int WRAP_Igatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sen
 
 int WRAP_Improbe(int source, int tag, MPI_Comm *comm, int *flag, MPI_Message **message, WRAP_Status *status)
 {
+    const bool ignore = (intptr_t)status == (intptr_t)IMPL_STATUS_IGNORE;
     MPI_Status impl_status;
     *message = malloc(sizeof(MPI_Message));
-    int rc = IMPL_Improbe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, flag, *message, &impl_status);
-    MPI_Status_to_WRAP_Status(&impl_status, status);
+    int rc = IMPL_Improbe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, flag, *message, ignore ? MPI_STATUS_IGNORE : &impl_status);
+    if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3697,9 +3754,11 @@ int WRAP_Intercomm_merge(MPI_Comm *intercomm, int high, MPI_Comm **newintracomm)
 
 int WRAP_Iprobe(int source, int tag, MPI_Comm *comm, int *flag, WRAP_Status *status)
 {
+    const bool ignore = (intptr_t)status == (intptr_t)IMPL_STATUS_IGNORE;
+    printf("status=%p IMPL_STATUS_IGNORE=%p ignore=%d\n", status, IMPL_STATUS_IGNORE, (int)ignore);
     MPI_Status impl_status;
-    int rc = IMPL_Iprobe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, flag, &impl_status);
-    MPI_Status_to_WRAP_Status(&impl_status, status);
+    int rc = IMPL_Iprobe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, flag, ignore ? MPI_STATUS_IGNORE : &impl_status);
+    if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3719,8 +3778,26 @@ int WRAP_Irecv_c(void *buf, IMPL_Count count, MPI_Datatype *datatype, int source
 
 int WRAP_Ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *datatype, MPI_Op *op, int root, MPI_Comm *comm, MPI_Request **request)
 {
+    int rc;
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Ireduce(sendbuf, recvbuf, count, *datatype, *op, RANK_MUK_TO_IMPL(root), *comm, *request);
+    if (IS_PREDEFINED_OP(*op)) {
+        rc = IMPL_Ireduce(sendbuf, recvbuf, count, *datatype, *op, RANK_MUK_TO_IMPL(root), *comm, *request);
+    }
+    else {
+        // bake the cookie
+        MPI_Datatype dup;
+        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(op, datatype, &dup);
+        if (cookie == NULL) {
+            printf("WRAP_Ireduce: cookie failed to bake.\n");
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+        // do the reduction
+        rc = IMPL_Ireduce(sendbuf, recvbuf, count, dup, *op, RANK_MUK_TO_IMPL(root), *comm, *request);
+        // cleanup
+        cleanup_ireduce_trampoline_cookie(cookie, *request, &dup);
+    }
+    end:
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3891,9 +3968,10 @@ int WRAP_Lookup_name(const char *service_name, MPI_Info *info, char *port_name)
 
 int WRAP_Mprobe(int source, int tag, MPI_Comm *comm, MPI_Message **message, WRAP_Status *status)
 {
+    const bool ignore = (intptr_t)status == (intptr_t)IMPL_STATUS_IGNORE;
     MPI_Status impl_status;
-    int rc = IMPL_Mprobe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, *message, &impl_status);
-    MPI_Status_to_WRAP_Status(&impl_status, status);
+    int rc = IMPL_Mprobe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, *message, ignore ? MPI_STATUS_IGNORE : &impl_status);
+    if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4216,9 +4294,10 @@ int WRAP_Precv_init(void *buf, int partitions, IMPL_Count count, MPI_Datatype *d
 
 int WRAP_Probe(int source, int tag, MPI_Comm *comm, WRAP_Status *status)
 {
+    const bool ignore = (intptr_t)status == (intptr_t)IMPL_STATUS_IGNORE;
     MPI_Status impl_status;
-    int rc = IMPL_Probe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, &impl_status);
-    MPI_Status_to_WRAP_Status(&impl_status, status);
+    int rc = IMPL_Probe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, ignore ? MPI_STATUS_IGNORE : &impl_status);
+    if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -5674,8 +5753,7 @@ int WRAP_Win_detach(MPI_Win *win, const void *base)
 
 int WRAP_Win_fence(int assert, MPI_Win *win)
 {
-    //MUK_Warning("assert = %d %d\n", assert, MODE_MUK_TO_IMPL(assert));
-    int rc = IMPL_Win_fence(MODE_MUK_TO_IMPL(assert), *win);
+    int rc = IMPL_Win_fence(RMA_MODE_MUK_TO_IMPL(assert), *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -5766,19 +5844,19 @@ int WRAP_Win_lock(int lock_type, int rank, int assert, MPI_Win *win)
     } else if (lock_type == MUK_LOCK_SHARED) {
         impl_type = MPI_LOCK_SHARED;
     }
-    int rc = IMPL_Win_lock(impl_type, rank, MODE_MUK_TO_IMPL(assert), *win);
+    int rc = IMPL_Win_lock(impl_type, rank, RMA_MODE_MUK_TO_IMPL(assert), *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Win_lock_all(int assert, MPI_Win *win)
 {
-    int rc = IMPL_Win_lock_all(MODE_MUK_TO_IMPL(assert), *win);
+    int rc = IMPL_Win_lock_all(RMA_MODE_MUK_TO_IMPL(assert), *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Win_post(MPI_Group *group, int assert, MPI_Win *win)
 {
-    int rc = IMPL_Win_post(*group, MODE_MUK_TO_IMPL(assert), *win);
+    int rc = IMPL_Win_post(*group, RMA_MODE_MUK_TO_IMPL(assert), *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -5820,7 +5898,7 @@ int WRAP_Win_shared_query_c(MPI_Win *win, int rank, IMPL_Aint *size, IMPL_Aint *
 
 int WRAP_Win_start(MPI_Group *group, int assert, MPI_Win *win)
 {
-    int rc = IMPL_Win_start(*group, MODE_MUK_TO_IMPL(assert), *win);
+    int rc = IMPL_Win_start(*group, RMA_MODE_MUK_TO_IMPL(assert), *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
