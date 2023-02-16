@@ -10,14 +10,13 @@
 
 #include <dlfcn.h>
 
-#include "debug.h"
-
 // this is for function symbols, or other symbols that are not optional.
 static inline void * MUK_DLSYM(void * restrict handle, const char * restrict symbol)
 {
     void * fp = dlsym(handle, symbol);
     if (fp == NULL) {
         //fprintf(stderr, "MUK_DLSYM: failed to find %s - %s\n", symbol, dlerror() );
+        //fflush(0);
     }
     return fp;
 }
