@@ -1,6 +1,8 @@
 #include "muk.h"
 #include "muk-dl.h"
 
+#include "debug.h"
+
 #if defined(__linux__) && defined(__x86_64__)
 #define LIBMPI_NAME "/usr/lib/x86_64-linux-gnu/libmpi.so"
 #elif defined(__MACH__)
@@ -145,6 +147,10 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     } else {
         rc = MUK_Init_thread(argc,argv,requested,provided);
     }
+    if (rc) {
+        MUK_Warning("libinit: MPI initialization failed: %d\n",rc);
+        abort();
+    }
 
     char * wrapname = "/dev/null";
     // figure out which library i am using
@@ -153,7 +159,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
         char lib_version[16384] = {0};
         int  lib_version_length;
         rc = MUK_Get_library_version(lib_version, &lib_version_length);
-        //printf("MPI_Get_library_version = %s\n", lib_version);
+        printf("MPI_Get_library_version = %s\n", lib_version);
 
         char * pos;
         pos = strstr(lib_version, "Open MPI");
@@ -166,12 +172,15 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
             whose_mpi = MPICH;
             printf("MPICH\n");
         }
-    if (whose_mpi == OMPI) {
-        wrapname = "ompi-wrap.so";
-    } else if (whose_mpi == MPICH) {
-        wrapname = "mpich-wrap.so";
-    }
 
+        if (whose_mpi == OMPI) {
+            wrapname = "ompi-wrap.so";
+        } else if (whose_mpi == MPICH) {
+            wrapname = "mpich-wrap.so";
+        } else {
+            MUK_Warning("MPI implementation unknown.\n");
+            abort();
+        }
     }
 
     // these are ABI-agnostic and important, so why not load them now...
@@ -194,206 +203,11 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
         abort();
     }
 
-#if 0
-    // error codes
-    // MPI_SUCCESS is defined to be 0 and thus is omitted
-    int* pIMPL_ERR_BUFFER = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_BUFFER");
-    IMPL_ERR_BUFFER = *pIMPL_ERR_BUFFER;
-    int* pIMPL_ERR_COUNT = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_COUNT");
-    IMPL_ERR_COUNT = *pIMPL_ERR_COUNT;
-    int* pIMPL_ERR_TYPE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_TYPE");
-    IMPL_ERR_TYPE = *pIMPL_ERR_TYPE;
-    int* pIMPL_ERR_TAG = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_TAG");
-    IMPL_ERR_TAG = *pIMPL_ERR_TAG;
-    int* pIMPL_ERR_COMM = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_COMM");
-    IMPL_ERR_COMM = *pIMPL_ERR_COMM;
-    int* pIMPL_ERR_RANK = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_RANK");
-    IMPL_ERR_RANK = *pIMPL_ERR_RANK;
-    int* pIMPL_ERR_REQUEST = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_REQUEST");
-    IMPL_ERR_REQUEST = *pIMPL_ERR_REQUEST;
-    int* pIMPL_ERR_ROOT = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_ROOT");
-    IMPL_ERR_ROOT = *pIMPL_ERR_ROOT;
-    int* pIMPL_ERR_GROUP = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_GROUP");
-    IMPL_ERR_GROUP = *pIMPL_ERR_GROUP;
-    int* pIMPL_ERR_OP = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_OP");
-    IMPL_ERR_OP = *pIMPL_ERR_OP;
-    int* pIMPL_ERR_TOPOLOGY = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_TOPOLOGY");
-    IMPL_ERR_TOPOLOGY = *pIMPL_ERR_TOPOLOGY;
-    int* pIMPL_ERR_DIMS = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_DIMS");
-    IMPL_ERR_DIMS = *pIMPL_ERR_DIMS;
-    int* pIMPL_ERR_ARG = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_ARG");
-    IMPL_ERR_ARG = *pIMPL_ERR_ARG;
-    int* pIMPL_ERR_UNKNOWN = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_UNKNOWN");
-    IMPL_ERR_UNKNOWN = *pIMPL_ERR_UNKNOWN;
-    int* pIMPL_ERR_TRUNCATE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_TRUNCATE");
-    IMPL_ERR_TRUNCATE = *pIMPL_ERR_TRUNCATE;
-    int* pIMPL_ERR_OTHER = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_OTHER");
-    IMPL_ERR_OTHER = *pIMPL_ERR_OTHER;
-    int* pIMPL_ERR_INTERN = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_INTERN");
-    IMPL_ERR_INTERN = *pIMPL_ERR_INTERN;
-    int* pIMPL_ERR_PENDING = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_PENDING");
-    IMPL_ERR_PENDING = *pIMPL_ERR_PENDING;
-    int* pIMPL_ERR_IN_STATUS = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_IN_STATUS");
-    IMPL_ERR_IN_STATUS = *pIMPL_ERR_IN_STATUS;
-    int* pIMPL_ERR_ACCESS = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_ACCESS");
-    IMPL_ERR_ACCESS = *pIMPL_ERR_ACCESS;
-    int* pIMPL_ERR_AMODE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_AMODE");
-    IMPL_ERR_AMODE = *pIMPL_ERR_AMODE;
-    int* pIMPL_ERR_ASSERT = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_ASSERT");
-    IMPL_ERR_ASSERT = *pIMPL_ERR_ASSERT;
-    int* pIMPL_ERR_BAD_FILE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_BAD_FILE");
-    IMPL_ERR_BAD_FILE = *pIMPL_ERR_BAD_FILE;
-    int* pIMPL_ERR_BASE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_BASE");
-    IMPL_ERR_BASE = *pIMPL_ERR_BASE;
-    int* pIMPL_ERR_CONVERSION = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_CONVERSION");
-    IMPL_ERR_CONVERSION = *pIMPL_ERR_CONVERSION;
-    int* pIMPL_ERR_DISP = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_DISP");
-    IMPL_ERR_DISP = *pIMPL_ERR_DISP;
-    int* pIMPL_ERR_DUP_DATAREP = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_DUP_DATAREP");
-    IMPL_ERR_DUP_DATAREP = *pIMPL_ERR_DUP_DATAREP;
-    int* pIMPL_ERR_FILE_EXISTS = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_FILE_EXISTS");
-    IMPL_ERR_FILE_EXISTS = *pIMPL_ERR_FILE_EXISTS;
-    int* pIMPL_ERR_FILE_IN_USE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_FILE_IN_USE");
-    IMPL_ERR_FILE_IN_USE = *pIMPL_ERR_FILE_IN_USE;
-    int* pIMPL_ERR_FILE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_FILE");
-    IMPL_ERR_FILE = *pIMPL_ERR_FILE;
-    int* pIMPL_ERR_INFO_KEY = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_INFO_KEY");
-    IMPL_ERR_INFO_KEY = *pIMPL_ERR_INFO_KEY;
-    int* pIMPL_ERR_INFO_NOKEY = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_INFO_NOKEY");
-    IMPL_ERR_INFO_NOKEY = *pIMPL_ERR_INFO_NOKEY;
-    int* pIMPL_ERR_INFO_VALUE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_INFO_VALUE");
-    IMPL_ERR_INFO_VALUE = *pIMPL_ERR_INFO_VALUE;
-    int* pIMPL_ERR_INFO = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_INFO");
-    IMPL_ERR_INFO = *pIMPL_ERR_INFO;
-    int* pIMPL_ERR_IO = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_IO");
-    IMPL_ERR_IO = *pIMPL_ERR_IO;
-    int* pIMPL_ERR_KEYVAL = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_KEYVAL");
-    IMPL_ERR_KEYVAL = *pIMPL_ERR_KEYVAL;
-    int* pIMPL_ERR_LOCKTYPE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_LOCKTYPE");
-    IMPL_ERR_LOCKTYPE = *pIMPL_ERR_LOCKTYPE;
-    int* pIMPL_ERR_NAME = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_NAME");
-    IMPL_ERR_NAME = *pIMPL_ERR_NAME;
-    int* pIMPL_ERR_NO_MEM = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_NO_MEM");
-    IMPL_ERR_NO_MEM = *pIMPL_ERR_NO_MEM;
-    int* pIMPL_ERR_NOT_SAME = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_NOT_SAME");
-    IMPL_ERR_NOT_SAME = *pIMPL_ERR_NOT_SAME;
-    int* pIMPL_ERR_NO_SPACE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_NO_SPACE");
-    IMPL_ERR_NO_SPACE = *pIMPL_ERR_NO_SPACE;
-    int* pIMPL_ERR_NO_SUCH_FILE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_NO_SUCH_FILE");
-    IMPL_ERR_NO_SUCH_FILE = *pIMPL_ERR_NO_SUCH_FILE;
-    int* pIMPL_ERR_PORT = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_PORT");
-    IMPL_ERR_PORT = *pIMPL_ERR_PORT;
-    if (major >= 4) {
-        int* pIMPL_ERR_PROC_ABORTED = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_PROC_ABORTED");
-        IMPL_ERR_PROC_ABORTED = *pIMPL_ERR_PROC_ABORTED;
-    }
-    int* pIMPL_ERR_QUOTA = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_QUOTA");
-    IMPL_ERR_QUOTA = *pIMPL_ERR_QUOTA;
-    int* pIMPL_ERR_READ_ONLY = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_READ_ONLY");
-    IMPL_ERR_READ_ONLY = *pIMPL_ERR_READ_ONLY;
-    int* pIMPL_ERR_RMA_ATTACH = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_RMA_ATTACH");
-    IMPL_ERR_RMA_ATTACH = *pIMPL_ERR_RMA_ATTACH;
-    int* pIMPL_ERR_RMA_CONFLICT = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_RMA_CONFLICT");
-    IMPL_ERR_RMA_CONFLICT = *pIMPL_ERR_RMA_CONFLICT;
-    int* pIMPL_ERR_RMA_RANGE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_RMA_RANGE");
-    IMPL_ERR_RMA_RANGE = *pIMPL_ERR_RMA_RANGE;
-    int* pIMPL_ERR_RMA_SHARED = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_RMA_SHARED");
-    IMPL_ERR_RMA_SHARED = *pIMPL_ERR_RMA_SHARED;
-    int* pIMPL_ERR_RMA_SYNC = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_RMA_SYNC");
-    IMPL_ERR_RMA_SYNC = *pIMPL_ERR_RMA_SYNC;
-    int* pIMPL_ERR_RMA_FLAVOR = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_RMA_FLAVOR");
-    IMPL_ERR_RMA_FLAVOR = *pIMPL_ERR_RMA_FLAVOR;
-    int* pIMPL_ERR_SERVICE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_SERVICE");
-    IMPL_ERR_SERVICE = *pIMPL_ERR_SERVICE;
-    if (major >= 4) {
-        int* pIMPL_ERR_SESSION = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_SESSION");
-        IMPL_ERR_SESSION = *pIMPL_ERR_SESSION;
-    }
-    int* pIMPL_ERR_SIZE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_SIZE");
-    IMPL_ERR_SIZE = *pIMPL_ERR_SIZE;
-    int* pIMPL_ERR_SPAWN = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_SPAWN");
-    IMPL_ERR_SPAWN = *pIMPL_ERR_SPAWN;
-    int* pIMPL_ERR_UNSUPPORTED_DATAREP = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_UNSUPPORTED_DATAREP");
-    IMPL_ERR_UNSUPPORTED_DATAREP = *pIMPL_ERR_UNSUPPORTED_DATAREP;
-    int* pIMPL_ERR_UNSUPPORTED_OPERATION = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_UNSUPPORTED_OPERATION");
-    IMPL_ERR_UNSUPPORTED_OPERATION = *pIMPL_ERR_UNSUPPORTED_OPERATION;
-    if (major >= 4) {
-        int* pIMPL_ERR_VALUE_TOO_LARGE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_VALUE_TOO_LARGE");
-        IMPL_ERR_VALUE_TOO_LARGE = *pIMPL_ERR_VALUE_TOO_LARGE;
-    }
-    int* pIMPL_ERR_WIN = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_WIN");
-    IMPL_ERR_WIN = *pIMPL_ERR_WIN;
-    int* pIMPL_T_ERR_CANNOT_INIT = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_CANNOT_INIT");
-    IMPL_T_ERR_CANNOT_INIT = *pIMPL_T_ERR_CANNOT_INIT;
-    if (major >= 4) {
-        int* pIMPL_T_ERR_NOT_ACCESSIBLE = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_NOT_ACCESSIBLE");
-        IMPL_T_ERR_NOT_ACCESSIBLE = *pIMPL_T_ERR_NOT_ACCESSIBLE;
-    }
-    int* pIMPL_T_ERR_NOT_INITIALIZED = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_NOT_INITIALIZED");
-    IMPL_T_ERR_NOT_INITIALIZED = *pIMPL_T_ERR_NOT_INITIALIZED;
-    if (major >= 4) {
-        int* pIMPL_T_ERR_NOT_SUPPORTED = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_NOT_SUPPORTED");
-        IMPL_T_ERR_NOT_SUPPORTED = *pIMPL_T_ERR_NOT_SUPPORTED;
-    }
-    int* pIMPL_T_ERR_MEMORY = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_MEMORY");
-    IMPL_T_ERR_MEMORY = *pIMPL_T_ERR_MEMORY;
-    int* pIMPL_T_ERR_INVALID = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_INVALID");
-    IMPL_T_ERR_INVALID = *pIMPL_T_ERR_INVALID;
-    int* pIMPL_T_ERR_INVALID_INDEX = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_INVALID_INDEX");
-    IMPL_T_ERR_INVALID_INDEX = *pIMPL_T_ERR_INVALID_INDEX;
-    int* pIMPL_T_ERR_INVALID_ITEM = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_INVALID_ITEM");
-    IMPL_T_ERR_INVALID_ITEM = *pIMPL_T_ERR_INVALID_ITEM;
-    int* pIMPL_T_ERR_INVALID_SESSION = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_INVALID_SESSION");
-    IMPL_T_ERR_INVALID_SESSION = *pIMPL_T_ERR_INVALID_SESSION;
-    int* pIMPL_T_ERR_INVALID_HANDLE = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_INVALID_HANDLE");
-    IMPL_T_ERR_INVALID_HANDLE = *pIMPL_T_ERR_INVALID_HANDLE;
-    int* pIMPL_T_ERR_INVALID_NAME = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_INVALID_NAME");
-    IMPL_T_ERR_INVALID_NAME = *pIMPL_T_ERR_INVALID_NAME;
-    int* pIMPL_T_ERR_OUT_OF_HANDLES = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_OUT_OF_HANDLES");
-    IMPL_T_ERR_OUT_OF_HANDLES = *pIMPL_T_ERR_OUT_OF_HANDLES;
-    int* pIMPL_T_ERR_OUT_OF_SESSIONS = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_OUT_OF_SESSIONS");
-    IMPL_T_ERR_OUT_OF_SESSIONS = *pIMPL_T_ERR_OUT_OF_SESSIONS;
-    int* pIMPL_T_ERR_CVAR_SET_NOT_NOW = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_CVAR_SET_NOT_NOW");
-    IMPL_T_ERR_CVAR_SET_NOT_NOW = *pIMPL_T_ERR_CVAR_SET_NOT_NOW;
-    int* pIMPL_T_ERR_CVAR_SET_NEVER = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_CVAR_SET_NEVER");
-    IMPL_T_ERR_CVAR_SET_NEVER = *pIMPL_T_ERR_CVAR_SET_NEVER;
-    int* pIMPL_T_ERR_PVAR_NO_WRITE = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_PVAR_NO_WRITE");
-    IMPL_T_ERR_PVAR_NO_WRITE = *pIMPL_T_ERR_PVAR_NO_WRITE;
-    int* pIMPL_T_ERR_PVAR_NO_STARTSTOP = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_PVAR_NO_STARTSTOP");
-    IMPL_T_ERR_PVAR_NO_STARTSTOP = *pIMPL_T_ERR_PVAR_NO_STARTSTOP;
-    int* pIMPL_T_ERR_PVAR_NO_ATOMIC = MUK_DLSYM(wrap_so_handle,"IMPL_T_ERR_PVAR_NO_ATOMIC");
-    IMPL_T_ERR_PVAR_NO_ATOMIC = *pIMPL_T_ERR_PVAR_NO_ATOMIC;
-    int* pIMPL_ERR_LASTCODE = MUK_DLSYM(wrap_so_handle,"IMPL_ERR_LASTCODE");
-    IMPL_ERR_LASTCODE = *pIMPL_ERR_LASTCODE;
-#endif
-
     // Buffer Address Constants
     void ** pMPI_BOTTOM   = MUK_DLSYM(wrap_so_handle,"IMPL_BOTTOM");
     MPI_BOTTOM = *pMPI_BOTTOM;
     void ** pMPI_IN_PLACE = MUK_DLSYM(wrap_so_handle,"IMPL_IN_PLACE");
     MPI_IN_PLACE = *pMPI_IN_PLACE;
-
-#if 0
-    // Assorted Constants
-    int* pMPI_PROC_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_PROC_NULL");
-    MPI_PROC_NULL = *pMPI_PROC_NULL;
-    int* pMPI_ANY_SOURCE = MUK_DLSYM(wrap_so_handle,"IMPL_ANY_SOURCE");
-    MPI_ANY_SOURCE = *pMPI_ANY_SOURCE;
-    int* pMPI_ANY_TAG = MUK_DLSYM(wrap_so_handle,"IMPL_ANY_TAG");
-    MPI_ANY_TAG = *pMPI_ANY_TAG;
-    int* pMPI_UNDEFINED = MUK_DLSYM(wrap_so_handle,"IMPL_UNDEFINED");
-    MPI_UNDEFINED = *pMPI_UNDEFINED;
-    int* pMPI_BSEND_OVERHEAD = MUK_DLSYM(wrap_so_handle,"IMPL_BSEND_OVERHEAD");
-    MPI_BSEND_OVERHEAD = *pMPI_BSEND_OVERHEAD;
-    int* pMPI_KEYVAL_INVALID = MUK_DLSYM(wrap_so_handle,"IMPL_KEYVAL_INVALID");
-    MPI_KEYVAL_INVALID = *pMPI_KEYVAL_INVALID;
-    int* pMPI_LOCK_EXCLUSIVE = MUK_DLSYM(wrap_so_handle,"IMPL_LOCK_EXCLUSIVE");
-    MPI_LOCK_EXCLUSIVE = *pMPI_LOCK_EXCLUSIVE;
-    int* pMPI_LOCK_SHARED = MUK_DLSYM(wrap_so_handle,"IMPL_LOCK_SHARED");
-    MPI_LOCK_SHARED = *pMPI_LOCK_SHARED;
-    int* pMPI_ROOT = MUK_DLSYM(wrap_so_handle,"IMPL_ROOT");
-    MPI_ROOT = *pMPI_ROOT;
-#endif
 
     // No Process Message Handle
     //void ** pMPI_MESSAGE_NO_PROC = MUK_DLSYM(wrap_so_handle,"IMPL_MESSAGE_NO_PROC");
@@ -401,27 +215,6 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     //    MPI_MESSAGE_NO_PROC = MUK_DLSYM(wrap_so_handle,"IMPL_MESSAGE_NO_PROC");
     void ** pmuk_mpi_message_no_proc = MUK_DLSYM(wrap_so_handle,"IMPL_MESSAGE_NO_PROC");
     muk_mpi_message_no_proc = *pmuk_mpi_message_no_proc;
-
-
-#if 0
-    //Fortran status array size and reserved index values (C only)
-    int* pMPI_F_STATUS_SIZE = MUK_DLSYM(wrap_so_handle,"IMPL_F_STATUS_SIZE");
-    MPI_F_STATUS_SIZE = *pMPI_F_STATUS_SIZE;
-    int* pMPI_F_SOURCE = MUK_DLSYM(wrap_so_handle,"IMPL_F_SOURCE");
-    MPI_F_SOURCE = *pMPI_F_SOURCE;
-    int* pMPI_F_TAG = MUK_DLSYM(wrap_so_handle,"IMPL_F_TAG");
-    MPI_F_TAG = *pMPI_F_TAG;
-    int* pMPI_F_ERROR = MUK_DLSYM(wrap_so_handle,"IMPL_F_ERROR");
-    MPI_F_ERROR = *pMPI_F_ERROR;
-    int* pMPI_ADDRESS_KIND = MUK_DLSYM(wrap_so_handle,"IMPL_ADDRESS_KIND");
-    MPI_ADDRESS_KIND = *pMPI_ADDRESS_KIND;
-    int* pMPI_COUNT_KIND = MUK_DLSYM(wrap_so_handle,"IMPL_COUNT_KIND");
-    MPI_COUNT_KIND = *pMPI_COUNT_KIND;
-    int* pMPI_INTEGER_KIND = MUK_DLSYM(wrap_so_handle,"IMPL_INTEGER_KIND");
-    MPI_INTEGER_KIND = *pMPI_INTEGER_KIND;
-    int* pMPI_OFFSET_KIND = MUK_DLSYM(wrap_so_handle,"IMPL_OFFSET_KIND");
-    MPI_OFFSET_KIND = *pMPI_OFFSET_KIND;
-#endif
 
     // Error-handling specifiers
     //    MPI_ERRORS_ARE_FATAL = MUK_DLSYM(wrap_so_handle,"IMPL_ERRORS_ARE_FATAL");
@@ -574,7 +367,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     void ** pmuk_mpi_cxx_long_double_complex = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_CXX_LONG_DOUBLE_COMPLEX",MPI_DATATYPE_NULL);
     muk_mpi_cxx_long_double_complex = *pmuk_mpi_cxx_long_double_complex;
 
-#if 0
+#if 0 // FORTRAN STUFF
     //    MPI_DOUBLE_COMPLEX = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_DOUBLE_COMPLEX",MPI_DATATYPE_NULL);
     void ** pmuk_mpi_double_complex = MUK_DLSYM_OPT(wrap_so_handle,"IMPL_DOUBLE_COMPLEX",MPI_DATATYPE_NULL);
     muk_mpi_double_complex = *pmuk_mpi_double_complex;
@@ -658,48 +451,12 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     void ** pmuk_mpi_comm_self = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_SELF");
     muk_mpi_comm_self = *pmuk_mpi_comm_self;
 
-#if 0
-    // Communicator split type constants
-    int* pMPI_COMM_TYPE_SHARED = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_TYPE_SHARED");
-    MPI_COMM_TYPE_SHARED = *pMPI_COMM_TYPE_SHARED;
-    if (major >= 4) {
-        int* pMPI_COMM_TYPE_HW_UNGUIDED = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_TYPE_HW_UNGUIDED");
-        MPI_COMM_TYPE_HW_UNGUIDED = *pMPI_COMM_TYPE_HW_UNGUIDED;
-        int* pMPI_COMM_TYPE_HW_GUIDED = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_TYPE_HW_GUIDED");
-        MPI_COMM_TYPE_HW_GUIDED = *pMPI_COMM_TYPE_HW_GUIDED;
-    }
-#endif
-
-#if 0
-    // Results of communicator and group comparisons
-    int* pMPI_IDENT = MUK_DLSYM(wrap_so_handle,"IMPL_IDENT");
-    MPI_IDENT = *pMPI_IDENT;
-    int* pMPI_CONGRUENT = MUK_DLSYM(wrap_so_handle,"IMPL_CONGRUENT");
-    MPI_CONGRUENT = *pMPI_CONGRUENT;
-    int* pMPI_SIMILAR = MUK_DLSYM(wrap_so_handle,"IMPL_SIMILAR");
-    MPI_SIMILAR = *pMPI_SIMILAR;
-    int* pMPI_UNEQUAL = MUK_DLSYM(wrap_so_handle,"IMPL_UNEQUAL");
-    MPI_UNEQUAL = *pMPI_UNEQUAL;
-#endif
-
     // Environmental inquiry info key
     //MPI_Info* pMPI_INFO_ENV = MUK_DLSYM(wrap_so_handle,"IMPL_INFO_ENV");
     //MPI_INFO_ENV = *pMPI_INFO_ENV;
     //    MPI_INFO_ENV = MUK_DLSYM(wrap_so_handle,"IMPL_INFO_ENV");
     void ** pmuk_mpi_info_env = MUK_DLSYM(wrap_so_handle,"IMPL_INFO_ENV");
     muk_mpi_info_env = *pmuk_mpi_info_env;
-
-#if 0
-    // Environmental inquiry keys
-    int* pMPI_TAG_UB = MUK_DLSYM(wrap_so_handle,"IMPL_TAG_UB");
-    MPI_TAG_UB = *pMPI_TAG_UB;
-    int* pMPI_IO = MUK_DLSYM(wrap_so_handle,"IMPL_IO");
-    MPI_IO = *pMPI_IO;
-    int* pMPI_HOST = MUK_DLSYM(wrap_so_handle,"IMPL_HOST");
-    MPI_HOST = *pMPI_HOST;
-    int* pMPI_WTIME_IS_GLOBAL = MUK_DLSYM(wrap_so_handle,"IMPL_WTIME_IS_GLOBAL");
-    MPI_WTIME_IS_GLOBAL = *pMPI_WTIME_IS_GLOBAL;
-#endif
 
     // Collective Operations
     //    MPI_MAX = MUK_DLSYM(wrap_so_handle,"IMPL_MAX");
@@ -796,162 +553,10 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     muk_mpi_group_empty = *pmuk_mpi_group_empty;
     //printf("libint: MPI_GROUP_EMPTY=%p *MPI_GROUP_EMPTY=%lx\n", MPI_GROUP_EMPTY, (intptr_t)*(void**)MPI_GROUP_EMPTY);
 
-#if 0
-    // Topologies
-    int* pMPI_GRAPH = MUK_DLSYM(wrap_so_handle,"IMPL_GRAPH");
-    MPI_GRAPH = *pMPI_GRAPH;
-    int* pMPI_CART = MUK_DLSYM(wrap_so_handle,"IMPL_CART");
-    MPI_CART = *pMPI_CART;
-    int* pMPI_DIST_GRAPH = MUK_DLSYM(wrap_so_handle,"IMPL_DIST_GRAPH");
-    MPI_DIST_GRAPH = *pMPI_DIST_GRAPH;
-#endif
-
     // Predefined functions
     // TODO
     // Deprecated predefined functions
     // TODO
-
-#if 0
-    // Predefined Attribute Keys
-    int* pMPI_APPNUM = MUK_DLSYM(wrap_so_handle,"IMPL_APPNUM");
-    MPI_APPNUM = *pMPI_APPNUM;
-    int* pMPI_LASTUSEDCODE = MUK_DLSYM(wrap_so_handle,"IMPL_LASTUSEDCODE");
-    MPI_LASTUSEDCODE = *pMPI_LASTUSEDCODE;
-    int* pMPI_UNIVERSE_SIZE = MUK_DLSYM(wrap_so_handle,"IMPL_UNIVERSE_SIZE");
-    MPI_UNIVERSE_SIZE = *pMPI_UNIVERSE_SIZE;
-    int* pMPI_WIN_BASE = MUK_DLSYM(wrap_so_handle,"IMPL_WIN_BASE");
-    MPI_WIN_BASE = *pMPI_WIN_BASE;
-    int* pMPI_WIN_DISP_UNIT = MUK_DLSYM(wrap_so_handle,"IMPL_WIN_DISP_UNIT");
-    MPI_WIN_DISP_UNIT = *pMPI_WIN_DISP_UNIT;
-    int* pMPI_WIN_SIZE = MUK_DLSYM(wrap_so_handle,"IMPL_WIN_SIZE");
-    MPI_WIN_SIZE = *pMPI_WIN_SIZE;
-    int* pMPI_WIN_CREATE_FLAVOR = MUK_DLSYM(wrap_so_handle,"IMPL_WIN_CREATE_FLAVOR");
-    MPI_WIN_CREATE_FLAVOR = *pMPI_WIN_CREATE_FLAVOR;
-    int* pMPI_WIN_MODEL = MUK_DLSYM(wrap_so_handle,"IMPL_WIN_MODEL");
-    MPI_WIN_MODEL = *pMPI_WIN_MODEL;
-
-    // MPI Window Create Flavors
-    int* pMPI_WIN_FLAVOR_CREATE = MUK_DLSYM(wrap_so_handle,"IMPL_WIN_FLAVOR_CREATE");
-    MPI_WIN_FLAVOR_CREATE = *pMPI_WIN_FLAVOR_CREATE;
-    int* pMPI_WIN_FLAVOR_ALLOCATE = MUK_DLSYM(wrap_so_handle,"IMPL_WIN_FLAVOR_ALLOCATE");
-    MPI_WIN_FLAVOR_ALLOCATE = *pMPI_WIN_FLAVOR_ALLOCATE;
-    int* pMPI_WIN_FLAVOR_DYNAMIC = MUK_DLSYM(wrap_so_handle,"IMPL_WIN_FLAVOR_DYNAMIC");
-    MPI_WIN_FLAVOR_DYNAMIC = *pMPI_WIN_FLAVOR_DYNAMIC;
-    int* pMPI_WIN_FLAVOR_SHARED = MUK_DLSYM(wrap_so_handle,"IMPL_WIN_FLAVOR_SHARED");
-    MPI_WIN_FLAVOR_SHARED = *pMPI_WIN_FLAVOR_SHARED;
-
-    // MPI Window Models
-    int* pMPI_WIN_SEPARATE = MUK_DLSYM(wrap_so_handle,"IMPL_WIN_SEPARATE");
-    MPI_WIN_SEPARATE = *pMPI_WIN_SEPARATE;
-    int* pMPI_WIN_UNIFIED = MUK_DLSYM(wrap_so_handle,"IMPL_WIN_UNIFIED");
-    MPI_WIN_UNIFIED = *pMPI_WIN_UNIFIED;
-                
-    // Mode Constants
-    int* pMPI_MODE_APPEND = MUK_DLSYM(wrap_so_handle,"IMPL_MODE_APPEND");
-    MPI_MODE_APPEND = *pMPI_MODE_APPEND;
-    int* pMPI_MODE_CREATE = MUK_DLSYM(wrap_so_handle,"IMPL_MODE_CREATE");
-    MPI_MODE_CREATE = *pMPI_MODE_CREATE;
-    int* pMPI_MODE_DELETE_ON_CLOSE = MUK_DLSYM(wrap_so_handle,"IMPL_MODE_DELETE_ON_CLOSE");
-    MPI_MODE_DELETE_ON_CLOSE = *pMPI_MODE_DELETE_ON_CLOSE;
-    int* pMPI_MODE_EXCL = MUK_DLSYM(wrap_so_handle,"IMPL_MODE_EXCL");
-    MPI_MODE_EXCL = *pMPI_MODE_EXCL;
-    int* pMPI_MODE_NOCHECK = MUK_DLSYM(wrap_so_handle,"IMPL_MODE_NOCHECK");
-    MPI_MODE_NOCHECK = *pMPI_MODE_NOCHECK;
-    int* pMPI_MODE_NOPRECEDE = MUK_DLSYM(wrap_so_handle,"IMPL_MODE_NOPRECEDE");
-    MPI_MODE_NOPRECEDE = *pMPI_MODE_NOPRECEDE;
-    int* pMPI_MODE_NOPUT = MUK_DLSYM(wrap_so_handle,"IMPL_MODE_NOPUT");
-    MPI_MODE_NOPUT = *pMPI_MODE_NOPUT;
-    int* pMPI_MODE_NOSTORE = MUK_DLSYM(wrap_so_handle,"IMPL_MODE_NOSTORE");
-    MPI_MODE_NOSTORE = *pMPI_MODE_NOSTORE;
-    int* pMPI_MODE_NOSUCCEED = MUK_DLSYM(wrap_so_handle,"IMPL_MODE_NOSUCCEED");
-    MPI_MODE_NOSUCCEED = *pMPI_MODE_NOSUCCEED;
-    int* pMPI_MODE_RDONLY = MUK_DLSYM(wrap_so_handle,"IMPL_MODE_RDONLY");
-    MPI_MODE_RDONLY = *pMPI_MODE_RDONLY;
-    int* pMPI_MODE_RDWR = MUK_DLSYM(wrap_so_handle,"IMPL_MODE_RDWR");
-    MPI_MODE_RDWR = *pMPI_MODE_RDWR;
-    int* pMPI_MODE_SEQUENTIAL = MUK_DLSYM(wrap_so_handle,"IMPL_MODE_SEQUENTIAL");
-    MPI_MODE_SEQUENTIAL = *pMPI_MODE_SEQUENTIAL;
-    int* pMPI_MODE_UNIQUE_OPEN = MUK_DLSYM(wrap_so_handle,"IMPL_MODE_UNIQUE_OPEN");
-    MPI_MODE_UNIQUE_OPEN = *pMPI_MODE_UNIQUE_OPEN;
-    int* pMPI_MODE_WRONLY = MUK_DLSYM(wrap_so_handle,"IMPL_MODE_WRONLY");
-    MPI_MODE_WRONLY = *pMPI_MODE_WRONLY;
-
-    // Datatype Decoding Constants
-    int* pMPI_COMBINER_CONTIGUOUS = MUK_DLSYM(wrap_so_handle,"IMPL_COMBINER_CONTIGUOUS");
-    MPI_COMBINER_CONTIGUOUS = *pMPI_COMBINER_CONTIGUOUS;
-    int* pMPI_COMBINER_DARRAY = MUK_DLSYM(wrap_so_handle,"IMPL_COMBINER_DARRAY");
-    MPI_COMBINER_DARRAY = *pMPI_COMBINER_DARRAY;
-    int* pMPI_COMBINER_DUP = MUK_DLSYM(wrap_so_handle,"IMPL_COMBINER_DUP");
-    MPI_COMBINER_DUP = *pMPI_COMBINER_DUP;
-    int* pMPI_COMBINER_F90_COMPLEX = MUK_DLSYM(wrap_so_handle,"IMPL_COMBINER_F90_COMPLEX");
-    MPI_COMBINER_F90_COMPLEX = *pMPI_COMBINER_F90_COMPLEX;
-    int* pMPI_COMBINER_F90_INTEGER = MUK_DLSYM(wrap_so_handle,"IMPL_COMBINER_F90_INTEGER");
-    MPI_COMBINER_F90_INTEGER = *pMPI_COMBINER_F90_INTEGER;
-    int* pMPI_COMBINER_F90_REAL = MUK_DLSYM(wrap_so_handle,"IMPL_COMBINER_F90_REAL");
-    MPI_COMBINER_F90_REAL = *pMPI_COMBINER_F90_REAL;
-    int* pMPI_COMBINER_HINDEXED = MUK_DLSYM(wrap_so_handle,"IMPL_COMBINER_HINDEXED");
-    MPI_COMBINER_HINDEXED = *pMPI_COMBINER_HINDEXED;
-    int* pMPI_COMBINER_HVECTOR = MUK_DLSYM(wrap_so_handle,"IMPL_COMBINER_HVECTOR");
-    MPI_COMBINER_HVECTOR = *pMPI_COMBINER_HVECTOR;
-    int* pMPI_COMBINER_INDEXED_BLOCK = MUK_DLSYM(wrap_so_handle,"IMPL_COMBINER_INDEXED_BLOCK");
-    MPI_COMBINER_INDEXED_BLOCK = *pMPI_COMBINER_INDEXED_BLOCK;
-    int* pMPI_COMBINER_HINDEXED_BLOCK = MUK_DLSYM(wrap_so_handle,"IMPL_COMBINER_HINDEXED_BLOCK");
-    MPI_COMBINER_HINDEXED_BLOCK = *pMPI_COMBINER_HINDEXED_BLOCK;
-    int* pMPI_COMBINER_INDEXED = MUK_DLSYM(wrap_so_handle,"IMPL_COMBINER_INDEXED");
-    MPI_COMBINER_INDEXED = *pMPI_COMBINER_INDEXED;
-    int* pMPI_COMBINER_NAMED = MUK_DLSYM(wrap_so_handle,"IMPL_COMBINER_NAMED");
-    MPI_COMBINER_NAMED = *pMPI_COMBINER_NAMED;
-    int* pMPI_COMBINER_RESIZED = MUK_DLSYM(wrap_so_handle,"IMPL_COMBINER_RESIZED");
-    MPI_COMBINER_RESIZED = *pMPI_COMBINER_RESIZED;
-    int* pMPI_COMBINER_STRUCT = MUK_DLSYM(wrap_so_handle,"IMPL_COMBINER_STRUCT");
-    MPI_COMBINER_STRUCT = *pMPI_COMBINER_STRUCT;
-    int* pMPI_COMBINER_SUBARRAY = MUK_DLSYM(wrap_so_handle,"IMPL_COMBINER_SUBARRAY");
-    MPI_COMBINER_SUBARRAY = *pMPI_COMBINER_SUBARRAY;
-    int* pMPI_COMBINER_VECTOR = MUK_DLSYM(wrap_so_handle,"IMPL_COMBINER_VECTOR");
-    MPI_COMBINER_VECTOR = *pMPI_COMBINER_VECTOR;
-
-    // Threads Constants
-    int* pMPI_THREAD_FUNNELED = MUK_DLSYM(wrap_so_handle,"IMPL_THREAD_FUNNELED");
-    MPI_THREAD_FUNNELED = *pMPI_THREAD_FUNNELED;
-    int* pMPI_THREAD_MULTIPLE = MUK_DLSYM(wrap_so_handle,"IMPL_THREAD_MULTIPLE");
-    MPI_THREAD_MULTIPLE = *pMPI_THREAD_MULTIPLE;
-    int* pMPI_THREAD_SERIALIZED = MUK_DLSYM(wrap_so_handle,"IMPL_THREAD_SERIALIZED");
-    MPI_THREAD_SERIALIZED = *pMPI_THREAD_SERIALIZED;
-    int* pMPI_THREAD_SINGLE = MUK_DLSYM(wrap_so_handle,"IMPL_THREAD_SINGLE");
-    MPI_THREAD_SINGLE = *pMPI_THREAD_SINGLE;
-
-    // File Operation Constants, Part 1
-    int* pMPI_DISPLACEMENT_CURRENT = MUK_DLSYM(wrap_so_handle,"IMPL_DISPLACEMENT_CURRENT");
-    MPI_DISPLACEMENT_CURRENT = *pMPI_DISPLACEMENT_CURRENT;
-
-    // File Operation Constants, Part 2
-    int* pMPI_DISTRIBUTE_BLOCK = MUK_DLSYM(wrap_so_handle,"IMPL_DISTRIBUTE_BLOCK");
-    MPI_DISTRIBUTE_BLOCK = *pMPI_DISTRIBUTE_BLOCK;
-    int* pMPI_DISTRIBUTE_CYCLIC = MUK_DLSYM(wrap_so_handle,"IMPL_DISTRIBUTE_CYCLIC");
-    MPI_DISTRIBUTE_CYCLIC = *pMPI_DISTRIBUTE_CYCLIC;
-    int* pMPI_DISTRIBUTE_DFLT_DARG = MUK_DLSYM(wrap_so_handle,"IMPL_DISTRIBUTE_DFLT_DARG");
-    MPI_DISTRIBUTE_DFLT_DARG = *pMPI_DISTRIBUTE_DFLT_DARG;
-    int* pMPI_DISTRIBUTE_NONE = MUK_DLSYM(wrap_so_handle,"IMPL_DISTRIBUTE_NONE");
-    MPI_DISTRIBUTE_NONE = *pMPI_DISTRIBUTE_NONE;
-    int* pMPI_ORDER_C = MUK_DLSYM(wrap_so_handle,"IMPL_ORDER_C");
-    MPI_ORDER_C = *pMPI_ORDER_C;
-    int* pMPI_ORDER_FORTRAN = MUK_DLSYM(wrap_so_handle,"IMPL_ORDER_FORTRAN");
-    MPI_ORDER_FORTRAN = *pMPI_ORDER_FORTRAN;
-    int* pMPI_SEEK_CUR = MUK_DLSYM(wrap_so_handle,"IMPL_SEEK_CUR");
-    MPI_SEEK_CUR = *pMPI_SEEK_CUR;
-    int* pMPI_SEEK_END = MUK_DLSYM(wrap_so_handle,"IMPL_SEEK_END");
-    MPI_SEEK_END = *pMPI_SEEK_END;
-    int* pMPI_SEEK_SET = MUK_DLSYM(wrap_so_handle,"IMPL_SEEK_SET");
-    MPI_SEEK_SET = *pMPI_SEEK_SET;
-
-    // F90 Datatype Matching Constants
-    int* pMPI_TYPECLASS_COMPLEX = MUK_DLSYM(wrap_so_handle,"IMPL_TYPECLASS_COMPLEX");
-    MPI_TYPECLASS_COMPLEX = *pMPI_TYPECLASS_COMPLEX;
-    int* pMPI_TYPECLASS_INTEGER = MUK_DLSYM(wrap_so_handle,"IMPL_TYPECLASS_INTEGER");
-    MPI_TYPECLASS_INTEGER = *pMPI_TYPECLASS_INTEGER;
-    int* pMPI_TYPECLASS_REAL = MUK_DLSYM(wrap_so_handle,"IMPL_TYPECLASS_REAL");
-    MPI_TYPECLASS_REAL = *pMPI_TYPECLASS_REAL;
-#endif
 
     // Constants Specifying Empty or Ignored Input
     MPI_ARGVS_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_ARGVS_NULL");
@@ -959,9 +564,13 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MPI_ERRCODES_IGNORE = MUK_DLSYM(wrap_so_handle,"IMPL_ERRCODES_IGNORE");
     void ** pMPI_STATUS_IGNORE   = MUK_DLSYM(wrap_so_handle,"IMPL_STATUS_IGNORE");
     void ** pMPI_STATUSES_IGNORE = MUK_DLSYM(wrap_so_handle,"IMPL_STATUSES_IGNORE");
-    MPI_STATUS_IGNORE   = *pMPI_STATUS_IGNORE;
-    MPI_STATUSES_IGNORE = *pMPI_STATUSES_IGNORE;
-#if 0
+    MPI_STATUS_IGNORE   = (MPI_Status*)*pMPI_STATUS_IGNORE;
+    MPI_STATUSES_IGNORE = (MPI_Status*)*pMPI_STATUSES_IGNORE;
+    fflush(0);
+    printf("libinit: pMPI_STATUS_IGNORE=%p pMPI_STATUSES_IGNORE=%p\n", pMPI_STATUS_IGNORE, pMPI_STATUSES_IGNORE);
+    printf("libinit:  MPI_STATUS_IGNORE=%p  MPI_STATUSES_IGNORE=%p\n", MPI_STATUS_IGNORE, MPI_STATUSES_IGNORE);
+    fflush(0);
+#if 0 // TODO
     int * MPI_UNWEIGHTED = MUK_DLSYM(wrap_so_handle,"IMPL_UNWEIGHTED");
     int * MPI_WEIGHTS_EMPTY = MUK_DLSYM(wrap_so_handle,"IMPL_WEIGHTS_EMPTY");
 #endif
@@ -1281,7 +890,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MUK_Isendrecv_replace_c = MUK_DLSYM(wrap_so_handle, "WRAP_Isendrecv_replace_c");
     MUK_Issend = MUK_DLSYM(wrap_so_handle, "WRAP_Issend");
     MUK_Issend_c = MUK_DLSYM(wrap_so_handle, "WRAP_Issend_c");
-#if 0
+#if 0 // deleted
     MUK_Keyval_create = MUK_DLSYM(wrap_so_handle, "WRAP_Keyval_create");
     MUK_Keyval_free = MUK_DLSYM(wrap_so_handle, "WRAP_Keyval_free");
 #endif
@@ -3682,6 +3291,7 @@ int MPI_Intercomm_merge(MPI_Comm intercomm, int high, MPI_Comm *newintracomm)
 
 int MPI_Iprobe(int source, int tag, MPI_Comm comm, int *flag, MPI_Status *status)
 {
+    printf("MPI_Iprobe: status=%p\n", status);
     return MUK_Iprobe(source, tag, comm, flag, status);
 }
 
@@ -3901,7 +3511,7 @@ int MPI_Issend_c(const void *buf, MPI_Count count, MPI_Datatype datatype, int de
     return rc;
 }
 
-#if 0
+#if 0 // deleted
 int MPI_Keyval_create(MPI_Copy_function *copy_fn, MPI_Delete_function *delete_fn, int *keyval, void *extra_state)
 {
     return MUK_Keyval_create(copy_fn, delete_fn, keyval, extra_state);
