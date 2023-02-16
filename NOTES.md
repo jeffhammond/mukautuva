@@ -30,7 +30,7 @@ git clone https://github.com/pmodels/armci-mpi.git
 
 Configure like this, e.g.:
 ```
-./configure CC=gcc CFLAGS=-g3 --enable-g CPPFLAGS=-I${HOME}/mukautuva LDFLAGS="-L${HOME}/mukautuva -Wl,-rpath=${HOME}/mukautuva" LIBS=-lmuk
+./configure CC=gcc CFLAGS=-g3 --enable-g  CPPFLAGS=-I.. LDFLAGS=-L.. LIBS=-lmuk && make -j4 && make -j4 checkprogs
 ```
 
 Currently, Mukautuva plus Open-MPI crash in `MPI_Group_translate_ranks` so we disable rank translation caching.

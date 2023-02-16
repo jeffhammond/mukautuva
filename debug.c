@@ -15,14 +15,8 @@
 // Print an assertion failure message and abort the program.
 void MUK_Assert_fail(const char *expr, const char *msg, const char *file, int line, const char *func)
 {
-  int rank = -1, flag;
-
-  MPI_Initialized(&flag);
-  if (flag) {
-      MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  } else {
-      printf("MPI is not initialized!\n");
-  }
+  int rank;
+  PMPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   if (msg == NULL) {
     fprintf(stderr, "[%d] MUK assert fail in %s() [%s:%d]: \"%s\"\n", rank, func, file, line, expr);
@@ -56,22 +50,16 @@ void MUK_Assert_fail(const char *expr, const char *msg, const char *file, int li
 
   fflush(NULL);
   {
-    double stall = MPI_Wtime();
-    while (MPI_Wtime() - stall < 1) ;
+    double stall = PMPI_Wtime();
+    while (PMPI_Wtime() - stall < 1) ;
   }
-  MPI_Abort(MPI_COMM_WORLD, -1);
+  PMPI_Abort(MPI_COMM_WORLD, -1);
 }
 
 void MUK_Warning(const char *fmt, ...)
 {
-  int rank = -1, flag;
-
-  MPI_Initialized(&flag);
-  if (flag) {
-      MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  } else {
-      printf("MPI is not initialized!\n");
-  }
+  int rank;
+  PMPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   va_list etc;
   int  disp;

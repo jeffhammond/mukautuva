@@ -1,8 +1,6 @@
 #include "muk-dl.h"
 #include "muk-predefined.h"
 
-#include <assert.h>
-
 // status typedef
 typedef struct
 {
@@ -1234,7 +1232,7 @@ static inline int RANK_MUK_TO_IMPL(int rank_muk)
     }
     else {
 #if 1
-        printf("RANK_MUK_TO_IMPL rank=%d\n", rank_muk);
+        MUK_Warning("RANK_MUK_TO_IMPL rank=%d\n", rank_muk);
 #endif
         return rank_muk;
     }
@@ -1249,7 +1247,7 @@ static inline int TAG_MUK_TO_IMPL(int tag_muk)
     }
 }
 
-// constant conversion
+// status conversion
 static inline int UNDEFINED_IMPL_TO_MUK(int i)
 {
     if (i == MPI_UNDEFINED) {
@@ -1259,49 +1257,27 @@ static inline int UNDEFINED_IMPL_TO_MUK(int i)
     }
 }
 
-// mode constant conversion - this needs to handle multiple modes OR-ed together
-static inline int IO_MODE_MUK_TO_IMPL(int mode_muk)
+// status conversion
+static inline int MODE_MUK_TO_IMPL(int mode_muk)
 {
-    int mode_impl = 0;
-    if (mode_muk & MUK_MODE_APPEND)          { mode_impl |= MPI_MODE_APPEND; }
-    if (mode_muk & MUK_MODE_CREATE)          { mode_impl |= MPI_MODE_CREATE; }
-    if (mode_muk & MUK_MODE_DELETE_ON_CLOSE) { mode_impl |= MPI_MODE_DELETE_ON_CLOSE; }
-    if (mode_muk & MUK_MODE_EXCL)            { mode_impl |= MPI_MODE_EXCL; }
-    if (mode_muk & MUK_MODE_RDONLY)          { mode_impl |= MPI_MODE_RDONLY; }
-    if (mode_muk & MUK_MODE_RDWR)            { mode_impl |= MPI_MODE_RDWR; }
-    if (mode_muk & MUK_MODE_SEQUENTIAL)      { mode_impl |= MPI_MODE_SEQUENTIAL; }
-    if (mode_muk & MUK_MODE_UNIQUE_OPEN)     { mode_impl |= MPI_MODE_UNIQUE_OPEN; }
-    if (mode_muk & MUK_MODE_WRONLY)          { mode_impl |= MPI_MODE_WRONLY; }
-    return mode_impl;
-}
-static inline int IO_MODE_IMPL_TO_MUK(int mode_impl)
-{
-    int mode_muk = 0;
-    if (mode_impl & MUK_MODE_APPEND)          { mode_muk |= MPI_MODE_APPEND; }
-    if (mode_impl & MUK_MODE_CREATE)          { mode_muk |= MPI_MODE_CREATE; }
-    if (mode_impl & MUK_MODE_DELETE_ON_CLOSE) { mode_muk |= MPI_MODE_DELETE_ON_CLOSE; }
-    if (mode_impl & MUK_MODE_EXCL)            { mode_muk |= MPI_MODE_EXCL; }
-    if (mode_impl & MUK_MODE_RDONLY)          { mode_muk |= MPI_MODE_RDONLY; }
-    if (mode_impl & MUK_MODE_RDWR)            { mode_muk |= MPI_MODE_RDWR; }
-    if (mode_impl & MUK_MODE_SEQUENTIAL)      { mode_muk |= MPI_MODE_SEQUENTIAL; }
-    if (mode_impl & MUK_MODE_UNIQUE_OPEN)     { mode_muk |= MPI_MODE_UNIQUE_OPEN; }
-    if (mode_impl & MUK_MODE_WRONLY)          { mode_muk |= MPI_MODE_WRONLY; }
-    return mode_muk;
+         if (mode_muk == MUK_MODE_APPEND)          { return MPI_MODE_APPEND; }
+    else if (mode_muk == MUK_MODE_CREATE)          { return MPI_MODE_CREATE; }
+    else if (mode_muk == MUK_MODE_DELETE_ON_CLOSE) { return MPI_MODE_DELETE_ON_CLOSE; }
+    else if (mode_muk == MUK_MODE_EXCL)            { return MPI_MODE_EXCL; }
+    else if (mode_muk == MUK_MODE_NOCHECK)         { return MPI_MODE_NOCHECK; }
+    else if (mode_muk == MUK_MODE_NOPRECEDE)       { return MPI_MODE_NOPRECEDE; }
+    else if (mode_muk == MUK_MODE_NOPUT)           { return MPI_MODE_NOPUT; }
+    else if (mode_muk == MUK_MODE_NOSTORE)         { return MPI_MODE_NOSTORE; }
+    else if (mode_muk == MUK_MODE_NOSUCCEED)       { return MPI_MODE_NOSUCCEED; }
+    else if (mode_muk == MUK_MODE_RDONLY)          { return MPI_MODE_RDONLY; }
+    else if (mode_muk == MUK_MODE_RDWR)            { return MPI_MODE_RDWR; }
+    else if (mode_muk == MUK_MODE_SEQUENTIAL)      { return MPI_MODE_SEQUENTIAL; }
+    else if (mode_muk == MUK_MODE_UNIQUE_OPEN)     { return MPI_MODE_UNIQUE_OPEN; }
+    else if (mode_muk == MUK_MODE_WRONLY)          { return MPI_MODE_WRONLY; }
+    else                                           { return mode_muk; }
 }
 
-// mode constant conversion - this needs to handle multiple modes OR-ed together
-static inline int RMA_MODE_MUK_TO_IMPL(int mode_muk)
-{
-    int mode_impl = 0;
-    if (mode_muk & MUK_MODE_NOCHECK)         { mode_impl |= MPI_MODE_NOCHECK; }
-    if (mode_muk & MUK_MODE_NOPRECEDE)       { mode_impl |= MPI_MODE_NOPRECEDE; }
-    if (mode_muk & MUK_MODE_NOPUT)           { mode_impl |= MPI_MODE_NOPUT; }
-    if (mode_muk & MUK_MODE_NOSTORE)         { mode_impl |= MPI_MODE_NOSTORE; }
-    if (mode_muk & MUK_MODE_NOSUCCEED)       { mode_impl |= MPI_MODE_NOSUCCEED; }
-    return mode_impl;
-}
-
-// predefined attribute conversion
+// status conversion
 static inline int KEY_MUK_TO_IMPL(int key_muk)
 {
          if (key_muk == MUK_TAG_UB)            { return MPI_TAG_UB; }
@@ -1330,11 +1306,7 @@ static int ALLTOALLW_SETUP(const MPI_Comm * comm, const MPI_Datatype* sendtypes[
 static inline void WRAP_Status_to_MPI_Status(const WRAP_Status * w, MPI_Status * m)
 {
     if ((intptr_t)w == (intptr_t)IMPL_STATUS_IGNORE) {
-        printf("WRAP_Status_to_MPI_Status passed STATUS_IGNORE\n");
-        return;
-    }
-    if (w == NULL || m == NULL) {
-        printf("WRAP_Status_to_MPI_Status passed NULL (w=%p m=%p)\n",w,m);
+        //MUK_Warning("MPI_Status_to_WRAP_Status passed STATUS_IGNORE\n");
         return;
     }
 
@@ -1354,11 +1326,7 @@ static inline void WRAP_Status_to_MPI_Status(const WRAP_Status * w, MPI_Status *
 static inline void MPI_Status_to_WRAP_Status(const MPI_Status * m, WRAP_Status * w)
 {
     if ((intptr_t)w == (intptr_t)IMPL_STATUS_IGNORE) {
-        printf("MPI_Status_to_WRAP_Status passed STATUS_IGNORE\n");
-        return;
-    }
-    if (w == NULL || m == NULL) {
-        printf("MPI_Status_to_WRAP_Status passed NULL (m=%p w=%p)\n",m,w);
+        //MUK_Warning("MPI_Status_to_WRAP_Status passed STATUS_IGNORE\n");
         return;
     }
 
@@ -1383,7 +1351,7 @@ void WRAP_Init_handle_key(void)
 {
     int rc = IMPL_Type_create_keyval(MPI_TYPE_NULL_COPY_FN, MPI_TYPE_NULL_DELETE_FN, &TYPE_HANDLE_KEY, NULL);
     if (rc != MPI_SUCCESS) {
-        printf("IMPL_Type_create_keyval(TYPE_HANDLE_KEY) failed: %d\n", rc);
+        MUK_Warning("IMPL_Type_create_keyval(TYPE_HANDLE_KEY) failed: %d\n", rc);
     }
 }
 
@@ -1394,7 +1362,7 @@ void WRAP_Finalize_handle_key(void)
         rc = IMPL_Type_free_keyval(&TYPE_HANDLE_KEY);
     }
     if (rc != MPI_SUCCESS) {
-        printf("IMPL_Type_free_keyval(TYPE_HANDLE_KEY) failed: %d\n", rc);
+        MUK_Warning("IMPL_Type_free_keyval(TYPE_HANDLE_KEY) failed: %d\n", rc);
     }
 }
 
@@ -1450,7 +1418,7 @@ static WRAP_User_function * lookup_op_pair(MPI_Op * op)
     WRAP_User_function * user_fn = NULL;
     op_fptr_pair_t * current = op_fptr_pair_list;
     if (op_fptr_pair_list == NULL) {
-        printf("op_fptr_pair_list is NULL - this should be impossible.\n");
+        MUK_Warning("op_fptr_pair_list is NULL - this should be impossible.\n");
     }
     while (current) {
         if (current->op == op) {
@@ -1488,10 +1456,10 @@ static void remove_op_pair_from_list(MPI_Op *op)
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
 
     // Step 1: look up op in the linked list
-    if (op_fptr_pair_list == NULL) {
-        printf("remove_op_pair_from_list: op_fptr_pair_list is NULL - this should be impossible.\n");
-    }
     op_fptr_pair_t * current = op_fptr_pair_list;
+    if (op_fptr_pair_list == NULL) {
+        MUK_Warning("remove_op_pair_from_list: op_fptr_pair_list is NULL - this should be impossible.\n");
+    }
     while (current) {
         if (current->op == op) {
             break;
@@ -1501,7 +1469,7 @@ static void remove_op_pair_from_list(MPI_Op *op)
 
     // Step 2: remove current from the list
     if (current->prev == NULL) {
-        assert(current == op_fptr_pair_list);
+        MUK_Assert(current == op_fptr_pair_list);
         op_fptr_pair_list = current->next;
         if (current->next != NULL) {
             current->next->prev = NULL;
@@ -1524,14 +1492,14 @@ static reduce_trampoline_cookie_t * bake_reduce_trampoline_cookie(MPI_Op * op, M
     // Part 1: look up the user function associated with the MPI_Op argument
     WRAP_User_function * user_fn = lookup_op_pair(op);
     if (user_fn == NULL) {
-        printf("bake_reduce_trampoline_cookie: failed to find valid op<->fn mapping.\n");
+        MUK_Warning("bake_reduce_trampoline_cookie: failed to find valid op<->fn mapping.\n");
         return NULL;
     }
 
     // Part 2: duplicate the datatype so there can be no collision of keyvals
     rc = IMPL_Type_dup(*datatype,dup);
     if (rc) {
-        printf("bake_reduce_trampoline_cookie: Type_dup failed\n");
+        MUK_Warning("bake_reduce_trampoline_cookie: Type_dup failed\n");
         return NULL;
     }
 
@@ -1541,7 +1509,7 @@ static reduce_trampoline_cookie_t * bake_reduce_trampoline_cookie(MPI_Op * op, M
     cookie->fp = user_fn;
     rc = IMPL_Type_set_attr(*dup, TYPE_HANDLE_KEY, cookie);
     if (rc) {
-        printf("bake_reduce_trampoline_cookie: Type_set_attr failed\n");
+        MUK_Warning("bake_reduce_trampoline_cookie: Type_set_attr failed\n");
         IMPL_Type_free(dup);
         free(cookie);
         return NULL;
@@ -1555,7 +1523,7 @@ static void cleanup_reduce_trampoline_cookie(reduce_trampoline_cookie_t * cookie
     free(cookie);
     int rc = IMPL_Type_free(dup);
     if (rc) {
-        printf("Type_free failed: %d\n",rc);
+        MUK_Warning("Type_free failed: %d\n",rc);
     }
 }
 
@@ -1575,6 +1543,23 @@ typedef struct req_cookie_pair_s
 req_cookie_pair_t;
 
 req_cookie_pair_t * req_cookie_pair_list = NULL;
+
+static reduce_trampoline_cookie_t * lookup_cookie_pair(MPI_Request * request)
+{
+    reduce_trampoline_cookie_t * cookie = NULL;
+    req_cookie_pair_t * current = req_cookie_pair_list;
+    if (req_cookie_pair_list == NULL) {
+        MUK_Warning("req_cookie_pair_list is NULL - this should be impossible.\n");
+    }
+    while (current) {
+        if (current->request == request) {
+            cookie = current->cookie;
+            break;
+        }
+        current = current->next;
+    }
+    return cookie;
+}
 
 static void add_cookie_pair_to_list(MPI_Request * request, reduce_trampoline_cookie_t * cookie)
 {
@@ -1597,22 +1582,15 @@ static void add_cookie_pair_to_list(MPI_Request * request, reduce_trampoline_coo
     }
 }
 
-// this is the only one of these functions that is called
-// in a performance-critical way (in a loop in e.g. Waitall)
-// so ideally it should be inlined.
-static inline void remove_cookie_pair_from_list(MPI_Request * request)
+static void remove_cookie_pair_from_list(MPI_Request * request)
 {
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
 
-    // Step 0: it is likely that this will be null, because it is only
-    //         non-null when there is a outstanding nonblocking reduction
-    //         with a user-defined op.
-    if (req_cookie_pair_list == NULL) {
-        return;
-    }
-
     // Step 1: look up op in the linked list
     req_cookie_pair_t * current = req_cookie_pair_list;
+    if (req_cookie_pair_list == NULL) {
+        MUK_Warning("remove_op_pair_from_list: req_cookie_pair_list is NULL - this should be impossible.\n");
+    }
     while (current) {
         if (current->request == request) {
             break;
@@ -1620,16 +1598,9 @@ static inline void remove_cookie_pair_from_list(MPI_Request * request)
         current = current->next;
     }
 
-    // Step 2: free the cookie that we found
-    if (current->cookie != NULL) {
-        free(current->cookie);
-    } else {
-        printf("remove_cookie_from_list: current->cookie is NULL\n");
-    }
-
-    // Step 3: remove current from the list
+    // Step 2: remove current from the list
     if (current->prev == NULL) {
-        assert(current == req_cookie_pair_list);
+        MUK_Assert(current == req_cookie_pair_list);
         req_cookie_pair_list = current->next;
         if (current->next != NULL) {
             current->next->prev = NULL;
@@ -1643,15 +1614,6 @@ static inline void remove_cookie_pair_from_list(MPI_Request * request)
 
     // Step 3: free the memory
     free(current);
-}
-
-static void cleanup_ireduce_trampoline_cookie(reduce_trampoline_cookie_t * cookie, MPI_Request * request, MPI_Datatype * dup)
-{
-    add_cookie_pair_to_list(request, cookie);
-    int rc = IMPL_Type_free(dup);
-    if (rc) {
-        printf("Type_free failed: %d\n",rc);
-    }
 }
 
 // WRAP->IMPL functions
@@ -1680,13 +1642,11 @@ int WRAP_Accumulate(const void *origin_addr, int origin_count, MPI_Datatype *ori
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Accumulate_c(const void *origin_addr, IMPL_Count origin_count, MPI_Datatype *origin_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype *target_datatype, MPI_Op *op, MPI_Win *win)
 {
     int rc = IMPL_Accumulate_c(origin_addr, origin_count, *origin_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, *target_datatype, *op, *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Add_error_class(int *errorclass)
 {
@@ -1730,13 +1690,11 @@ int WRAP_Allgather(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, v
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Allgather_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *recvtype, MPI_Comm *comm)
 {
     int rc = IMPL_Allgather_c(sendbuf, sendcount, *sendtype, recvbuf, recvcount, *recvtype, *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Allgather_init(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, void *recvbuf, int recvcount, MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
@@ -1745,14 +1703,12 @@ int WRAP_Allgather_init(const void *sendbuf, int sendcount, MPI_Datatype *sendty
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Allgather_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Allgather_init_c(sendbuf, sendcount, *sendtype, recvbuf, recvcount, *recvtype, *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Allgatherv(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype *recvtype, MPI_Comm *comm)
 {
@@ -1760,13 +1716,11 @@ int WRAP_Allgatherv(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, 
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Allgatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype *recvtype, MPI_Comm *comm)
 {
     int rc = IMPL_Allgatherv_c(sendbuf, sendcount, *sendtype, recvbuf, recvcounts, displs, *recvtype, *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Allgatherv_init(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
@@ -1775,14 +1729,12 @@ int WRAP_Allgatherv_init(const void *sendbuf, int sendcount, MPI_Datatype *sendt
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Allgatherv_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Allgatherv_init_c(sendbuf, sendcount, *sendtype, recvbuf, recvcounts, displs, *recvtype, *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Alloc_mem(IMPL_Aint size, MPI_Info *info, void *baseptr)
 {
@@ -1801,7 +1753,7 @@ int WRAP_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *
         MPI_Datatype dup;
         reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(op, datatype, &dup);
         if (cookie == NULL) {
-            printf("WRAP_Allreduce: cookie failed to bake.\n");
+            MUK_Warning("WRAP_Allreduce: cookie failed to bake.\n");
             rc = MPI_ERR_INTERN;
             goto end;
         }
@@ -1820,7 +1772,7 @@ int WRAP_Allreduce_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_D
     if (IS_PREDEFINED_OP(*op)) {
         rc = IMPL_Allreduce_c(sendbuf, recvbuf, count, *datatype, *op, *comm);
     } else {
-        printf("WRAP_Allreduce_c does not implement user-defined ops.\n");
+        MUK_Warning("WRAP_Allreduce_c does not implement user-defined ops.\n");
         rc = MPI_ERR_INTERN;
     }
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -1833,14 +1785,12 @@ int WRAP_Allreduce_init(const void *sendbuf, void *recvbuf, int count, MPI_Datat
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Allreduce_init_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Allreduce_init_c(sendbuf, recvbuf, count, *datatype, *op, *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Alltoall(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, void *recvbuf, int recvcount, MPI_Datatype *recvtype, MPI_Comm *comm)
 {
@@ -1848,13 +1798,11 @@ int WRAP_Alltoall(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, vo
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Alltoall_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *recvtype, MPI_Comm *comm)
 {
     int rc = IMPL_Alltoall_c(sendbuf, sendcount, *sendtype, recvbuf, recvcount, *recvtype, *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Alltoall_init(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, void *recvbuf, int recvcount, MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
@@ -1863,14 +1811,12 @@ int WRAP_Alltoall_init(const void *sendbuf, int sendcount, MPI_Datatype *sendtyp
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Alltoall_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Alltoall_init_c(sendbuf, sendcount, *sendtype, recvbuf, recvcount, *recvtype, *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Alltoallv(const void *sendbuf, const int sendcounts[], const int sdispls[], MPI_Datatype *sendtype, void *recvbuf, const int recvcounts[], const int rdispls[], MPI_Datatype *recvtype, MPI_Comm *comm)
 {
@@ -1878,13 +1824,11 @@ int WRAP_Alltoallv(const void *sendbuf, const int sendcounts[], const int sdispl
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Alltoallv_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], MPI_Datatype *sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], MPI_Datatype *recvtype, MPI_Comm *comm)
 {
     int rc = IMPL_Alltoallv_c(sendbuf, sendcounts, sdispls, *sendtype, recvbuf, recvcounts, rdispls, *recvtype, *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Alltoallv_init(const void *sendbuf, const int sendcounts[], const int sdispls[], MPI_Datatype *sendtype, void *recvbuf, const int recvcounts[], const int rdispls[], MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
@@ -1893,14 +1837,12 @@ int WRAP_Alltoallv_init(const void *sendbuf, const int sendcounts[], const int s
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Alltoallv_init_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], MPI_Datatype *sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Alltoallv_init_c(sendbuf, sendcounts, sdispls, *sendtype, recvbuf, recvcounts, rdispls, *recvtype, *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Alltoallw(const void *sendbuf, const int sendcounts[], const int sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const int recvcounts[], const int rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm)
 {
@@ -1991,13 +1933,11 @@ int WRAP_Bcast(void *buffer, int count, MPI_Datatype *datatype, int root, MPI_Co
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Bcast_c(void *buffer, IMPL_Count count, MPI_Datatype *datatype, int root, MPI_Comm *comm)
 {
     int rc = IMPL_Bcast_c(buffer, count, *datatype, RANK_MUK_TO_IMPL(root), *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Bcast_init(void *buffer, int count, MPI_Datatype *datatype, int root, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
@@ -2006,14 +1946,12 @@ int WRAP_Bcast_init(void *buffer, int count, MPI_Datatype *datatype, int root, M
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Bcast_init_c(void *buffer, IMPL_Count count, MPI_Datatype *datatype, int root, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Bcast_init_c(buffer, count, *datatype, RANK_MUK_TO_IMPL(root), *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Bsend(const void *buf, int count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm)
 {
@@ -2021,13 +1959,11 @@ int WRAP_Bsend(const void *buf, int count, MPI_Datatype *datatype, int dest, int
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Bsend_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm)
 {
     int rc = IMPL_Bsend_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Bsend_init(const void *buf, int count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
@@ -2036,14 +1972,12 @@ int WRAP_Bsend_init(const void *buf, int count, MPI_Datatype *datatype, int dest
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Bsend_init_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Bsend_init_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Buffer_attach(void *buffer, int size)
 {
@@ -2051,13 +1985,11 @@ int WRAP_Buffer_attach(void *buffer, int size)
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Buffer_attach_c(void *buffer, IMPL_Count size)
 {
     int rc = IMPL_Buffer_attach_c(buffer, size);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Buffer_detach(void *buffer_addr, int *size)
 {
@@ -2065,13 +1997,11 @@ int WRAP_Buffer_detach(void *buffer_addr, int *size)
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Buffer_detach_c(void *buffer_addr, IMPL_Count *size)
 {
     int rc = IMPL_Buffer_detach_c(buffer_addr, size);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Cancel(MPI_Request **request)
 {
@@ -2274,7 +2204,7 @@ int WRAP_Comm_group(MPI_Comm *comm, MPI_Group **group)
     *group = malloc(sizeof(MPI_Group));
     int rc = IMPL_Comm_group(*comm, *group);
 #if DEBUG
-    printf("WRAP_Comm_group group=%p *group=%p **group=%lx MPI_GROUP_NULL=%lx\n",
+    MUK_Warning("WRAP_Comm_group group=%p *group=%p **group=%lx MPI_GROUP_NULL=%lx\n",
                 group,*group,(uintptr_t)**group,(uintptr_t)MPI_GROUP_NULL);
 #endif
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -2455,13 +2385,11 @@ int WRAP_Exscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *dat
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Exscan_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm)
 {
     int rc = IMPL_Exscan_c(sendbuf, recvbuf, count, *datatype, *op, *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Exscan_init(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
@@ -2470,14 +2398,12 @@ int WRAP_Exscan_init(const void *sendbuf, void *recvbuf, int count, MPI_Datatype
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Exscan_init_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Exscan_init_c(sendbuf, recvbuf, count, *datatype, *op, *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Fetch_and_op(const void *origin_addr, void *result_addr, MPI_Datatype *datatype, int target_rank, IMPL_Aint target_disp, MPI_Op *op, MPI_Win *win)
 {
@@ -2515,7 +2441,6 @@ int WRAP_File_delete(const char *filename, MPI_Info *info)
 int WRAP_File_get_amode(MPI_File *fh, int *amode)
 {
     int rc = IMPL_File_get_amode(*fh, amode);
-    *amode = IO_MODE_IMPL_TO_MUK(*amode);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -2575,13 +2500,11 @@ int WRAP_File_get_type_extent(MPI_File *fh, MPI_Datatype *datatype, IMPL_Aint *e
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_File_get_type_extent_c(MPI_File *fh, MPI_Datatype *datatype, IMPL_Count *extent)
 {
     int rc = IMPL_File_get_type_extent_c(*fh, *datatype, extent);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_File_get_view(MPI_File *fh, IMPL_Offset *disp, MPI_Datatype *etype, MPI_Datatype *filetype, char *datarep)
 {
@@ -2603,14 +2526,12 @@ int WRAP_File_iread_all(MPI_File *fh, void *buf, int count, MPI_Datatype *dataty
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_File_iread_all_c(MPI_File *fh, void *buf, IMPL_Count count, MPI_Datatype *datatype, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_File_iread_all_c(*fh, buf, count, *datatype, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_File_iread_at(MPI_File *fh, IMPL_Offset offset, void *buf, int count, MPI_Datatype *datatype, MPI_Request **request)
 {
@@ -2626,32 +2547,26 @@ int WRAP_File_iread_at_all(MPI_File *fh, IMPL_Offset offset, void *buf, int coun
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_File_iread_at_all_c(MPI_File *fh, IMPL_Offset offset, void *buf, IMPL_Count count, MPI_Datatype *datatype, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_File_iread_at_all_c(*fh, offset, buf, count, *datatype, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
-#if MPI_VERSION >= 4
 int WRAP_File_iread_at_c(MPI_File *fh, IMPL_Offset offset, void *buf, IMPL_Count count, MPI_Datatype *datatype, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_File_iread_at_c(*fh, offset, buf, count, *datatype, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
-#if MPI_VERSION >= 4
 int WRAP_File_iread_c(MPI_File *fh, void *buf, IMPL_Count count, MPI_Datatype *datatype, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_File_iread_c(*fh, buf, count, *datatype, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_File_iread_shared(MPI_File *fh, void *buf, int count, MPI_Datatype *datatype, MPI_Request **request)
 {
@@ -2660,14 +2575,12 @@ int WRAP_File_iread_shared(MPI_File *fh, void *buf, int count, MPI_Datatype *dat
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_File_iread_shared_c(MPI_File *fh, void *buf, IMPL_Count count, MPI_Datatype *datatype, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_File_iread_shared_c(*fh, buf, count, *datatype, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_File_iwrite(MPI_File *fh, const void *buf, int count, MPI_Datatype *datatype, MPI_Request **request)
 {
@@ -2683,14 +2596,12 @@ int WRAP_File_iwrite_all(MPI_File *fh, const void *buf, int count, MPI_Datatype 
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_File_iwrite_all_c(MPI_File *fh, const void *buf, IMPL_Count count, MPI_Datatype *datatype, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_File_iwrite_all_c(*fh, buf, count, *datatype, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_File_iwrite_at(MPI_File *fh, IMPL_Offset offset, const void *buf, int count, MPI_Datatype *datatype, MPI_Request **request)
 {
@@ -2706,32 +2617,26 @@ int WRAP_File_iwrite_at_all(MPI_File *fh, IMPL_Offset offset, const void *buf, i
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_File_iwrite_at_all_c(MPI_File *fh, IMPL_Offset offset, const void *buf, IMPL_Count count, MPI_Datatype *datatype, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_File_iwrite_at_all_c(*fh, offset, buf, count, *datatype, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
-#if MPI_VERSION >= 4
 int WRAP_File_iwrite_at_c(MPI_File *fh, IMPL_Offset offset, const void *buf, IMPL_Count count, MPI_Datatype *datatype, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_File_iwrite_at_c(*fh, offset, buf, count, *datatype, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
-#if MPI_VERSION >= 4
 int WRAP_File_iwrite_c(MPI_File *fh, const void *buf, IMPL_Count count, MPI_Datatype *datatype, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_File_iwrite_c(*fh, buf, count, *datatype, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_File_iwrite_shared(MPI_File *fh, const void *buf, int count, MPI_Datatype *datatype, MPI_Request **request)
 {
@@ -2740,19 +2645,17 @@ int WRAP_File_iwrite_shared(MPI_File *fh, const void *buf, int count, MPI_Dataty
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_File_iwrite_shared_c(MPI_File *fh, const void *buf, IMPL_Count count, MPI_Datatype *datatype, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_File_iwrite_shared_c(*fh, buf, count, *datatype, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_File_open(MPI_Comm *comm, const char *filename, int amode, MPI_Info *info, MPI_File **fh)
 {
     *fh = malloc(sizeof(MPI_File));
-    int rc = IMPL_File_open(*comm, filename, IO_MODE_MUK_TO_IMPL(amode), *info, *fh);
+    int rc = IMPL_File_open(*comm, filename, amode, *info, *fh);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -2784,13 +2687,11 @@ int WRAP_File_read_all_begin(MPI_File *fh, void *buf, int count, MPI_Datatype *d
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_File_read_all_begin_c(MPI_File *fh, void *buf, IMPL_Count count, MPI_Datatype *datatype)
 {
     int rc = IMPL_File_read_all_begin_c(*fh, buf, count, *datatype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_File_read_all_c(MPI_File *fh, void *buf, IMPL_Count count, MPI_Datatype *datatype, WRAP_Status *status)
 {
@@ -2830,13 +2731,11 @@ int WRAP_File_read_at_all_begin(MPI_File *fh, IMPL_Offset offset, void *buf, int
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_File_read_at_all_begin_c(MPI_File *fh, IMPL_Offset offset, void *buf, IMPL_Count count, MPI_Datatype *datatype)
 {
     int rc = IMPL_File_read_at_all_begin_c(*fh, offset, buf, count, *datatype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_File_read_at_all_c(MPI_File *fh, IMPL_Offset offset, void *buf, IMPL_Count count, MPI_Datatype *datatype, WRAP_Status *status)
 {
@@ -2884,13 +2783,11 @@ int WRAP_File_read_ordered_begin(MPI_File *fh, void *buf, int count, MPI_Datatyp
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_File_read_ordered_begin_c(MPI_File *fh, void *buf, IMPL_Count count, MPI_Datatype *datatype)
 {
     int rc = IMPL_File_read_ordered_begin_c(*fh, buf, count, *datatype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_File_read_ordered_c(MPI_File *fh, void *buf, IMPL_Count count, MPI_Datatype *datatype, WRAP_Status *status)
 {
@@ -2994,13 +2891,11 @@ int WRAP_File_write_all_begin(MPI_File *fh, const void *buf, int count, MPI_Data
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_File_write_all_begin_c(MPI_File *fh, const void *buf, IMPL_Count count, MPI_Datatype *datatype)
 {
     int rc = IMPL_File_write_all_begin_c(*fh, buf, count, *datatype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_File_write_all_c(MPI_File *fh, const void *buf, IMPL_Count count, MPI_Datatype *datatype, WRAP_Status *status)
 {
@@ -3040,13 +2935,11 @@ int WRAP_File_write_at_all_begin(MPI_File *fh, IMPL_Offset offset, const void *b
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_File_write_at_all_begin_c(MPI_File *fh, IMPL_Offset offset, const void *buf, IMPL_Count count, MPI_Datatype *datatype)
 {
     int rc = IMPL_File_write_at_all_begin_c(*fh, offset, buf, count, *datatype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_File_write_at_all_c(MPI_File *fh, IMPL_Offset offset, const void *buf, IMPL_Count count, MPI_Datatype *datatype, WRAP_Status *status)
 {
@@ -3094,13 +2987,11 @@ int WRAP_File_write_ordered_begin(MPI_File *fh, const void *buf, int count, MPI_
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_File_write_ordered_begin_c(MPI_File *fh, const void *buf, IMPL_Count count, MPI_Datatype *datatype)
 {
     int rc = IMPL_File_write_ordered_begin_c(*fh, buf, count, *datatype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_File_write_ordered_c(MPI_File *fh, const void *buf, IMPL_Count count, MPI_Datatype *datatype, WRAP_Status *status)
 {
@@ -3146,13 +3037,11 @@ int WRAP_Gather(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, void
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Gather_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *recvtype, int root, MPI_Comm *comm)
 {
     int rc = IMPL_Gather_c(sendbuf, sendcount, *sendtype, recvbuf, recvcount, *recvtype, RANK_MUK_TO_IMPL(root), *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Gather_init(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, void *recvbuf, int recvcount, MPI_Datatype *recvtype, int root, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
@@ -3161,14 +3050,12 @@ int WRAP_Gather_init(const void *sendbuf, int sendcount, MPI_Datatype *sendtype,
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Gather_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *recvtype, int root, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Gather_init_c(sendbuf, sendcount, *sendtype, recvbuf, recvcount, *recvtype, RANK_MUK_TO_IMPL(root), *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Gatherv(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype *recvtype, int root, MPI_Comm *comm)
 {
@@ -3176,13 +3063,11 @@ int WRAP_Gatherv(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, voi
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Gatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype *recvtype, int root, MPI_Comm *comm)
 {
     int rc = IMPL_Gatherv_c(sendbuf, sendcount, *sendtype, recvbuf, recvcounts, displs, *recvtype, RANK_MUK_TO_IMPL(root), *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Gatherv_init(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype *recvtype, int root, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
@@ -3191,14 +3076,12 @@ int WRAP_Gatherv_init(const void *sendbuf, int sendcount, MPI_Datatype *sendtype
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Gatherv_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype *recvtype, int root, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Gatherv_init_c(sendbuf, sendcount, *sendtype, recvbuf, recvcounts, displs, *recvtype, RANK_MUK_TO_IMPL(root), *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Get(void *origin_addr, int origin_count, MPI_Datatype *origin_datatype, int target_rank, IMPL_Aint target_disp, int target_count, MPI_Datatype *target_datatype, MPI_Win *win)
 {
@@ -3212,13 +3095,11 @@ int WRAP_Get_accumulate(const void *origin_addr, int origin_count, MPI_Datatype 
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Get_accumulate_c(const void *origin_addr, IMPL_Count origin_count, MPI_Datatype *origin_datatype, void *result_addr, IMPL_Count result_count, MPI_Datatype *result_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype *target_datatype, MPI_Op *op, MPI_Win *win)
 {
     int rc = IMPL_Get_accumulate_c(origin_addr, origin_count, *origin_datatype, result_addr, result_count, *result_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, *target_datatype, *op, *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Get_address(const void *location, IMPL_Aint *address)
 {
@@ -3226,13 +3107,11 @@ int WRAP_Get_address(const void *location, IMPL_Aint *address)
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Get_c(void *origin_addr, IMPL_Count origin_count, MPI_Datatype *origin_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype *target_datatype, MPI_Win *win)
 {
     int rc = IMPL_Get_c(origin_addr, origin_count, *origin_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, *target_datatype, *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Get_count(const WRAP_Status *status, MPI_Datatype *datatype, int *count)
 {
@@ -3348,7 +3227,7 @@ int WRAP_Group_excl(MPI_Group *group, int n, const int ranks[], MPI_Group **newg
 int WRAP_Group_free(MPI_Group **group)
 {
 #ifdef DEBUG
-    printf("WRAP_Group_free group=%p *group=%p **group=%lx MPI_GROUP_EMPTY=%lx IMPL_GROUP_EMPTY=%lx\n",
+    MUK_Warning("WRAP_Group_free group=%p *group=%p **group=%lx MPI_GROUP_EMPTY=%lx IMPL_GROUP_EMPTY=%lx\n",
                 group,*group,(uintptr_t)**group,(uintptr_t)MPI_GROUP_EMPTY,(uintptr_t)IMPL_GROUP_EMPTY);
 #endif
     int rc = IMPL_Group_free(*group);
@@ -3449,14 +3328,12 @@ int WRAP_Iallgather(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, 
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Iallgather_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Iallgather_c(sendbuf, sendcount, *sendtype, recvbuf, recvcount, *recvtype, *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Iallgatherv(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Request **request)
 {
@@ -3465,48 +3342,26 @@ int WRAP_Iallgatherv(const void *sendbuf, int sendcount, MPI_Datatype *sendtype,
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Iallgatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Iallgatherv_c(sendbuf, sendcount, *sendtype, recvbuf, recvcounts, displs, *recvtype, *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm, MPI_Request **request)
 {
-    int rc;
     *request = malloc(sizeof(MPI_Request));
-    if (IS_PREDEFINED_OP(*op)) {
-        rc = IMPL_Iallreduce(sendbuf, recvbuf, count, *datatype, *op, *comm, *request);
-    }
-    else {
-        // bake the cookie
-        MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(op, datatype, &dup);
-        if (cookie == NULL) {
-            printf("WRAP_Iallreduce: cookie failed to bake.\n");
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
-        rc = IMPL_Iallreduce(sendbuf, recvbuf, count, dup, *op, *comm, *request);
-        // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, *request, &dup);
-    }
-    end:
+    int rc = IMPL_Iallreduce(sendbuf, recvbuf, count, *datatype, *op, *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Iallreduce_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Iallreduce_c(sendbuf, recvbuf, count, *datatype, *op, *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Ialltoall(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, void *recvbuf, int recvcount, MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Request **request)
 {
@@ -3515,14 +3370,12 @@ int WRAP_Ialltoall(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, v
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Ialltoall_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Ialltoall_c(sendbuf, sendcount, *sendtype, recvbuf, recvcount, *recvtype, *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Ialltoallv(const void *sendbuf, const int sendcounts[], const int sdispls[], MPI_Datatype *sendtype, void *recvbuf, const int recvcounts[], const int rdispls[], MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Request **request)
 {
@@ -3531,14 +3384,12 @@ int WRAP_Ialltoallv(const void *sendbuf, const int sendcounts[], const int sdisp
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Ialltoallv_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], MPI_Datatype *sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Ialltoallv_c(sendbuf, sendcounts, sdispls, *sendtype, recvbuf, recvcounts, rdispls, *recvtype, *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Ialltoallw(const void *sendbuf, const int sendcounts[], const int sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const int recvcounts[], const int rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm, MPI_Request **request)
 {
@@ -3580,14 +3431,12 @@ int WRAP_Ibcast(void *buffer, int count, MPI_Datatype *datatype, int root, MPI_C
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Ibcast_c(void *buffer, IMPL_Count count, MPI_Datatype *datatype, int root, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Ibcast_c(buffer, count, *datatype, RANK_MUK_TO_IMPL(root), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Ibsend(const void *buf, int count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
@@ -3596,14 +3445,12 @@ int WRAP_Ibsend(const void *buf, int count, MPI_Datatype *datatype, int dest, in
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Ibsend_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Ibsend_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Iexscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm, MPI_Request **request)
 {
@@ -3612,14 +3459,12 @@ int WRAP_Iexscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *da
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Iexscan_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Iexscan_c(sendbuf, recvbuf, count, *datatype, *op, *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Igather(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, void *recvbuf, int recvcount, MPI_Datatype *recvtype, int root, MPI_Comm *comm, MPI_Request **request)
 {
@@ -3628,14 +3473,12 @@ int WRAP_Igather(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, voi
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Igather_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *recvtype, int root, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Igather_c(sendbuf, sendcount, *sendtype, recvbuf, recvcount, *recvtype, RANK_MUK_TO_IMPL(root), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Igatherv(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype *recvtype, int root, MPI_Comm *comm, MPI_Request **request)
 {
@@ -3644,22 +3487,19 @@ int WRAP_Igatherv(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, vo
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Igatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype *recvtype, int root, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Igatherv_c(sendbuf, sendcount, *sendtype, recvbuf, recvcounts, displs, *recvtype, RANK_MUK_TO_IMPL(root), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Improbe(int source, int tag, MPI_Comm *comm, int *flag, MPI_Message **message, WRAP_Status *status)
 {
-    const bool ignore = (intptr_t)status == (intptr_t)IMPL_STATUS_IGNORE;
     MPI_Status impl_status;
     *message = malloc(sizeof(MPI_Message));
-    int rc = IMPL_Improbe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, flag, *message, ignore ? MPI_STATUS_IGNORE : &impl_status);
-    if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
+    int rc = IMPL_Improbe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, flag, *message, &impl_status);
+    MPI_Status_to_WRAP_Status(&impl_status, status);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3688,14 +3528,12 @@ int WRAP_Ineighbor_allgather(const void *sendbuf, int sendcount, MPI_Datatype *s
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Ineighbor_allgather_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Ineighbor_allgather_c(sendbuf, sendcount, *sendtype, recvbuf, recvcount, *recvtype, *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Ineighbor_allgatherv(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Request **request)
 {
@@ -3704,14 +3542,12 @@ int WRAP_Ineighbor_allgatherv(const void *sendbuf, int sendcount, MPI_Datatype *
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Ineighbor_allgatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Ineighbor_allgatherv_c(sendbuf, sendcount, *sendtype, recvbuf, recvcounts, displs, *recvtype, *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Ineighbor_alltoall(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, void *recvbuf, int recvcount, MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Request **request)
 {
@@ -3720,14 +3556,12 @@ int WRAP_Ineighbor_alltoall(const void *sendbuf, int sendcount, MPI_Datatype *se
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Ineighbor_alltoall_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Ineighbor_alltoall_c(sendbuf, sendcount, *sendtype, recvbuf, recvcount, *recvtype, *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Ineighbor_alltoallv(const void *sendbuf, const int sendcounts[], const int sdispls[], MPI_Datatype *sendtype, void *recvbuf, const int recvcounts[], const int rdispls[], MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Request **request)
 {
@@ -3736,14 +3570,12 @@ int WRAP_Ineighbor_alltoallv(const void *sendbuf, const int sendcounts[], const 
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Ineighbor_alltoallv_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], MPI_Datatype *sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Ineighbor_alltoallv_c(sendbuf, sendcounts, sdispls, *sendtype, recvbuf, recvcounts, rdispls, *recvtype, *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Ineighbor_alltoallw(const void *sendbuf, const int sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const int recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm, MPI_Request **request)
 {
@@ -3865,11 +3697,9 @@ int WRAP_Intercomm_merge(MPI_Comm *intercomm, int high, MPI_Comm **newintracomm)
 
 int WRAP_Iprobe(int source, int tag, MPI_Comm *comm, int *flag, WRAP_Status *status)
 {
-    const bool ignore = (intptr_t)status == (intptr_t)IMPL_STATUS_IGNORE;
-    printf("status=%p IMPL_STATUS_IGNORE=%p ignore=%d\n", status, IMPL_STATUS_IGNORE, (int)ignore);
     MPI_Status impl_status;
-    int rc = IMPL_Iprobe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, flag, ignore ? MPI_STATUS_IGNORE : &impl_status);
-    if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
+    int rc = IMPL_Iprobe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, flag, &impl_status);
+    MPI_Status_to_WRAP_Status(&impl_status, status);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3880,48 +3710,26 @@ int WRAP_Irecv(void *buf, int count, MPI_Datatype *datatype, int source, int tag
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Irecv_c(void *buf, IMPL_Count count, MPI_Datatype *datatype, int source, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Irecv_c(buf, count, *datatype, RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *datatype, MPI_Op *op, int root, MPI_Comm *comm, MPI_Request **request)
 {
-    int rc;
     *request = malloc(sizeof(MPI_Request));
-    if (IS_PREDEFINED_OP(*op)) {
-        rc = IMPL_Ireduce(sendbuf, recvbuf, count, *datatype, *op, RANK_MUK_TO_IMPL(root), *comm, *request);
-    }
-    else {
-        // bake the cookie
-        MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(op, datatype, &dup);
-        if (cookie == NULL) {
-            printf("WRAP_Ireduce: cookie failed to bake.\n");
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
-        rc = IMPL_Ireduce(sendbuf, recvbuf, count, dup, *op, RANK_MUK_TO_IMPL(root), *comm, *request);
-        // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, *request, &dup);
-    }
-    end:
+    int rc = IMPL_Ireduce(sendbuf, recvbuf, count, *datatype, *op, RANK_MUK_TO_IMPL(root), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Ireduce_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype *datatype, MPI_Op *op, int root, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Ireduce_c(sendbuf, recvbuf, count, *datatype, *op, RANK_MUK_TO_IMPL(root), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int recvcounts[], MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm, MPI_Request **request)
 {
@@ -3937,23 +3745,19 @@ int WRAP_Ireduce_scatter_block(const void *sendbuf, void *recvbuf, int recvcount
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Ireduce_scatter_block_c(const void *sendbuf, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Ireduce_scatter_block_c(sendbuf, recvbuf, recvcount, *datatype, *op, *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
-#if MPI_VERSION >= 4
 int WRAP_Ireduce_scatter_c(const void *sendbuf, void *recvbuf, const IMPL_Count recvcounts[], MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Ireduce_scatter_c(sendbuf, recvbuf, recvcounts, *datatype, *op, *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Irsend(const void *buf, int count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
@@ -3962,14 +3766,12 @@ int WRAP_Irsend(const void *buf, int count, MPI_Datatype *datatype, int dest, in
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Irsend_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Irsend_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Iscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm, MPI_Request **request)
 {
@@ -3978,14 +3780,12 @@ int WRAP_Iscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *data
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Iscan_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Iscan_c(sendbuf, recvbuf, count, *datatype, *op, *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Iscatter(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, void *recvbuf, int recvcount, MPI_Datatype *recvtype, int root, MPI_Comm *comm, MPI_Request **request)
 {
@@ -3994,14 +3794,12 @@ int WRAP_Iscatter(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, vo
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Iscatter_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *recvtype, int root, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Iscatter_c(sendbuf, sendcount, *sendtype, recvbuf, recvcount, *recvtype, RANK_MUK_TO_IMPL(root), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Iscatterv(const void *sendbuf, const int sendcounts[], const int displs[], MPI_Datatype *sendtype, void *recvbuf, int recvcount, MPI_Datatype *recvtype, int root, MPI_Comm *comm, MPI_Request **request)
 {
@@ -4010,14 +3808,12 @@ int WRAP_Iscatterv(const void *sendbuf, const int sendcounts[], const int displs
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Iscatterv_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint displs[], MPI_Datatype *sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *recvtype, int root, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Iscatterv_c(sendbuf, sendcounts, displs, *sendtype, recvbuf, recvcount, *recvtype, RANK_MUK_TO_IMPL(root), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Isend(const void *buf, int count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
@@ -4026,14 +3822,12 @@ int WRAP_Isend(const void *buf, int count, MPI_Datatype *datatype, int dest, int
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Isend_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Isend_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Isendrecv(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, int dest, int sendtag, void *recvbuf, int recvcount, MPI_Datatype *recvtype, int source, int recvtag, MPI_Comm *comm, MPI_Request **request)
 {
@@ -4042,14 +3836,12 @@ int WRAP_Isendrecv(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, i
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Isendrecv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, int dest, int sendtag, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *recvtype, int source, int recvtag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Isendrecv_c(sendbuf, sendcount, *sendtype, RANK_MUK_TO_IMPL(dest), sendtag, recvbuf, recvcount, *recvtype, RANK_MUK_TO_IMPL(source), recvtag, *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Isendrecv_replace(void *buf, int count, MPI_Datatype *datatype, int dest, int sendtag, int source, int recvtag, MPI_Comm *comm, MPI_Request **request)
 {
@@ -4058,14 +3850,12 @@ int WRAP_Isendrecv_replace(void *buf, int count, MPI_Datatype *datatype, int des
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Isendrecv_replace_c(void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int sendtag, int source, int recvtag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Isendrecv_replace_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), sendtag, RANK_MUK_TO_IMPL(source), recvtag, *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Issend(const void *buf, int count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
@@ -4074,14 +3864,12 @@ int WRAP_Issend(const void *buf, int count, MPI_Datatype *datatype, int dest, in
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Issend_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Issend_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Keyval_create(MPI_Copy_function *copy_fn, MPI_Delete_function *delete_fn, int *keyval, void *extra_state)
 {
@@ -4103,10 +3891,9 @@ int WRAP_Lookup_name(const char *service_name, MPI_Info *info, char *port_name)
 
 int WRAP_Mprobe(int source, int tag, MPI_Comm *comm, MPI_Message **message, WRAP_Status *status)
 {
-    const bool ignore = (intptr_t)status == (intptr_t)IMPL_STATUS_IGNORE;
     MPI_Status impl_status;
-    int rc = IMPL_Mprobe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, *message, ignore ? MPI_STATUS_IGNORE : &impl_status);
-    if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
+    int rc = IMPL_Mprobe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, *message, &impl_status);
+    MPI_Status_to_WRAP_Status(&impl_status, status);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4136,13 +3923,11 @@ int WRAP_Neighbor_allgather(const void *sendbuf, int sendcount, MPI_Datatype *se
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Neighbor_allgather_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *recvtype, MPI_Comm *comm)
 {
     int rc = IMPL_Neighbor_allgather_c(sendbuf, sendcount, *sendtype, recvbuf, recvcount, *recvtype, *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Neighbor_allgather_init(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, void *recvbuf, int recvcount, MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
@@ -4151,14 +3936,12 @@ int WRAP_Neighbor_allgather_init(const void *sendbuf, int sendcount, MPI_Datatyp
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Neighbor_allgather_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Neighbor_allgather_init_c(sendbuf, sendcount, *sendtype, recvbuf, recvcount, *recvtype, *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Neighbor_allgatherv(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype *recvtype, MPI_Comm *comm)
 {
@@ -4166,13 +3949,11 @@ int WRAP_Neighbor_allgatherv(const void *sendbuf, int sendcount, MPI_Datatype *s
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Neighbor_allgatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype *recvtype, MPI_Comm *comm)
 {
     int rc = IMPL_Neighbor_allgatherv_c(sendbuf, sendcount, *sendtype, recvbuf, recvcounts, displs, *recvtype, *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Neighbor_allgatherv_init(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, void *recvbuf, const int recvcounts[], const int displs[], MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
@@ -4181,14 +3962,12 @@ int WRAP_Neighbor_allgatherv_init(const void *sendbuf, int sendcount, MPI_Dataty
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Neighbor_allgatherv_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint displs[], MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Neighbor_allgatherv_init_c(sendbuf, sendcount, *sendtype, recvbuf, recvcounts, displs, *recvtype, *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Neighbor_alltoall(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, void *recvbuf, int recvcount, MPI_Datatype *recvtype, MPI_Comm *comm)
 {
@@ -4196,13 +3975,11 @@ int WRAP_Neighbor_alltoall(const void *sendbuf, int sendcount, MPI_Datatype *sen
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Neighbor_alltoall_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *recvtype, MPI_Comm *comm)
 {
     int rc = IMPL_Neighbor_alltoall_c(sendbuf, sendcount, *sendtype, recvbuf, recvcount, *recvtype, *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Neighbor_alltoall_init(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, void *recvbuf, int recvcount, MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
@@ -4211,14 +3988,12 @@ int WRAP_Neighbor_alltoall_init(const void *sendbuf, int sendcount, MPI_Datatype
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Neighbor_alltoall_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Neighbor_alltoall_init_c(sendbuf, sendcount, *sendtype, recvbuf, recvcount, *recvtype, *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Neighbor_alltoallv(const void *sendbuf, const int sendcounts[], const int sdispls[], MPI_Datatype *sendtype, void *recvbuf, const int recvcounts[], const int rdispls[], MPI_Datatype *recvtype, MPI_Comm *comm)
 {
@@ -4226,13 +4001,11 @@ int WRAP_Neighbor_alltoallv(const void *sendbuf, const int sendcounts[], const i
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Neighbor_alltoallv_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], MPI_Datatype *sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], MPI_Datatype *recvtype, MPI_Comm *comm)
 {
     int rc = IMPL_Neighbor_alltoallv_c(sendbuf, sendcounts, sdispls, *sendtype, recvbuf, recvcounts, rdispls, *recvtype, *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Neighbor_alltoallv_init(const void *sendbuf, const int sendcounts[], const int sdispls[], MPI_Datatype *sendtype, void *recvbuf, const int recvcounts[], const int rdispls[], MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
@@ -4241,14 +4014,12 @@ int WRAP_Neighbor_alltoallv_init(const void *sendbuf, const int sendcounts[], co
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Neighbor_alltoallv_init_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], MPI_Datatype *sendtype, void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], MPI_Datatype *recvtype, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Neighbor_alltoallv_init_c(sendbuf, sendcounts, sdispls, *sendtype, recvbuf, recvcounts, rdispls, *recvtype, *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Neighbor_alltoallw(const void *sendbuf, const int sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const int recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm)
 {
@@ -4313,7 +4084,7 @@ void trampoline(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
     reduce_trampoline_cookie_t * cookie = NULL;
     rc = IMPL_Type_get_attr(*datatype, TYPE_HANDLE_KEY, &cookie, &flag);
     if (rc != MPI_SUCCESS || !flag) {
-        printf("trampoline: IMPL_Type_get_attr failed: flag=%d rc=%d\n", flag, rc);
+        MUK_Warning("trampoline: IMPL_Type_get_attr failed: flag=%d rc=%d\n", flag, rc);
         MPI_Abort(MPI_COMM_SELF,rc);
     }
     MPI_Datatype       * dptr = NULL;
@@ -4363,13 +4134,11 @@ int WRAP_Pack(const void *inbuf, int incount, MPI_Datatype *datatype, void *outb
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Pack_c(const void *inbuf, IMPL_Count incount, MPI_Datatype *datatype, void *outbuf, IMPL_Count outsize, IMPL_Count *position, MPI_Comm *comm)
 {
     int rc = IMPL_Pack_c(inbuf, incount, *datatype, outbuf, outsize, position, *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Pack_external(const char *datarep, const void *inbuf, int incount, MPI_Datatype *datatype, void *outbuf, IMPL_Aint outsize, IMPL_Aint *position)
 {
@@ -4377,13 +4146,11 @@ int WRAP_Pack_external(const char *datarep, const void *inbuf, int incount, MPI_
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Pack_external_c(const char *datarep, const void *inbuf, IMPL_Count incount, MPI_Datatype *datatype, void *outbuf, IMPL_Count outsize, IMPL_Count *position)
 {
     int rc = IMPL_Pack_external_c(datarep, inbuf, incount, *datatype, outbuf, outsize, position);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Pack_external_size(const char *datarep, int incount, MPI_Datatype *datatype, IMPL_Aint *size)
 {
@@ -4391,13 +4158,11 @@ int WRAP_Pack_external_size(const char *datarep, int incount, MPI_Datatype *data
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Pack_external_size_c(const char *datarep, IMPL_Count incount, MPI_Datatype *datatype, IMPL_Count *size)
 {
     int rc = IMPL_Pack_external_size_c(datarep, incount, *datatype, size);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Pack_size(int incount, MPI_Datatype *datatype, MPI_Comm *comm, int *size)
 {
@@ -4406,13 +4171,11 @@ int WRAP_Pack_size(int incount, MPI_Datatype *datatype, MPI_Comm *comm, int *siz
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Pack_size_c(IMPL_Count incount, MPI_Datatype *datatype, MPI_Comm *comm, IMPL_Count *size)
 {
     int rc = IMPL_Pack_size_c(incount, *datatype, *comm, size);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Parrived(MPI_Request *request, int partition, int *flag)
 {
@@ -4453,10 +4216,9 @@ int WRAP_Precv_init(void *buf, int partitions, IMPL_Count count, MPI_Datatype *d
 
 int WRAP_Probe(int source, int tag, MPI_Comm *comm, WRAP_Status *status)
 {
-    const bool ignore = (intptr_t)status == (intptr_t)IMPL_STATUS_IGNORE;
     MPI_Status impl_status;
-    int rc = IMPL_Probe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, ignore ? MPI_STATUS_IGNORE : &impl_status);
-    if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
+    int rc = IMPL_Probe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, &impl_status);
+    MPI_Status_to_WRAP_Status(&impl_status, status);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4479,13 +4241,11 @@ int WRAP_Put(const void *origin_addr, int origin_count, MPI_Datatype *origin_dat
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Put_c(const void *origin_addr, IMPL_Count origin_count, MPI_Datatype *origin_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype *target_datatype, MPI_Win *win)
 {
     int rc = IMPL_Put_c(origin_addr, origin_count, *origin_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, *target_datatype, *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Raccumulate(const void *origin_addr, int origin_count, MPI_Datatype *origin_datatype, int target_rank, IMPL_Aint target_disp, int target_count, MPI_Datatype *target_datatype, MPI_Op *op, MPI_Win *win, MPI_Request **request)
 {
@@ -4494,14 +4254,12 @@ int WRAP_Raccumulate(const void *origin_addr, int origin_count, MPI_Datatype *or
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Raccumulate_c(const void *origin_addr, IMPL_Count origin_count, MPI_Datatype *origin_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype *target_datatype, MPI_Op *op, MPI_Win *win, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Raccumulate_c(origin_addr, origin_count, *origin_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, *target_datatype, *op, *win, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Recv(void *buf, int count, MPI_Datatype *datatype, int source, int tag, MPI_Comm *comm, WRAP_Status *status)
 {
@@ -4526,14 +4284,12 @@ int WRAP_Recv_init(void *buf, int count, MPI_Datatype *datatype, int source, int
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Recv_init_c(void *buf, IMPL_Count count, MPI_Datatype *datatype, int source, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Recv_init_c(buf, count, *datatype, RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Reduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *datatype, MPI_Op *op, int root, MPI_Comm *comm)
 {
@@ -4546,7 +4302,7 @@ int WRAP_Reduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *dat
         MPI_Datatype dup;
         reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(op, datatype, &dup);
         if (cookie == NULL) {
-            printf("WRAP_Allreduce: cookie failed to bake.\n");
+            MUK_Warning("WRAP_Allreduce: cookie failed to bake.\n");
             rc = MPI_ERR_INTERN;
             goto end;
         }
@@ -4565,7 +4321,7 @@ int WRAP_Reduce_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Data
     if (IS_PREDEFINED_OP(*op)) {
         rc = IMPL_Reduce_c(sendbuf, recvbuf, count, *datatype, *op, RANK_MUK_TO_IMPL(root), *comm);
     } else {
-        printf("WRAP_Reduce_c does not implement user-defined ops.\n");
+        MUK_Warning("WRAP_Reduce_c does not implement user-defined ops.\n");
         rc = MPI_ERR_INTERN;
     }
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -4578,14 +4334,12 @@ int WRAP_Reduce_init(const void *sendbuf, void *recvbuf, int count, MPI_Datatype
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Reduce_init_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype *datatype, MPI_Op *op, int root, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Reduce_init_c(sendbuf, recvbuf, count, *datatype, *op, RANK_MUK_TO_IMPL(root), *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Reduce_local(const void *inbuf, void *inoutbuf, int count, MPI_Datatype *datatype, MPI_Op *op)
 {
@@ -4598,7 +4352,7 @@ int WRAP_Reduce_local(const void *inbuf, void *inoutbuf, int count, MPI_Datatype
         MPI_Datatype dup;
         reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(op, datatype, &dup);
         if (cookie == NULL) {
-            printf("WRAP_Allreduce: cookie failed to bake.\n");
+            MUK_Warning("WRAP_Allreduce: cookie failed to bake.\n");
             rc = MPI_ERR_INTERN;
             goto end;
         }
@@ -4617,7 +4371,7 @@ int WRAP_Reduce_local_c(const void *inbuf, void *inoutbuf, IMPL_Count count, MPI
     if (IS_PREDEFINED_OP(*op)) {
         rc = IMPL_Reduce_local_c(inbuf, inoutbuf, count, *datatype, *op);
     } else {
-        printf("WRAP_Reduce_local_c does not implement user-defined ops.\n");
+        MUK_Warning("WRAP_Reduce_local_c does not implement user-defined ops.\n");
         rc = MPI_ERR_INTERN;
     }
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -4634,7 +4388,7 @@ int WRAP_Reduce_scatter(const void *sendbuf, void *recvbuf, const int recvcounts
         MPI_Datatype dup;
         reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(op, datatype, &dup);
         if (cookie == NULL) {
-            printf("WRAP_Allreduce: cookie failed to bake.\n");
+            MUK_Warning("WRAP_Allreduce: cookie failed to bake.\n");
             rc = MPI_ERR_INTERN;
             goto end;
         }
@@ -4658,7 +4412,7 @@ int WRAP_Reduce_scatter_block(const void *sendbuf, void *recvbuf, int recvcount,
         MPI_Datatype dup;
         reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(op, datatype, &dup);
         if (cookie == NULL) {
-            printf("WRAP_Allreduce: cookie failed to bake.\n");
+            MUK_Warning("WRAP_Allreduce: cookie failed to bake.\n");
             rc = MPI_ERR_INTERN;
             goto end;
         }
@@ -4677,7 +4431,7 @@ int WRAP_Reduce_scatter_block_c(const void *sendbuf, void *recvbuf, IMPL_Count r
     if (IS_PREDEFINED_OP(*op)) {
         rc = IMPL_Reduce_scatter_block_c(sendbuf, recvbuf, recvcount, *datatype, *op, *comm);
     } else {
-        printf("WRAP_Reduce_scatter_block_c does not implement user-defined ops.\n");
+        MUK_Warning("WRAP_Reduce_scatter_block_c does not implement user-defined ops.\n");
         rc = MPI_ERR_INTERN;
     }
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -4690,14 +4444,12 @@ int WRAP_Reduce_scatter_block_init(const void *sendbuf, void *recvbuf, int recvc
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Reduce_scatter_block_init_c(const void *sendbuf, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Reduce_scatter_block_init_c(sendbuf, recvbuf, recvcount, *datatype, *op, *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Reduce_scatter_c(const void *sendbuf, void *recvbuf, const IMPL_Count recvcounts[], MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm)
 {
@@ -4705,7 +4457,7 @@ int WRAP_Reduce_scatter_c(const void *sendbuf, void *recvbuf, const IMPL_Count r
     if (IS_PREDEFINED_OP(*op)) {
         rc = IMPL_Reduce_scatter_c(sendbuf, recvbuf, recvcounts, *datatype, *op, *comm);
     } else {
-        printf("WRAP_Reduce_scatter_c does not implement user-defined ops.\n");
+        MUK_Warning("WRAP_Reduce_scatter_c does not implement user-defined ops.\n");
         rc = MPI_ERR_INTERN;
     }
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -4718,14 +4470,12 @@ int WRAP_Reduce_scatter_init(const void *sendbuf, void *recvbuf, const int recvc
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Reduce_scatter_init_c(const void *sendbuf, void *recvbuf, const IMPL_Count recvcounts[], MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Reduce_scatter_init_c(sendbuf, recvbuf, recvcounts, *datatype, *op, *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Register_datarep(const char *datarep, MPI_Datarep_conversion_function *read_conversion_fn, MPI_Datarep_conversion_function *write_conversion_fn, MPI_Datarep_extent_function *dtype_file_extent_fn, void *extra_state)
 {
@@ -4734,13 +4484,11 @@ int WRAP_Register_datarep(const char *datarep, MPI_Datarep_conversion_function *
 }
 
 #if MPI_VERSION >= 4
-#if MPI_VERSION >= 4
 int WRAP_Register_datarep_c(const char *datarep, MPI_Datarep_conversion_function_c *read_conversion_fn, MPI_Datarep_conversion_function_c *write_conversion_fn, MPI_Datarep_extent_function *dtype_file_extent_fn, void *extra_state)
 {
     int rc = IMPL_Register_datarep_c(datarep, read_conversion_fn, write_conversion_fn, dtype_file_extent_fn, extra_state);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 #endif
 
 int WRAP_Request_free(MPI_Request **request)
@@ -4775,23 +4523,19 @@ int WRAP_Rget_accumulate(const void *origin_addr, int origin_count, MPI_Datatype
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Rget_accumulate_c(const void *origin_addr, IMPL_Count origin_count, MPI_Datatype *origin_datatype, void *result_addr, IMPL_Count result_count, MPI_Datatype *result_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype *target_datatype, MPI_Op *op, MPI_Win *win, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Rget_accumulate_c(origin_addr, origin_count, *origin_datatype, result_addr, result_count, *result_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, *target_datatype, *op, *win, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
-#if MPI_VERSION >= 4
 int WRAP_Rget_c(void *origin_addr, IMPL_Count origin_count, MPI_Datatype *origin_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype *target_datatype, MPI_Win *win, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Rget_c(origin_addr, origin_count, *origin_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, *target_datatype, *win, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Rput(const void *origin_addr, int origin_count, MPI_Datatype *origin_datatype, int target_rank, IMPL_Aint target_disp, int target_count, MPI_Datatype *target_datatype, MPI_Win *win, MPI_Request **request)
 {
@@ -4800,14 +4544,12 @@ int WRAP_Rput(const void *origin_addr, int origin_count, MPI_Datatype *origin_da
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Rput_c(const void *origin_addr, IMPL_Count origin_count, MPI_Datatype *origin_datatype, int target_rank, IMPL_Aint target_disp, IMPL_Count target_count, MPI_Datatype *target_datatype, MPI_Win *win, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Rput_c(origin_addr, origin_count, *origin_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, *target_datatype, *win, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Rsend(const void *buf, int count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm)
 {
@@ -4815,13 +4557,11 @@ int WRAP_Rsend(const void *buf, int count, MPI_Datatype *datatype, int dest, int
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Rsend_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm)
 {
     int rc = IMPL_Rsend_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Rsend_init(const void *buf, int count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
@@ -4830,14 +4570,12 @@ int WRAP_Rsend_init(const void *buf, int count, MPI_Datatype *datatype, int dest
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Rsend_init_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Rsend_init_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Scan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm)
 {
@@ -4845,13 +4583,11 @@ int WRAP_Scan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *datat
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Scan_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm)
 {
     int rc = IMPL_Scan_c(sendbuf, recvbuf, count, *datatype, *op, *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Scan_init(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
@@ -4860,14 +4596,12 @@ int WRAP_Scan_init(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Scan_init_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Scan_init_c(sendbuf, recvbuf, count, *datatype, *op, *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Scatter(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, void *recvbuf, int recvcount, MPI_Datatype *recvtype, int root, MPI_Comm *comm)
 {
@@ -4875,13 +4609,11 @@ int WRAP_Scatter(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, voi
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Scatter_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *recvtype, int root, MPI_Comm *comm)
 {
     int rc = IMPL_Scatter_c(sendbuf, sendcount, *sendtype, recvbuf, recvcount, *recvtype, RANK_MUK_TO_IMPL(root), *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Scatter_init(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, void *recvbuf, int recvcount, MPI_Datatype *recvtype, int root, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
@@ -4890,14 +4622,12 @@ int WRAP_Scatter_init(const void *sendbuf, int sendcount, MPI_Datatype *sendtype
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Scatter_init_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *recvtype, int root, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Scatter_init_c(sendbuf, sendcount, *sendtype, recvbuf, recvcount, *recvtype, RANK_MUK_TO_IMPL(root), *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Scatterv(const void *sendbuf, const int sendcounts[], const int displs[], MPI_Datatype *sendtype, void *recvbuf, int recvcount, MPI_Datatype *recvtype, int root, MPI_Comm *comm)
 {
@@ -4905,13 +4635,11 @@ int WRAP_Scatterv(const void *sendbuf, const int sendcounts[], const int displs[
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Scatterv_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint displs[], MPI_Datatype *sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *recvtype, int root, MPI_Comm *comm)
 {
     int rc = IMPL_Scatterv_c(sendbuf, sendcounts, displs, *sendtype, recvbuf, recvcount, *recvtype, RANK_MUK_TO_IMPL(root), *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Scatterv_init(const void *sendbuf, const int sendcounts[], const int displs[], MPI_Datatype *sendtype, void *recvbuf, int recvcount, MPI_Datatype *recvtype, int root, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
@@ -4920,14 +4648,12 @@ int WRAP_Scatterv_init(const void *sendbuf, const int sendcounts[], const int di
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Scatterv_init_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint displs[], MPI_Datatype *sendtype, void *recvbuf, IMPL_Count recvcount, MPI_Datatype *recvtype, int root, MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Scatterv_init_c(sendbuf, sendcounts, displs, *sendtype, recvbuf, recvcount, *recvtype, RANK_MUK_TO_IMPL(root), *comm, *info, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Send(const void *buf, int count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm)
 {
@@ -4935,13 +4661,11 @@ int WRAP_Send(const void *buf, int count, MPI_Datatype *datatype, int dest, int 
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Send_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm)
 {
     int rc = IMPL_Send_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Send_init(const void *buf, int count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
@@ -4950,14 +4674,12 @@ int WRAP_Send_init(const void *buf, int count, MPI_Datatype *datatype, int dest,
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Send_init_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Send_init_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Sendrecv(const void *sendbuf, int sendcount, MPI_Datatype *sendtype, int dest, int sendtag, void *recvbuf, int recvcount, MPI_Datatype *recvtype, int source, int recvtag, MPI_Comm *comm, WRAP_Status *status)
 {
@@ -5065,13 +4787,11 @@ int WRAP_Ssend(const void *buf, int count, MPI_Datatype *datatype, int dest, int
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Ssend_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm)
 {
     int rc = IMPL_Ssend_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Ssend_init(const void *buf, int count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
@@ -5080,14 +4800,12 @@ int WRAP_Ssend_init(const void *buf, int count, MPI_Datatype *datatype, int dest
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Ssend_init_c(const void *buf, IMPL_Count count, MPI_Datatype *datatype, int dest, int tag, MPI_Comm *comm, MPI_Request **request)
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Ssend_init_c(buf, count, *datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(tag), *comm, *request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Start(MPI_Request **request)
 {
@@ -5198,7 +4916,6 @@ int WRAP_Testall(int count, MPI_Request* array_of_requests[], int *flag, WRAP_St
     if (*flag) {
         for (int i=0; i<count; i++) {
             if (impl_requests[i] == MPI_REQUEST_NULL) {
-                remove_cookie_pair_from_list(array_of_requests[i]);
                 free(array_of_requests[i]);
                 array_of_requests[i] = &IMPL_REQUEST_NULL;
             }
@@ -5235,7 +4952,6 @@ int WRAP_Testany(int count, MPI_Request* array_of_requests[], int *indx, int *fl
         if (*indx != MPI_UNDEFINED) {
 
             if (impl_requests[*indx] == MPI_REQUEST_NULL) {
-                remove_cookie_pair_from_list(array_of_requests[*indx]);
                 free(array_of_requests[*indx]);
                 array_of_requests[*indx] = &IMPL_REQUEST_NULL;
             }
@@ -5275,7 +4991,6 @@ int WRAP_Testsome(int incount, MPI_Request* array_of_requests[], int *outcount, 
         for (int i=0; i<*outcount; i++) {
             const int j = array_of_indices[i];
             if (impl_requests[j] == MPI_REQUEST_NULL) {
-                remove_cookie_pair_from_list(array_of_requests[j]);
                 free(array_of_requests[j]);
                 array_of_requests[j] = &IMPL_REQUEST_NULL;
             }
@@ -5317,14 +5032,12 @@ int WRAP_Type_contiguous(int count, MPI_Datatype *oldtype, MPI_Datatype **newtyp
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Type_contiguous_c(IMPL_Count count, MPI_Datatype *oldtype, MPI_Datatype **newtype)
 {
     *newtype = malloc(sizeof(MPI_Datatype));
     int rc = IMPL_Type_contiguous_c(count, *oldtype, *newtype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Type_create_darray(int size, int rank, int ndims, const int array_of_gsizes[], const int array_of_distribs[], const int array_of_dargs[], const int array_of_psizes[], int order, MPI_Datatype *oldtype, MPI_Datatype **newtype)
 {
@@ -5389,23 +5102,19 @@ int WRAP_Type_create_hindexed_block(int count, int blocklength, const IMPL_Aint 
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Type_create_hindexed_block_c(IMPL_Count count, IMPL_Count blocklength, const IMPL_Count array_of_displacements[], MPI_Datatype *oldtype, MPI_Datatype **newtype)
 {
     *newtype = malloc(sizeof(MPI_Datatype));
     int rc = IMPL_Type_create_hindexed_block_c(count, blocklength, array_of_displacements, *oldtype, *newtype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
-#if MPI_VERSION >= 4
 int WRAP_Type_create_hindexed_c(IMPL_Count count, const IMPL_Count array_of_blocklengths[], const IMPL_Count array_of_displacements[], MPI_Datatype *oldtype, MPI_Datatype **newtype)
 {
     *newtype = malloc(sizeof(MPI_Datatype));
     int rc = IMPL_Type_create_hindexed_c(count, array_of_blocklengths, array_of_displacements, *oldtype, *newtype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Type_create_hvector(int count, int blocklength, IMPL_Aint stride, MPI_Datatype *oldtype, MPI_Datatype **newtype)
 {
@@ -5414,14 +5123,12 @@ int WRAP_Type_create_hvector(int count, int blocklength, IMPL_Aint stride, MPI_D
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Type_create_hvector_c(IMPL_Count count, IMPL_Count blocklength, IMPL_Count stride, MPI_Datatype *oldtype, MPI_Datatype **newtype)
 {
     *newtype = malloc(sizeof(MPI_Datatype));
     int rc = IMPL_Type_create_hvector_c(count, blocklength, stride, *oldtype, *newtype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Type_create_indexed_block(int count, int blocklength, const int array_of_displacements[], MPI_Datatype *oldtype, MPI_Datatype **newtype)
 {
@@ -5430,14 +5137,12 @@ int WRAP_Type_create_indexed_block(int count, int blocklength, const int array_o
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Type_create_indexed_block_c(IMPL_Count count, IMPL_Count blocklength, const IMPL_Count array_of_displacements[], MPI_Datatype *oldtype, MPI_Datatype **newtype)
 {
     *newtype = malloc(sizeof(MPI_Datatype));
     int rc = IMPL_Type_create_indexed_block_c(count, blocklength, array_of_displacements, *oldtype, *newtype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Type_create_keyval(MPI_Type_copy_attr_function *type_copy_attr_fn, MPI_Type_delete_attr_function *type_delete_attr_fn, int *type_keyval, void *extra_state)
 {
@@ -5452,14 +5157,12 @@ int WRAP_Type_create_resized(MPI_Datatype *oldtype, IMPL_Aint lb, IMPL_Aint exte
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Type_create_resized_c(MPI_Datatype *oldtype, IMPL_Count lb, IMPL_Count extent, MPI_Datatype **newtype)
 {
     *newtype = malloc(sizeof(MPI_Datatype));
     int rc = IMPL_Type_create_resized_c(*oldtype, lb, extent, *newtype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Type_create_struct(int count, const int array_of_blocklengths[], const IMPL_Aint array_of_displacements[], const MPI_Datatype array_of_types[], MPI_Datatype **newtype)
 {
@@ -5468,14 +5171,12 @@ int WRAP_Type_create_struct(int count, const int array_of_blocklengths[], const 
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Type_create_struct_c(IMPL_Count count, const IMPL_Count array_of_blocklengths[], const IMPL_Count array_of_displacements[], const MPI_Datatype array_of_types[], MPI_Datatype **newtype)
 {
     *newtype = malloc(sizeof(MPI_Datatype));
     int rc = IMPL_Type_create_struct_c(count, array_of_blocklengths, array_of_displacements, array_of_types, *newtype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Type_create_subarray(int ndims, const int array_of_sizes[], const int array_of_subsizes[], const int array_of_starts[], int order, MPI_Datatype *oldtype, MPI_Datatype **newtype)
 {
@@ -5551,13 +5252,11 @@ int WRAP_Type_get_contents(MPI_Datatype *datatype, int max_integers, int max_add
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Type_get_contents_c(MPI_Datatype *datatype, IMPL_Count max_integers, IMPL_Count max_addresses, IMPL_Count max_large_counts, IMPL_Count max_datatypes, int array_of_integers[], IMPL_Aint array_of_addresses[], IMPL_Count array_of_large_counts[], MPI_Datatype array_of_datatypes[])
 {
     int rc = IMPL_Type_get_contents_c(*datatype, max_integers, max_addresses, max_large_counts, max_datatypes, array_of_integers, array_of_addresses, array_of_large_counts, array_of_datatypes);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Type_get_envelope(MPI_Datatype *datatype, int *num_integers, int *num_addresses, int *num_datatypes, int *combiner)
 {
@@ -5566,14 +5265,12 @@ int WRAP_Type_get_envelope(MPI_Datatype *datatype, int *num_integers, int *num_a
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Type_get_envelope_c(MPI_Datatype *datatype, IMPL_Count *num_integers, IMPL_Count *num_addresses, IMPL_Count *num_large_counts, IMPL_Count *num_datatypes, int *combiner)
 {
     int rc = IMPL_Type_get_envelope_c(*datatype, num_integers, num_addresses, num_large_counts, num_datatypes, combiner);
     *combiner = COMBINER_CODE_IMPL_TO_MUK(*combiner);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Type_get_extent(MPI_Datatype *datatype, IMPL_Aint *lb, IMPL_Aint *extent)
 {
@@ -5583,13 +5280,11 @@ int WRAP_Type_get_extent(MPI_Datatype *datatype, IMPL_Aint *lb, IMPL_Aint *exten
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Type_get_extent_c(MPI_Datatype *datatype, IMPL_Count *lb, IMPL_Count *extent)
 {
     int rc = IMPL_Type_get_extent_c(*datatype, lb, extent);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Type_get_extent_x(MPI_Datatype *datatype, IMPL_Count *lb, IMPL_Count *extent)
 {
@@ -5609,13 +5304,11 @@ int WRAP_Type_get_true_extent(MPI_Datatype *datatype, IMPL_Aint *true_lb, IMPL_A
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Type_get_true_extent_c(MPI_Datatype *datatype, IMPL_Count *true_lb, IMPL_Count *true_extent)
 {
     int rc = IMPL_Type_get_true_extent_c(*datatype, true_lb, true_extent);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Type_get_true_extent_x(MPI_Datatype *datatype, IMPL_Count *true_lb, IMPL_Count *true_extent)
 {
@@ -5642,14 +5335,12 @@ int WRAP_Type_indexed(int count, const int array_of_blocklengths[], const int ar
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Type_indexed_c(IMPL_Count count, const IMPL_Count array_of_blocklengths[], const IMPL_Count array_of_displacements[], MPI_Datatype *oldtype, MPI_Datatype **newtype)
 {
     *newtype = malloc(sizeof(MPI_Datatype));
     int rc = IMPL_Type_indexed_c(count, array_of_blocklengths, array_of_displacements, *oldtype, *newtype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Type_lb(MPI_Datatype *datatype, IMPL_Aint *displacement)
 {
@@ -5683,13 +5374,11 @@ int WRAP_Type_size(MPI_Datatype *datatype, int *size)
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Type_size_c(MPI_Datatype *datatype, IMPL_Count *size)
 {
     int rc = IMPL_Type_size_c(*datatype, size);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Type_size_x(MPI_Datatype *datatype, IMPL_Count *size)
 {
@@ -5718,14 +5407,12 @@ int WRAP_Type_vector(int count, int blocklength, int stride, MPI_Datatype *oldty
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Type_vector_c(IMPL_Count count, IMPL_Count blocklength, IMPL_Count stride, MPI_Datatype *oldtype, MPI_Datatype **newtype)
 {
     *newtype = malloc(sizeof(MPI_Datatype));
     int rc = IMPL_Type_vector_c(count, blocklength, stride, *oldtype, *newtype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Unpack(const void *inbuf, int insize, int *position, void *outbuf, int outcount, MPI_Datatype *datatype, MPI_Comm *comm)
 {
@@ -5733,13 +5420,11 @@ int WRAP_Unpack(const void *inbuf, int insize, int *position, void *outbuf, int 
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Unpack_c(const void *inbuf, IMPL_Count insize, IMPL_Count *position, void *outbuf, IMPL_Count outcount, MPI_Datatype *datatype, MPI_Comm *comm)
 {
     int rc = IMPL_Unpack_c(inbuf, insize, position, outbuf, outcount, *datatype, *comm);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Unpack_external(const char datarep[], const void *inbuf, IMPL_Aint insize, IMPL_Aint *position, void *outbuf, int outcount, MPI_Datatype *datatype)
 {
@@ -5747,13 +5432,11 @@ int WRAP_Unpack_external(const char datarep[], const void *inbuf, IMPL_Aint insi
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Unpack_external_c(const char datarep[], const void *inbuf, IMPL_Count insize, IMPL_Count *position, void *outbuf, IMPL_Count outcount, MPI_Datatype *datatype)
 {
     int rc = IMPL_Unpack_external_c(datarep, inbuf, insize, position, outbuf, outcount, *datatype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Unpublish_name(const char *service_name, MPI_Info *info, const char *port_name)
 {
@@ -5769,7 +5452,6 @@ int WRAP_Wait(MPI_Request **request, WRAP_Status *status)
     int rc = IMPL_Wait(*request, ignore ? MPI_STATUS_IGNORE : &impl_status);
 
     if (**request == MPI_REQUEST_NULL) {
-        remove_cookie_pair_from_list(*request);
         free(*request);
         *request = &IMPL_REQUEST_NULL;
     }
@@ -5803,7 +5485,6 @@ int WRAP_Waitall(int count, MPI_Request* array_of_requests[], WRAP_Status array_
     // The list may contain null or inactive handles. The call sets to empty the status of each such entry.
     for (int i=0; i<count; i++) {
         if (impl_requests[i] == MPI_REQUEST_NULL) {
-            remove_cookie_pair_from_list(array_of_requests[i]);
             free(array_of_requests[i]);
             array_of_requests[i] = &IMPL_REQUEST_NULL;
         }
@@ -5838,7 +5519,6 @@ int WRAP_Waitany(int count, MPI_Request* array_of_requests[], int *indx, WRAP_St
     if (*indx != MPI_UNDEFINED) {
 
         if (impl_requests[*indx] == MPI_REQUEST_NULL) {
-            remove_cookie_pair_from_list(array_of_requests[*indx]);
             free(array_of_requests[*indx]);
             array_of_requests[*indx] = &IMPL_REQUEST_NULL;
         }
@@ -5877,7 +5557,6 @@ int WRAP_Waitsome(int incount, MPI_Request* array_of_requests[], int *outcount, 
         for (int i=0; i<*outcount; i++) {
             const int j = array_of_indices[i];
             if (impl_requests[j] == MPI_REQUEST_NULL) {
-                remove_cookie_pair_from_list(array_of_requests[j]);
                 free(array_of_requests[j]);
                 array_of_requests[j] = &IMPL_REQUEST_NULL;
             }
@@ -5908,14 +5587,12 @@ int WRAP_Win_allocate(IMPL_Aint size, int disp_unit, MPI_Info *info, MPI_Comm *c
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Win_allocate_c(IMPL_Aint size, IMPL_Aint disp_unit, MPI_Info *info, MPI_Comm *comm, void *baseptr, MPI_Win **win)
 {
     *win = malloc(sizeof(MPI_Win));
     int rc = IMPL_Win_allocate_c(size, disp_unit, *info, *comm, baseptr, *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Win_allocate_shared(IMPL_Aint size, int disp_unit, MPI_Info *info, MPI_Comm *comm, void *baseptr, MPI_Win **win)
 {
@@ -5924,14 +5601,12 @@ int WRAP_Win_allocate_shared(IMPL_Aint size, int disp_unit, MPI_Info *info, MPI_
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Win_allocate_shared_c(IMPL_Aint size, IMPL_Aint disp_unit, MPI_Info *info, MPI_Comm *comm, void *baseptr, MPI_Win **win)
 {
     *win = malloc(sizeof(MPI_Win));
     int rc = IMPL_Win_allocate_shared_c(size, disp_unit, *info, *comm, baseptr, *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Win_attach(MPI_Win *win, void *base, IMPL_Aint size)
 {
@@ -5958,14 +5633,12 @@ int WRAP_Win_create(void *base, IMPL_Aint size, int disp_unit, MPI_Info *info, M
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Win_create_c(void *base, IMPL_Aint size, IMPL_Aint disp_unit, MPI_Info *info, MPI_Comm *comm, MPI_Win **win)
 {
     *win = malloc(sizeof(MPI_Win));
     int rc = IMPL_Win_create_c(base, size, disp_unit, *info, *comm, *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Win_create_dynamic(MPI_Info *info, MPI_Comm *comm, MPI_Win **win)
 {
@@ -6001,8 +5674,8 @@ int WRAP_Win_detach(MPI_Win *win, const void *base)
 
 int WRAP_Win_fence(int assert, MPI_Win *win)
 {
-    //printf("assert = %d %d\n", assert, MODE_MUK_TO_IMPL(assert));
-    int rc = IMPL_Win_fence(RMA_MODE_MUK_TO_IMPL(assert), *win);
+    //MUK_Warning("assert = %d %d\n", assert, MODE_MUK_TO_IMPL(assert));
+    int rc = IMPL_Win_fence(MODE_MUK_TO_IMPL(assert), *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -6093,19 +5766,19 @@ int WRAP_Win_lock(int lock_type, int rank, int assert, MPI_Win *win)
     } else if (lock_type == MUK_LOCK_SHARED) {
         impl_type = MPI_LOCK_SHARED;
     }
-    int rc = IMPL_Win_lock(impl_type, rank, RMA_MODE_MUK_TO_IMPL(assert), *win);
+    int rc = IMPL_Win_lock(impl_type, rank, MODE_MUK_TO_IMPL(assert), *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Win_lock_all(int assert, MPI_Win *win)
 {
-    int rc = IMPL_Win_lock_all(RMA_MODE_MUK_TO_IMPL(assert), *win);
+    int rc = IMPL_Win_lock_all(MODE_MUK_TO_IMPL(assert), *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Win_post(MPI_Group *group, int assert, MPI_Win *win)
 {
-    int rc = IMPL_Win_post(*group, RMA_MODE_MUK_TO_IMPL(assert), *win);
+    int rc = IMPL_Win_post(*group, MODE_MUK_TO_IMPL(assert), *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -6139,17 +5812,15 @@ int WRAP_Win_shared_query(MPI_Win *win, int rank, IMPL_Aint *size, int *disp_uni
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
 int WRAP_Win_shared_query_c(MPI_Win *win, int rank, IMPL_Aint *size, IMPL_Aint *disp_unit, void *baseptr)
 {
     int rc = IMPL_Win_shared_query_c(*win, rank, size, disp_unit, baseptr);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Win_start(MPI_Group *group, int assert, MPI_Win *win)
 {
-    int rc = IMPL_Win_start(*group, RMA_MODE_MUK_TO_IMPL(assert), *win);
+    int rc = IMPL_Win_start(*group, MODE_MUK_TO_IMPL(assert), *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
