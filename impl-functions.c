@@ -1544,6 +1544,78 @@ req_cookie_pair_t;
 
 req_cookie_pair_t * req_cookie_pair_list = NULL;
 
+static reduce_trampoline_cookie_t * lookup_cookie_pair(MPI_Request * request)
+{
+    reduce_trampoline_cookie_t * cookie = NULL;
+    req_cookie_pair_t * current = req_cookie_pair_list;
+    if (req_cookie_pair_list == NULL) {
+        MUK_Warning("req_cookie_pair_list is NULL - this should be impossible.\n");
+    }
+    while (current) {
+        if (current->request == request) {
+            cookie = current->cookie;
+            break;
+        }
+        current = current->next;
+    }
+    return cookie;
+}
+
+static void add_cookie_pair_to_list(MPI_Request * request, reduce_trampoline_cookie_t * cookie)
+{
+    // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
+    req_cookie_pair_t * pair = malloc(sizeof(req_cookie_pair_t));
+    pair->request = request;
+    pair->cookie  = cookie;
+    pair->prev = NULL;
+    pair->next = NULL;
+
+    if (req_cookie_pair_list == NULL) {
+        req_cookie_pair_list = pair;
+    } else {
+        req_cookie_pair_t * parent = req_cookie_pair_list;
+        while (parent->next != NULL) {
+            parent = parent->next;
+        }
+        parent->next = pair;
+        pair->prev   = parent;
+    }
+}
+
+static void remove_cookie_pair_from_list(MPI_Request * request)
+{
+    // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
+
+    // Step 1: look up op in the linked list
+    req_cookie_pair_t * current = req_cookie_pair_list;
+    if (req_cookie_pair_list == NULL) {
+        MUK_Warning("remove_op_pair_from_list: req_cookie_pair_list is NULL - this should be impossible.\n");
+    }
+    while (current) {
+        if (current->request == request) {
+            break;
+        }
+        current = current->next;
+    }
+
+    // Step 2: remove current from the list
+    if (current->prev == NULL) {
+        MUK_Assert(current == req_cookie_pair_list);
+        req_cookie_pair_list = current->next;
+        if (current->next != NULL) {
+            current->next->prev = NULL;
+        }
+    } else {
+        current->prev->next = current->next;
+        if (current->next != NULL) {
+            current->next->prev = current->prev;
+        }
+    }
+
+    // Step 3: free the memory
+    free(current);
+}
+
 // WRAP->IMPL functions
 
 int WRAP_Abort(MPI_Comm *comm, int errorcode)
