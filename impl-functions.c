@@ -1544,6 +1544,7 @@ req_cookie_pair_t;
 
 req_cookie_pair_t * req_cookie_pair_list = NULL;
 
+#if 0
 static reduce_trampoline_cookie_t * lookup_cookie_pair(MPI_Request * request)
 {
     reduce_trampoline_cookie_t * cookie = NULL;
@@ -1560,6 +1561,7 @@ static reduce_trampoline_cookie_t * lookup_cookie_pair(MPI_Request * request)
     }
     return cookie;
 }
+#endif
 
 static void add_cookie_pair_to_list(MPI_Request * request, reduce_trampoline_cookie_t * cookie)
 {
@@ -1589,7 +1591,7 @@ static void remove_cookie_pair_from_list(MPI_Request * request)
     // Step 1: look up op in the linked list
     req_cookie_pair_t * current = req_cookie_pair_list;
     if (req_cookie_pair_list == NULL) {
-        MUK_Warning("remove_op_pair_from_list: req_cookie_pair_list is NULL - this should be impossible.\n");
+        MUK_Warning("remove_cookie_from_list: req_cookie_pair_list is NULL - this should be impossible.\n");
     }
     while (current) {
         if (current->request == request) {
@@ -1598,7 +1600,14 @@ static void remove_cookie_pair_from_list(MPI_Request * request)
         current = current->next;
     }
 
-    // Step 2: remove current from the list
+    // Step 2: free the cookie that we found
+    if (current->cookie != NULL) {
+        free(current->cookie);
+    } else {
+        MUK_Warning("remove_cookie_from_list: current->cookie is NULL\n");
+    }
+
+    // Step 3: remove current from the list
     if (current->prev == NULL) {
         MUK_Assert(current == req_cookie_pair_list);
         req_cookie_pair_list = current->next;
@@ -1614,6 +1623,15 @@ static void remove_cookie_pair_from_list(MPI_Request * request)
 
     // Step 3: free the memory
     free(current);
+}
+
+static void cleanup_ireduce_trampoline_cookie(reduce_trampoline_cookie_t * cookie, MPI_Request * request, MPI_Datatype * dup)
+{
+    add_cookie_pair_to_list(request, cookie);
+    int rc = IMPL_Type_free(dup);
+    if (rc) {
+        MUK_Warning("Type_free failed: %d\n",rc);
+    }
 }
 
 // WRAP->IMPL functions
@@ -3437,8 +3455,26 @@ int WRAP_Iallgatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *
 
 int WRAP_Iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm, MPI_Request **request)
 {
+    int rc;
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Iallreduce(sendbuf, recvbuf, count, *datatype, *op, *comm, *request);
+    if (IS_PREDEFINED_OP(*op)) {
+        rc = IMPL_Iallreduce(sendbuf, recvbuf, count, *datatype, *op, *comm, *request);
+    }
+    else {
+        // bake the cookie
+        MPI_Datatype dup;
+        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(op, datatype, &dup);
+        if (cookie == NULL) {
+            MUK_Warning("WRAP_Iallreduce: cookie failed to bake.\n");
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+        // do the reduction
+        rc = IMPL_Iallreduce(sendbuf, recvbuf, count, dup, *op, *comm, *request);
+        // cleanup
+        cleanup_ireduce_trampoline_cookie(cookie, *request, &dup);
+    }
+    end:
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3831,8 +3867,26 @@ int WRAP_Irecv_c(void *buf, IMPL_Count count, MPI_Datatype *datatype, int source
 
 int WRAP_Ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *datatype, MPI_Op *op, int root, MPI_Comm *comm, MPI_Request **request)
 {
+    int rc;
     *request = malloc(sizeof(MPI_Request));
-    int rc = IMPL_Ireduce(sendbuf, recvbuf, count, *datatype, *op, RANK_MUK_TO_IMPL(root), *comm, *request);
+    if (IS_PREDEFINED_OP(*op)) {
+        rc = IMPL_Ireduce(sendbuf, recvbuf, count, *datatype, *op, RANK_MUK_TO_IMPL(root), *comm, *request);
+    }
+    else {
+        // bake the cookie
+        MPI_Datatype dup;
+        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(op, datatype, &dup);
+        if (cookie == NULL) {
+            MUK_Warning("WRAP_Ireduce: cookie failed to bake.\n");
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+        // do the reduction
+        rc = IMPL_Ireduce(sendbuf, recvbuf, count, dup, *op, RANK_MUK_TO_IMPL(root), *comm, *request);
+        // cleanup
+        cleanup_ireduce_trampoline_cookie(cookie, *request, &dup);
+    }
+    end:
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
