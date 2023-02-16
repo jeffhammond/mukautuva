@@ -1,6 +1,8 @@
 #include "muk-dl.h"
 #include "muk-predefined.h"
 
+#include <assert.h>
+
 // status typedef
 typedef struct
 {
@@ -1232,7 +1234,7 @@ static inline int RANK_MUK_TO_IMPL(int rank_muk)
     }
     else {
 #if 1
-        MUK_Warning("RANK_MUK_TO_IMPL rank=%d\n", rank_muk);
+        printf("RANK_MUK_TO_IMPL rank=%d\n", rank_muk);
 #endif
         return rank_muk;
     }
@@ -1328,7 +1330,11 @@ static int ALLTOALLW_SETUP(const MPI_Comm * comm, const MPI_Datatype* sendtypes[
 static inline void WRAP_Status_to_MPI_Status(const WRAP_Status * w, MPI_Status * m)
 {
     if ((intptr_t)w == (intptr_t)IMPL_STATUS_IGNORE) {
-        //MUK_Warning("MPI_Status_to_WRAP_Status passed STATUS_IGNORE\n");
+        printf("WRAP_Status_to_MPI_Status passed STATUS_IGNORE\n");
+        return;
+    }
+    if (w == NULL || m == NULL) {
+        printf("WRAP_Status_to_MPI_Status passed NULL (w=%p m=%p)\n",w,m);
         return;
     }
 
@@ -1348,7 +1354,11 @@ static inline void WRAP_Status_to_MPI_Status(const WRAP_Status * w, MPI_Status *
 static inline void MPI_Status_to_WRAP_Status(const MPI_Status * m, WRAP_Status * w)
 {
     if ((intptr_t)w == (intptr_t)IMPL_STATUS_IGNORE) {
-        //MUK_Warning("MPI_Status_to_WRAP_Status passed STATUS_IGNORE\n");
+        printf("MPI_Status_to_WRAP_Status passed STATUS_IGNORE\n");
+        return;
+    }
+    if (w == NULL || m == NULL) {
+        printf("MPI_Status_to_WRAP_Status passed NULL (m=%p w=%p)\n",m,w);
         return;
     }
 
@@ -1373,7 +1383,7 @@ void WRAP_Init_handle_key(void)
 {
     int rc = IMPL_Type_create_keyval(MPI_TYPE_NULL_COPY_FN, MPI_TYPE_NULL_DELETE_FN, &TYPE_HANDLE_KEY, NULL);
     if (rc != MPI_SUCCESS) {
-        MUK_Warning("IMPL_Type_create_keyval(TYPE_HANDLE_KEY) failed: %d\n", rc);
+        printf("IMPL_Type_create_keyval(TYPE_HANDLE_KEY) failed: %d\n", rc);
     }
 }
 
@@ -1384,7 +1394,7 @@ void WRAP_Finalize_handle_key(void)
         rc = IMPL_Type_free_keyval(&TYPE_HANDLE_KEY);
     }
     if (rc != MPI_SUCCESS) {
-        MUK_Warning("IMPL_Type_free_keyval(TYPE_HANDLE_KEY) failed: %d\n", rc);
+        printf("IMPL_Type_free_keyval(TYPE_HANDLE_KEY) failed: %d\n", rc);
     }
 }
 
@@ -1440,7 +1450,7 @@ static WRAP_User_function * lookup_op_pair(MPI_Op * op)
     WRAP_User_function * user_fn = NULL;
     op_fptr_pair_t * current = op_fptr_pair_list;
     if (op_fptr_pair_list == NULL) {
-        MUK_Warning("op_fptr_pair_list is NULL - this should be impossible.\n");
+        printf("op_fptr_pair_list is NULL - this should be impossible.\n");
     }
     while (current) {
         if (current->op == op) {
@@ -1479,7 +1489,7 @@ static void remove_op_pair_from_list(MPI_Op *op)
 
     // Step 1: look up op in the linked list
     if (op_fptr_pair_list == NULL) {
-        MUK_Warning("remove_op_pair_from_list: op_fptr_pair_list is NULL - this should be impossible.\n");
+        printf("remove_op_pair_from_list: op_fptr_pair_list is NULL - this should be impossible.\n");
     }
     op_fptr_pair_t * current = op_fptr_pair_list;
     while (current) {
@@ -1491,7 +1501,7 @@ static void remove_op_pair_from_list(MPI_Op *op)
 
     // Step 2: remove current from the list
     if (current->prev == NULL) {
-        MUK_Assert(current == op_fptr_pair_list);
+        assert(current == op_fptr_pair_list);
         op_fptr_pair_list = current->next;
         if (current->next != NULL) {
             current->next->prev = NULL;
@@ -1514,14 +1524,14 @@ static reduce_trampoline_cookie_t * bake_reduce_trampoline_cookie(MPI_Op * op, M
     // Part 1: look up the user function associated with the MPI_Op argument
     WRAP_User_function * user_fn = lookup_op_pair(op);
     if (user_fn == NULL) {
-        MUK_Warning("bake_reduce_trampoline_cookie: failed to find valid op<->fn mapping.\n");
+        printf("bake_reduce_trampoline_cookie: failed to find valid op<->fn mapping.\n");
         return NULL;
     }
 
     // Part 2: duplicate the datatype so there can be no collision of keyvals
     rc = IMPL_Type_dup(*datatype,dup);
     if (rc) {
-        MUK_Warning("bake_reduce_trampoline_cookie: Type_dup failed\n");
+        printf("bake_reduce_trampoline_cookie: Type_dup failed\n");
         return NULL;
     }
 
@@ -1531,7 +1541,7 @@ static reduce_trampoline_cookie_t * bake_reduce_trampoline_cookie(MPI_Op * op, M
     cookie->fp = user_fn;
     rc = IMPL_Type_set_attr(*dup, TYPE_HANDLE_KEY, cookie);
     if (rc) {
-        MUK_Warning("bake_reduce_trampoline_cookie: Type_set_attr failed\n");
+        printf("bake_reduce_trampoline_cookie: Type_set_attr failed\n");
         IMPL_Type_free(dup);
         free(cookie);
         return NULL;
@@ -1545,7 +1555,7 @@ static void cleanup_reduce_trampoline_cookie(reduce_trampoline_cookie_t * cookie
     free(cookie);
     int rc = IMPL_Type_free(dup);
     if (rc) {
-        MUK_Warning("Type_free failed: %d\n",rc);
+        printf("Type_free failed: %d\n",rc);
     }
 }
 
@@ -1614,12 +1624,12 @@ static inline void remove_cookie_pair_from_list(MPI_Request * request)
     if (current->cookie != NULL) {
         free(current->cookie);
     } else {
-        MUK_Warning("remove_cookie_from_list: current->cookie is NULL\n");
+        printf("remove_cookie_from_list: current->cookie is NULL\n");
     }
 
     // Step 3: remove current from the list
     if (current->prev == NULL) {
-        MUK_Assert(current == req_cookie_pair_list);
+        assert(current == req_cookie_pair_list);
         req_cookie_pair_list = current->next;
         if (current->next != NULL) {
             current->next->prev = NULL;
@@ -1640,7 +1650,7 @@ static void cleanup_ireduce_trampoline_cookie(reduce_trampoline_cookie_t * cooki
     add_cookie_pair_to_list(request, cookie);
     int rc = IMPL_Type_free(dup);
     if (rc) {
-        MUK_Warning("Type_free failed: %d\n",rc);
+        printf("Type_free failed: %d\n",rc);
     }
 }
 
@@ -1791,7 +1801,7 @@ int WRAP_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *
         MPI_Datatype dup;
         reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(op, datatype, &dup);
         if (cookie == NULL) {
-            MUK_Warning("WRAP_Allreduce: cookie failed to bake.\n");
+            printf("WRAP_Allreduce: cookie failed to bake.\n");
             rc = MPI_ERR_INTERN;
             goto end;
         }
@@ -1810,7 +1820,7 @@ int WRAP_Allreduce_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_D
     if (IS_PREDEFINED_OP(*op)) {
         rc = IMPL_Allreduce_c(sendbuf, recvbuf, count, *datatype, *op, *comm);
     } else {
-        MUK_Warning("WRAP_Allreduce_c does not implement user-defined ops.\n");
+        printf("WRAP_Allreduce_c does not implement user-defined ops.\n");
         rc = MPI_ERR_INTERN;
     }
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -2264,7 +2274,7 @@ int WRAP_Comm_group(MPI_Comm *comm, MPI_Group **group)
     *group = malloc(sizeof(MPI_Group));
     int rc = IMPL_Comm_group(*comm, *group);
 #if DEBUG
-    MUK_Warning("WRAP_Comm_group group=%p *group=%p **group=%lx MPI_GROUP_NULL=%lx\n",
+    printf("WRAP_Comm_group group=%p *group=%p **group=%lx MPI_GROUP_NULL=%lx\n",
                 group,*group,(uintptr_t)**group,(uintptr_t)MPI_GROUP_NULL);
 #endif
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -3338,7 +3348,7 @@ int WRAP_Group_excl(MPI_Group *group, int n, const int ranks[], MPI_Group **newg
 int WRAP_Group_free(MPI_Group **group)
 {
 #ifdef DEBUG
-    MUK_Warning("WRAP_Group_free group=%p *group=%p **group=%lx MPI_GROUP_EMPTY=%lx IMPL_GROUP_EMPTY=%lx\n",
+    printf("WRAP_Group_free group=%p *group=%p **group=%lx MPI_GROUP_EMPTY=%lx IMPL_GROUP_EMPTY=%lx\n",
                 group,*group,(uintptr_t)**group,(uintptr_t)MPI_GROUP_EMPTY,(uintptr_t)IMPL_GROUP_EMPTY);
 #endif
     int rc = IMPL_Group_free(*group);
@@ -3476,7 +3486,7 @@ int WRAP_Iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype 
         MPI_Datatype dup;
         reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(op, datatype, &dup);
         if (cookie == NULL) {
-            MUK_Warning("WRAP_Iallreduce: cookie failed to bake.\n");
+            printf("WRAP_Iallreduce: cookie failed to bake.\n");
             rc = MPI_ERR_INTERN;
             goto end;
         }
@@ -3645,10 +3655,11 @@ int WRAP_Igatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sen
 
 int WRAP_Improbe(int source, int tag, MPI_Comm *comm, int *flag, MPI_Message **message, WRAP_Status *status)
 {
+    const bool ignore = (intptr_t)status == (intptr_t)IMPL_STATUS_IGNORE;
     MPI_Status impl_status;
     *message = malloc(sizeof(MPI_Message));
-    int rc = IMPL_Improbe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, flag, *message, &impl_status);
-    MPI_Status_to_WRAP_Status(&impl_status, status);
+    int rc = IMPL_Improbe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, flag, *message, ignore ? MPI_STATUS_IGNORE : &impl_status);
+    if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3854,9 +3865,11 @@ int WRAP_Intercomm_merge(MPI_Comm *intercomm, int high, MPI_Comm **newintracomm)
 
 int WRAP_Iprobe(int source, int tag, MPI_Comm *comm, int *flag, WRAP_Status *status)
 {
+    const bool ignore = (intptr_t)status == (intptr_t)IMPL_STATUS_IGNORE;
+    printf("status=%p IMPL_STATUS_IGNORE=%p ignore=%d\n", status, IMPL_STATUS_IGNORE, (int)ignore);
     MPI_Status impl_status;
-    int rc = IMPL_Iprobe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, flag, &impl_status);
-    MPI_Status_to_WRAP_Status(&impl_status, status);
+    int rc = IMPL_Iprobe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, flag, ignore ? MPI_STATUS_IGNORE : &impl_status);
+    if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3888,7 +3901,7 @@ int WRAP_Ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *da
         MPI_Datatype dup;
         reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(op, datatype, &dup);
         if (cookie == NULL) {
-            MUK_Warning("WRAP_Ireduce: cookie failed to bake.\n");
+            printf("WRAP_Ireduce: cookie failed to bake.\n");
             rc = MPI_ERR_INTERN;
             goto end;
         }
@@ -4090,9 +4103,10 @@ int WRAP_Lookup_name(const char *service_name, MPI_Info *info, char *port_name)
 
 int WRAP_Mprobe(int source, int tag, MPI_Comm *comm, MPI_Message **message, WRAP_Status *status)
 {
+    const bool ignore = (intptr_t)status == (intptr_t)IMPL_STATUS_IGNORE;
     MPI_Status impl_status;
-    int rc = IMPL_Mprobe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, *message, &impl_status);
-    MPI_Status_to_WRAP_Status(&impl_status, status);
+    int rc = IMPL_Mprobe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, *message, ignore ? MPI_STATUS_IGNORE : &impl_status);
+    if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4299,7 +4313,7 @@ void trampoline(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
     reduce_trampoline_cookie_t * cookie = NULL;
     rc = IMPL_Type_get_attr(*datatype, TYPE_HANDLE_KEY, &cookie, &flag);
     if (rc != MPI_SUCCESS || !flag) {
-        MUK_Warning("trampoline: IMPL_Type_get_attr failed: flag=%d rc=%d\n", flag, rc);
+        printf("trampoline: IMPL_Type_get_attr failed: flag=%d rc=%d\n", flag, rc);
         MPI_Abort(MPI_COMM_SELF,rc);
     }
     MPI_Datatype       * dptr = NULL;
@@ -4439,9 +4453,10 @@ int WRAP_Precv_init(void *buf, int partitions, IMPL_Count count, MPI_Datatype *d
 
 int WRAP_Probe(int source, int tag, MPI_Comm *comm, WRAP_Status *status)
 {
+    const bool ignore = (intptr_t)status == (intptr_t)IMPL_STATUS_IGNORE;
     MPI_Status impl_status;
-    int rc = IMPL_Probe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, &impl_status);
-    MPI_Status_to_WRAP_Status(&impl_status, status);
+    int rc = IMPL_Probe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, ignore ? MPI_STATUS_IGNORE : &impl_status);
+    if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4531,7 +4546,7 @@ int WRAP_Reduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *dat
         MPI_Datatype dup;
         reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(op, datatype, &dup);
         if (cookie == NULL) {
-            MUK_Warning("WRAP_Allreduce: cookie failed to bake.\n");
+            printf("WRAP_Allreduce: cookie failed to bake.\n");
             rc = MPI_ERR_INTERN;
             goto end;
         }
@@ -4550,7 +4565,7 @@ int WRAP_Reduce_c(const void *sendbuf, void *recvbuf, IMPL_Count count, MPI_Data
     if (IS_PREDEFINED_OP(*op)) {
         rc = IMPL_Reduce_c(sendbuf, recvbuf, count, *datatype, *op, RANK_MUK_TO_IMPL(root), *comm);
     } else {
-        MUK_Warning("WRAP_Reduce_c does not implement user-defined ops.\n");
+        printf("WRAP_Reduce_c does not implement user-defined ops.\n");
         rc = MPI_ERR_INTERN;
     }
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -4583,7 +4598,7 @@ int WRAP_Reduce_local(const void *inbuf, void *inoutbuf, int count, MPI_Datatype
         MPI_Datatype dup;
         reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(op, datatype, &dup);
         if (cookie == NULL) {
-            MUK_Warning("WRAP_Allreduce: cookie failed to bake.\n");
+            printf("WRAP_Allreduce: cookie failed to bake.\n");
             rc = MPI_ERR_INTERN;
             goto end;
         }
@@ -4602,7 +4617,7 @@ int WRAP_Reduce_local_c(const void *inbuf, void *inoutbuf, IMPL_Count count, MPI
     if (IS_PREDEFINED_OP(*op)) {
         rc = IMPL_Reduce_local_c(inbuf, inoutbuf, count, *datatype, *op);
     } else {
-        MUK_Warning("WRAP_Reduce_local_c does not implement user-defined ops.\n");
+        printf("WRAP_Reduce_local_c does not implement user-defined ops.\n");
         rc = MPI_ERR_INTERN;
     }
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -4619,7 +4634,7 @@ int WRAP_Reduce_scatter(const void *sendbuf, void *recvbuf, const int recvcounts
         MPI_Datatype dup;
         reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(op, datatype, &dup);
         if (cookie == NULL) {
-            MUK_Warning("WRAP_Allreduce: cookie failed to bake.\n");
+            printf("WRAP_Allreduce: cookie failed to bake.\n");
             rc = MPI_ERR_INTERN;
             goto end;
         }
@@ -4643,7 +4658,7 @@ int WRAP_Reduce_scatter_block(const void *sendbuf, void *recvbuf, int recvcount,
         MPI_Datatype dup;
         reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(op, datatype, &dup);
         if (cookie == NULL) {
-            MUK_Warning("WRAP_Allreduce: cookie failed to bake.\n");
+            printf("WRAP_Allreduce: cookie failed to bake.\n");
             rc = MPI_ERR_INTERN;
             goto end;
         }
@@ -4662,7 +4677,7 @@ int WRAP_Reduce_scatter_block_c(const void *sendbuf, void *recvbuf, IMPL_Count r
     if (IS_PREDEFINED_OP(*op)) {
         rc = IMPL_Reduce_scatter_block_c(sendbuf, recvbuf, recvcount, *datatype, *op, *comm);
     } else {
-        MUK_Warning("WRAP_Reduce_scatter_block_c does not implement user-defined ops.\n");
+        printf("WRAP_Reduce_scatter_block_c does not implement user-defined ops.\n");
         rc = MPI_ERR_INTERN;
     }
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -4690,7 +4705,7 @@ int WRAP_Reduce_scatter_c(const void *sendbuf, void *recvbuf, const IMPL_Count r
     if (IS_PREDEFINED_OP(*op)) {
         rc = IMPL_Reduce_scatter_c(sendbuf, recvbuf, recvcounts, *datatype, *op, *comm);
     } else {
-        MUK_Warning("WRAP_Reduce_scatter_c does not implement user-defined ops.\n");
+        printf("WRAP_Reduce_scatter_c does not implement user-defined ops.\n");
         rc = MPI_ERR_INTERN;
     }
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -5986,7 +6001,7 @@ int WRAP_Win_detach(MPI_Win *win, const void *base)
 
 int WRAP_Win_fence(int assert, MPI_Win *win)
 {
-    //MUK_Warning("assert = %d %d\n", assert, MODE_MUK_TO_IMPL(assert));
+    //printf("assert = %d %d\n", assert, MODE_MUK_TO_IMPL(assert));
     int rc = IMPL_Win_fence(RMA_MODE_MUK_TO_IMPL(assert), *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }

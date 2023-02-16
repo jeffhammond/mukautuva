@@ -11,7 +11,7 @@ else
     CFLAGS=-fmax-errors=5 # GCC
 endif
 
-CFLAGS	+= -g3 -O3 -Wall -Wextra #-Werror # -Wpedantic
+CFLAGS	+= -g3 -O0 -Wall -Wextra #-Werror # -Wpedantic
 CFLAGS	+= -fPIC
 SOFLAGS	= -shared
 
