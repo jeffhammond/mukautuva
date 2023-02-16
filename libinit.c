@@ -159,7 +159,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
         char lib_version[16384] = {0};
         int  lib_version_length;
         rc = MUK_Get_library_version(lib_version, &lib_version_length);
-        printf("MPI_Get_library_version = %s\n", lib_version);
+        //printf("MPI_Get_library_version = %s\n", lib_version);
 
         char * pos;
         pos = strstr(lib_version, "Open MPI");
@@ -566,10 +566,12 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     void ** pMPI_STATUSES_IGNORE = MUK_DLSYM(wrap_so_handle,"IMPL_STATUSES_IGNORE");
     MPI_STATUS_IGNORE   = (MPI_Status*)*pMPI_STATUS_IGNORE;
     MPI_STATUSES_IGNORE = (MPI_Status*)*pMPI_STATUSES_IGNORE;
+#if 0
     fflush(0);
     printf("libinit: pMPI_STATUS_IGNORE=%p pMPI_STATUSES_IGNORE=%p\n", pMPI_STATUS_IGNORE, pMPI_STATUSES_IGNORE);
     printf("libinit:  MPI_STATUS_IGNORE=%p  MPI_STATUSES_IGNORE=%p\n", MPI_STATUS_IGNORE, MPI_STATUSES_IGNORE);
     fflush(0);
+#endif
 #if 0 // TODO
     int * MPI_UNWEIGHTED = MUK_DLSYM(wrap_so_handle,"IMPL_UNWEIGHTED");
     int * MPI_WEIGHTS_EMPTY = MUK_DLSYM(wrap_so_handle,"IMPL_WEIGHTS_EMPTY");
