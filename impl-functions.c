@@ -1247,7 +1247,7 @@ static inline int TAG_MUK_TO_IMPL(int tag_muk)
     }
 }
 
-// status conversion
+// constant conversion
 static inline int UNDEFINED_IMPL_TO_MUK(int i)
 {
     if (i == MPI_UNDEFINED) {
@@ -1257,27 +1257,49 @@ static inline int UNDEFINED_IMPL_TO_MUK(int i)
     }
 }
 
-// status conversion
-static inline int MODE_MUK_TO_IMPL(int mode_muk)
+// mode constant conversion - this needs to handle multiple modes OR-ed together
+static inline int IO_MODE_MUK_TO_IMPL(int mode_muk)
 {
-         if (mode_muk == MUK_MODE_APPEND)          { return MPI_MODE_APPEND; }
-    else if (mode_muk == MUK_MODE_CREATE)          { return MPI_MODE_CREATE; }
-    else if (mode_muk == MUK_MODE_DELETE_ON_CLOSE) { return MPI_MODE_DELETE_ON_CLOSE; }
-    else if (mode_muk == MUK_MODE_EXCL)            { return MPI_MODE_EXCL; }
-    else if (mode_muk == MUK_MODE_NOCHECK)         { return MPI_MODE_NOCHECK; }
-    else if (mode_muk == MUK_MODE_NOPRECEDE)       { return MPI_MODE_NOPRECEDE; }
-    else if (mode_muk == MUK_MODE_NOPUT)           { return MPI_MODE_NOPUT; }
-    else if (mode_muk == MUK_MODE_NOSTORE)         { return MPI_MODE_NOSTORE; }
-    else if (mode_muk == MUK_MODE_NOSUCCEED)       { return MPI_MODE_NOSUCCEED; }
-    else if (mode_muk == MUK_MODE_RDONLY)          { return MPI_MODE_RDONLY; }
-    else if (mode_muk == MUK_MODE_RDWR)            { return MPI_MODE_RDWR; }
-    else if (mode_muk == MUK_MODE_SEQUENTIAL)      { return MPI_MODE_SEQUENTIAL; }
-    else if (mode_muk == MUK_MODE_UNIQUE_OPEN)     { return MPI_MODE_UNIQUE_OPEN; }
-    else if (mode_muk == MUK_MODE_WRONLY)          { return MPI_MODE_WRONLY; }
-    else                                           { return mode_muk; }
+    int mode_impl = 0;
+    if (mode_muk & MUK_MODE_APPEND)          { mode_impl |= MPI_MODE_APPEND; }
+    if (mode_muk & MUK_MODE_CREATE)          { mode_impl |= MPI_MODE_CREATE; }
+    if (mode_muk & MUK_MODE_DELETE_ON_CLOSE) { mode_impl |= MPI_MODE_DELETE_ON_CLOSE; }
+    if (mode_muk & MUK_MODE_EXCL)            { mode_impl |= MPI_MODE_EXCL; }
+    if (mode_muk & MUK_MODE_RDONLY)          { mode_impl |= MPI_MODE_RDONLY; }
+    if (mode_muk & MUK_MODE_RDWR)            { mode_impl |= MPI_MODE_RDWR; }
+    if (mode_muk & MUK_MODE_SEQUENTIAL)      { mode_impl |= MPI_MODE_SEQUENTIAL; }
+    if (mode_muk & MUK_MODE_UNIQUE_OPEN)     { mode_impl |= MPI_MODE_UNIQUE_OPEN; }
+    if (mode_muk & MUK_MODE_WRONLY)          { mode_impl |= MPI_MODE_WRONLY; }
+    return mode_impl;
+}
+static inline int IO_MODE_IMPL_TO_MUK(int mode_impl)
+{
+    int mode_muk = 0;
+    if (mode_impl & MUK_MODE_APPEND)          { mode_muk |= MPI_MODE_APPEND; }
+    if (mode_impl & MUK_MODE_CREATE)          { mode_muk |= MPI_MODE_CREATE; }
+    if (mode_impl & MUK_MODE_DELETE_ON_CLOSE) { mode_muk |= MPI_MODE_DELETE_ON_CLOSE; }
+    if (mode_impl & MUK_MODE_EXCL)            { mode_muk |= MPI_MODE_EXCL; }
+    if (mode_impl & MUK_MODE_RDONLY)          { mode_muk |= MPI_MODE_RDONLY; }
+    if (mode_impl & MUK_MODE_RDWR)            { mode_muk |= MPI_MODE_RDWR; }
+    if (mode_impl & MUK_MODE_SEQUENTIAL)      { mode_muk |= MPI_MODE_SEQUENTIAL; }
+    if (mode_impl & MUK_MODE_UNIQUE_OPEN)     { mode_muk |= MPI_MODE_UNIQUE_OPEN; }
+    if (mode_impl & MUK_MODE_WRONLY)          { mode_muk |= MPI_MODE_WRONLY; }
+    return mode_muk;
 }
 
-// status conversion
+// mode constant conversion - this needs to handle multiple modes OR-ed together
+static inline int RMA_MODE_MUK_TO_IMPL(int mode_muk)
+{
+    int mode_impl = 0;
+    if (mode_muk & MUK_MODE_NOCHECK)         { mode_impl |= MPI_MODE_NOCHECK; }
+    if (mode_muk & MUK_MODE_NOPRECEDE)       { mode_impl |= MPI_MODE_NOPRECEDE; }
+    if (mode_muk & MUK_MODE_NOPUT)           { mode_impl |= MPI_MODE_NOPUT; }
+    if (mode_muk & MUK_MODE_NOSTORE)         { mode_impl |= MPI_MODE_NOSTORE; }
+    if (mode_muk & MUK_MODE_NOSUCCEED)       { mode_impl |= MPI_MODE_NOSUCCEED; }
+    return mode_impl;
+}
+
+// predefined attribute conversion
 static inline int KEY_MUK_TO_IMPL(int key_muk)
 {
          if (key_muk == MUK_TAG_UB)            { return MPI_TAG_UB; }
@@ -2483,6 +2505,7 @@ int WRAP_File_delete(const char *filename, MPI_Info *info)
 int WRAP_File_get_amode(MPI_File *fh, int *amode)
 {
     int rc = IMPL_File_get_amode(*fh, amode);
+    *amode = IO_MODE_IMPL_TO_MUK(*amode);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -2719,7 +2742,7 @@ int WRAP_File_iwrite_shared_c(MPI_File *fh, const void *buf, IMPL_Count count, M
 int WRAP_File_open(MPI_Comm *comm, const char *filename, int amode, MPI_Info *info, MPI_File **fh)
 {
     *fh = malloc(sizeof(MPI_File));
-    int rc = IMPL_File_open(*comm, filename, amode, *info, *fh);
+    int rc = IMPL_File_open(*comm, filename, IO_MODE_MUK_TO_IMPL(amode), *info, *fh);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -5964,7 +5987,7 @@ int WRAP_Win_detach(MPI_Win *win, const void *base)
 int WRAP_Win_fence(int assert, MPI_Win *win)
 {
     //MUK_Warning("assert = %d %d\n", assert, MODE_MUK_TO_IMPL(assert));
-    int rc = IMPL_Win_fence(MODE_MUK_TO_IMPL(assert), *win);
+    int rc = IMPL_Win_fence(RMA_MODE_MUK_TO_IMPL(assert), *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -6055,19 +6078,19 @@ int WRAP_Win_lock(int lock_type, int rank, int assert, MPI_Win *win)
     } else if (lock_type == MUK_LOCK_SHARED) {
         impl_type = MPI_LOCK_SHARED;
     }
-    int rc = IMPL_Win_lock(impl_type, rank, MODE_MUK_TO_IMPL(assert), *win);
+    int rc = IMPL_Win_lock(impl_type, rank, RMA_MODE_MUK_TO_IMPL(assert), *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Win_lock_all(int assert, MPI_Win *win)
 {
-    int rc = IMPL_Win_lock_all(MODE_MUK_TO_IMPL(assert), *win);
+    int rc = IMPL_Win_lock_all(RMA_MODE_MUK_TO_IMPL(assert), *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Win_post(MPI_Group *group, int assert, MPI_Win *win)
 {
-    int rc = IMPL_Win_post(*group, MODE_MUK_TO_IMPL(assert), *win);
+    int rc = IMPL_Win_post(*group, RMA_MODE_MUK_TO_IMPL(assert), *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -6111,7 +6134,7 @@ int WRAP_Win_shared_query_c(MPI_Win *win, int rank, IMPL_Aint *size, IMPL_Aint *
 
 int WRAP_Win_start(MPI_Group *group, int assert, MPI_Win *win)
 {
-    int rc = IMPL_Win_start(*group, MODE_MUK_TO_IMPL(assert), *win);
+    int rc = IMPL_Win_start(*group, RMA_MODE_MUK_TO_IMPL(assert), *win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 

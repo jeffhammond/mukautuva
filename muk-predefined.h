@@ -183,22 +183,26 @@ enum {
 };
 
 // Mode Constants
+// The values of these constants must be defined such that the bitwise OR
+// and the sum of any distinct set of these constants is equivalent.
 enum {
     // none of these should be 0
-    MUK_MODE_APPEND             = 1,
-    MUK_MODE_CREATE             = 2,
-    MUK_MODE_DELETE_ON_CLOSE    = 3,
-    MUK_MODE_EXCL               = 4,
-    MUK_MODE_NOCHECK            = 5,
-    MUK_MODE_NOPRECEDE          = 6,
-    MUK_MODE_NOPUT              = 7,
-    MUK_MODE_NOSTORE            = 8,
-    MUK_MODE_NOSUCCEED          = 9,
-    MUK_MODE_RDONLY             = 10,
-    MUK_MODE_RDWR               = 11,
-    MUK_MODE_SEQUENTIAL         = 12,
-    MUK_MODE_UNIQUE_OPEN        = 13,
-    MUK_MODE_WRONLY             = 14
+    // I/O constants
+    MUK_MODE_APPEND             = 1<<1,
+    MUK_MODE_CREATE             = 1<<2,
+    MUK_MODE_DELETE_ON_CLOSE    = 1<<3,
+    MUK_MODE_EXCL               = 1<<4,
+    MUK_MODE_RDONLY             = 1<<5,
+    MUK_MODE_RDWR               = 1<<6,
+    MUK_MODE_SEQUENTIAL         = 1<<7,
+    MUK_MODE_UNIQUE_OPEN        = 1<<8,
+    MUK_MODE_WRONLY             = 1<<9,
+    // RMA constants
+    MUK_MODE_NOCHECK            = 1<<15,
+    MUK_MODE_NOPRECEDE          = 1<<16,
+    MUK_MODE_NOPUT              = 1<<17,
+    MUK_MODE_NOSTORE            = 1<<18,
+    MUK_MODE_NOSUCCEED          = 1<<19
 };
 
 // Datatype Decoding Constants
