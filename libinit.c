@@ -148,7 +148,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
         rc = MUK_Init_thread(argc,argv,requested,provided);
     }
     if (rc) {
-        MUK_Warning("libinit: MPI initialization failed: %d\n",rc);
+        printf("libinit: MPI initialization failed: %d\n",rc);
         abort();
     }
 
@@ -178,7 +178,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
         } else if (whose_mpi == MPICH) {
             wrapname = "mpich-wrap.so";
         } else {
-            MUK_Warning("MPI implementation unknown.\n");
+            printf("MPI implementation unknown.\n");
             abort();
         }
     }
@@ -1262,7 +1262,7 @@ int MPI_Accumulate_c(const void *origin_addr, MPI_Count origin_count, MPI_Dataty
 {
     int rc;
     if (MUK_Accumulate_c == NULL) {
-        MUK_Warning("MPI_Accumulate_c is missing from the implementation wrapper.\n");
+        printf("MPI_Accumulate_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -1300,7 +1300,7 @@ int MPI_Allgather_c(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendt
 {
     int rc;
     if (MUK_Allgather_c == NULL) {
-        MUK_Warning("MPI_Allgather_c is missing from the implementation wrapper.\n");
+        printf("MPI_Allgather_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -1318,7 +1318,7 @@ int MPI_Allgather_init_c(const void *sendbuf, MPI_Count sendcount, MPI_Datatype 
 {
     int rc;
     if (MUK_Allgather_init_c == NULL) {
-        MUK_Warning("MPI_Allgather_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Allgather_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -1336,7 +1336,7 @@ int MPI_Allgatherv_c(const void *sendbuf, MPI_Count sendcount, MPI_Datatype send
 {
     int rc;
     if (MUK_Allgatherv_c == NULL) {
-        MUK_Warning("MPI_Allgatherv_c is missing from the implementation wrapper.\n");
+        printf("MPI_Allgatherv_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -1354,7 +1354,7 @@ int MPI_Allgatherv_init_c(const void *sendbuf, MPI_Count sendcount, MPI_Datatype
 {
     int rc;
     if (MUK_Allgatherv_init_c == NULL) {
-        MUK_Warning("MPI_Allgatherv_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Allgatherv_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -1377,7 +1377,7 @@ int MPI_Allreduce_c(const void *sendbuf, void *recvbuf, MPI_Count count, MPI_Dat
 {
     int rc;
     if (MUK_Allreduce_c == NULL) {
-        MUK_Warning("MPI_Allreduce_c is missing from the implementation wrapper.\n");
+        printf("MPI_Allreduce_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -1395,7 +1395,7 @@ int MPI_Allreduce_init_c(const void *sendbuf, void *recvbuf, MPI_Count count, MP
 {
     int rc;
     if (MUK_Allreduce_init_c == NULL) {
-        MUK_Warning("MPI_Allreduce_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Allreduce_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -1413,7 +1413,7 @@ int MPI_Alltoall_c(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
 {
     int rc;
     if (MUK_Alltoall_c == NULL) {
-        MUK_Warning("MPI_Alltoall_c is missing from the implementation wrapper.\n");
+        printf("MPI_Alltoall_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -1431,7 +1431,7 @@ int MPI_Alltoall_init_c(const void *sendbuf, MPI_Count sendcount, MPI_Datatype s
 {
     int rc;
     if (MUK_Alltoall_init_c == NULL) {
-        MUK_Warning("MPI_Alltoall_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Alltoall_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -1449,7 +1449,7 @@ int MPI_Alltoallv_c(const void *sendbuf, const MPI_Count sendcounts[], const MPI
 {
     int rc;
     if (MUK_Alltoallv_c == NULL) {
-        MUK_Warning("MPI_Alltoallv_c is missing from the implementation wrapper.\n");
+        printf("MPI_Alltoallv_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -1467,7 +1467,7 @@ int MPI_Alltoallv_init_c(const void *sendbuf, const MPI_Count sendcounts[], cons
 {
     int rc;
     if (MUK_Alltoallv_init_c == NULL) {
-        MUK_Warning("MPI_Alltoallv_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Alltoallv_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -1485,7 +1485,7 @@ int MPI_Alltoallw_c(const void *sendbuf, const MPI_Count sendcounts[], const MPI
 {
     int rc;
     if (MUK_Alltoallw_c == NULL) {
-        MUK_Warning("MPI_Alltoallw_c is missing from the implementation wrapper.\n");
+        printf("MPI_Alltoallw_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -1503,7 +1503,7 @@ int MPI_Alltoallw_init_c(const void *sendbuf, const MPI_Count sendcounts[], cons
 {
     int rc;
     if (MUK_Alltoallw_init_c == NULL) {
-        MUK_Warning("MPI_Alltoallw_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Alltoallw_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -1546,7 +1546,7 @@ int MPI_Bcast_c(void *buffer, MPI_Count count, MPI_Datatype datatype, int root, 
 {
     int rc;
     if (MUK_Bcast_c == NULL) {
-        MUK_Warning("MPI_Bcast_c is missing from the implementation wrapper.\n");
+        printf("MPI_Bcast_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -1564,7 +1564,7 @@ int MPI_Bcast_init_c(void *buffer, MPI_Count count, MPI_Datatype datatype, int r
 {
     int rc;
     if (MUK_Bcast_init_c == NULL) {
-        MUK_Warning("MPI_Bcast_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Bcast_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -1582,7 +1582,7 @@ int MPI_Bsend_c(const void *buf, MPI_Count count, MPI_Datatype datatype, int des
 {
     int rc;
     if (MUK_Bsend_c == NULL) {
-        MUK_Warning("MPI_Bsend_c is missing from the implementation wrapper.\n");
+        printf("MPI_Bsend_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -1600,7 +1600,7 @@ int MPI_Bsend_init_c(const void *buf, MPI_Count count, MPI_Datatype datatype, in
 {
     int rc;
     if (MUK_Bsend_init_c == NULL) {
-        MUK_Warning("MPI_Bsend_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Bsend_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -1618,7 +1618,7 @@ int MPI_Buffer_attach_c(void *buffer, MPI_Count size)
 {
     int rc;
     if (MUK_Buffer_attach_c == NULL) {
-        MUK_Warning("MPI_Buffer_attach_c is missing from the implementation wrapper.\n");
+        printf("MPI_Buffer_attach_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -1636,7 +1636,7 @@ int MPI_Buffer_detach_c(void *buffer_addr, MPI_Count *size)
 {
     int rc;
     if (MUK_Buffer_detach_c == NULL) {
-        MUK_Warning("MPI_Buffer_detach_c is missing from the implementation wrapper.\n");
+        printf("MPI_Buffer_detach_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -1935,7 +1935,7 @@ int MPI_Exscan_c(const void *sendbuf, void *recvbuf, MPI_Count count, MPI_Dataty
 {
     int rc;
     if (MUK_Exscan_c == NULL) {
-        MUK_Warning("MPI_Exscan_c is missing from the implementation wrapper.\n");
+        printf("MPI_Exscan_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -1953,7 +1953,7 @@ int MPI_Exscan_init_c(const void *sendbuf, void *recvbuf, MPI_Count count, MPI_D
 {
     int rc;
     if (MUK_Exscan_init_c == NULL) {
-        MUK_Warning("MPI_Exscan_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Exscan_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2043,7 +2043,7 @@ int MPI_File_get_type_extent_c(MPI_File fh, MPI_Datatype datatype, MPI_Count *ex
 {
     int rc;
     if (MUK_File_get_type_extent_c == NULL) {
-        MUK_Warning("MPI_File_get_type_extent_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_get_type_extent_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2071,7 +2071,7 @@ int MPI_File_iread_all_c(MPI_File fh, void *buf, MPI_Count count, MPI_Datatype d
 {
     int rc;
     if (MUK_File_iread_all_c == NULL) {
-        MUK_Warning("MPI_File_iread_all_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_iread_all_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2094,7 +2094,7 @@ int MPI_File_iread_at_all_c(MPI_File fh, MPI_Offset offset, void *buf, MPI_Count
 {
     int rc;
     if (MUK_File_iread_at_all_c == NULL) {
-        MUK_Warning("MPI_File_iread_at_all_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_iread_at_all_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2107,7 +2107,7 @@ int MPI_File_iread_at_c(MPI_File fh, MPI_Offset offset, void *buf, MPI_Count cou
 {
     int rc;
     if (MUK_File_iread_at_c == NULL) {
-        MUK_Warning("MPI_File_iread_at_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_iread_at_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2120,7 +2120,7 @@ int MPI_File_iread_c(MPI_File fh, void *buf, MPI_Count count, MPI_Datatype datat
 {
     int rc;
     if (MUK_File_iread_c == NULL) {
-        MUK_Warning("MPI_File_iread_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_iread_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2138,7 +2138,7 @@ int MPI_File_iread_shared_c(MPI_File fh, void *buf, MPI_Count count, MPI_Datatyp
 {
     int rc;
     if (MUK_File_iread_shared_c == NULL) {
-        MUK_Warning("MPI_File_iread_shared_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_iread_shared_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2161,7 +2161,7 @@ int MPI_File_iwrite_all_c(MPI_File fh, const void *buf, MPI_Count count, MPI_Dat
 {
     int rc;
     if (MUK_File_iwrite_all_c == NULL) {
-        MUK_Warning("MPI_File_iwrite_all_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_iwrite_all_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2184,7 +2184,7 @@ int MPI_File_iwrite_at_all_c(MPI_File fh, MPI_Offset offset, const void *buf, MP
 {
     int rc;
     if (MUK_File_iwrite_at_all_c == NULL) {
-        MUK_Warning("MPI_File_iwrite_at_all_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_iwrite_at_all_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2197,7 +2197,7 @@ int MPI_File_iwrite_at_c(MPI_File fh, MPI_Offset offset, const void *buf, MPI_Co
 {
     int rc;
     if (MUK_File_iwrite_at_c == NULL) {
-        MUK_Warning("MPI_File_iwrite_at_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_iwrite_at_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2210,7 +2210,7 @@ int MPI_File_iwrite_c(MPI_File fh, const void *buf, MPI_Count count, MPI_Datatyp
 {
     int rc;
     if (MUK_File_iwrite_c == NULL) {
-        MUK_Warning("MPI_File_iwrite_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_iwrite_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2228,7 +2228,7 @@ int MPI_File_iwrite_shared_c(MPI_File fh, const void *buf, MPI_Count count, MPI_
 {
     int rc;
     if (MUK_File_iwrite_shared_c == NULL) {
-        MUK_Warning("MPI_File_iwrite_shared_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_iwrite_shared_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2266,7 +2266,7 @@ int MPI_File_read_all_begin_c(MPI_File fh, void *buf, MPI_Count count, MPI_Datat
 {
     int rc;
     if (MUK_File_read_all_begin_c == NULL) {
-        MUK_Warning("MPI_File_read_all_begin_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_read_all_begin_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2279,7 +2279,7 @@ int MPI_File_read_all_c(MPI_File fh, void *buf, MPI_Count count, MPI_Datatype da
 {
     int rc;
     if (MUK_File_read_all_c == NULL) {
-        MUK_Warning("MPI_File_read_all_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_read_all_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2312,7 +2312,7 @@ int MPI_File_read_at_all_begin_c(MPI_File fh, MPI_Offset offset, void *buf, MPI_
 {
     int rc;
     if (MUK_File_read_at_all_begin_c == NULL) {
-        MUK_Warning("MPI_File_read_at_all_begin_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_read_at_all_begin_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2325,7 +2325,7 @@ int MPI_File_read_at_all_c(MPI_File fh, MPI_Offset offset, void *buf, MPI_Count 
 {
     int rc;
     if (MUK_File_read_at_all_c == NULL) {
-        MUK_Warning("MPI_File_read_at_all_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_read_at_all_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2343,7 +2343,7 @@ int MPI_File_read_at_c(MPI_File fh, MPI_Offset offset, void *buf, MPI_Count coun
 {
     int rc;
     if (MUK_File_read_at_c == NULL) {
-        MUK_Warning("MPI_File_read_at_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_read_at_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2356,7 +2356,7 @@ int MPI_File_read_c(MPI_File fh, void *buf, MPI_Count count, MPI_Datatype dataty
 {
     int rc;
     if (MUK_File_read_c == NULL) {
-        MUK_Warning("MPI_File_read_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_read_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2379,7 +2379,7 @@ int MPI_File_read_ordered_begin_c(MPI_File fh, void *buf, MPI_Count count, MPI_D
 {
     int rc;
     if (MUK_File_read_ordered_begin_c == NULL) {
-        MUK_Warning("MPI_File_read_ordered_begin_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_read_ordered_begin_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2392,7 +2392,7 @@ int MPI_File_read_ordered_c(MPI_File fh, void *buf, MPI_Count count, MPI_Datatyp
 {
     int rc;
     if (MUK_File_read_ordered_c == NULL) {
-        MUK_Warning("MPI_File_read_ordered_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_read_ordered_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2415,7 +2415,7 @@ int MPI_File_read_shared_c(MPI_File fh, void *buf, MPI_Count count, MPI_Datatype
 {
     int rc;
     if (MUK_File_read_shared_c == NULL) {
-        MUK_Warning("MPI_File_read_shared_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_read_shared_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2483,7 +2483,7 @@ int MPI_File_write_all_begin_c(MPI_File fh, const void *buf, MPI_Count count, MP
 {
     int rc;
     if (MUK_File_write_all_begin_c == NULL) {
-        MUK_Warning("MPI_File_write_all_begin_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_write_all_begin_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2496,7 +2496,7 @@ int MPI_File_write_all_c(MPI_File fh, const void *buf, MPI_Count count, MPI_Data
 {
     int rc;
     if (MUK_File_write_all_c == NULL) {
-        MUK_Warning("MPI_File_write_all_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_write_all_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2529,7 +2529,7 @@ int MPI_File_write_at_all_begin_c(MPI_File fh, MPI_Offset offset, const void *bu
 {
     int rc;
     if (MUK_File_write_at_all_begin_c == NULL) {
-        MUK_Warning("MPI_File_write_at_all_begin_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_write_at_all_begin_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2542,7 +2542,7 @@ int MPI_File_write_at_all_c(MPI_File fh, MPI_Offset offset, const void *buf, MPI
 {
     int rc;
     if (MUK_File_write_at_all_c == NULL) {
-        MUK_Warning("MPI_File_write_at_all_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_write_at_all_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2560,7 +2560,7 @@ int MPI_File_write_at_c(MPI_File fh, MPI_Offset offset, const void *buf, MPI_Cou
 {
     int rc;
     if (MUK_File_write_at_c == NULL) {
-        MUK_Warning("MPI_File_write_at_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_write_at_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2573,7 +2573,7 @@ int MPI_File_write_c(MPI_File fh, const void *buf, MPI_Count count, MPI_Datatype
 {
     int rc;
     if (MUK_File_write_c == NULL) {
-        MUK_Warning("MPI_File_write_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_write_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2596,7 +2596,7 @@ int MPI_File_write_ordered_begin_c(MPI_File fh, const void *buf, MPI_Count count
 {
     int rc;
     if (MUK_File_write_ordered_begin_c == NULL) {
-        MUK_Warning("MPI_File_write_ordered_begin_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_write_ordered_begin_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2609,7 +2609,7 @@ int MPI_File_write_ordered_c(MPI_File fh, const void *buf, MPI_Count count, MPI_
 {
     int rc;
     if (MUK_File_write_ordered_c == NULL) {
-        MUK_Warning("MPI_File_write_ordered_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_write_ordered_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2632,7 +2632,7 @@ int MPI_File_write_shared_c(MPI_File fh, const void *buf, MPI_Count count, MPI_D
 {
     int rc;
     if (MUK_File_write_shared_c == NULL) {
-        MUK_Warning("MPI_File_write_shared_c is missing from the implementation wrapper.\n");
+        printf("MPI_File_write_shared_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2655,7 +2655,7 @@ int MPI_Gather_c(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype
 {
     int rc;
     if (MUK_Gather_c == NULL) {
-        MUK_Warning("MPI_Gather_c is missing from the implementation wrapper.\n");
+        printf("MPI_Gather_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2673,7 +2673,7 @@ int MPI_Gather_init_c(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sen
 {
     int rc;
     if (MUK_Gather_init_c == NULL) {
-        MUK_Warning("MPI_Gather_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Gather_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2691,7 +2691,7 @@ int MPI_Gatherv_c(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtyp
 {
     int rc;
     if (MUK_Gatherv_c == NULL) {
-        MUK_Warning("MPI_Gatherv_c is missing from the implementation wrapper.\n");
+        printf("MPI_Gatherv_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2709,7 +2709,7 @@ int MPI_Gatherv_init_c(const void *sendbuf, MPI_Count sendcount, MPI_Datatype se
 {
     int rc;
     if (MUK_Gatherv_init_c == NULL) {
-        MUK_Warning("MPI_Gatherv_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Gatherv_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2732,7 +2732,7 @@ int MPI_Get_accumulate_c(const void *origin_addr, MPI_Count origin_count, MPI_Da
 {
     int rc;
     if (MUK_Get_accumulate_c == NULL) {
-        MUK_Warning("MPI_Get_accumulate_c is missing from the implementation wrapper.\n");
+        printf("MPI_Get_accumulate_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2750,7 +2750,7 @@ int MPI_Get_c(void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_dat
 {
     int rc;
     if (MUK_Get_c == NULL) {
-        MUK_Warning("MPI_Get_c is missing from the implementation wrapper.\n");
+        printf("MPI_Get_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2768,7 +2768,7 @@ int MPI_Get_count_c(const MPI_Status *status, MPI_Datatype datatype, MPI_Count *
 {
     int rc;
     if (MUK_Get_count_c == NULL) {
-        MUK_Warning("MPI_Get_count_c is missing from the implementation wrapper.\n");
+        printf("MPI_Get_count_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2786,7 +2786,7 @@ int MPI_Get_elements_c(const MPI_Status *status, MPI_Datatype datatype, MPI_Coun
 {
     int rc;
     if (MUK_Get_elements_c == NULL) {
-        MUK_Warning("MPI_Get_elements_c is missing from the implementation wrapper.\n");
+        printf("MPI_Get_elements_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2916,7 +2916,7 @@ int MPI_Iallgather_c(const void *sendbuf, MPI_Count sendcount, MPI_Datatype send
 {
     int rc;
     if (MUK_Iallgather_c == NULL) {
-        MUK_Warning("MPI_Iallgather_c is missing from the implementation wrapper.\n");
+        printf("MPI_Iallgather_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2934,7 +2934,7 @@ int MPI_Iallgatherv_c(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sen
 {
     int rc;
     if (MUK_Iallgatherv_c == NULL) {
-        MUK_Warning("MPI_Iallgatherv_c is missing from the implementation wrapper.\n");
+        printf("MPI_Iallgatherv_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2952,7 +2952,7 @@ int MPI_Iallreduce_c(const void *sendbuf, void *recvbuf, MPI_Count count, MPI_Da
 {
     int rc;
     if (MUK_Iallreduce_c == NULL) {
-        MUK_Warning("MPI_Iallreduce_c is missing from the implementation wrapper.\n");
+        printf("MPI_Iallreduce_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2970,7 +2970,7 @@ int MPI_Ialltoall_c(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendt
 {
     int rc;
     if (MUK_Ialltoall_c == NULL) {
-        MUK_Warning("MPI_Ialltoall_c is missing from the implementation wrapper.\n");
+        printf("MPI_Ialltoall_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -2988,7 +2988,7 @@ int MPI_Ialltoallv_c(const void *sendbuf, const MPI_Count sendcounts[], const MP
 {
     int rc;
     if (MUK_Ialltoallv_c == NULL) {
-        MUK_Warning("MPI_Ialltoallv_c is missing from the implementation wrapper.\n");
+        printf("MPI_Ialltoallv_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3006,7 +3006,7 @@ int MPI_Ialltoallw_c(const void *sendbuf, const MPI_Count sendcounts[], const MP
 {
     int rc;
     if (MUK_Ialltoallw_c == NULL) {
-        MUK_Warning("MPI_Ialltoallw_c is missing from the implementation wrapper.\n");
+        printf("MPI_Ialltoallw_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3029,7 +3029,7 @@ int MPI_Ibcast_c(void *buffer, MPI_Count count, MPI_Datatype datatype, int root,
 {
     int rc;
     if (MUK_Ibcast_c == NULL) {
-        MUK_Warning("MPI_Ibcast_c is missing from the implementation wrapper.\n");
+        printf("MPI_Ibcast_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3047,7 +3047,7 @@ int MPI_Ibsend_c(const void *buf, MPI_Count count, MPI_Datatype datatype, int de
 {
     int rc;
     if (MUK_Ibsend_c == NULL) {
-        MUK_Warning("MPI_Ibsend_c is missing from the implementation wrapper.\n");
+        printf("MPI_Ibsend_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3065,7 +3065,7 @@ int MPI_Iexscan_c(const void *sendbuf, void *recvbuf, MPI_Count count, MPI_Datat
 {
     int rc;
     if (MUK_Iexscan_c == NULL) {
-        MUK_Warning("MPI_Iexscan_c is missing from the implementation wrapper.\n");
+        printf("MPI_Iexscan_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3083,7 +3083,7 @@ int MPI_Igather_c(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtyp
 {
     int rc;
     if (MUK_Igather_c == NULL) {
-        MUK_Warning("MPI_Igather_c is missing from the implementation wrapper.\n");
+        printf("MPI_Igather_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3101,7 +3101,7 @@ int MPI_Igatherv_c(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
 {
     int rc;
     if (MUK_Igatherv_c == NULL) {
-        MUK_Warning("MPI_Igatherv_c is missing from the implementation wrapper.\n");
+        printf("MPI_Igatherv_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3138,7 +3138,7 @@ int MPI_Ineighbor_allgather_c(const void *sendbuf, MPI_Count sendcount, MPI_Data
 {
     int rc;
     if (MUK_Ineighbor_allgather_c == NULL) {
-        MUK_Warning("MPI_Ineighbor_allgather_c is missing from the implementation wrapper.\n");
+        printf("MPI_Ineighbor_allgather_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3156,7 +3156,7 @@ int MPI_Ineighbor_allgatherv_c(const void *sendbuf, MPI_Count sendcount, MPI_Dat
 {
     int rc;
     if (MUK_Ineighbor_allgatherv_c == NULL) {
-        MUK_Warning("MPI_Ineighbor_allgatherv_c is missing from the implementation wrapper.\n");
+        printf("MPI_Ineighbor_allgatherv_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3174,7 +3174,7 @@ int MPI_Ineighbor_alltoall_c(const void *sendbuf, MPI_Count sendcount, MPI_Datat
 {
     int rc;
     if (MUK_Ineighbor_alltoall_c == NULL) {
-        MUK_Warning("MPI_Ineighbor_alltoall_c is missing from the implementation wrapper.\n");
+        printf("MPI_Ineighbor_alltoall_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3192,7 +3192,7 @@ int MPI_Ineighbor_alltoallv_c(const void *sendbuf, const MPI_Count sendcounts[],
 {
     int rc;
     if (MUK_Ineighbor_alltoallv_c == NULL) {
-        MUK_Warning("MPI_Ineighbor_alltoallv_c is missing from the implementation wrapper.\n");
+        printf("MPI_Ineighbor_alltoallv_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3210,7 +3210,7 @@ int MPI_Ineighbor_alltoallw_c(const void *sendbuf, const MPI_Count sendcounts[],
 {
     int rc;
     if (MUK_Ineighbor_alltoallw_c == NULL) {
-        MUK_Warning("MPI_Ineighbor_alltoallw_c is missing from the implementation wrapper.\n");
+        printf("MPI_Ineighbor_alltoallw_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3306,7 +3306,7 @@ int MPI_Irecv_c(void *buf, MPI_Count count, MPI_Datatype datatype, int source, i
 {
     int rc;
     if (MUK_Irecv_c == NULL) {
-        MUK_Warning("MPI_Irecv_c is missing from the implementation wrapper.\n");
+        printf("MPI_Irecv_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3324,7 +3324,7 @@ int MPI_Ireduce_c(const void *sendbuf, void *recvbuf, MPI_Count count, MPI_Datat
 {
     int rc;
     if (MUK_Ireduce_c == NULL) {
-        MUK_Warning("MPI_Ireduce_c is missing from the implementation wrapper.\n");
+        printf("MPI_Ireduce_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3347,7 +3347,7 @@ int MPI_Ireduce_scatter_block_c(const void *sendbuf, void *recvbuf, MPI_Count re
 {
     int rc;
     if (MUK_Ireduce_scatter_block_c == NULL) {
-        MUK_Warning("MPI_Ireduce_scatter_block_c is missing from the implementation wrapper.\n");
+        printf("MPI_Ireduce_scatter_block_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3360,7 +3360,7 @@ int MPI_Ireduce_scatter_c(const void *sendbuf, void *recvbuf, const MPI_Count re
 {
     int rc;
     if (MUK_Ireduce_scatter_c == NULL) {
-        MUK_Warning("MPI_Ireduce_scatter_c is missing from the implementation wrapper.\n");
+        printf("MPI_Ireduce_scatter_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3378,7 +3378,7 @@ int MPI_Irsend_c(const void *buf, MPI_Count count, MPI_Datatype datatype, int de
 {
     int rc;
     if (MUK_Irsend_c == NULL) {
-        MUK_Warning("MPI_Irsend_c is missing from the implementation wrapper.\n");
+        printf("MPI_Irsend_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3396,7 +3396,7 @@ int MPI_Iscan_c(const void *sendbuf, void *recvbuf, MPI_Count count, MPI_Datatyp
 {
     int rc;
     if (MUK_Iscan_c == NULL) {
-        MUK_Warning("MPI_Iscan_c is missing from the implementation wrapper.\n");
+        printf("MPI_Iscan_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3414,7 +3414,7 @@ int MPI_Iscatter_c(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
 {
     int rc;
     if (MUK_Iscatter_c == NULL) {
-        MUK_Warning("MPI_Iscatter_c is missing from the implementation wrapper.\n");
+        printf("MPI_Iscatter_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3432,7 +3432,7 @@ int MPI_Iscatterv_c(const void *sendbuf, const MPI_Count sendcounts[], const MPI
 {
     int rc;
     if (MUK_Iscatterv_c == NULL) {
-        MUK_Warning("MPI_Iscatterv_c is missing from the implementation wrapper.\n");
+        printf("MPI_Iscatterv_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3450,7 +3450,7 @@ int MPI_Isend_c(const void *buf, MPI_Count count, MPI_Datatype datatype, int des
 {
     int rc;
     if (MUK_Isend_c == NULL) {
-        MUK_Warning("MPI_Isend_c is missing from the implementation wrapper.\n");
+        printf("MPI_Isend_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3468,7 +3468,7 @@ int MPI_Isendrecv_c(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendt
 {
     int rc;
     if (MUK_Isendrecv_c == NULL) {
-        MUK_Warning("MPI_Isendrecv_c is missing from the implementation wrapper.\n");
+        printf("MPI_Isendrecv_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3486,7 +3486,7 @@ int MPI_Isendrecv_replace_c(void *buf, MPI_Count count, MPI_Datatype datatype, i
 {
     int rc;
     if (MUK_Isendrecv_replace_c == NULL) {
-        MUK_Warning("MPI_Isendrecv_replace_c is missing from the implementation wrapper.\n");
+        printf("MPI_Isendrecv_replace_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3504,7 +3504,7 @@ int MPI_Issend_c(const void *buf, MPI_Count count, MPI_Datatype datatype, int de
 {
     int rc;
     if (MUK_Issend_c == NULL) {
-        MUK_Warning("MPI_Issend_c is missing from the implementation wrapper.\n");
+        printf("MPI_Issend_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3558,7 +3558,7 @@ int MPI_Neighbor_allgather_c(const void *sendbuf, MPI_Count sendcount, MPI_Datat
 {
     int rc;
     if (MUK_Neighbor_allgather_c == NULL) {
-        MUK_Warning("MPI_Neighbor_allgather_c is missing from the implementation wrapper.\n");
+        printf("MPI_Neighbor_allgather_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3576,7 +3576,7 @@ int MPI_Neighbor_allgather_init_c(const void *sendbuf, MPI_Count sendcount, MPI_
 {
     int rc;
     if (MUK_Neighbor_allgather_init_c == NULL) {
-        MUK_Warning("MPI_Neighbor_allgather_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Neighbor_allgather_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3594,7 +3594,7 @@ int MPI_Neighbor_allgatherv_c(const void *sendbuf, MPI_Count sendcount, MPI_Data
 {
     int rc;
     if (MUK_Neighbor_allgatherv_c == NULL) {
-        MUK_Warning("MPI_Neighbor_allgatherv_c is missing from the implementation wrapper.\n");
+        printf("MPI_Neighbor_allgatherv_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3612,7 +3612,7 @@ int MPI_Neighbor_allgatherv_init_c(const void *sendbuf, MPI_Count sendcount, MPI
 {
     int rc;
     if (MUK_Neighbor_allgatherv_init_c == NULL) {
-        MUK_Warning("MPI_Neighbor_allgatherv_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Neighbor_allgatherv_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3630,7 +3630,7 @@ int MPI_Neighbor_alltoall_c(const void *sendbuf, MPI_Count sendcount, MPI_Dataty
 {
     int rc;
     if (MUK_Neighbor_alltoall_c == NULL) {
-        MUK_Warning("MPI_Neighbor_alltoall_c is missing from the implementation wrapper.\n");
+        printf("MPI_Neighbor_alltoall_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3648,7 +3648,7 @@ int MPI_Neighbor_alltoall_init_c(const void *sendbuf, MPI_Count sendcount, MPI_D
 {
     int rc;
     if (MUK_Neighbor_alltoall_init_c == NULL) {
-        MUK_Warning("MPI_Neighbor_alltoall_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Neighbor_alltoall_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3666,7 +3666,7 @@ int MPI_Neighbor_alltoallv_c(const void *sendbuf, const MPI_Count sendcounts[], 
 {
     int rc;
     if (MUK_Neighbor_alltoallv_c == NULL) {
-        MUK_Warning("MPI_Neighbor_alltoallv_c is missing from the implementation wrapper.\n");
+        printf("MPI_Neighbor_alltoallv_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3684,7 +3684,7 @@ int MPI_Neighbor_alltoallv_init_c(const void *sendbuf, const MPI_Count sendcount
 {
     int rc;
     if (MUK_Neighbor_alltoallv_init_c == NULL) {
-        MUK_Warning("MPI_Neighbor_alltoallv_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Neighbor_alltoallv_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3702,7 +3702,7 @@ int MPI_Neighbor_alltoallw_c(const void *sendbuf, const MPI_Count sendcounts[], 
 {
     int rc;
     if (MUK_Neighbor_alltoallw_c == NULL) {
-        MUK_Warning("MPI_Neighbor_alltoallw_c is missing from the implementation wrapper.\n");
+        printf("MPI_Neighbor_alltoallw_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3720,7 +3720,7 @@ int MPI_Neighbor_alltoallw_init_c(const void *sendbuf, const MPI_Count sendcount
 {
     int rc;
     if (MUK_Neighbor_alltoallw_init_c == NULL) {
-        MUK_Warning("MPI_Neighbor_alltoallw_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Neighbor_alltoallw_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3743,7 +3743,7 @@ int MPI_Op_create_c(MPI_User_function_c *user_fn, int commute, MPI_Op *op)
 {
     int rc;
     if (MUK_Op_create_c == NULL) {
-        MUK_Warning("MPI_Op_create_c is missing from the implementation wrapper.\n");
+        printf("MPI_Op_create_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3773,7 +3773,7 @@ int MPI_Pack_c(const void *inbuf, MPI_Count incount, MPI_Datatype datatype, void
 {
     int rc;
     if (MUK_Pack_c == NULL) {
-        MUK_Warning("MPI_Pack_c is missing from the implementation wrapper.\n");
+        printf("MPI_Pack_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3791,7 +3791,7 @@ int MPI_Pack_external_c(const char *datarep, const void *inbuf, MPI_Count incoun
 {
     int rc;
     if (MUK_Pack_external_c == NULL) {
-        MUK_Warning("MPI_Pack_external_c is missing from the implementation wrapper.\n");
+        printf("MPI_Pack_external_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3809,7 +3809,7 @@ int MPI_Pack_external_size_c(const char *datarep, MPI_Count incount, MPI_Datatyp
 {
     int rc;
     if (MUK_Pack_external_size_c == NULL) {
-        MUK_Warning("MPI_Pack_external_size_c is missing from the implementation wrapper.\n");
+        printf("MPI_Pack_external_size_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3827,7 +3827,7 @@ int MPI_Pack_size_c(MPI_Count incount, MPI_Datatype datatype, MPI_Comm comm, MPI
 {
     int rc;
     if (MUK_Pack_size_c == NULL) {
-        MUK_Warning("MPI_Pack_size_c is missing from the implementation wrapper.\n");
+        printf("MPI_Pack_size_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3890,7 +3890,7 @@ int MPI_Put_c(const void *origin_addr, MPI_Count origin_count, MPI_Datatype orig
 {
     int rc;
     if (MUK_Put_c == NULL) {
-        MUK_Warning("MPI_Put_c is missing from the implementation wrapper.\n");
+        printf("MPI_Put_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3908,7 +3908,7 @@ int MPI_Raccumulate_c(const void *origin_addr, MPI_Count origin_count, MPI_Datat
 {
     int rc;
     if (MUK_Raccumulate_c == NULL) {
-        MUK_Warning("MPI_Raccumulate_c is missing from the implementation wrapper.\n");
+        printf("MPI_Raccumulate_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3926,7 +3926,7 @@ int MPI_Recv_c(void *buf, MPI_Count count, MPI_Datatype datatype, int source, in
 {
     int rc;
     if (MUK_Recv_c == NULL) {
-        MUK_Warning("MPI_Recv_c is missing from the implementation wrapper.\n");
+        printf("MPI_Recv_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3944,7 +3944,7 @@ int MPI_Recv_init_c(void *buf, MPI_Count count, MPI_Datatype datatype, int sourc
 {
     int rc;
     if (MUK_Recv_init_c == NULL) {
-        MUK_Warning("MPI_Recv_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Recv_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3962,7 +3962,7 @@ int MPI_Reduce_c(const void *sendbuf, void *recvbuf, MPI_Count count, MPI_Dataty
 {
     int rc;
     if (MUK_Reduce_c == NULL) {
-        MUK_Warning("MPI_Reduce_c is missing from the implementation wrapper.\n");
+        printf("MPI_Reduce_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3980,7 +3980,7 @@ int MPI_Reduce_init_c(const void *sendbuf, void *recvbuf, MPI_Count count, MPI_D
 {
     int rc;
     if (MUK_Reduce_init_c == NULL) {
-        MUK_Warning("MPI_Reduce_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Reduce_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -3998,7 +3998,7 @@ int MPI_Reduce_local_c(const void *inbuf, void *inoutbuf, MPI_Count count, MPI_D
 {
     int rc;
     if (MUK_Reduce_local_c == NULL) {
-        MUK_Warning("MPI_Reduce_local_c is missing from the implementation wrapper.\n");
+        printf("MPI_Reduce_local_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4021,7 +4021,7 @@ int MPI_Reduce_scatter_block_c(const void *sendbuf, void *recvbuf, MPI_Count rec
 {
     int rc;
     if (MUK_Reduce_scatter_block_c == NULL) {
-        MUK_Warning("MPI_Reduce_scatter_block_c is missing from the implementation wrapper.\n");
+        printf("MPI_Reduce_scatter_block_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4039,7 +4039,7 @@ int MPI_Reduce_scatter_block_init_c(const void *sendbuf, void *recvbuf, MPI_Coun
 {
     int rc;
     if (MUK_Reduce_scatter_block_init_c == NULL) {
-        MUK_Warning("MPI_Reduce_scatter_block_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Reduce_scatter_block_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4052,7 +4052,7 @@ int MPI_Reduce_scatter_c(const void *sendbuf, void *recvbuf, const MPI_Count rec
 {
     int rc;
     if (MUK_Reduce_scatter_c == NULL) {
-        MUK_Warning("MPI_Reduce_scatter_c is missing from the implementation wrapper.\n");
+        printf("MPI_Reduce_scatter_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4070,7 +4070,7 @@ int MPI_Reduce_scatter_init_c(const void *sendbuf, void *recvbuf, const MPI_Coun
 {
     int rc;
     if (MUK_Reduce_scatter_init_c == NULL) {
-        MUK_Warning("MPI_Reduce_scatter_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Reduce_scatter_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4088,7 +4088,7 @@ int MPI_Register_datarep_c(const char *datarep, MPI_Datarep_conversion_function_
 {
     int rc;
     if (MUK_Register_datarep_c == NULL) {
-        MUK_Warning("MPI_Register_datarep_c is missing from the implementation wrapper.\n");
+        printf("MPI_Register_datarep_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4123,7 +4123,7 @@ int MPI_Rget_accumulate_c(const void *origin_addr, MPI_Count origin_count, MPI_D
 {
     int rc;
     if (MUK_Rget_accumulate_c == NULL) {
-        MUK_Warning("MPI_Rget_accumulate_c is missing from the implementation wrapper.\n");
+        printf("MPI_Rget_accumulate_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4136,7 +4136,7 @@ int MPI_Rget_c(void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_da
 {
     int rc;
     if (MUK_Rget_c == NULL) {
-        MUK_Warning("MPI_Rget_c is missing from the implementation wrapper.\n");
+        printf("MPI_Rget_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4154,7 +4154,7 @@ int MPI_Rput_c(const void *origin_addr, MPI_Count origin_count, MPI_Datatype ori
 {
     int rc;
     if (MUK_Rput_c == NULL) {
-        MUK_Warning("MPI_Rput_c is missing from the implementation wrapper.\n");
+        printf("MPI_Rput_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4172,7 +4172,7 @@ int MPI_Rsend_c(const void *buf, MPI_Count count, MPI_Datatype datatype, int des
 {
     int rc;
     if (MUK_Rsend_c == NULL) {
-        MUK_Warning("MPI_Rsend_c is missing from the implementation wrapper.\n");
+        printf("MPI_Rsend_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4190,7 +4190,7 @@ int MPI_Rsend_init_c(const void *buf, MPI_Count count, MPI_Datatype datatype, in
 {
     int rc;
     if (MUK_Rsend_init_c == NULL) {
-        MUK_Warning("MPI_Rsend_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Rsend_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4208,7 +4208,7 @@ int MPI_Scan_c(const void *sendbuf, void *recvbuf, MPI_Count count, MPI_Datatype
 {
     int rc;
     if (MUK_Scan_c == NULL) {
-        MUK_Warning("MPI_Scan_c is missing from the implementation wrapper.\n");
+        printf("MPI_Scan_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4226,7 +4226,7 @@ int MPI_Scan_init_c(const void *sendbuf, void *recvbuf, MPI_Count count, MPI_Dat
 {
     int rc;
     if (MUK_Scan_init_c == NULL) {
-        MUK_Warning("MPI_Scan_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Scan_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4244,7 +4244,7 @@ int MPI_Scatter_c(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtyp
 {
     int rc;
     if (MUK_Scatter_c == NULL) {
-        MUK_Warning("MPI_Scatter_c is missing from the implementation wrapper.\n");
+        printf("MPI_Scatter_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4262,7 +4262,7 @@ int MPI_Scatter_init_c(const void *sendbuf, MPI_Count sendcount, MPI_Datatype se
 {
     int rc;
     if (MUK_Scatter_init_c == NULL) {
-        MUK_Warning("MPI_Scatter_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Scatter_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4280,7 +4280,7 @@ int MPI_Scatterv_c(const void *sendbuf, const MPI_Count sendcounts[], const MPI_
 {
     int rc;
     if (MUK_Scatterv_c == NULL) {
-        MUK_Warning("MPI_Scatterv_c is missing from the implementation wrapper.\n");
+        printf("MPI_Scatterv_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4298,7 +4298,7 @@ int MPI_Scatterv_init_c(const void *sendbuf, const MPI_Count sendcounts[], const
 {
     int rc;
     if (MUK_Scatterv_init_c == NULL) {
-        MUK_Warning("MPI_Scatterv_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Scatterv_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4316,7 +4316,7 @@ int MPI_Send_c(const void *buf, MPI_Count count, MPI_Datatype datatype, int dest
 {
     int rc;
     if (MUK_Send_c == NULL) {
-        MUK_Warning("MPI_Send_c is missing from the implementation wrapper.\n");
+        printf("MPI_Send_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4334,7 +4334,7 @@ int MPI_Send_init_c(const void *buf, MPI_Count count, MPI_Datatype datatype, int
 {
     int rc;
     if (MUK_Send_init_c == NULL) {
-        MUK_Warning("MPI_Send_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Send_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4352,7 +4352,7 @@ int MPI_Sendrecv_c(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
 {
     int rc;
     if (MUK_Sendrecv_c == NULL) {
-        MUK_Warning("MPI_Sendrecv_c is missing from the implementation wrapper.\n");
+        printf("MPI_Sendrecv_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4370,7 +4370,7 @@ int MPI_Sendrecv_replace_c(void *buf, MPI_Count count, MPI_Datatype datatype, in
 {
     int rc;
     if (MUK_Sendrecv_replace_c == NULL) {
-        MUK_Warning("MPI_Sendrecv_replace_c is missing from the implementation wrapper.\n");
+        printf("MPI_Sendrecv_replace_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4440,7 +4440,7 @@ int MPI_Ssend_c(const void *buf, MPI_Count count, MPI_Datatype datatype, int des
 {
     int rc;
     if (MUK_Ssend_c == NULL) {
-        MUK_Warning("MPI_Ssend_c is missing from the implementation wrapper.\n");
+        printf("MPI_Ssend_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4458,7 +4458,7 @@ int MPI_Ssend_init_c(const void *buf, MPI_Count count, MPI_Datatype datatype, in
 {
     int rc;
     if (MUK_Ssend_init_c == NULL) {
-        MUK_Warning("MPI_Ssend_init_c is missing from the implementation wrapper.\n");
+        printf("MPI_Ssend_init_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4508,7 +4508,7 @@ int MPI_Status_set_elements_c(MPI_Status *status, MPI_Datatype datatype, MPI_Cou
 {
     int rc;
     if (MUK_Status_set_elements_c == NULL) {
-        MUK_Warning("MPI_Status_set_elements_c is missing from the implementation wrapper.\n");
+        printf("MPI_Status_set_elements_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4580,7 +4580,7 @@ int MPI_Type_contiguous_c(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype *n
 {
     int rc;
     if (MUK_Type_contiguous_c == NULL) {
-        MUK_Warning("MPI_Type_contiguous_c is missing from the implementation wrapper.\n");
+        printf("MPI_Type_contiguous_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4598,7 +4598,7 @@ int MPI_Type_create_darray_c(int size, int rank, int ndims, const MPI_Count arra
 {
     int rc;
     if (MUK_Type_create_darray_c == NULL) {
-        MUK_Warning("MPI_Type_create_darray_c is missing from the implementation wrapper.\n");
+        printf("MPI_Type_create_darray_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4636,7 +4636,7 @@ int MPI_Type_create_hindexed_block_c(MPI_Count count, MPI_Count blocklength, con
 {
     int rc;
     if (MUK_Type_create_hindexed_block_c == NULL) {
-        MUK_Warning("MPI_Type_create_hindexed_block_c is missing from the implementation wrapper.\n");
+        printf("MPI_Type_create_hindexed_block_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4649,7 +4649,7 @@ int MPI_Type_create_hindexed_c(MPI_Count count, const MPI_Count array_of_blockle
 {
     int rc;
     if (MUK_Type_create_hindexed_c == NULL) {
-        MUK_Warning("MPI_Type_create_hindexed_c is missing from the implementation wrapper.\n");
+        printf("MPI_Type_create_hindexed_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4667,7 +4667,7 @@ int MPI_Type_create_hvector_c(MPI_Count count, MPI_Count blocklength, MPI_Count 
 {
     int rc;
     if (MUK_Type_create_hvector_c == NULL) {
-        MUK_Warning("MPI_Type_create_hvector_c is missing from the implementation wrapper.\n");
+        printf("MPI_Type_create_hvector_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4685,7 +4685,7 @@ int MPI_Type_create_indexed_block_c(MPI_Count count, MPI_Count blocklength, cons
 {
     int rc;
     if (MUK_Type_create_indexed_block_c == NULL) {
-        MUK_Warning("MPI_Type_create_indexed_block_c is missing from the implementation wrapper.\n");
+        printf("MPI_Type_create_indexed_block_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4708,7 +4708,7 @@ int MPI_Type_create_resized_c(MPI_Datatype oldtype, MPI_Count lb, MPI_Count exte
 {
     int rc;
     if (MUK_Type_create_resized_c == NULL) {
-        MUK_Warning("MPI_Type_create_resized_c is missing from the implementation wrapper.\n");
+        printf("MPI_Type_create_resized_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4726,7 +4726,7 @@ int MPI_Type_create_struct_c(MPI_Count count, const MPI_Count array_of_blockleng
 {
     int rc;
     if (MUK_Type_create_struct_c == NULL) {
-        MUK_Warning("MPI_Type_create_struct_c is missing from the implementation wrapper.\n");
+        printf("MPI_Type_create_struct_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4744,7 +4744,7 @@ int MPI_Type_create_subarray_c(int ndims, const MPI_Count array_of_sizes[], cons
 {
     int rc;
     if (MUK_Type_create_subarray_c == NULL) {
-        MUK_Warning("MPI_Type_create_subarray_c is missing from the implementation wrapper.\n");
+        printf("MPI_Type_create_subarray_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4794,7 +4794,7 @@ int MPI_Type_get_contents_c(MPI_Datatype datatype, MPI_Count max_integers, MPI_C
 {
     int rc;
     if (MUK_Type_get_contents_c == NULL) {
-        MUK_Warning("MPI_Type_get_contents_c is missing from the implementation wrapper.\n");
+        printf("MPI_Type_get_contents_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4812,7 +4812,7 @@ int MPI_Type_get_envelope_c(MPI_Datatype datatype, MPI_Count *num_integers, MPI_
 {
     int rc;
     if (MUK_Type_get_envelope_c == NULL) {
-        MUK_Warning("MPI_Type_get_envelope_c is missing from the implementation wrapper.\n");
+        printf("MPI_Type_get_envelope_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4830,7 +4830,7 @@ int MPI_Type_get_extent_c(MPI_Datatype datatype, MPI_Count *lb, MPI_Count *exten
 {
     int rc;
     if (MUK_Type_get_extent_c == NULL) {
-        MUK_Warning("MPI_Type_get_extent_c is missing from the implementation wrapper.\n");
+        printf("MPI_Type_get_extent_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4858,7 +4858,7 @@ int MPI_Type_get_true_extent_c(MPI_Datatype datatype, MPI_Count *true_lb, MPI_Co
 {
     int rc;
     if (MUK_Type_get_true_extent_c == NULL) {
-        MUK_Warning("MPI_Type_get_true_extent_c is missing from the implementation wrapper.\n");
+        printf("MPI_Type_get_true_extent_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4891,7 +4891,7 @@ int MPI_Type_indexed_c(MPI_Count count, const MPI_Count array_of_blocklengths[],
 {
     int rc;
     if (MUK_Type_indexed_c == NULL) {
-        MUK_Warning("MPI_Type_indexed_c is missing from the implementation wrapper.\n");
+        printf("MPI_Type_indexed_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4929,7 +4929,7 @@ int MPI_Type_size_c(MPI_Datatype datatype, MPI_Count *size)
 {
     int rc;
     if (MUK_Type_size_c == NULL) {
-        MUK_Warning("MPI_Type_size_c is missing from the implementation wrapper.\n");
+        printf("MPI_Type_size_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4962,7 +4962,7 @@ int MPI_Type_vector_c(MPI_Count count, MPI_Count blocklength, MPI_Count stride, 
 {
     int rc;
     if (MUK_Type_vector_c == NULL) {
-        MUK_Warning("MPI_Type_vector_c is missing from the implementation wrapper.\n");
+        printf("MPI_Type_vector_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4980,7 +4980,7 @@ int MPI_Unpack_c(const void *inbuf, MPI_Count insize, MPI_Count *position, void 
 {
     int rc;
     if (MUK_Unpack_c == NULL) {
-        MUK_Warning("MPI_Unpack_c is missing from the implementation wrapper.\n");
+        printf("MPI_Unpack_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -4998,7 +4998,7 @@ int MPI_Unpack_external_c(const char datarep[], const void *inbuf, MPI_Count ins
 {
     int rc;
     if (MUK_Unpack_external_c == NULL) {
-        MUK_Warning("MPI_Unpack_external_c is missing from the implementation wrapper.\n");
+        printf("MPI_Unpack_external_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -5055,7 +5055,7 @@ int MPI_Win_allocate_c(MPI_Aint size, MPI_Aint disp_unit, MPI_Info info, MPI_Com
 {
     int rc;
     if (MUK_Win_allocate_c == NULL) {
-        MUK_Warning("MPI_Win_allocate_c is missing from the implementation wrapper.\n");
+        printf("MPI_Win_allocate_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -5073,7 +5073,7 @@ int MPI_Win_allocate_shared_c(MPI_Aint size, MPI_Aint disp_unit, MPI_Info info, 
 {
     int rc;
     if (MUK_Win_allocate_shared_c == NULL) {
-        MUK_Warning("MPI_Win_allocate_shared_c is missing from the implementation wrapper.\n");
+        printf("MPI_Win_allocate_shared_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -5106,7 +5106,7 @@ int MPI_Win_create_c(void *base, MPI_Aint size, MPI_Aint disp_unit, MPI_Info inf
 {
     int rc;
     if (MUK_Win_create_c == NULL) {
-        MUK_Warning("MPI_Win_create_c is missing from the implementation wrapper.\n");
+        printf("MPI_Win_create_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {
@@ -5246,7 +5246,7 @@ int MPI_Win_shared_query_c(MPI_Win win, int rank, MPI_Aint *size, MPI_Aint *disp
 {
     int rc;
     if (MUK_Win_shared_query_c == NULL) {
-        MUK_Warning("MPI_Win_shared_query_c is missing from the implementation wrapper.\n");
+        printf("MPI_Win_shared_query_c is missing from the implementation wrapper.\n");
         rc = MPI_ERR_INTERN;
     }
     else {

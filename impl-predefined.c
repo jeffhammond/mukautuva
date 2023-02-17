@@ -221,7 +221,7 @@ int ERROR_CODE_IMPL_TO_MUK(int error_c)
         int len;
         char name[MPI_MAX_ERROR_STRING] = {0};
         rc = MPI_Error_string(error, name, &len);
-        MUK_Warning("Unknown error class returned from the C library: code=%d=%x, class=%d=%x, name=%s\n",
+        printf("Unknown error class returned from the C library: code=%d=%x, class=%d=%x, name=%s\n",
                      error_c, error_c, error, error, name);
 #endif
         return MUK_ERR_UNKNOWN;
