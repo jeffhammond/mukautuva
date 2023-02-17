@@ -1383,6 +1383,88 @@ static inline void WRAP_COMM_NULLIFY(MPI_Comm ** comm)
     }
 }
 
+static inline void WRAP_DATATYPE_NULLIFY(MPI_Datatype ** datatype)
+{
+    if (**datatype == MPI_DATATYPE_NULL) {
+        free(*datatype);
+        *datatype = &IMPL_DATATYPE_NULL;
+    }
+}
+
+static inline void WRAP_ERRHANDLER_NULLIFY(MPI_Errhandler ** errhandler)
+{
+    if (**errhandler == MPI_ERRHANDLER_NULL) {
+        free(*errhandler);
+        *errhandler = &IMPL_ERRHANDLER_NULL;
+    }
+}
+
+static inline void WRAP_FILE_NULLIFY(MPI_File ** file)
+{
+    if (**file == MPI_FILE_NULL) {
+        free(*file);
+        *file = &IMPL_FILE_NULL;
+    }
+}
+
+static inline void WRAP_GROUP_NULLIFY(MPI_Group ** group)
+{
+    if (**group == MPI_GROUP_NULL) {
+        free(*group);
+        *group = &IMPL_GROUP_NULL;
+    }
+}
+
+static inline void WRAP_INFO_NULLIFY(MPI_Info ** info)
+{
+    if (**info == MPI_INFO_NULL) {
+        free(*info);
+        *info = &IMPL_INFO_NULL;
+    }
+}
+
+static inline void WRAP_MESSAGE_NULLIFY(MPI_Message ** message)
+{
+    if (**message == MPI_MESSAGE_NULL) {
+        free(*message);
+        *message = &IMPL_MESSAGE_NULL;
+    }
+}
+
+static inline void WRAP_OP_NULLIFY(MPI_Op ** op)
+{
+    if (**op == MPI_OP_NULL) {
+        free(*op);
+        *op = &IMPL_OP_NULL;
+    }
+}
+
+static inline void WRAP_REQUEST_NULLIFY(MPI_Request ** request)
+{
+    if (**request == MPI_REQUEST_NULL) {
+        free(*request);
+        *request = &IMPL_REQUEST_NULL;
+    }
+}
+
+#if MPI_VERSION >= 4
+static inline void WRAP_SESSION_NULLIFY(MPI_Session ** session)
+{
+    if (**session == MPI_SESSION_NULL) {
+        free(*session);
+        *session = &IMPL_SESSION_NULL;
+    }
+}
+#endif
+
+static inline void WRAP_WIN_NULLIFY(MPI_Win ** win)
+{
+    if (**win == MPI_WIN_NULL) {
+        free(*win);
+        *win = &IMPL_WIN_NULL;
+    }
+}
+
 static inline void WRAP_COMM_PRINT(MPI_Comm ** comm, char * label)
 {
     printf("WRAP_COMM_PRINT: %s comm=%p *comm=%p "
