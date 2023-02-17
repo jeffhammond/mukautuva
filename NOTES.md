@@ -57,6 +57,21 @@ Maybe...
 ./configure CC=gcc CFLAGS=-I${HOME}/mukautuva LDFLAGS="-L${HOME}/mukautuva" LIBS="-lmuk" --disable-cxx --disable-spawn --enable-strictmpi --disable-fortran MPICC=gcc MPICXX=false MPIFC=false CXX=g++ FC=gfortran
 ```
 
+Latest...
+```sh
+export LD_LIBRARY_PATH=${HOME}/mukautuva
+wget https://www.mpich.org/static/downloads/4.1/mpich-testsuite-4.1.tar.gz
+tar -xaf mpich-testsuite-4.1.tar.gz
+cd mpich-testsuite-4.1/
+./configure CC=gcc CXX=g++ FC=false CPPFLAGS="-I${HOME}/mukautuva" LDFLAGS="-L${HOME}/mukautuva" LIBS="-lmuk" --enable-strictmpi
+```
+
+Useful:
+```sh
+find . -type f -executable -print
+for t in `find . -type f -executable -print` ; do echo Starting $t && mpirun -n 4 $t ; done
+```
+
 # Intel MPI Benchmarks
 
 ```sh
