@@ -1,8 +1,6 @@
 #include "muk.h"
 #include "muk-dl.h"
 
-#include "debug.h"
-
 #if defined(__linux__) && defined(__x86_64__)
 #define LIBMPI_NAME "/usr/lib/x86_64-linux-gnu/libmpi.so"
 #elif defined(__MACH__)

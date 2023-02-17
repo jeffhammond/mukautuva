@@ -8,8 +8,6 @@
 
 #include <dlfcn.h>
 
-#include "debug.h"
-
 typedef enum {
     MPICH   = 1,
     OMPI    = 2,
