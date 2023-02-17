@@ -35,44 +35,55 @@ int main(int argc, char* argv[])
     MPI_Comm_compare(MPI_COMM_WORLD,dup,&result);
     if (result != MPI_CONGRUENT) MPI_Abort(MPI_COMM_WORLD,result);
 
-    MPI_Comm split;
-    MPI_Comm_split(MPI_COMM_WORLD,0,-me,&split);
-    MPI_Barrier(split);
+    {
+        MPI_Comm split;
+        MPI_Comm_split(MPI_COMM_WORLD,0,-me,&split);
+        MPI_Barrier(split);
 
-    MPI_Comm_compare(MPI_COMM_WORLD,split,&result);
-    if (np > 1 && result != MPI_SIMILAR) {
-        printf("result=%d, MPI_CONGRUENT=%d MPI_SIMILAR=%d\n", result, MPI_CONGRUENT, MPI_SIMILAR);
-        MPI_Abort(MPI_COMM_WORLD,result);
+        MPI_Comm_compare(MPI_COMM_WORLD,split,&result);
+        if (np > 1 && result != MPI_SIMILAR) {
+            printf("result=%d, MPI_CONGRUENT=%d MPI_SIMILAR=%d\n", result, MPI_CONGRUENT, MPI_SIMILAR);
+            MPI_Abort(MPI_COMM_WORLD,result);
+        }
+        else if (np == 1 && result != MPI_CONGRUENT) {
+            printf("result=%d, MPI_CONGRUENT=%d MPI_SIMILAR=%d\n", result, MPI_CONGRUENT, MPI_SIMILAR);
+            MPI_Abort(MPI_COMM_WORLD,result);
+        }
+
+        MPI_Comm oddeven;
+        MPI_Comm_split(MPI_COMM_WORLD,me%2,me,&oddeven);
+        MPI_Barrier(oddeven);
+
+        MPI_Comm_compare(MPI_COMM_WORLD,oddeven,&result);
+        if ((np > 1) && (result != MPI_UNEQUAL)) MPI_Abort(MPI_COMM_WORLD,result);
+
+        MPI_Comm shared;
+        MPI_Comm_split_type(MPI_COMM_WORLD,MPI_COMM_TYPE_SHARED,0,MPI_INFO_NULL,&shared);
+        MPI_Barrier(shared);
+
+        MPI_Comm_free(&split);
+
+        MPI_Comm_free(&shared);
+        if (shared != MPI_COMM_NULL) {
+            printf("freed window is not null\n");
+            MPI_Abort(MPI_COMM_WORLD,1);
+        }
+
+        // disconnect is the same as free except it synchronizes
+        MPI_Comm_disconnect(&dup);
+        if (dup != MPI_COMM_NULL) {
+            printf("freed window is not null\n");
+            MPI_Abort(MPI_COMM_WORLD,1);
+        }
     }
-    else if (np == 1 && result != MPI_CONGRUENT) {
-        printf("result=%d, MPI_CONGRUENT=%d MPI_SIMILAR=%d\n", result, MPI_CONGRUENT, MPI_SIMILAR);
-        MPI_Abort(MPI_COMM_WORLD,result);
-    }
 
-    MPI_Comm oddeven;
-    MPI_Comm_split(MPI_COMM_WORLD,me%2,me,&oddeven);
-    MPI_Barrier(oddeven);
-
-    MPI_Comm_compare(MPI_COMM_WORLD,oddeven,&result);
-    if ((np > 1) && (result != MPI_UNEQUAL)) MPI_Abort(MPI_COMM_WORLD,result);
-
-    MPI_Comm shared;
-    MPI_Comm_split_type(MPI_COMM_WORLD,MPI_COMM_TYPE_SHARED,0,MPI_INFO_NULL,&shared);
-    MPI_Barrier(shared);
-
-    MPI_Comm_free(&split);
-
-    MPI_Comm_free(&shared);
-    if (shared != MPI_COMM_NULL) {
-        printf("freed window is not null\n");
-        MPI_Abort(MPI_COMM_WORLD,1);
-    }
-
-    // disconnect is the same as free except it synchronizes
-    MPI_Comm_disconnect(&dup);
-    if (dup != MPI_COMM_NULL) {
-        printf("freed window is not null\n");
-        MPI_Abort(MPI_COMM_WORLD,1);
+    {
+        MPI_Comm split;
+        MPI_Comm_split(MPI_COMM_WORLD,MPI_UNDEFINED,0,&split);
+        if (split != MPI_COMM_NULL) {
+            printf("color=MPI_UNDEFINED but split=%p != MPI_COMM_NULL=%p\n", split, MPI_COMM_NULL);
+            MPI_Abort(MPI_COMM_WORLD,1);
+        }
     }
 
     fflush(0);
