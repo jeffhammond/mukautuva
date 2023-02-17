@@ -52,10 +52,10 @@ libinit.o: libinit.c muk.h muk-dl.h $(MPI_H)
 libinit.i: libinit.c muk.h muk-dl.h $(MPI_H)
 	$(CC) $(CFLAGS) -E $< -o $@
 
-mpich-wrap.so: mpich-predefined.o mpich-functions.o mpich-debug.o
+mpich-wrap.so: mpich-predefined.o mpich-functions.o
 	$(MPICHCC) $(SOFLAGS) $^ -o $@
 
-ompi-wrap.so: ompi-predefined.o ompi-functions.o ompi-debug.o
+ompi-wrap.so: ompi-predefined.o ompi-functions.o
 	$(OMPICC) $(SOFLAGS) $^ -o $@
 
 mpich-predefined.o: impl-predefined.c muk-predefined.h
@@ -68,12 +68,6 @@ mpich-functions.o: impl-functions.c
 	$(MPICHCC) $(CFLAGS) -c $< -o $@
 
 ompi-functions.o: impl-functions.c
-	$(OMPICC) $(CFLAGS) -c $< -o $@
-
-mpich-debug.o: debug.c
-	$(MPICHCC) $(CFLAGS) -c $< -o $@
-
-ompi-debug.o: debug.c
 	$(OMPICC) $(CFLAGS) -c $< -o $@
 
 check: $(RUNTESTS)
