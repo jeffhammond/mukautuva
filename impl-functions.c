@@ -1375,107 +1375,6 @@ static inline void MPI_Status_to_WRAP_Status(const MPI_Status * m, WRAP_Status *
 #endif
 }
 
-static inline void WRAP_COMM_NULLIFY(MPI_Comm ** comm)
-{
-    if (**comm == MPI_COMM_NULL) {
-        free(*comm);
-        *comm = &IMPL_COMM_NULL;
-    }
-}
-
-static inline void WRAP_DATATYPE_NULLIFY(MPI_Datatype ** datatype)
-{
-    if (**datatype == MPI_DATATYPE_NULL) {
-        free(*datatype);
-        *datatype = &IMPL_DATATYPE_NULL;
-    }
-}
-
-static inline void WRAP_ERRHANDLER_NULLIFY(MPI_Errhandler ** errhandler)
-{
-    if (**errhandler == MPI_ERRHANDLER_NULL) {
-        free(*errhandler);
-        *errhandler = &IMPL_ERRHANDLER_NULL;
-    }
-}
-
-static inline void WRAP_FILE_NULLIFY(MPI_File ** file)
-{
-    if (**file == MPI_FILE_NULL) {
-        free(*file);
-        *file = &IMPL_FILE_NULL;
-    }
-}
-
-static inline void WRAP_GROUP_NULLIFY(MPI_Group ** group)
-{
-    if (**group == MPI_GROUP_NULL) {
-        free(*group);
-        *group = &IMPL_GROUP_NULL;
-    }
-}
-
-static inline void WRAP_INFO_NULLIFY(MPI_Info ** info)
-{
-    if (**info == MPI_INFO_NULL) {
-        free(*info);
-        *info = &IMPL_INFO_NULL;
-    }
-}
-
-static inline void WRAP_MESSAGE_NULLIFY(MPI_Message ** message)
-{
-    if (**message == MPI_MESSAGE_NULL) {
-        free(*message);
-        *message = &IMPL_MESSAGE_NULL;
-    }
-}
-
-static inline void WRAP_OP_NULLIFY(MPI_Op ** op)
-{
-    if (**op == MPI_OP_NULL) {
-        free(*op);
-        *op = &IMPL_OP_NULL;
-    }
-}
-
-static inline void WRAP_REQUEST_NULLIFY(MPI_Request ** request)
-{
-    if (**request == MPI_REQUEST_NULL) {
-        free(*request);
-        *request = &IMPL_REQUEST_NULL;
-    }
-}
-
-#if MPI_VERSION >= 4
-static inline void WRAP_SESSION_NULLIFY(MPI_Session ** session)
-{
-    if (**session == MPI_SESSION_NULL) {
-        free(*session);
-        *session = &IMPL_SESSION_NULL;
-    }
-}
-#endif
-
-static inline void WRAP_WIN_NULLIFY(MPI_Win ** win)
-{
-    if (**win == MPI_WIN_NULL) {
-        free(*win);
-        *win = &IMPL_WIN_NULL;
-    }
-}
-
-static inline void WRAP_COMM_PRINT(MPI_Comm ** comm, char * label)
-{
-    printf("WRAP_COMM_PRINT: %s comm=%p *comm=%p "
-#ifdef MPICH
-    "**comm=%d\n",
-#else
-    "**comm=%p\n",
-#endif
-     label, comm, *comm, **comm);
-}
-
 // crazy stuff to support user-defined reductions
 
 int TYPE_HANDLE_KEY = MPI_KEYVAL_INVALID;
@@ -1753,6 +1652,110 @@ static void cleanup_ireduce_trampoline_cookie(reduce_trampoline_cookie_t * cooki
     if (rc) {
         printf("Type_free failed: %d\n",rc);
     }
+}
+
+// NULLIFY functions
+
+static inline void WRAP_COMM_NULLIFY(MPI_Comm ** comm)
+{
+    if (**comm == MPI_COMM_NULL) {
+        free(*comm);
+        *comm = &IMPL_COMM_NULL;
+    }
+}
+
+static inline void WRAP_DATATYPE_NULLIFY(MPI_Datatype ** datatype)
+{
+    if (**datatype == MPI_DATATYPE_NULL) {
+        free(*datatype);
+        *datatype = &IMPL_DATATYPE_NULL;
+    }
+}
+
+static inline void WRAP_ERRHANDLER_NULLIFY(MPI_Errhandler ** errhandler)
+{
+    if (**errhandler == MPI_ERRHANDLER_NULL) {
+        free(*errhandler);
+        *errhandler = &IMPL_ERRHANDLER_NULL;
+    }
+}
+
+static inline void WRAP_FILE_NULLIFY(MPI_File ** file)
+{
+    if (**file == MPI_FILE_NULL) {
+        free(*file);
+        *file = &IMPL_FILE_NULL;
+    }
+}
+
+static inline void WRAP_GROUP_NULLIFY(MPI_Group ** group)
+{
+    if (**group == MPI_GROUP_NULL) {
+        free(*group);
+        *group = &IMPL_GROUP_NULL;
+    }
+}
+
+static inline void WRAP_INFO_NULLIFY(MPI_Info ** info)
+{
+    if (**info == MPI_INFO_NULL) {
+        free(*info);
+        *info = &IMPL_INFO_NULL;
+    }
+}
+
+static inline void WRAP_MESSAGE_NULLIFY(MPI_Message ** message)
+{
+    if (**message == MPI_MESSAGE_NULL) {
+        free(*message);
+        *message = &IMPL_MESSAGE_NULL;
+    }
+}
+
+static inline void WRAP_OP_NULLIFY(MPI_Op ** op)
+{
+    if (**op == MPI_OP_NULL) {
+        free(*op);
+        *op = &IMPL_OP_NULL;
+    }
+}
+
+static inline void WRAP_REQUEST_NULLIFY(MPI_Request ** request)
+{
+    if (**request == MPI_REQUEST_NULL) {
+        remove_cookie_pair_from_list(*request);
+        free(*request);
+        *request = &IMPL_REQUEST_NULL;
+    }
+}
+
+#if MPI_VERSION >= 4
+static inline void WRAP_SESSION_NULLIFY(MPI_Session ** session)
+{
+    if (**session == MPI_SESSION_NULL) {
+        free(*session);
+        *session = &IMPL_SESSION_NULL;
+    }
+}
+#endif
+
+static inline void WRAP_WIN_NULLIFY(MPI_Win ** win)
+{
+    if (**win == MPI_WIN_NULL) {
+        free(*win);
+        *win = &IMPL_WIN_NULL;
+    }
+}
+
+static inline void WRAP_COMM_PRINT(MPI_Comm ** comm, char * label)
+{
+    printf("WRAP_COMM_PRINT: %s comm=%p *comm=%p "
+#ifdef MPICH
+    "**comm=%d\n",
+#else
+    "**comm=%p\n",
+#endif
+     label, comm, *comm, **comm);
 }
 
 // WRAP->IMPL functions
@@ -2177,6 +2180,11 @@ int WRAP_Buffer_detach_c(void *buffer_addr, IMPL_Count *size)
 int WRAP_Cancel(MPI_Request **request)
 {
     int rc = IMPL_Cancel(*request);
+    // It is erroneous to call MPI_REQUEST_FREE or MPI_CANCEL for a request
+    // associated with a nonblocking collective operation.
+    //remove_cookie_pair_from_list(*request);
+    free(*request);
+    *request = &IMPL_REQUEST_NULL;
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -2381,10 +2389,7 @@ int WRAP_Comm_group(MPI_Comm *comm, MPI_Group **group)
 {
     *group = malloc(sizeof(MPI_Group));
     int rc = IMPL_Comm_group(*comm, *group);
-#if DEBUG
-    printf("WRAP_Comm_group group=%p *group=%p **group=%lx MPI_GROUP_NULL=%lx\n",
-                group,*group,(uintptr_t)**group,(uintptr_t)MPI_GROUP_NULL);
-#endif
+    WRAP_GROUP_NULLIFY(group);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -2416,6 +2421,7 @@ int WRAP_Comm_remote_group(MPI_Comm *comm, MPI_Group **group)
 {
     *group = malloc(sizeof(MPI_Group));
     int rc = IMPL_Comm_remote_group(*comm, *group);
+    WRAP_GROUP_NULLIFY(group);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -2531,8 +2537,7 @@ int WRAP_Errhandler_create(MPI_Comm_errhandler_function *comm_errhandler_fn, MPI
 int WRAP_Errhandler_free(MPI_Errhandler **errhandler)
 {
     int rc = IMPL_Errhandler_free(*errhandler);
-    free(*errhandler);
-    *errhandler = &IMPL_ERRHANDLER_NULL;
+    WRAP_ERRHANDLER_NULLIFY(errhandler);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -2606,8 +2611,7 @@ int WRAP_File_call_errhandler(MPI_File *fh, int errorcode)
 int WRAP_File_close(MPI_File **fh)
 {
     int rc = IMPL_File_close(*fh);
-    free(*fh);
-    *fh = &IMPL_FILE_NULL;
+    WRAP_FILE_NULLIFY(fh);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -2654,6 +2658,7 @@ int WRAP_File_get_group(MPI_File *fh, MPI_Group **group)
 {
     *group = malloc(sizeof(MPI_Group));
     int rc = IMPL_File_get_group(*fh, *group);
+    WRAP_GROUP_NULLIFY(group);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3492,13 +3497,8 @@ int WRAP_Group_excl(MPI_Group *group, int n, const int ranks[], MPI_Group **newg
 
 int WRAP_Group_free(MPI_Group **group)
 {
-#ifdef DEBUG
-    printf("WRAP_Group_free group=%p *group=%p **group=%lx MPI_GROUP_EMPTY=%lx IMPL_GROUP_EMPTY=%lx\n",
-                group,*group,(uintptr_t)**group,(uintptr_t)MPI_GROUP_EMPTY,(uintptr_t)IMPL_GROUP_EMPTY);
-#endif
     int rc = IMPL_Group_free(*group);
-    free(*group);
-    *group = &IMPL_GROUP_NULL;
+    WRAP_GROUP_NULLIFY(group);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3805,6 +3805,7 @@ int WRAP_Improbe(int source, int tag, MPI_Comm *comm, int *flag, MPI_Message **m
     *message = malloc(sizeof(MPI_Message));
     int rc = IMPL_Improbe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, flag, *message, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
+    WRAP_MESSAGE_NULLIFY(message);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3812,8 +3813,7 @@ int WRAP_Imrecv(void *buf, int count, MPI_Datatype *datatype, MPI_Message **mess
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Imrecv(buf, count, *datatype, *message, *request);
-    free(*message);
-    *message = &IMPL_MESSAGE_NULL;
+    WRAP_MESSAGE_NULLIFY(message);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3821,8 +3821,7 @@ int WRAP_Imrecv_c(void *buf, IMPL_Count count, MPI_Datatype *datatype, MPI_Messa
 {
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Imrecv_c(buf, count, *datatype, *message, *request);
-    free(*message);
-    *message = &IMPL_MESSAGE_NULL;
+    WRAP_MESSAGE_NULLIFY(message);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3946,8 +3945,7 @@ int WRAP_Info_dup(MPI_Info *info, MPI_Info **newinfo)
 int WRAP_Info_free(MPI_Info **info)
 {
     int rc = IMPL_Info_free(*info);
-    free(*info);
-    *info = &IMPL_INFO_NULL;
+    WRAP_INFO_NULLIFY(info);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4252,6 +4250,7 @@ int WRAP_Mprobe(int source, int tag, MPI_Comm *comm, MPI_Message **message, WRAP
     MPI_Status impl_status;
     int rc = IMPL_Mprobe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, *message, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
+    WRAP_MESSAGE_NULLIFY(message);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4261,8 +4260,7 @@ int WRAP_Mrecv(void *buf, int count, MPI_Datatype *datatype, MPI_Message **messa
     MPI_Status impl_status;
     int rc = IMPL_Mrecv(buf, count, *datatype, *message, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
-    free(*message);
-    *message = &IMPL_MESSAGE_NULL;
+    WRAP_MESSAGE_NULLIFY(message);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4272,8 +4270,7 @@ int WRAP_Mrecv_c(void *buf, IMPL_Count count, MPI_Datatype *datatype, MPI_Messag
     MPI_Status impl_status;
     int rc = IMPL_Mrecv_c(buf, count, *datatype, *message, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
-    free(*message);
-    *message = &IMPL_MESSAGE_NULL;
+    WRAP_MESSAGE_NULLIFY(message);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4493,8 +4490,7 @@ int WRAP_Op_free(MPI_Op **op)
 {
     remove_op_pair_from_list(*op);
     int rc = IMPL_Op_free(*op);
-    free(*op);
-    *op = &IMPL_OP_NULL;
+    WRAP_OP_NULLIFY(op);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4895,6 +4891,9 @@ int WRAP_Register_datarep_c(const char *datarep, MPI_Datarep_conversion_function
 int WRAP_Request_free(MPI_Request **request)
 {
     int rc = IMPL_Request_free(*request);
+    // It is erroneous to call MPI_REQUEST_FREE or MPI_CANCEL for a request
+    // associated with a nonblocking collective operation.
+    //remove_cookie_pair_from_list(*request);
     free(*request);
     *request = &IMPL_REQUEST_NULL;
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -5316,6 +5315,7 @@ int WRAP_Test(MPI_Request **request, int *flag, WRAP_Status *status)
     MPI_Status impl_status;
     int rc = IMPL_Test(*request, flag, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (*flag) {
+        remove_cookie_pair_from_list(*request);
         free(*request);
         *request = &IMPL_REQUEST_NULL;
         if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -5681,8 +5681,7 @@ int WRAP_Type_extent(MPI_Datatype *datatype, IMPL_Aint *extent)
 int WRAP_Type_free(MPI_Datatype **datatype)
 {
     int rc = IMPL_Type_free(*datatype);
-    free(*datatype);
-    *datatype = &IMPL_DATATYPE_NULL;
+    WRAP_DATATYPE_NULLIFY(datatype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -6185,8 +6184,7 @@ int WRAP_Win_flush_local_all(MPI_Win *win)
 int WRAP_Win_free(MPI_Win **win)
 {
     int rc = IMPL_Win_free(*win);
-    free(*win);
-    *win = &IMPL_WIN_NULL;
+    WRAP_WIN_NULLIFY(win);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -6221,6 +6219,7 @@ int WRAP_Win_get_group(MPI_Win *win, MPI_Group **group)
 {
     *group = malloc(sizeof(MPI_Group));
     int rc = IMPL_Win_get_group(*win, *group);
+    WRAP_GROUP_NULLIFY(group);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
