@@ -507,6 +507,9 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     //    MPI_COMM_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_NULL");
     pmuk_mpi_comm_null = MUK_DLSYM(wrap_so_handle,"IMPL_COMM_NULL");
     muk_mpi_comm_null = *pmuk_mpi_comm_null;
+    //printf("libinit: pmuk_mpi_comm_null=%p\n", pmuk_mpi_comm_null);
+    //printf("libinit:  muk_mpi_comm_null=%p\n", muk_mpi_comm_null);
+    //printf("libinit: &muk_mpi_comm_null=%p\n", &muk_mpi_comm_null);
     //    MPI_DATATYPE_NULL = MUK_DLSYM(wrap_so_handle,"IMPL_DATATYPE_NULL");
     pmuk_mpi_datatype_null = MUK_DLSYM(wrap_so_handle,"IMPL_DATATYPE_NULL");
     muk_mpi_datatype_null = *pmuk_mpi_datatype_null;
@@ -1655,7 +1658,9 @@ int MPI_Cart_coords(MPI_Comm comm, int rank, int maxdims, int coords[])
 
 int MPI_Cart_create(MPI_Comm comm_old, int ndims, const int dims[], const int periods[], int reorder, MPI_Comm *comm_cart)
 {
-    return MUK_Cart_create(comm_old, ndims, dims, periods, reorder, comm_cart);
+    int rc = MUK_Cart_create(comm_old, ndims, dims, periods, reorder, comm_cart);
+    MUK_COMM_NULLIFY(comm_cart);
+    return rc;
 }
 
 int MPI_Cart_get(MPI_Comm comm, int maxdims, int dims[], int periods[], int coords[])
@@ -1680,7 +1685,9 @@ int MPI_Cart_shift(MPI_Comm comm, int direction, int disp, int *rank_source, int
 
 int MPI_Cart_sub(MPI_Comm comm, const int remain_dims[], MPI_Comm *newcomm)
 {
-    return MUK_Cart_sub(comm, remain_dims, newcomm);
+    int rc = MUK_Cart_sub(comm, remain_dims, newcomm);
+    MUK_COMM_NULLIFY(newcomm);
+    return rc;
 }
 
 int MPI_Cartdim_get(MPI_Comm comm, int *ndims)
@@ -1695,7 +1702,9 @@ int MPI_Close_port(const char *port_name)
 
 int MPI_Comm_accept(const char *port_name, MPI_Info info, int root, MPI_Comm comm, MPI_Comm *newcomm)
 {
-    return MUK_Comm_accept(port_name, info, root, comm, newcomm);
+    int rc = MUK_Comm_accept(port_name, info, root, comm, newcomm);
+    MUK_COMM_NULLIFY(newcomm);
+    return rc;
 }
 
 int MPI_Comm_call_errhandler(MPI_Comm comm, int errorcode)
@@ -1710,12 +1719,16 @@ int MPI_Comm_compare(MPI_Comm comm1, MPI_Comm comm2, int *result)
 
 int MPI_Comm_connect(const char *port_name, MPI_Info info, int root, MPI_Comm comm, MPI_Comm *newcomm)
 {
-    return MUK_Comm_connect(port_name, info, root, comm, newcomm);
+    int rc = MUK_Comm_connect(port_name, info, root, comm, newcomm);
+    MUK_COMM_NULLIFY(newcomm);
+    return rc;
 }
 
 int MPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm *newcomm)
 {
-    return MUK_Comm_create(comm, group, newcomm);
+    int rc = MUK_Comm_create(comm, group, newcomm);
+    MUK_COMM_NULLIFY(newcomm);
+    return rc;
 }
 
 int MPI_Comm_create_errhandler(MPI_Comm_errhandler_function *comm_errhandler_fn, MPI_Errhandler *errhandler)
@@ -1725,12 +1738,16 @@ int MPI_Comm_create_errhandler(MPI_Comm_errhandler_function *comm_errhandler_fn,
 
 int MPI_Comm_create_from_group(MPI_Group group, const char *stringtag, MPI_Info info, MPI_Errhandler errhandler, MPI_Comm *newcomm)
 {
-    return MUK_Comm_create_from_group(group, stringtag, info, errhandler, newcomm);
+    int rc = MUK_Comm_create_from_group(group, stringtag, info, errhandler, newcomm);
+    MUK_COMM_NULLIFY(newcomm);
+    return rc;
 }
 
 int MPI_Comm_create_group(MPI_Comm comm, MPI_Group group, int tag, MPI_Comm *newcomm)
 {
-    return MUK_Comm_create_group(comm, group, tag, newcomm);
+    int rc = MUK_Comm_create_group(comm, group, tag, newcomm);
+    MUK_COMM_NULLIFY(newcomm);
+    return rc;
 }
 
 int MPI_Comm_create_keyval(MPI_Comm_copy_attr_function *comm_copy_attr_fn, MPI_Comm_delete_attr_function *comm_delete_attr_fn, int *comm_keyval, void *extra_state)
@@ -1752,12 +1769,16 @@ int MPI_Comm_disconnect(MPI_Comm *comm)
 
 int MPI_Comm_dup(MPI_Comm comm, MPI_Comm *newcomm)
 {
-    return MUK_Comm_dup(comm, newcomm);
+    int rc = MUK_Comm_dup(comm, newcomm);
+    MUK_COMM_NULLIFY(newcomm);
+    return rc;
 }
 
 int MPI_Comm_dup_with_info(MPI_Comm comm, MPI_Info info, MPI_Comm *newcomm)
 {
-    return MUK_Comm_dup_with_info(comm, info, newcomm);
+    int rc = MUK_Comm_dup_with_info(comm, info, newcomm);
+    MUK_COMM_NULLIFY(newcomm);
+    return rc;
 }
 
 int MPI_Comm_free(MPI_Comm *comm)
@@ -1794,32 +1815,44 @@ int MPI_Comm_get_name(MPI_Comm comm, char *comm_name, int *resultlen)
 
 int MPI_Comm_get_parent(MPI_Comm *parent)
 {
-    return MUK_Comm_get_parent(parent);
+    int rc = MUK_Comm_get_parent(parent);
+    MUK_COMM_NULLIFY(parent);
+    return rc;
 }
 
 int MPI_Comm_group(MPI_Comm comm, MPI_Group *group)
 {
-    return MUK_Comm_group(comm, group);
+    int rc = MUK_Comm_group(comm, group);
+    MUK_GROUP_NULLIFY(group);
+    return rc;
 }
 
 int MPI_Comm_idup(MPI_Comm comm, MPI_Comm *newcomm, MPI_Request *request)
 {
-    return MUK_Comm_idup(comm, newcomm, request);
+    int rc = MUK_Comm_idup(comm, newcomm, request);
+    MUK_COMM_NULLIFY(newcomm);
+    return rc;
 }
 
 int MPI_Comm_idup_with_info(MPI_Comm comm, MPI_Info info, MPI_Comm *newcomm, MPI_Request *request)
 {
-    return MUK_Comm_idup_with_info(comm, info, newcomm, request);
+    int rc = MUK_Comm_idup_with_info(comm, info, newcomm, request);
+    MUK_COMM_NULLIFY(newcomm);
+    return rc;
 }
 
 int MPI_Comm_join(int fd, MPI_Comm *intercomm)
 {
-    return MUK_Comm_join(fd, intercomm);
+    int rc = MUK_Comm_join(fd, intercomm);
+    MUK_COMM_NULLIFY(intercomm);
+    return rc;
 }
 
 int MPI_Comm_remote_group(MPI_Comm comm, MPI_Group *group)
 {
-    return MUK_Comm_remote_group(comm, group);
+    int rc = MUK_Comm_remote_group(comm, group);
+    MUK_GROUP_NULLIFY(group);
+    return rc;
 }
 
 int MPI_Comm_remote_size(MPI_Comm comm, int *size)
@@ -1849,12 +1882,16 @@ int MPI_Comm_set_name(MPI_Comm comm, const char *comm_name)
 
 int MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *newcomm)
 {
-    return MUK_Comm_split(comm, color, key, newcomm);
+    int rc = MUK_Comm_split(comm, color, key, newcomm);
+    MUK_COMM_NULLIFY(newcomm);
+    return rc;
 }
 
 int MPI_Comm_split_type(MPI_Comm comm, int split_type, int key, MPI_Info info, MPI_Comm *newcomm)
 {
-    return MUK_Comm_split_type(comm, split_type, key, info, newcomm);
+    int rc = MUK_Comm_split_type(comm, split_type, key, info, newcomm);
+    MUK_COMM_NULLIFY(newcomm);
+    return rc;
 }
 
 int MPI_Comm_test_inter(MPI_Comm comm, int *flag)
