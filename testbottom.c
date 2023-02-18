@@ -41,15 +41,11 @@ int main(int argc, char* argv[])
             len[1] = i;
             MPI_Get_address(&i, disp);
             MPI_Get_address(a, disp+1);
-            printf("disp[0],disp[1]={ %p , %p }\n",(void*)disp[0],(void*)disp[1]);
-            printf("&len[0],&len[1]={ %p , %p }\n",&len[0],&len[1]);
 
             type[0] = MPI_INT;
             type[1] = MPI_FLOAT;
             MPI_Type_create_struct(2, len, disp, type, &newtype);
             MPI_Type_commit(&newtype);
-
-            printf("MPI_BOTTOM=%p\n", MPI_BOTTOM);
 
             /* Pack i followed by a[0]...a[i-1]*/
             position = 0;
