@@ -5788,20 +5788,32 @@ int WRAP_Type_create_resized_c(MPI_Datatype *oldtype, IMPL_Count lb, IMPL_Count 
 }
 #endif
 
-int WRAP_Type_create_struct(int count, const int array_of_blocklengths[], const IMPL_Aint array_of_displacements[], const MPI_Datatype array_of_types[], MPI_Datatype **newtype)
+int WRAP_Type_create_struct(int count, const int array_of_blocklengths[], const IMPL_Aint array_of_displacements[], const MPI_Datatype* array_of_types[], MPI_Datatype **newtype)
 {
     *newtype = malloc(sizeof(MPI_Datatype));
-    int rc = IMPL_Type_create_struct(count, array_of_blocklengths, array_of_displacements, array_of_types, *newtype);
+    MPI_Datatype * impl_datatypes = malloc(count * sizeof(MPI_Datatype));
+    if (impl_datatypes == NULL) return MPI_ERR_INTERN;
+    for (int i=0; i<count; i++) {
+        impl_datatypes[i] = *(array_of_types[i]);
+    }
+    int rc = IMPL_Type_create_struct(count, array_of_blocklengths, array_of_displacements, impl_datatypes, *newtype);
     WRAP_DATATYPE_NULLIFY(newtype);
+    free(impl_datatypes);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 #if MPI_VERSION >= 4
-int WRAP_Type_create_struct_c(IMPL_Count count, const IMPL_Count array_of_blocklengths[], const IMPL_Count array_of_displacements[], const MPI_Datatype array_of_types[], MPI_Datatype **newtype)
+int WRAP_Type_create_struct_c(IMPL_Count count, const IMPL_Count array_of_blocklengths[], const IMPL_Count array_of_displacements[], const MPI_Datatype* array_of_types[], MPI_Datatype **newtype)
 {
     *newtype = malloc(sizeof(MPI_Datatype));
-    int rc = IMPL_Type_create_struct_c(count, array_of_blocklengths, array_of_displacements, array_of_types, *newtype);
+    MPI_Datatype * impl_datatypes = malloc(count * sizeof(MPI_Datatype));
+    if (impl_datatypes == NULL) return MPI_ERR_INTERN;
+    for (int i=0; i<count; i++) {
+        impl_datatypes[i] = *(array_of_types[i]);
+    }
+    int rc = IMPL_Type_create_struct_c(count, array_of_blocklengths, array_of_displacements, impl_datatypes, *newtype);
     WRAP_DATATYPE_NULLIFY(newtype);
+    free(impl_datatypes);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 #endif
@@ -6033,11 +6045,17 @@ int WRAP_Type_size_x(MPI_Datatype *datatype, IMPL_Count *size)
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Type_struct(int count, int array_of_blocklengths[], IMPL_Aint array_of_displacements[], MPI_Datatype array_of_types[], MPI_Datatype **newtype)
+int WRAP_Type_struct(int count, int array_of_blocklengths[], IMPL_Aint array_of_displacements[], MPI_Datatype* array_of_types[], MPI_Datatype **newtype)
 {
     *newtype = malloc(sizeof(MPI_Datatype));
-    int rc = IMPL_Type_struct(count, array_of_blocklengths, array_of_displacements, array_of_types, *newtype);
+    MPI_Datatype * impl_datatypes = malloc(count * sizeof(MPI_Datatype));
+    if (impl_datatypes == NULL) return MPI_ERR_INTERN;
+    for (int i=0; i<count; i++) {
+        impl_datatypes[i] = *(array_of_types[i]);
+    }
+    int rc = IMPL_Type_struct(count, array_of_blocklengths, array_of_displacements, impl_datatypes, *newtype);
     WRAP_DATATYPE_NULLIFY(newtype);
+    free(impl_datatypes);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
