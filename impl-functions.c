@@ -6007,7 +6007,18 @@ int WRAP_Type_lb(MPI_Datatype *datatype, IMPL_Aint *displacement)
 
 int WRAP_Type_match_size(int typeclass, int size, MPI_Datatype **datatype)
 {
-    int rc = IMPL_Type_match_size(typeclass, size, *datatype);
+    *datatype = malloc(sizeof(MPI_Datatype));
+    int impl_typeclass;
+    if (typeclass == MUK_TYPECLASS_INTEGER) {
+        impl_typeclass = MPI_TYPECLASS_INTEGER;
+    }
+    else if (typeclass == MUK_TYPECLASS_REAL) {
+        impl_typeclass = MPI_TYPECLASS_REAL;
+    }
+    else if (typeclass == MUK_TYPECLASS_COMPLEX) {
+        impl_typeclass = MPI_TYPECLASS_COMPLEX;
+    }
+    int rc = IMPL_Type_match_size(impl_typeclass, size, *datatype);
     WRAP_DATATYPE_NULLIFY(datatype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
