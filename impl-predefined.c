@@ -325,8 +325,9 @@ int ERROR_CODE_MUK_TO_IMPL(int error_muk)
 }
 
 // Buffer Address Constants
-#if ( __STDC_VERSION__ >= 201112L)
-_Static_assert( MPI_BOTTOM == NULL );
+#if ( __STDC_VERSION__ >= 201112L) && !defined(__clang__)
+// Clang refuses to do this
+_Static_assert(MPI_BOTTOM == NULL);
 #endif
 void * IMPL_BOTTOM = MPI_BOTTOM;
 void * IMPL_IN_PLACE = MPI_IN_PLACE;
@@ -334,7 +335,7 @@ void * IMPL_IN_PLACE = MPI_IN_PLACE;
 // we avoid converting thread levels because every known implementation uses
 // the same values for them, but we explicitly verify the assumption here.
 #if ( __STDC_VERSION__ >= 201112L)
-_Static_assert( (int)MUK_UNDEFINED == (int) MPI_UNDEFINED );
+_Static_assert( (int)MUK_UNDEFINED == (int)MPI_UNDEFINED );
 #endif
 
 // Assorted Constants
