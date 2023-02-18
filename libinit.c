@@ -907,10 +907,8 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MUK_Isendrecv_replace_c = MUK_DLSYM(wrap_so_handle, "WRAP_Isendrecv_replace_c");
     MUK_Issend = MUK_DLSYM(wrap_so_handle, "WRAP_Issend");
     MUK_Issend_c = MUK_DLSYM(wrap_so_handle, "WRAP_Issend_c");
-#if 0 // deleted
     MUK_Keyval_create = MUK_DLSYM(wrap_so_handle, "WRAP_Keyval_create");
     MUK_Keyval_free = MUK_DLSYM(wrap_so_handle, "WRAP_Keyval_free");
-#endif
     MUK_Lookup_name = MUK_DLSYM(wrap_so_handle, "WRAP_Lookup_name");
     MUK_Mprobe = MUK_DLSYM(wrap_so_handle, "WRAP_Mprobe");
     MUK_Mrecv = MUK_DLSYM(wrap_so_handle, "WRAP_Mrecv");

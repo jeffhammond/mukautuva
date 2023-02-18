@@ -334,8 +334,8 @@ int (*MUK_Isendrecv_replace_c)(void *buf, MPI_Count count, MPI_Datatype datatype
 int (*MUK_Issend)(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request);
 int (*MUK_Issend_c)(const void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request);
 // deprecated
-//int (*MUK_Keyval_create)(MUK_Copy_function *copy_fn, MUK_Delete_function *delete_fn, int *keyval, void *extra_state);
-//int (*MUK_Keyval_free)(int *keyval);
+int (*MUK_Keyval_create)(MPI_Copy_function *copy_fn, MPI_Delete_function *delete_fn, int *keyval, void *extra_state);
+int (*MUK_Keyval_free)(int *keyval);
 int (*MUK_Lookup_name)(const char *service_name, MPI_Info info, char *port_name);
 int (*MUK_Mprobe)(int source, int tag, MPI_Comm comm, MPI_Message *message, MPI_Status *status);
 int (*MUK_Mrecv)(void *buf, int count, MPI_Datatype datatype, MPI_Message *message, MPI_Status *status);
