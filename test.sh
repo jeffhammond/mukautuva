@@ -7,6 +7,8 @@ if [ `uname -s` == Darwin ] ; then
     OMPILIB=/opt/homebrew/Cellar/open-mpi/4.1.4_2/lib/libmpi.dylib
     MPICHRUN=/opt/homebrew/Cellar/mpich/4.1/bin/mpirun
     MPICHLIB=/opt/homebrew/Cellar/mpich/4.1/lib/libmpi.dylib
+    IMPIRUN=true
+    IMPILIB=
     DBG=lldb
     DBGARGS="--one-line 'run' --one-line-on-crash 'bt' --one-line 'quit' --"
 else
@@ -15,6 +17,9 @@ else
     OMPILIB=/usr/lib/x86_64-linux-gnu/libmpi.so
     MPICHRUN=/usr/bin/mpirun.mpich
     MPICHLIB=/usr/lib/x86_64-linux-gnu/libmpich.so
+    IMPIRUN=/opt/intel/oneapi/mpi/2021.8.0/bin/mpirun
+    IMPILIB=/opt/intel/oneapi/mpi/2021.8.0/lib/debug/libmpi.so
+    #IMPILIB=/opt/intel/oneapi/mpi/2021.8.0/lib/release/libmpi.so
     DBG=gdb
     DBGARGS="-ex \"set width 1000\" -ex \"thread apply all bt\" -ex run -ex bt -ex \"set confirm off\" -ex quit --args"
 fi
@@ -27,3 +32,5 @@ MPI_LIB=${OMPILIB} ${OMPIRUN} ${OPTS} -n ${NP} $1 || \
 MPI_LIB=${OMPILIB} ${OMPIRUN} ${OPTS} -n ${NP} ${DBG} ${DBGARGS} $1 ; \
 MPI_LIB=${MPICHLIB} ${MPICHRUN} -n ${NP} $1 || \
 MPI_LIB=${MPICHLIB} ${MPICHRUN} -n ${NP} ${DBG} ${DBGARGS} $1
+MPI_LIB=${IMPILIB} ${IMPIRUN} -n ${NP} $1 || \
+MPI_LIB=${IMPILIB} ${IMPIRUN} -n ${NP} ${DBG} ${DBGARGS} $1

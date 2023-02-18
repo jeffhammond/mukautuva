@@ -11,7 +11,8 @@
 typedef enum {
     MPICH   = 1,
     OMPI    = 2,
-    UNKNOWN = 3
+    INTEL   = 3,
+    UNKNOWN = 4
 } Which_MPI_e;
 
 extern Which_MPI_e whose_mpi;

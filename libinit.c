@@ -170,10 +170,18 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
             whose_mpi = MPICH;
             printf("MPICH\n");
         }
+        // Intel(R) MPI Library 2021.8 for Linux* OS
+        pos = strstr(lib_version, "Intel(R) MPI Library");
+        if (pos != NULL) {
+            whose_mpi = INTEL;
+            printf("INTEL\n");
+        }
 
         if (whose_mpi == OMPI) {
             wrapname = "ompi-wrap.so";
         } else if (whose_mpi == MPICH) {
+            wrapname = "mpich-wrap.so";
+        } else if (whose_mpi == INTEL) {
             wrapname = "mpich-wrap.so";
         } else {
             printf("MPI implementation unknown.\n");
