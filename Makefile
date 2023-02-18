@@ -20,7 +20,7 @@ ARFLAGS	= -r
 
 all: libs tests
 
-RUNTESTS = testcoll.x testcomm.x testinit.x testreqs.x testwin.x testgroup.x testtypes.x testops.x
+RUNTESTS = testcoll.x testcomm.x testinit.x testreqs.x testwin.x testgroup.x testtypes.x testops.x testbottom.x
 
 tests: header.o testconstants.x $(RUNTESTS)
 
