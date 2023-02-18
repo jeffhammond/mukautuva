@@ -55,6 +55,84 @@ extern MPI_Session IMPL_SESSION_NULL;
 extern MPI_Status* IMPL_STATUS_IGNORE;
 extern MPI_Status* IMPL_STATUSES_IGNORE;
 
+// Named Predefined Datatypes
+extern MPI_Datatype IMPL_CHAR;
+extern MPI_Datatype IMPL_SHORT;
+extern MPI_Datatype IMPL_INT;
+extern MPI_Datatype IMPL_LONG;
+extern MPI_Datatype IMPL_LONG_LONG_INT;
+extern MPI_Datatype IMPL_LONG_LONG;
+extern MPI_Datatype IMPL_SIGNED_CHAR;
+extern MPI_Datatype IMPL_UNSIGNED_CHAR;
+extern MPI_Datatype IMPL_UNSIGNED_SHORT;
+extern MPI_Datatype IMPL_UNSIGNED;
+extern MPI_Datatype IMPL_UNSIGNED_LONG;
+extern MPI_Datatype IMPL_UNSIGNED_LONG_LONG;
+extern MPI_Datatype IMPL_FLOAT;
+extern MPI_Datatype IMPL_DOUBLE;
+extern MPI_Datatype IMPL_LONG_DOUBLE;
+extern MPI_Datatype IMPL_WCHAR;
+extern MPI_Datatype IMPL_C_BOOL;
+
+extern MPI_Datatype IMPL_INT8_T;
+extern MPI_Datatype IMPL_INT16_T;
+extern MPI_Datatype IMPL_INT32_T;
+extern MPI_Datatype IMPL_INT64_T;
+extern MPI_Datatype IMPL_UINT8_T;
+extern MPI_Datatype IMPL_UINT16_T;
+extern MPI_Datatype IMPL_UINT32_T;
+extern MPI_Datatype IMPL_UINT64_T;
+extern MPI_Datatype IMPL_AINT;
+extern MPI_Datatype IMPL_COUNT;
+extern MPI_Datatype IMPL_OFFSET;
+extern MPI_Datatype IMPL_C_COMPLEX;
+extern MPI_Datatype IMPL_C_FLOAT_COMPLEX;
+extern MPI_Datatype IMPL_C_DOUBLE_COMPLEX;
+extern MPI_Datatype IMPL_C_LONG_DOUBLE_COMPLEX;
+
+extern MPI_Datatype IMPL_BYTE;
+extern MPI_Datatype IMPL_PACKED;
+
+extern MPI_Datatype IMPL_INTEGER;
+extern MPI_Datatype IMPL_REAL;
+extern MPI_Datatype IMPL_DOUBLE_PRECISION;
+extern MPI_Datatype IMPL_COMPLEX;
+extern MPI_Datatype IMPL_LOGICAL;
+extern MPI_Datatype IMPL_CHARACTER;
+
+extern MPI_Datatype IMPL_CXX_BOOL;
+extern MPI_Datatype IMPL_CXX_FLOAT_COMPLEX;
+extern MPI_Datatype IMPL_CXX_DOUBLE_COMPLEX;
+extern MPI_Datatype IMPL_CXX_LONG_DOUBLE_COMPLEX;
+
+#if 0
+extern MPI_Datatype IMPL_DOUBLE_COMPLEX;
+extern MPI_Datatype IMPL_INTEGER1;
+extern MPI_Datatype IMPL_INTEGER2;
+extern MPI_Datatype IMPL_INTEGER4;
+extern MPI_Datatype IMPL_INTEGER8;
+extern MPI_Datatype IMPL_INTEGER16;
+extern MPI_Datatype IMPL_REAL2;
+extern MPI_Datatype IMPL_REAL4;
+extern MPI_Datatype IMPL_REAL8;
+extern MPI_Datatype IMPL_REAL16;
+extern MPI_Datatype IMPL_COMPLEX4;
+extern MPI_Datatype IMPL_COMPLEX8;
+extern MPI_Datatype IMPL_COMPLEX16;
+extern MPI_Datatype IMPL_COMPLEX32;
+#endif
+
+extern MPI_Datatype IMPL_FLOAT_INT;
+extern MPI_Datatype IMPL_DOUBLE_INT;
+extern MPI_Datatype IMPL_LONG_INT;
+extern MPI_Datatype IMPL_2INT;
+extern MPI_Datatype IMPL_SHORT_INT;
+extern MPI_Datatype IMPL_LONG_DOUBLE_INT;
+
+extern MPI_Datatype IMPL_2REAL;
+extern MPI_Datatype IMPL_2DOUBLE_PRECISION;
+extern MPI_Datatype IMPL_2INTEGER;
+
 int (*IMPL_Finalized)(int * finalized);
 int (*IMPL_Comm_rank)(MPI_Comm comm, int *rank);
 int (*IMPL_Comm_size)(MPI_Comm comm, int *size);
@@ -1756,6 +1834,216 @@ static inline void WRAP_COMM_PRINT(MPI_Comm ** comm, char * label)
     "**comm=%p\n",
 #endif
      label, comm, *comm, **comm);
+}
+
+static inline void WRAP_DATATYPE_IMPL_TO_MUK(MPI_Datatype impl_datatype, MPI_Datatype ** muk_datatype)
+{
+    if (impl_datatype == MPI_DATATYPE_NULL) {
+        *muk_datatype = &IMPL_DATATYPE_NULL;
+    }
+    else if (impl_datatype == MPI_CHAR) {
+        *muk_datatype = &IMPL_CHAR;
+    }
+    else if (impl_datatype == MPI_SHORT) {
+        *muk_datatype = &IMPL_SHORT;
+    }
+    else if (impl_datatype == MPI_INT) {
+        *muk_datatype = &IMPL_INT;
+    }
+    else if (impl_datatype == MPI_LONG) {
+        *muk_datatype = &IMPL_LONG;
+    }
+    else if (impl_datatype == MPI_LONG_LONG_INT) {
+        *muk_datatype = &IMPL_LONG_LONG_INT;
+    }
+    else if (impl_datatype == MPI_LONG_LONG) {
+        *muk_datatype = &IMPL_LONG_LONG;
+    }
+    else if (impl_datatype == MPI_SIGNED_CHAR) {
+        *muk_datatype = &IMPL_SIGNED_CHAR;
+    }
+    else if (impl_datatype == MPI_UNSIGNED_CHAR) {
+        *muk_datatype = &IMPL_UNSIGNED_CHAR;
+    }
+    else if (impl_datatype == MPI_UNSIGNED_SHORT) {
+        *muk_datatype = &IMPL_UNSIGNED_SHORT;
+    }
+    else if (impl_datatype == MPI_UNSIGNED) {
+        *muk_datatype = &IMPL_UNSIGNED;
+    }
+    else if (impl_datatype == MPI_UNSIGNED_LONG) {
+        *muk_datatype = &IMPL_UNSIGNED_LONG;
+    }
+    else if (impl_datatype == MPI_UNSIGNED_LONG_LONG) {
+        *muk_datatype = &IMPL_UNSIGNED_LONG_LONG;
+    }
+    else if (impl_datatype == MPI_FLOAT) {
+        *muk_datatype = &IMPL_FLOAT;
+    }
+    else if (impl_datatype == MPI_DOUBLE) {
+        *muk_datatype = &IMPL_DOUBLE;
+    }
+    else if (impl_datatype == MPI_LONG_DOUBLE) {
+        *muk_datatype = &IMPL_LONG_DOUBLE;
+    }
+    else if (impl_datatype == MPI_WCHAR) {
+        *muk_datatype = &IMPL_WCHAR;
+    }
+    else if (impl_datatype == MPI_C_BOOL) {
+        *muk_datatype = &IMPL_C_BOOL;
+    }
+    else if (impl_datatype == MPI_INT8_T) {
+        *muk_datatype = &IMPL_INT8_T;
+    }
+    else if (impl_datatype == MPI_INT16_T) {
+        *muk_datatype = &IMPL_INT16_T;
+    }
+    else if (impl_datatype == MPI_INT32_T) {
+        *muk_datatype = &IMPL_INT32_T;
+    }
+    else if (impl_datatype == MPI_INT64_T) {
+        *muk_datatype = &IMPL_INT64_T;
+    }
+    else if (impl_datatype == MPI_UINT8_T) {
+        *muk_datatype = &IMPL_UINT8_T;
+    }
+    else if (impl_datatype == MPI_UINT16_T) {
+        *muk_datatype = &IMPL_UINT16_T;
+    }
+    else if (impl_datatype == MPI_UINT32_T) {
+        *muk_datatype = &IMPL_UINT32_T;
+    }
+    else if (impl_datatype == MPI_UINT64_T) {
+        *muk_datatype = &IMPL_UINT64_T;
+    }
+    else if (impl_datatype == MPI_AINT) {
+        *muk_datatype = &IMPL_AINT;
+    }
+    else if (impl_datatype == MPI_COUNT) {
+        *muk_datatype = &IMPL_COUNT;
+    }
+    else if (impl_datatype == MPI_OFFSET) {
+        *muk_datatype = &IMPL_OFFSET;
+    }
+    else if (impl_datatype == MPI_C_COMPLEX) {
+        *muk_datatype = &IMPL_C_COMPLEX;
+    }
+    else if (impl_datatype == MPI_C_FLOAT_COMPLEX) {
+        *muk_datatype = &IMPL_C_FLOAT_COMPLEX;
+    }
+    else if (impl_datatype == MPI_C_DOUBLE_COMPLEX) {
+        *muk_datatype = &IMPL_C_DOUBLE_COMPLEX;
+    }
+    else if (impl_datatype == MPI_C_LONG_DOUBLE_COMPLEX) {
+        *muk_datatype = &IMPL_C_LONG_DOUBLE_COMPLEX;
+    }
+    else if (impl_datatype == MPI_BYTE) {
+        *muk_datatype = &IMPL_BYTE;
+    }
+    else if (impl_datatype == MPI_PACKED) {
+        *muk_datatype = &IMPL_PACKED;
+    }
+    else if (impl_datatype == MPI_INTEGER) {
+        *muk_datatype = &IMPL_INTEGER;
+    }
+    else if (impl_datatype == MPI_REAL) {
+        *muk_datatype = &IMPL_REAL;
+    }
+    else if (impl_datatype == MPI_DOUBLE_PRECISION) {
+        *muk_datatype = &IMPL_DOUBLE_PRECISION;
+    }
+    else if (impl_datatype == MPI_COMPLEX) {
+        *muk_datatype = &IMPL_COMPLEX;
+    }
+    else if (impl_datatype == MPI_LOGICAL) {
+        *muk_datatype = &IMPL_LOGICAL;
+    }
+    else if (impl_datatype == MPI_CHARACTER) {
+        *muk_datatype = &IMPL_CHARACTER;
+    }
+    else if (impl_datatype == MPI_CXX_BOOL) {
+        *muk_datatype = &IMPL_CXX_BOOL;
+    }
+    else if (impl_datatype == MPI_CXX_FLOAT_COMPLEX) {
+        *muk_datatype = &IMPL_CXX_FLOAT_COMPLEX;
+    }
+    else if (impl_datatype == MPI_CXX_DOUBLE_COMPLEX) {
+        *muk_datatype = &IMPL_CXX_DOUBLE_COMPLEX;
+    }
+    else if (impl_datatype == MPI_CXX_LONG_DOUBLE_COMPLEX) {
+        *muk_datatype = &IMPL_CXX_LONG_DOUBLE_COMPLEX;
+    }
+#if 0 // FORTRAN STUFF
+    else if (impl_datatype == MPI_DOUBLE_COMPLEX) {
+        *muk_datatype = &IMPL_DOUBLE_COMPLEX;
+    }
+    else if (impl_datatype == MPI_INTEGER1) {
+        *muk_datatype = &IMPL_INTEGER1;
+    }
+    else if (impl_datatype == MPI_INTEGER2) {
+        *muk_datatype = &IMPL_INTEGER2;
+    }
+    else if (impl_datatype == MPI_INTEGER4) {
+        *muk_datatype = &IMPL_INTEGER4;
+    }
+    else if (impl_datatype == MPI_INTEGER8) {
+        *muk_datatype = &IMPL_INTEGER8;
+    }
+    else if (impl_datatype == MPI_INTEGER16) {
+        *muk_datatype = &IMPL_INTEGER16;
+    }
+    else if (impl_datatype == MPI_REAL2) {
+        *muk_datatype = &IMPL_REAL2;
+    }
+    else if (impl_datatype == MPI_REAL4) {
+        *muk_datatype = &IMPL_REAL4;
+    }
+    else if (impl_datatype == MPI_REAL8) {
+        *muk_datatype = &IMPL_REAL8;
+    }
+    else if (impl_datatype == MPI_REAL16) {
+        *muk_datatype = &IMPL_REAL16;
+    }
+    else if (impl_datatype == MPI_COMPLEX4) {
+        *muk_datatype = &IMPL_COMPLEX4;
+    }
+    else if (impl_datatype == MPI_COMPLEX8) {
+        *muk_datatype = &IMPL_COMPLEX8;
+    }
+    else if (impl_datatype == MPI_COMPLEX16) {
+        *muk_datatype = &IMPL_COMPLEX16;
+    }
+    else if (impl_datatype == MPI_COMPLEX32) {
+        *muk_datatype = &IMPL_COMPLEX32;
+    }
+#endif
+    else if (impl_datatype == MPI_FLOAT_INT) {
+        *muk_datatype = &IMPL_FLOAT_INT;
+    }
+    else if (impl_datatype == MPI_DOUBLE_INT) {
+        *muk_datatype = &IMPL_DOUBLE_INT;
+    }
+    else if (impl_datatype == MPI_LONG_INT) {
+        *muk_datatype = &IMPL_LONG_INT;
+    }
+    else if (impl_datatype == MPI_2INT) {
+        *muk_datatype = &IMPL_2INT;
+    }
+    else if (impl_datatype == MPI_SHORT_INT) {
+        *muk_datatype = &IMPL_SHORT_INT;
+    }
+    else if (impl_datatype == MPI_LONG_DOUBLE_INT) {
+        *muk_datatype = &IMPL_LONG_DOUBLE_INT;
+    }
+    else if (impl_datatype == MPI_2REAL) {
+        *muk_datatype = &IMPL_2REAL;
+    }
+    else if (impl_datatype == MPI_2DOUBLE_PRECISION) {
+        *muk_datatype = &IMPL_2DOUBLE_PRECISION;
+    }
+    else if (impl_datatype == MPI_2INTEGER) {
+        *muk_datatype = &IMPL_2INTEGER;
+    }
 }
 
 // WRAP->IMPL functions
@@ -5888,16 +6176,26 @@ int WRAP_Type_get_attr(MPI_Datatype *datatype, int type_keyval, void *attribute_
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Type_get_contents(MPI_Datatype *datatype, int max_integers, int max_addresses, int max_datatypes, int array_of_integers[], IMPL_Aint array_of_addresses[], MPI_Datatype array_of_datatypes[])
+int WRAP_Type_get_contents(MPI_Datatype *datatype, int max_integers, int max_addresses, int max_datatypes, int array_of_integers[], IMPL_Aint array_of_addresses[], MPI_Datatype* array_of_datatypes[])
 {
-    int rc = IMPL_Type_get_contents(*datatype, max_integers, max_addresses, max_datatypes, array_of_integers, array_of_addresses, array_of_datatypes);
+    MPI_Datatype * impl_datatypes = malloc(max_datatypes * sizeof(MPI_Datatype));
+    int rc = IMPL_Type_get_contents(*datatype, max_integers, max_addresses, max_datatypes, array_of_integers, array_of_addresses, impl_datatypes);
+    for (int i=0; i<max_datatypes; i++) {
+        WRAP_DATATYPE_IMPL_TO_MUK(impl_datatypes[i],&array_of_datatypes[i]);
+    }
+    free(impl_datatypes);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 #if MPI_VERSION >= 4
-int WRAP_Type_get_contents_c(MPI_Datatype *datatype, IMPL_Count max_integers, IMPL_Count max_addresses, IMPL_Count max_large_counts, IMPL_Count max_datatypes, int array_of_integers[], IMPL_Aint array_of_addresses[], IMPL_Count array_of_large_counts[], MPI_Datatype array_of_datatypes[])
+int WRAP_Type_get_contents_c(MPI_Datatype *datatype, IMPL_Count max_integers, IMPL_Count max_addresses, IMPL_Count max_large_counts, IMPL_Count max_datatypes, int array_of_integers[], IMPL_Aint array_of_addresses[], IMPL_Count array_of_large_counts[], MPI_Datatype* array_of_datatypes[])
 {
-    int rc = IMPL_Type_get_contents_c(*datatype, max_integers, max_addresses, max_large_counts, max_datatypes, array_of_integers, array_of_addresses, array_of_large_counts, array_of_datatypes);
+    MPI_Datatype * impl_datatypes = malloc(max_datatypes * sizeof(MPI_Datatype));
+    int rc = IMPL_Type_get_contents_c(*datatype, max_integers, max_addresses, max_large_counts, max_datatypes, array_of_integers, array_of_addresses, array_of_large_counts, impl_datatypes);
+    for (int i=0; i<max_datatypes; i++) {
+        WRAP_DATATYPE_IMPL_TO_MUK(impl_datatypes[i],&array_of_datatypes[i]);
+    }
+    free(impl_datatypes);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 #endif
