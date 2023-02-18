@@ -202,10 +202,16 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     }
 
     // Buffer Address Constants
-    void ** pMPI_BOTTOM   = MUK_DLSYM(wrap_so_handle,"IMPL_BOTTOM");
-    MPI_BOTTOM = *pMPI_BOTTOM;
+    //void ** pMPI_BOTTOM   = MUK_DLSYM(wrap_so_handle,"IMPL_BOTTOM");
+    //MPI_BOTTOM = *pMPI_BOTTOM;
     void ** pMPI_IN_PLACE = MUK_DLSYM(wrap_so_handle,"IMPL_IN_PLACE");
     MPI_IN_PLACE = *pMPI_IN_PLACE;
+#if 0
+    fflush(0);
+    printf("libinit: pMPI_BOTTOM=%p pMPI_IN_PLACE=%p\n", pMPI_BOTTOM, pMPI_IN_PLACE);
+    printf("libinit:  MPI_BOTTOM=%p  MPI_IN_PLACE=%p\n", MPI_BOTTOM, MPI_IN_PLACE);
+    fflush(0);
+#endif
 
     // No Process Message Handle
     //void ** pMPI_MESSAGE_NO_PROC = MUK_DLSYM(wrap_so_handle,"IMPL_MESSAGE_NO_PROC");
