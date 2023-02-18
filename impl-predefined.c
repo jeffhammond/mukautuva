@@ -325,6 +325,9 @@ int ERROR_CODE_MUK_TO_IMPL(int error_muk)
 }
 
 // Buffer Address Constants
+#if ( __STDC_VERSION__ >= 201112L)
+_Static_assert( MPI_BOTTOM == NULL );
+#endif
 void * IMPL_BOTTOM = MPI_BOTTOM;
 void * IMPL_IN_PLACE = MPI_IN_PLACE;
 
