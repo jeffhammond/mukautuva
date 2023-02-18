@@ -79,6 +79,7 @@ check: $(RUNTESTS)
 	./test.sh ./testreqs.x
 	./test.sh ./testtypes.x
 	./test.sh ./testwin.x
+	./test.sh ./testbottom.x
 
 clean:
 	-rm -f *.o *.x *.s *.a *.i *.so
