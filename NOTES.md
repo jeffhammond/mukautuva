@@ -58,12 +58,18 @@ Maybe...
 ```
 
 Latest...
+
 ```sh
 export LD_LIBRARY_PATH=${HOME}/mukautuva
+mkdir ${HOME}/mukautuva/bin
+ln -s `which gcc` ${HOME}/mukautuva/bin/mpicc
+```
+
+```
 wget https://www.mpich.org/static/downloads/4.1/mpich-testsuite-4.1.tar.gz
 tar -xaf mpich-testsuite-4.1.tar.gz
 cd mpich-testsuite-4.1/
-./configure CC=gcc CXX=g++ FC=false CPPFLAGS="-I${HOME}/mukautuva" LDFLAGS="-L${HOME}/mukautuva" LIBS="-lmuk" --enable-strictmpi
+./configure CC=gcc CXX=g++ FC=false CPPFLAGS="-I${HOME}/mukautuva" LDFLAGS="-L${HOME}/mukautuva" LIBS="-lmuk" --enable-strictmpi --with-mpi=${HOME}/mukautuva
 ```
 
 Useful:
