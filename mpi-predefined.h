@@ -103,7 +103,8 @@ enum {
 };
 
 // Buffer Address Constants
-MUK_EXTERN void * MPI_BOTTOM;
+//MUK_EXTERN void * MPI_BOTTOM;
+#define MPI_BOTTOM ((void *)0)
 MUK_EXTERN void * MPI_IN_PLACE;
 
 // Assorted Constants
