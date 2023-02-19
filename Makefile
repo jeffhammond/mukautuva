@@ -3,7 +3,7 @@ ifeq ($(shell uname),Darwin)
     MPICHCC=/opt/homebrew/Cellar/mpich/4.1/bin/mpicc
     CC=clang
     CFLAGS=-ferror-limit=5 # Clang
-    CFLAGS+=-Wno-c2x-extensions
+    CFLAGS+=-Wno-c2x-extensions -Wno-unused-function
 else
     OMPICC=/usr/bin/mpicc.openmpi
     MPICHCC=/usr/bin/mpicc.mpich
