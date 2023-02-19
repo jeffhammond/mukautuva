@@ -2044,6 +2044,17 @@ static inline void WRAP_DATATYPE_IMPL_TO_MUK(MPI_Datatype impl_datatype, MPI_Dat
     else if (impl_datatype == MPI_2INTEGER) {
         *muk_datatype = &IMPL_2INTEGER;
     }
+    else {
+        // The datatypes returned in array_of_datatypes are handles to datatype objects
+        // that are equivalent to the datatypes used in the original construction call.
+        // If these were derived datatypes, then the returned datatypes are new datatype objects,
+        // and the user is responsible for freeing these datatypes with MPI_TYPE_FREE.
+        // If these were predefined datatypes, then the returned datatype is equal to that
+        // (constant) predefined datatype and cannot be freed.
+        MPI_Datatype * user_datatype = malloc(sizeof(MPI_Datatype));
+        *user_datatype = impl_datatype;
+        *muk_datatype = user_datatype;
+    }
 }
 
 // WRAP->IMPL functions
