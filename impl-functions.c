@@ -6266,6 +6266,7 @@ int WRAP_Type_get_true_extent_x(MPI_Datatype *datatype, IMPL_Count *true_lb, IMP
 
 int WRAP_Type_hindexed(int count, int array_of_blocklengths[], IMPL_Aint array_of_displacements[], MPI_Datatype *oldtype, MPI_Datatype **newtype)
 {
+    *newtype = malloc(sizeof(MPI_Datatype));
     int rc = IMPL_Type_hindexed(count, array_of_blocklengths, array_of_displacements, *oldtype, *newtype);
     WRAP_DATATYPE_NULLIFY(newtype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -6273,6 +6274,7 @@ int WRAP_Type_hindexed(int count, int array_of_blocklengths[], IMPL_Aint array_o
 
 int WRAP_Type_hvector(int count, int blocklength, IMPL_Aint stride, MPI_Datatype *oldtype, MPI_Datatype **newtype)
 {
+    *newtype = malloc(sizeof(MPI_Datatype));
     int rc = IMPL_Type_hvector(count, blocklength, stride, *oldtype, *newtype);
     WRAP_DATATYPE_NULLIFY(newtype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
