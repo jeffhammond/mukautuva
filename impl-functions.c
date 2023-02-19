@@ -4363,7 +4363,6 @@ int WRAP_Info_get_string(MPI_Info *info, const char *key, int *buflen, char *val
 #if MPI_VERSION >= 4
     rc = IMPL_Info_get_string(*info, key, buflen, value, flag);
 #elif EMULATE_INFO_GET_STRING
-    //printf("MPI_Info_get_string is missing\n");
     int valuelen;
     rc = MPI_Info_get_valuelen(*info, key, &valuelen, flag);
     if (!flag) {
@@ -4378,6 +4377,7 @@ int WRAP_Info_get_string(MPI_Info *info, const char *key, int *buflen, char *val
     *buflen = valuelen + 1;
     end:
 #else
+    printf("MPI_Info_get_string is missing\n");
     (void)info;
     (void)key;
     (void)buflen;
