@@ -1697,6 +1697,10 @@ static inline void remove_cookie_pair_from_list(MPI_Request * request)
         }
         current = current->next;
     }
+    if (current == NULL) {
+        printf("remove_cookie_pair_from_list failed to find the request\n");
+        return;
+    }
 
     // Step 2: free the cookie that we found
     if (current->cookie != NULL) {
