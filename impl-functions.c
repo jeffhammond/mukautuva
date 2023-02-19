@@ -4359,7 +4359,32 @@ int WRAP_Info_get_nthkey(MPI_Info *info, int n, char *key)
 
 int WRAP_Info_get_string(MPI_Info *info, const char *key, int *buflen, char *value, int *flag)
 {
-    int rc = IMPL_Info_get_string(*info, key, buflen, value, flag);
+    int rc;
+#if MPI_VERSION >= 4
+    rc = IMPL_Info_get_string(*info, key, buflen, value, flag);
+#elif EMULATE_INFO_GET_STRING
+    //printf("MPI_Info_get_string is missing\n");
+    int valuelen;
+    rc = MPI_Info_get_valuelen(*info, key, &valuelen, flag);
+    if (!flag) {
+        rc = MPI_SUCCESS;
+        goto end;
+    }
+    rc = MPI_Info_get(*info, key, *buflen, value, flag);
+    if (!flag) {
+        rc = MPI_SUCCESS;
+        goto end;
+    }
+    *buflen = valuelen + 1;
+    end:
+#else
+    (void)info;
+    (void)key;
+    (void)buflen;
+    (void)value;
+    (void)flag;
+    rc = MPI_ERR_INTERN;
+#endif
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
