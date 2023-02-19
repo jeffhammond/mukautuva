@@ -25,8 +25,6 @@ Which_MPI_e whose_mpi = UNKNOWN;
 
 #include "muk-function-pointers.h"
 
-#include "impl-predefined.h"
-
 // end of type stuff
 
 int (*WRAP_Load_functions)(void * restrict h, int major, int minor);

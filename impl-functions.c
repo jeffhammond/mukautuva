@@ -2377,7 +2377,7 @@ int WRAP_Attr_delete(MPI_Comm *comm, int keyval)
 
 int WRAP_Attr_get(MPI_Comm *comm, int keyval, void *attribute_val, int *flag)
 {
-    int rc = IMPL_Attr_get(*comm, keyval, attribute_val, flag);
+    int rc = IMPL_Attr_get(*comm, KEY_MUK_TO_IMPL(keyval), attribute_val, flag);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -6208,7 +6208,7 @@ int WRAP_Type_free_keyval(int *type_keyval)
 
 int WRAP_Type_get_attr(MPI_Datatype *datatype, int type_keyval, void *attribute_val, int *flag)
 {
-    int rc = IMPL_Type_get_attr(*datatype, type_keyval, attribute_val, flag);
+    int rc = IMPL_Type_get_attr(*datatype, KEY_MUK_TO_IMPL(type_keyval), attribute_val, flag);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
