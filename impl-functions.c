@@ -6329,6 +6329,10 @@ int WRAP_Type_match_size(int typeclass, int size, MPI_Datatype **datatype)
     else if (typeclass == MUK_TYPECLASS_COMPLEX) {
         impl_typeclass = MPI_TYPECLASS_COMPLEX;
     }
+    else {
+        printf("Unknown typeclass: %d\n", typeclass);
+        impl_typeclass = MPI_UNDEFINED;
+    }
     int rc = IMPL_Type_match_size(impl_typeclass, size, *datatype);
     WRAP_DATATYPE_NULLIFY(datatype);
     return ERROR_CODE_IMPL_TO_MUK(rc);
