@@ -1405,6 +1405,31 @@ static int ALLTOALLW_SETUP(const MPI_Comm * comm, const MPI_Datatype* sendtypes[
 #include <stdlib.h>
 #include <string.h>
 
+static inline void WRAP_Status_empty(const bool ignore, WRAP_Status * w)
+{
+    if (ignore) return;
+
+    // An empty status is a status which is set to return
+    // tag = MPI_ANY_TAG
+    // source = MPI_ANY_SOURCE
+    // error = MPI_SUCCESS
+    // and is also internally configured so that calls to
+    // MPI_GET_COUNT, MPI_GET_ELEMENTS, and MPI_GET_ELEMENTS_X
+    // return count = 0 and MPI_TEST_CANCELLED returns false.
+
+    w->MPI_SOURCE = MUK_ANY_SOURCE;
+    w->MPI_TAG    = MUK_ANY_TAG;
+    w->MPI_ERROR  = 0; // MUK_SUCCESS;
+
+#if defined(MPICH)
+    memset(w->__kielletty__, 0, 2*sizeof(int));
+#elif defined(OPEN_MPI)
+    memset(w->__kielletty__, 0, 3*sizeof(int));
+#else
+#error Need MPI_Status ABI support
+#endif
+}
+
 static inline void WRAP_Status_to_MPI_Status(const WRAP_Status * w, MPI_Status * m)
 {
     if ((intptr_t)w == (intptr_t)IMPL_STATUS_IGNORE) {
@@ -1643,7 +1668,7 @@ static void cleanup_reduce_trampoline_cookie(reduce_trampoline_cookie_t * cookie
 // (or else the lookup will segfault, obviously).
 typedef struct req_cookie_pair_s
 {
-    MPI_Request                * request;
+    const MPI_Request          * request;
     reduce_trampoline_cookie_t * cookie;
 
     // for the linked list
@@ -1654,7 +1679,7 @@ req_cookie_pair_t;
 
 req_cookie_pair_t * req_cookie_pair_list = NULL;
 
-static void add_cookie_pair_to_list(MPI_Request * request, reduce_trampoline_cookie_t * cookie)
+static void add_cookie_pair_to_list(const MPI_Request * request, reduce_trampoline_cookie_t * cookie)
 {
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
     req_cookie_pair_t * pair = malloc(sizeof(req_cookie_pair_t));
@@ -1678,7 +1703,7 @@ static void add_cookie_pair_to_list(MPI_Request * request, reduce_trampoline_coo
 // this is the only one of these functions that is called
 // in a performance-critical way (in a loop in e.g. Waitall)
 // so ideally it should be inlined.
-static inline void remove_cookie_pair_from_list(MPI_Request * request)
+static inline void remove_cookie_pair_from_list(const MPI_Request * request)
 {
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
 
@@ -1727,7 +1752,7 @@ static inline void remove_cookie_pair_from_list(MPI_Request * request)
     free(current);
 }
 
-static void cleanup_ireduce_trampoline_cookie(reduce_trampoline_cookie_t * cookie, MPI_Request * request, MPI_Datatype * dup)
+static void cleanup_ireduce_trampoline_cookie(reduce_trampoline_cookie_t * cookie, const MPI_Request * request, MPI_Datatype * dup)
 {
     add_cookie_pair_to_list(request, cookie);
     int rc = IMPL_Type_free(dup);
@@ -1806,7 +1831,9 @@ static inline void WRAP_REQUEST_NULLIFY(MPI_Request ** request)
 {
     if (**request == MPI_REQUEST_NULL) {
         remove_cookie_pair_from_list(*request);
-        free(*request);
+        //if (**request != MPI_REQUEST_NULL) {
+            free(*request);
+        //}
         *request = &IMPL_REQUEST_NULL;
     }
 }
@@ -2347,13 +2374,13 @@ int WRAP_Alltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[], const I
 
 int WRAP_Alltoallw_init(const void *sendbuf, const int sendcounts[], const int sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const int recvcounts[], const int rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
+    *request = malloc(sizeof(MPI_Request));
     MPI_Datatype * impl_sendtypes;
     MPI_Datatype * impl_recvtypes;
     int rc = ALLTOALLW_SETUP(comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
     if (rc != MPI_SUCCESS) {
         return ERROR_CODE_IMPL_TO_MUK(rc);
     }
-    *request = malloc(sizeof(MPI_Request));
     rc = IMPL_Alltoallw_init(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *info, *request);
     WRAP_REQUEST_NULLIFY(request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -2361,13 +2388,13 @@ int WRAP_Alltoallw_init(const void *sendbuf, const int sendcounts[], const int s
 
 int WRAP_Alltoallw_init_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
+    *request = malloc(sizeof(MPI_Request));
     MPI_Datatype * impl_sendtypes;
     MPI_Datatype * impl_recvtypes;
     int rc = ALLTOALLW_SETUP(comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
     if (rc != MPI_SUCCESS) {
         return ERROR_CODE_IMPL_TO_MUK(rc);
     }
-    *request = malloc(sizeof(MPI_Request));
     rc = IMPL_Alltoallw_init_c(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *info, *request);
     WRAP_REQUEST_NULLIFY(request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -3980,8 +4007,8 @@ int WRAP_Iallgatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *
 
 int WRAP_Iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *datatype, MPI_Op *op, MPI_Comm *comm, MPI_Request **request)
 {
-    int rc;
     *request = malloc(sizeof(MPI_Request));
+    int rc;
     if (IS_PREDEFINED_OP(*op)) {
         rc = IMPL_Iallreduce(sendbuf, recvbuf, count, *datatype, *op, *comm, *request);
     }
@@ -4037,7 +4064,6 @@ int WRAP_Ialltoallv(const void *sendbuf, const int sendcounts[], const int sdisp
     *request = malloc(sizeof(MPI_Request));
     int rc = IMPL_Ialltoallv(sendbuf, sendcounts, sdispls, *sendtype, recvbuf, recvcounts, rdispls, *recvtype, *comm, *request);
     WRAP_REQUEST_NULLIFY(request);
-    WRAP_REQUEST_NULLIFY(request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4053,13 +4079,13 @@ int WRAP_Ialltoallv_c(const void *sendbuf, const IMPL_Count sendcounts[], const 
 
 int WRAP_Ialltoallw(const void *sendbuf, const int sendcounts[], const int sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const int recvcounts[], const int rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm, MPI_Request **request)
 {
+    *request = malloc(sizeof(MPI_Request));
     MPI_Datatype * impl_sendtypes;
     MPI_Datatype * impl_recvtypes;
     int rc = ALLTOALLW_SETUP(comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
     if (rc != MPI_SUCCESS) {
         return ERROR_CODE_IMPL_TO_MUK(rc);
     }
-    *request = malloc(sizeof(MPI_Request));
     rc = IMPL_Ialltoallw(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *request);
     WRAP_REQUEST_NULLIFY(request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -4067,13 +4093,13 @@ int WRAP_Ialltoallw(const void *sendbuf, const int sendcounts[], const int sdisp
 
 int WRAP_Ialltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm, MPI_Request **request)
 {
+    *request = malloc(sizeof(MPI_Request));
     MPI_Datatype * impl_sendtypes;
     MPI_Datatype * impl_recvtypes;
     int rc = ALLTOALLW_SETUP(comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
     if (rc != MPI_SUCCESS) {
         return ERROR_CODE_IMPL_TO_MUK(rc);
     }
-    *request = malloc(sizeof(MPI_Request));
     rc = IMPL_Ialltoallw_c(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *request);
     WRAP_REQUEST_NULLIFY(request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -4179,9 +4205,9 @@ int WRAP_Igatherv_c(const void *sendbuf, IMPL_Count sendcount, MPI_Datatype *sen
 
 int WRAP_Improbe(int source, int tag, MPI_Comm *comm, int *flag, MPI_Message **message, WRAP_Status *status)
 {
+    *message = malloc(sizeof(MPI_Message));
     const bool ignore = (intptr_t)status == (intptr_t)IMPL_STATUS_IGNORE;
     MPI_Status impl_status;
-    *message = malloc(sizeof(MPI_Message));
     int rc = IMPL_Improbe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, flag, *message, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     WRAP_MESSAGE_NULLIFY(message);
@@ -4280,13 +4306,13 @@ int WRAP_Ineighbor_alltoallv_c(const void *sendbuf, const IMPL_Count sendcounts[
 
 int WRAP_Ineighbor_alltoallw(const void *sendbuf, const int sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const int recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm, MPI_Request **request)
 {
+    *request = malloc(sizeof(MPI_Request));
     MPI_Datatype * impl_sendtypes;
     MPI_Datatype * impl_recvtypes;
     int rc = ALLTOALLW_SETUP(comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
     if (rc != MPI_SUCCESS) {
         return ERROR_CODE_IMPL_TO_MUK(rc);
     }
-    *request = malloc(sizeof(MPI_Request));
     rc = IMPL_Ineighbor_alltoallw(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *request);
     WRAP_REQUEST_NULLIFY(request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -4294,13 +4320,13 @@ int WRAP_Ineighbor_alltoallw(const void *sendbuf, const int sendcounts[], const 
 
 int WRAP_Ineighbor_alltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm, MPI_Request **request)
 {
+    *request = malloc(sizeof(MPI_Request));
     MPI_Datatype * impl_sendtypes;
     MPI_Datatype * impl_recvtypes;
     int rc = ALLTOALLW_SETUP(comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
     if (rc != MPI_SUCCESS) {
         return ERROR_CODE_IMPL_TO_MUK(rc);
     }
-    *request = malloc(sizeof(MPI_Request));
     rc = IMPL_Ineighbor_alltoallw_c(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *request);
     WRAP_REQUEST_NULLIFY(request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -4457,8 +4483,8 @@ int WRAP_Irecv_c(void *buf, IMPL_Count count, MPI_Datatype *datatype, int source
 
 int WRAP_Ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype *datatype, MPI_Op *op, int root, MPI_Comm *comm, MPI_Request **request)
 {
-    int rc;
     *request = malloc(sizeof(MPI_Request));
+    int rc;
     if (IS_PREDEFINED_OP(*op)) {
         rc = IMPL_Ireduce(sendbuf, recvbuf, count, *datatype, *op, RANK_MUK_TO_IMPL(root), *comm, *request);
     }
@@ -4691,6 +4717,7 @@ int WRAP_Lookup_name(const char *service_name, MPI_Info *info, char *port_name)
 
 int WRAP_Mprobe(int source, int tag, MPI_Comm *comm, MPI_Message **message, WRAP_Status *status)
 {
+    *message = malloc(sizeof(MPI_Message));
     const bool ignore = (intptr_t)status == (intptr_t)IMPL_STATUS_IGNORE;
     MPI_Status impl_status;
     int rc = IMPL_Mprobe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), *comm, *message, ignore ? MPI_STATUS_IGNORE : &impl_status);
@@ -4873,13 +4900,13 @@ int WRAP_Neighbor_alltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[]
 
 int WRAP_Neighbor_alltoallw_init(const void *sendbuf, const int sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const int recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
+    *request = malloc(sizeof(MPI_Request));
     MPI_Datatype * impl_sendtypes;
     MPI_Datatype * impl_recvtypes;
     int rc = ALLTOALLW_SETUP(comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
     if (rc != MPI_SUCCESS) {
         return ERROR_CODE_IMPL_TO_MUK(rc);
     }
-    *request = malloc(sizeof(MPI_Request));
     rc = IMPL_Neighbor_alltoallw_init(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *info, *request);
     WRAP_REQUEST_NULLIFY(request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -4887,13 +4914,13 @@ int WRAP_Neighbor_alltoallw_init(const void *sendbuf, const int sendcounts[], co
 
 int WRAP_Neighbor_alltoallw_init_c(const void *sendbuf, const IMPL_Count sendcounts[], const IMPL_Aint sdispls[], const MPI_Datatype* sendtypes[], void *recvbuf, const IMPL_Count recvcounts[], const IMPL_Aint rdispls[], const MPI_Datatype* recvtypes[], MPI_Comm *comm, MPI_Info *info, MPI_Request **request)
 {
+    *request = malloc(sizeof(MPI_Request));
     MPI_Datatype * impl_sendtypes;
     MPI_Datatype * impl_recvtypes;
     int rc = ALLTOALLW_SETUP(comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
     if (rc != MPI_SUCCESS) {
         return ERROR_CODE_IMPL_TO_MUK(rc);
     }
-    *request = malloc(sizeof(MPI_Request));
     rc = IMPL_Neighbor_alltoallw_init_c(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *info, *request);
     WRAP_REQUEST_NULLIFY(request);
     return ERROR_CODE_IMPL_TO_MUK(rc);
@@ -5368,6 +5395,12 @@ int WRAP_Request_free(MPI_Request **request)
 
 int WRAP_Request_get_status(MPI_Request *request, int *flag, WRAP_Status *status)
 {
+    if (*request == MPI_REQUEST_NULL) {
+        *flag = 1;
+        WRAP_Status_empty(false,status);
+        return MPI_SUCCESS;
+    }
+
     MPI_Status impl_status;
     int rc = IMPL_Request_get_status(*request, flag, &impl_status);
     if (*flag) {
@@ -5799,6 +5832,14 @@ int WRAP_Status_set_elements_x(WRAP_Status *status, MPI_Datatype *datatype, IMPL
 int WRAP_Test(MPI_Request **request, int *flag, WRAP_Status *status)
 {
     const bool ignore = (intptr_t)status == (intptr_t)IMPL_STATUS_IGNORE;
+
+    if (**request == MPI_REQUEST_NULL) {
+        //printf("WRAP_Test: request=%p *request=%p **request=MPI_REQUEST_NULL\n", request, *request);
+        *flag = 1;
+        WRAP_Status_empty(ignore,status);
+        return MPI_SUCCESS;
+    }
+
     MPI_Status impl_status;
     int rc = IMPL_Test(*request, flag, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (*flag) {
@@ -5839,12 +5880,16 @@ int WRAP_Testall(int count, MPI_Request* array_of_requests[], int *flag, WRAP_St
         for (int i=0; i<count; i++) {
             if (impl_requests[i] == MPI_REQUEST_NULL) {
                 remove_cookie_pair_from_list(array_of_requests[i]);
-                free(array_of_requests[i]);
+                if (*array_of_requests[i] != MPI_REQUEST_NULL) {
+                    free(array_of_requests[i]);
+                }
                 array_of_requests[i] = &IMPL_REQUEST_NULL;
             }
         }
     }
     free(impl_requests);
+
+    // need to WRAP_Status_empty(status) somewhere here when request is null
 
     if (!ignore) {
         for (int i=0; i<count; i++) {
@@ -5876,9 +5921,13 @@ int WRAP_Testany(int count, MPI_Request* array_of_requests[], int *indx, int *fl
 
             if (impl_requests[*indx] == MPI_REQUEST_NULL) {
                 remove_cookie_pair_from_list(array_of_requests[*indx]);
-                free(array_of_requests[*indx]);
+                if (*array_of_requests[*indx] != MPI_REQUEST_NULL) {
+                    free(array_of_requests[*indx]);
+                }
                 array_of_requests[*indx] = &IMPL_REQUEST_NULL;
             }
+
+            // need to WRAP_Status_empty(status) somewhere here when request is null
 
             if (!ignore) {
                 MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -5916,10 +5965,14 @@ int WRAP_Testsome(int incount, MPI_Request* array_of_requests[], int *outcount, 
             const int j = array_of_indices[i];
             if (impl_requests[j] == MPI_REQUEST_NULL) {
                 remove_cookie_pair_from_list(array_of_requests[j]);
-                free(array_of_requests[j]);
+                if (*array_of_requests[j] != MPI_REQUEST_NULL) {
+                    free(array_of_requests[j]);
+                }
                 array_of_requests[j] = &IMPL_REQUEST_NULL;
             }
         }
+
+        // need to WRAP_Status_empty(status) somewhere here when request is null
 
         if (!ignore) {
             for (int i=0; i<incount; i++) {
@@ -6476,15 +6529,18 @@ int WRAP_Unpublish_name(const char *service_name, MPI_Info *info, const char *po
 int WRAP_Wait(MPI_Request **request, WRAP_Status *status)
 {
     const bool ignore = (intptr_t)status == (intptr_t)IMPL_STATUS_IGNORE;
+
+    if (**request == MPI_REQUEST_NULL) {
+        //printf("WRAP_Wait: request=%p *request=%p **request=MPI_REQUEST_NULL\n", request, *request);
+        WRAP_Status_empty(ignore,status);
+        return MPI_SUCCESS;
+    }
+
     MPI_Status impl_status;
 
     int rc = IMPL_Wait(*request, ignore ? MPI_STATUS_IGNORE : &impl_status);
 
-    if (**request == MPI_REQUEST_NULL) {
-        remove_cookie_pair_from_list(*request);
-        free(*request);
-        *request = &IMPL_REQUEST_NULL;
-    }
+    WRAP_REQUEST_NULLIFY(request);
 
     if (!ignore) {
         MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -6516,11 +6572,15 @@ int WRAP_Waitall(int count, MPI_Request* array_of_requests[], WRAP_Status array_
     for (int i=0; i<count; i++) {
         if (impl_requests[i] == MPI_REQUEST_NULL) {
             remove_cookie_pair_from_list(array_of_requests[i]);
-            free(array_of_requests[i]);
+            if (*array_of_requests[i] != MPI_REQUEST_NULL) {
+                free(array_of_requests[i]);
+            }
             array_of_requests[i] = &IMPL_REQUEST_NULL;
         }
     }
     free(impl_requests);
+
+    // need to WRAP_Status_empty(status) somewhere here when request is null
 
     if (!ignore) {
         for (int i=0; i<count; i++) {
@@ -6528,7 +6588,6 @@ int WRAP_Waitall(int count, MPI_Request* array_of_requests[], WRAP_Status array_
         }
         free(impl_statuses);
     }
-
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -6551,9 +6610,13 @@ int WRAP_Waitany(int count, MPI_Request* array_of_requests[], int *indx, WRAP_St
 
         if (impl_requests[*indx] == MPI_REQUEST_NULL) {
             remove_cookie_pair_from_list(array_of_requests[*indx]);
-            free(array_of_requests[*indx]);
+            if (*array_of_requests[*indx] != MPI_REQUEST_NULL) {
+                free(array_of_requests[*indx]);
+            }
             array_of_requests[*indx] = &IMPL_REQUEST_NULL;
         }
+
+        // need to WRAP_Status_empty(status) somewhere here when request is null
 
         if (!ignore) {
             MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -6590,10 +6653,14 @@ int WRAP_Waitsome(int incount, MPI_Request* array_of_requests[], int *outcount, 
             const int j = array_of_indices[i];
             if (impl_requests[j] == MPI_REQUEST_NULL) {
                 remove_cookie_pair_from_list(array_of_requests[j]);
-                free(array_of_requests[j]);
+                if (*array_of_requests[j] != MPI_REQUEST_NULL) {
+                    free(array_of_requests[j]);
+                }
                 array_of_requests[j] = &IMPL_REQUEST_NULL;
             }
         }
+
+        // need to WRAP_Status_empty(status) somewhere here when request is null
 
         if (!ignore) {
             for (int i=0; i<incount; i++) {
