@@ -20,7 +20,9 @@ ARFLAGS	= -r
 
 all: libs tests
 
-RUNTESTS = testcoll.x testcomm.x testinit.x testreqs.x testwin.x testgroup.x testtypes.x testops.x testbottom.x testtypes2.x
+RUNTESTS = testcoll.x testcoll2.x testcomm.x testinit.x testreqs.x \
+	   testwin.x testgroup.x testtypes.x testtypes2.x testops.x \
+	   testbottom.x
 
 tests: header.o testconstants.x $(RUNTESTS)
 
@@ -72,12 +74,14 @@ ompi-functions.o: impl-functions.c
 
 check: $(RUNTESTS)
 	./test.sh ./testcoll.x
+	./test.sh ./testcoll2.x
 	./test.sh ./testcomm.x
 	./test.sh ./testgroup.x
 	./test.sh ./testinit.x
 	./test.sh ./testops.x
 	./test.sh ./testreqs.x
 	./test.sh ./testtypes.x
+	./test.sh ./testtypes2.x
 	./test.sh ./testwin.x
 	./test.sh ./testbottom.x
 
