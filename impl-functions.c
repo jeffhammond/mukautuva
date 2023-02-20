@@ -6953,14 +6953,14 @@ int WRAP_Win_set_name(MPI_Win *win, const char *win_name)
 
 int WRAP_Win_shared_query(MPI_Win *win, int rank, IMPL_Aint *size, int *disp_unit, void *baseptr)
 {
-    int rc = IMPL_Win_shared_query(*win, rank, size, disp_unit, baseptr);
+    int rc = IMPL_Win_shared_query(*win, RANK_MUK_TO_IMPL(rank), size, disp_unit, baseptr);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
 #if MPI_VERSION >= 4
 int WRAP_Win_shared_query_c(MPI_Win *win, int rank, IMPL_Aint *size, IMPL_Aint *disp_unit, void *baseptr)
 {
-    int rc = IMPL_Win_shared_query_c(*win, rank, size, disp_unit, baseptr);
+    int rc = IMPL_Win_shared_query_c(*win, RANK_MUK_TO_IMPL(rank), size, disp_unit, baseptr);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 #endif
