@@ -22,7 +22,7 @@ all: libs tests
 
 RUNTESTS = testcoll.x testcoll2.x testcomm.x testinit.x testreqs.x \
 	   testwin.x testgroup.x testtypes.x testtypes2.x testops.x \
-	   testbottom.x
+	   testbottom.x testcart.x
 
 tests: header.o testconstants.x $(RUNTESTS)
 
@@ -76,6 +76,7 @@ check: $(RUNTESTS)
 	./test.sh ./testcoll.x
 	./test.sh ./testcoll2.x
 	./test.sh ./testcomm.x
+	./test.sh ./testcart.x
 	./test.sh ./testgroup.x
 	./test.sh ./testinit.x
 	./test.sh ./testops.x
