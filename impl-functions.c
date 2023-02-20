@@ -1865,6 +1865,7 @@ static inline void WRAP_COMM_PRINT(MPI_Comm ** comm, char * label)
     "**comm=%p\n",
 #endif
      label, comm, *comm, **comm);
+    fflush(0);
 }
 
 static inline void WRAP_DATATYPE_IMPL_TO_MUK(MPI_Datatype impl_datatype, MPI_Datatype ** muk_datatype)
@@ -2549,10 +2550,10 @@ int WRAP_Cart_coords(MPI_Comm *comm, int rank, int maxdims, int coords[])
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Cart_create(MPI_Comm comm_old, int ndims, const int dims[], const int periods[], int reorder, MPI_Comm **comm_cart)
+int WRAP_Cart_create(MPI_Comm *comm_old, int ndims, const int dims[], const int periods[], int reorder, MPI_Comm **comm_cart)
 {
     *comm_cart = malloc(sizeof(MPI_Comm));
-    int rc = IMPL_Cart_create(comm_old, ndims, dims, periods, reorder, *comm_cart);
+    int rc = IMPL_Cart_create(*comm_old, ndims, dims, periods, reorder, *comm_cart);
     WRAP_COMM_NULLIFY(comm_cart);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
