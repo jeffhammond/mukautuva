@@ -8,7 +8,6 @@ extern "C" {
 #include "mpi-constants.h"
 #include "mpi-handle-typedefs.h"
 #include "mpi-typedefs.h"
-#define MUK_EXTERN extern
 #include "mpi-predefined.h"
 #include "mpi-prototypes.h"
 

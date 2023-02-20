@@ -1,10 +1,6 @@
 #ifndef MUK_MPI_PREDEFINED_H
 #define MUK_MPI_PREDEFINED_H
 
-#ifndef MUK_EXTERN
-#error You must define MUK_EXTERN outside of this header!
-#endif
-
 #include "muk-predefined.h"
 
 // error codes
@@ -103,9 +99,10 @@ enum {
 };
 
 // Buffer Address Constants
-//MUK_EXTERN void * MPI_BOTTOM;
+// this matches MPICH and OMPI
 #define MPI_BOTTOM ((void *)0)
-MUK_EXTERN void * MPI_IN_PLACE;
+// this matches OMPI (MPICH uses -1)
+#define MPI_IN_PLACE ((void *)1)
 
 // Assorted Constants
 enum {
@@ -131,15 +128,6 @@ enum {
     MPI_LOCK_SHARED     = MUK_LOCK_SHARED
 };
 
-// No Process Message Handle
-#ifdef MUK_INTERNAL
-void* muk_mpi_message_no_proc;
-#else
-extern struct MPI_ABI_Message muk_mpi_message_no_proc;
-#endif
-#define MPI_MESSAGE_NO_PROC (MPI_Message)&muk_mpi_message_no_proc
-
-
 #if 0
 //Fortran status array size and reserved index values (C only)
 enum {
@@ -155,535 +143,96 @@ enum {
 #endif
 
 // Error-handling specifiers
-#ifdef MUK_INTERNAL
-void* muk_mpi_errors_are_fatal;
-#else
-extern struct MPI_ABI_Errhandler muk_mpi_errors_are_fatal;
-#endif
-#define MPI_ERRORS_ARE_FATAL (MPI_Errhandler)&muk_mpi_errors_are_fatal
-
-#if 1 //MPI_VERSION >= 4
-#ifdef MUK_INTERNAL
-void* muk_mpi_errors_abort;
-#else
-extern struct MPI_ABI_Errhandler muk_mpi_errors_abort;
-#endif
-#define MPI_ERRORS_ABORT (MPI_Errhandler)&muk_mpi_errors_abort
-
-#endif
-#ifdef MUK_INTERNAL
-void* muk_mpi_errors_return;
-#else
-extern struct MPI_ABI_Errhandler muk_mpi_errors_return;
-#endif
-#define MPI_ERRORS_RETURN (MPI_Errhandler)&muk_mpi_errors_return
-
+#define MPI_ERRHANDLER_NULL (MPI_Errhandler)0
+#define MPI_ERRORS_ARE_FATAL (MPI_Errhandler)1
+#define MPI_ERRORS_RETURN (MPI_Errhandler) 2
+#define MPI_ERRORS_ABORT (MPI_Errhandler) 3
 
 // Named Predefined Datatypes
-#ifdef MUK_INTERNAL
-void* muk_mpi_char;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_char;
-#endif
-#define MPI_CHAR (MPI_Datatype)&muk_mpi_char
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_short;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_short;
-#endif
-#define MPI_SHORT (MPI_Datatype)&muk_mpi_short
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_int;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_int;
-#endif
-#define MPI_INT (MPI_Datatype)&muk_mpi_int
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_long;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_long;
-#endif
-#define MPI_LONG (MPI_Datatype)&muk_mpi_long
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_long_long_int;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_long_long_int;
-#endif
-#define MPI_LONG_LONG_INT (MPI_Datatype)&muk_mpi_long_long_int
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_long_long;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_long_long;
-#endif
-#define MPI_LONG_LONG (MPI_Datatype)&muk_mpi_long_long
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_signed_char;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_signed_char;
-#endif
-#define MPI_SIGNED_CHAR (MPI_Datatype)&muk_mpi_signed_char
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_unsigned_char;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_unsigned_char;
-#endif
-#define MPI_UNSIGNED_CHAR (MPI_Datatype)&muk_mpi_unsigned_char
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_unsigned_short;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_unsigned_short;
-#endif
-#define MPI_UNSIGNED_SHORT (MPI_Datatype)&muk_mpi_unsigned_short
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_unsigned;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_unsigned;
-#endif
-#define MPI_UNSIGNED (MPI_Datatype)&muk_mpi_unsigned
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_unsigned_long;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_unsigned_long;
-#endif
-#define MPI_UNSIGNED_LONG (MPI_Datatype)&muk_mpi_unsigned_long
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_unsigned_long_long;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_unsigned_long_long;
-#endif
-#define MPI_UNSIGNED_LONG_LONG (MPI_Datatype)&muk_mpi_unsigned_long_long
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_float;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_float;
-#endif
-#define MPI_FLOAT (MPI_Datatype)&muk_mpi_float
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_double;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_double;
-#endif
-#define MPI_DOUBLE (MPI_Datatype)&muk_mpi_double
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_long_double;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_long_double;
-#endif
-#define MPI_LONG_DOUBLE (MPI_Datatype)&muk_mpi_long_double
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_wchar;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_wchar;
-#endif
-#define MPI_WCHAR (MPI_Datatype)&muk_mpi_wchar
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_c_bool;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_c_bool;
-#endif
-#define MPI_C_BOOL (MPI_Datatype)&muk_mpi_c_bool
-
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_int8_t;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_int8_t;
-#endif
-#define MPI_INT8_T (MPI_Datatype)&muk_mpi_int8_t
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_int16_t;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_int16_t;
-#endif
-#define MPI_INT16_T (MPI_Datatype)&muk_mpi_int16_t
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_int32_t;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_int32_t;
-#endif
-#define MPI_INT32_T (MPI_Datatype)&muk_mpi_int32_t
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_int64_t;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_int64_t;
-#endif
-#define MPI_INT64_T (MPI_Datatype)&muk_mpi_int64_t
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_uint8_t;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_uint8_t;
-#endif
-#define MPI_UINT8_T (MPI_Datatype)&muk_mpi_uint8_t
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_uint16_t;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_uint16_t;
-#endif
-#define MPI_UINT16_T (MPI_Datatype)&muk_mpi_uint16_t
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_uint32_t;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_uint32_t;
-#endif
-#define MPI_UINT32_T (MPI_Datatype)&muk_mpi_uint32_t
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_uint64_t;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_uint64_t;
-#endif
-#define MPI_UINT64_T (MPI_Datatype)&muk_mpi_uint64_t
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_aint;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_aint;
-#endif
-#define MPI_AINT (MPI_Datatype)&muk_mpi_aint
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_count;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_count;
-#endif
-#define MPI_COUNT (MPI_Datatype)&muk_mpi_count
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_offset;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_offset;
-#endif
-#define MPI_OFFSET (MPI_Datatype)&muk_mpi_offset
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_c_complex;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_c_complex;
-#endif
-#define MPI_C_COMPLEX (MPI_Datatype)&muk_mpi_c_complex
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_c_float_complex;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_c_float_complex;
-#endif
-#define MPI_C_FLOAT_COMPLEX (MPI_Datatype)&muk_mpi_c_float_complex
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_c_double_complex;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_c_double_complex;
-#endif
-#define MPI_C_DOUBLE_COMPLEX (MPI_Datatype)&muk_mpi_c_double_complex
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_c_long_double_complex;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_c_long_double_complex;
-#endif
-#define MPI_C_LONG_DOUBLE_COMPLEX (MPI_Datatype)&muk_mpi_c_long_double_complex
-
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_byte;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_byte;
-#endif
-#define MPI_BYTE (MPI_Datatype)&muk_mpi_byte
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_packed;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_packed;
-#endif
-#define MPI_PACKED (MPI_Datatype)&muk_mpi_packed
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_integer;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_integer;
-#endif
-#define MPI_INTEGER (MPI_Datatype)&muk_mpi_integer
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_real;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_real;
-#endif
-#define MPI_REAL (MPI_Datatype)&muk_mpi_real
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_double_precision;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_double_precision;
-#endif
-#define MPI_DOUBLE_PRECISION (MPI_Datatype)&muk_mpi_double_precision
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_complex;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_complex;
-#endif
-#define MPI_COMPLEX (MPI_Datatype)&muk_mpi_complex
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_logical;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_logical;
-#endif
-#define MPI_LOGICAL (MPI_Datatype)&muk_mpi_logical
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_character;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_character;
-#endif
-#define MPI_CHARACTER (MPI_Datatype)&muk_mpi_character
-
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_cxx_bool;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_cxx_bool;
-#endif
-#define MPI_CXX_BOOL (MPI_Datatype)&muk_mpi_cxx_bool
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_cxx_float_complex;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_cxx_float_complex;
-#endif
-#define MPI_CXX_FLOAT_COMPLEX (MPI_Datatype)&muk_mpi_cxx_float_complex
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_cxx_double_complex;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_cxx_double_complex;
-#endif
-#define MPI_CXX_DOUBLE_COMPLEX (MPI_Datatype)&muk_mpi_cxx_double_complex
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_cxx_long_double_complex;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_cxx_long_double_complex;
-#endif
-#define MPI_CXX_LONG_DOUBLE_COMPLEX (MPI_Datatype)&muk_mpi_cxx_long_double_complex
-
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_double_complex;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_double_complex;
-#endif
-#define MPI_DOUBLE_COMPLEX (MPI_Datatype)&muk_mpi_double_complex
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_integer1;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_integer1;
-#endif
-#define MPI_INTEGER1 (MPI_Datatype)&muk_mpi_integer1
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_integer2;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_integer2;
-#endif
-#define MPI_INTEGER2 (MPI_Datatype)&muk_mpi_integer2
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_integer4;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_integer4;
-#endif
-#define MPI_INTEGER4 (MPI_Datatype)&muk_mpi_integer4
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_integer8;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_integer8;
-#endif
-#define MPI_INTEGER8 (MPI_Datatype)&muk_mpi_integer8
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_integer16;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_integer16;
-#endif
-#define MPI_INTEGER16 (MPI_Datatype)&muk_mpi_integer16
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_real2;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_real2;
-#endif
-#define MPI_REAL2 (MPI_Datatype)&muk_mpi_real2
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_real4;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_real4;
-#endif
-#define MPI_REAL4 (MPI_Datatype)&muk_mpi_real4
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_real8;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_real8;
-#endif
-#define MPI_REAL8 (MPI_Datatype)&muk_mpi_real8
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_real16;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_real16;
-#endif
-#define MPI_REAL16 (MPI_Datatype)&muk_mpi_real16
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_complex4;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_complex4;
-#endif
-#define MPI_COMPLEX4 (MPI_Datatype)&muk_mpi_complex4
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_complex8;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_complex8;
-#endif
-#define MPI_COMPLEX8 (MPI_Datatype)&muk_mpi_complex8
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_complex16;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_complex16;
-#endif
-#define MPI_COMPLEX16 (MPI_Datatype)&muk_mpi_complex16
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_complex32;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_complex32;
-#endif
-#define MPI_COMPLEX32 (MPI_Datatype)&muk_mpi_complex32
-
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_float_int;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_float_int;
-#endif
-#define MPI_FLOAT_INT (MPI_Datatype)&muk_mpi_float_int
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_double_int;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_double_int;
-#endif
-#define MPI_DOUBLE_INT (MPI_Datatype)&muk_mpi_double_int
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_long_int;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_long_int;
-#endif
-#define MPI_LONG_INT (MPI_Datatype)&muk_mpi_long_int
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_2int;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_2int;
-#endif
-#define MPI_2INT (MPI_Datatype)&muk_mpi_2int
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_short_int;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_short_int;
-#endif
-#define MPI_SHORT_INT (MPI_Datatype)&muk_mpi_short_int
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_long_double_int;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_long_double_int;
-#endif
-#define MPI_LONG_DOUBLE_INT (MPI_Datatype)&muk_mpi_long_double_int
-
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_2real;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_2real;
-#endif
-#define MPI_2REAL (MPI_Datatype)&muk_mpi_2real
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_2double_precision;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_2double_precision;
-#endif
-#define MPI_2DOUBLE_PRECISION (MPI_Datatype)&muk_mpi_2double_precision
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_2integer;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_2integer;
-#endif
-#define MPI_2INTEGER (MPI_Datatype)&muk_mpi_2integer
-
+#define MPI_DATATYPE_NULL ((MPI_Datatype)0)
+#define MPI_CHAR ((MPI_Datatype)1)
+#define MPI_SHORT ((MPI_Datatype)2)
+#define MPI_INT ((MPI_Datatype)3)
+#define MPI_LONG ((MPI_Datatype)4)
+#define MPI_LONG_LONG_INT ((MPI_Datatype)5)
+#define MPI_LONG_LONG ((MPI_Datatype)6)
+#define MPI_SIGNED_CHAR ((MPI_Datatype)7)
+#define MPI_UNSIGNED_CHAR ((MPI_Datatype)8)
+#define MPI_UNSIGNED_SHORT ((MPI_Datatype)9)
+#define MPI_UNSIGNED ((MPI_Datatype)10)
+#define MPI_UNSIGNED_LONG ((MPI_Datatype)11)
+#define MPI_UNSIGNED_LONG_LONG ((MPI_Datatype)12)
+#define MPI_FLOAT ((MPI_Datatype)13)
+#define MPI_DOUBLE ((MPI_Datatype)14)
+#define MPI_LONG_DOUBLE ((MPI_Datatype)15)
+#define MPI_WCHAR ((MPI_Datatype)16)
+#define MPI_C_BOOL ((MPI_Datatype)17)
+#define MPI_INT8_T ((MPI_Datatype)18)
+#define MPI_INT16_T ((MPI_Datatype)19)
+#define MPI_INT32_T ((MPI_Datatype)20)
+#define MPI_INT64_T ((MPI_Datatype)21)
+#define MPI_UINT8_T ((MPI_Datatype)22)
+#define MPI_UINT16_T ((MPI_Datatype)23)
+#define MPI_UINT32_T ((MPI_Datatype)24)
+#define MPI_UINT64_T ((MPI_Datatype)25)
+#define MPI_AINT ((MPI_Datatype)26)
+#define MPI_COUNT ((MPI_Datatype)27)
+#define MPI_OFFSET ((MPI_Datatype)28)
+#define MPI_C_COMPLEX ((MPI_Datatype)29)
+#define MPI_C_FLOAT_COMPLEX ((MPI_Datatype)30)
+#define MPI_C_DOUBLE_COMPLEX ((MPI_Datatype)31)
+#define MPI_C_LONG_DOUBLE_COMPLEX ((MPI_Datatype)32)
+#define MPI_BYTE ((MPI_Datatype)33)
+#define MPI_PACKED ((MPI_Datatype)34)
+#define MPI_CXX_BOOL ((MPI_Datatype)35)
+#define MPI_CXX_FLOAT_COMPLEX ((MPI_Datatype)36)
+#define MPI_CXX_DOUBLE_COMPLEX ((MPI_Datatype)37)
+#define MPI_CXX_LONG_DOUBLE_COMPLEX ((MPI_Datatype)38)
+#define MPI_INTEGER ((MPI_Datatype)39)
+#define MPI_REAL ((MPI_Datatype)40)
+#define MPI_DOUBLE_PRECISION ((MPI_Datatype)41)
+#define MPI_COMPLEX ((MPI_Datatype)42)
+#define MPI_LOGICAL ((MPI_Datatype)43)
+#define MPI_CHARACTER ((MPI_Datatype)44)
+#define MPI_DOUBLE_COMPLEX ((MPI_Datatype)45)
+#define MPI_INTEGER1 ((MPI_Datatype)46)
+#define MPI_INTEGER2 ((MPI_Datatype)47)
+#define MPI_INTEGER4 ((MPI_Datatype)48)
+#define MPI_INTEGER8 ((MPI_Datatype)49)
+#define MPI_INTEGER16 ((MPI_Datatype)50)
+#define MPI_REAL2 ((MPI_Datatype)51)
+#define MPI_REAL4 ((MPI_Datatype)52)
+#define MPI_REAL8 ((MPI_Datatype)53)
+#define MPI_REAL16 ((MPI_Datatype)54)
+#define MPI_COMPLEX4 ((MPI_Datatype)55)
+#define MPI_COMPLEX8 ((MPI_Datatype)56)
+#define MPI_COMPLEX16 ((MPI_Datatype)57)
+#define MPI_COMPLEX32 ((MPI_Datatype)58)
+#define MPI_FLOAT_INT ((MPI_Datatype)59)
+#define MPI_DOUBLE_INT ((MPI_Datatype)60)
+#define MPI_LONG_INT ((MPI_Datatype)61)
+#define MPI_2INT ((MPI_Datatype)62)
+#define MPI_SHORT_INT ((MPI_Datatype)63)
+#define MPI_LONG_DOUBLE_INT ((MPI_Datatype)64)
+#define MPI_2REAL ((MPI_Datatype)65)
+#define MPI_2DOUBLE_PRECISION ((MPI_Datatype)66)
+#define MPI_2INTEGER ((MPI_Datatype)67)
+#define MPI_LB ((MPI_Datatype)68)
+#define MPI_UB ((MPI_Datatype)69)
 
 // Reserved communicators
-#ifdef MUK_INTERNAL
-void* muk_mpi_comm_world;
-#else
-extern struct MPI_ABI_Comm muk_mpi_comm_world;
-#endif
-#define MPI_COMM_WORLD (MPI_Comm)&muk_mpi_comm_world
+#define MPI_COMM_NULL (MPI_Comm)0
+#define MPI_COMM_SELF (MPI_Comm)1
+#define MPI_COMM_WORLD (MPI_Comm)2
 
-#ifdef MUK_INTERNAL
-void* muk_mpi_comm_world;
-#else
-extern struct MPI_ABI_Comm muk_mpi_comm_world;
-#endif
-//#define MUK_PREDEFINED_GLOBAL(type, global) ((type) ((void *) &(global)))
-//#define MPI_COMM_WORLD MUK_PREDEFINED_GLOBAL( MPI_Comm, muk_mpi_comm_world)
-#define MPI_COMM_WORLD (MPI_Comm)&muk_mpi_comm_world
-#ifdef MUK_INTERNAL
-void* muk_mpi_comm_self;
-#else
-extern struct MPI_ABI_Comm muk_mpi_comm_self;
-#endif
-#define MPI_COMM_SELF (MPI_Comm)&muk_mpi_comm_self
-
+// Reserved groups
+#define MPI_GROUP_NULL (MPI_Group)0
+#define MPI_GROUP_EMPTY (MPI_Group)1
 
 // Communicator split type constants
 enum {
     MPI_COMM_TYPE_SHARED        = MUK_COMM_TYPE_SHARED,
-#if MPI_VERSION >= 4
+#if 1 //MPI_VERSION >= 4
     MPI_COMM_TYPE_HW_UNGUIDED   = MUK_COMM_TYPE_HW_UNGUIDED,
     MPI_COMM_TYPE_HW_GUIDED     = MUK_COMM_TYPE_HW_GUIDED
 #endif
@@ -694,207 +243,41 @@ enum {
     MPI_IDENT       = MUK_IDENT,
     MPI_CONGRUENT   = MUK_CONGRUENT,
     MPI_SIMILAR     = MUK_SIMILAR,
-    MPI_UNEQUAL     = MUK_UNEQUAL   
+    MPI_UNEQUAL     = MUK_UNEQUAL
 };
 
 // Environmental inquiry info key
-#ifdef MUK_INTERNAL
-void* muk_mpi_info_env;
-#else
-extern struct MPI_ABI_Info muk_mpi_info_env;
-#endif
-#define MPI_INFO_ENV (MPI_Info)&muk_mpi_info_env
-
+#define MPI_INFO_NULL (MPI_Info)0
+#define MPI_INFO_ENV  (MPI_Info)1
 
 // Collective Operations
-#ifdef MUK_INTERNAL
-void* muk_mpi_max;
-#else
-extern struct MPI_ABI_Op muk_mpi_max;
-#endif
-#define MPI_MAX (MPI_Op)&muk_mpi_max
+#define MPI_OP_NULL ((MPI_Op)0)
+#define MPI_MAX ((MPI_Op)1)
+#define MPI_MIN ((MPI_Op)2)
+#define MPI_SUM ((MPI_Op)3)
+#define MPI_PROD ((MPI_Op)4)
+#define MPI_LAND ((MPI_Op)5)
+#define MPI_BAND ((MPI_Op)6)
+#define MPI_LOR ((MPI_Op)7)
+#define MPI_BOR ((MPI_Op)8)
+#define MPI_LXOR ((MPI_Op)9)
+#define MPI_BXOR ((MPI_Op)10)
+#define MPI_MAXLOC ((MPI_Op)11)
+#define MPI_MINLOC ((MPI_Op)12)
+#define MPI_REPLACE ((MPI_Op)13)
+#define MPI_NO_OP ((MPI_Op)14)
 
-#ifdef MUK_INTERNAL
-void* muk_mpi_min;
-#else
-extern struct MPI_ABI_Op muk_mpi_min;
-#endif
-#define MPI_MIN (MPI_Op)&muk_mpi_min
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_sum;
-#else
-extern struct MPI_ABI_Op muk_mpi_sum;
-#endif
-#define MPI_SUM (MPI_Op)&muk_mpi_sum
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_prod;
-#else
-extern struct MPI_ABI_Op muk_mpi_prod;
-#endif
-#define MPI_PROD (MPI_Op)&muk_mpi_prod
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_land;
-#else
-extern struct MPI_ABI_Op muk_mpi_land;
-#endif
-#define MPI_LAND (MPI_Op)&muk_mpi_land
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_band;
-#else
-extern struct MPI_ABI_Op muk_mpi_band;
-#endif
-#define MPI_BAND (MPI_Op)&muk_mpi_band
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_lor;
-#else
-extern struct MPI_ABI_Op muk_mpi_lor;
-#endif
-#define MPI_LOR (MPI_Op)&muk_mpi_lor
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_bor;
-#else
-extern struct MPI_ABI_Op muk_mpi_bor;
-#endif
-#define MPI_BOR (MPI_Op)&muk_mpi_bor
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_lxor;
-#else
-extern struct MPI_ABI_Op muk_mpi_lxor;
-#endif
-#define MPI_LXOR (MPI_Op)&muk_mpi_lxor
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_bxor;
-#else
-extern struct MPI_ABI_Op muk_mpi_bxor;
-#endif
-#define MPI_BXOR (MPI_Op)&muk_mpi_bxor
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_maxloc;
-#else
-extern struct MPI_ABI_Op muk_mpi_maxloc;
-#endif
-#define MPI_MAXLOC (MPI_Op)&muk_mpi_maxloc
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_minloc;
-#else
-extern struct MPI_ABI_Op muk_mpi_minloc;
-#endif
-#define MPI_MINLOC (MPI_Op)&muk_mpi_minloc
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_replace;
-#else
-extern struct MPI_ABI_Op muk_mpi_replace;
-#endif
-#define MPI_REPLACE (MPI_Op)&muk_mpi_replace
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_no_op;
-#else
-extern struct MPI_ABI_Op muk_mpi_no_op;
-#endif
-#define MPI_NO_OP (MPI_Op)&muk_mpi_no_op
-
+// Predefined message handles
+#define MPI_MESSAGE_NULL (MPI_Message)0
+#define MPI_MESSAGE_NO_PROC ((MPI_Message)1)
 
 // Null Handles
-#ifdef MUK_INTERNAL
-void* muk_mpi_group_null;
-#else
-extern struct MPI_ABI_Group muk_mpi_group_null;
-#endif
-#define MPI_GROUP_NULL (MPI_Group)&muk_mpi_group_null
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_comm_null;
-#else
-extern struct MPI_ABI_Comm muk_mpi_comm_null;
-#endif
-#define MPI_COMM_NULL (MPI_Comm)&muk_mpi_comm_null
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_datatype_null;
-#else
-extern struct MPI_ABI_Datatype muk_mpi_datatype_null;
-#endif
-#define MPI_DATATYPE_NULL (MPI_Datatype)&muk_mpi_datatype_null
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_request_null;
-#else
-extern struct MPI_ABI_Request muk_mpi_request_null;
-#endif
-#define MPI_REQUEST_NULL (MPI_Request)&muk_mpi_request_null
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_op_null;
-#else
-extern struct MPI_ABI_Op muk_mpi_op_null;
-#endif
-#define MPI_OP_NULL (MPI_Op)&muk_mpi_op_null
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_errhandler_null;
-#else
-extern struct MPI_ABI_Errhandler muk_mpi_errhandler_null;
-#endif
-#define MPI_ERRHANDLER_NULL (MPI_Errhandler)&muk_mpi_errhandler_null
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_file_null;
-#else
-extern struct MPI_ABI_File muk_mpi_file_null;
-#endif
-#define MPI_FILE_NULL (MPI_File)&muk_mpi_file_null
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_info_null;
-#else
-extern struct MPI_ABI_Info muk_mpi_info_null;
-#endif
-#define MPI_INFO_NULL (MPI_Info)&muk_mpi_info_null
-
+#define MPI_REQUEST_NULL (MPI_Request)0
+#define MPI_FILE_NULL (MPI_File)0
+#define MPI_WIN_NULL (MPI_Win)0
 #if 1 //MPI_VERSION >= 4
-#ifdef MUK_INTERNAL
-void* muk_mpi_session_null;
-#else
-extern struct MPI_ABI_Session muk_mpi_session_null;
+#define MPI_SESSION_NULL (MPI_Session)0
 #endif
-#define MPI_SESSION_NULL (MPI_Session)&muk_mpi_session_null
-#endif
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_win_null;
-#else
-extern struct MPI_ABI_Win muk_mpi_win_null;
-#endif
-#define MPI_WIN_NULL (MPI_Win)&muk_mpi_win_null
-
-#ifdef MUK_INTERNAL
-void* muk_mpi_message_null;
-#else
-extern struct MPI_ABI_Message muk_mpi_message_null;
-#endif
-#define MPI_MESSAGE_NULL (MPI_Message)&muk_mpi_message_null
-
-
-// Empty group
-#ifdef MUK_INTERNAL
-void* muk_mpi_group_empty;
-#else
-extern struct MPI_ABI_Group muk_mpi_group_empty;
-#endif
-#define MPI_GROUP_EMPTY (MPI_Group)&muk_mpi_group_empty
-
 
 // Topologies
 enum {
@@ -1010,28 +393,29 @@ enum {
 };
 
 // Constants Specifying Empty or Ignored Input
-MUK_EXTERN char *** MPI_ARGVS_NULL;
-MUK_EXTERN char ** MPI_ARGV_NULL;
-MUK_EXTERN int * MPI_ERRCODES_IGNORE;
-MUK_EXTERN MPI_Status * MPI_STATUSES_IGNORE;
-MUK_EXTERN MPI_Status * MPI_STATUS_IGNORE;
-#if 0 //ndef MPICH
-MUK_EXTERN int * MPI_UNWEIGHTED;
-MUK_EXTERN int * MPI_WEIGHTS_EMPTY;
-#endif
+// These match MPICH and OMPI
+#define MPI_ARGV_NULL  ((char**)0)
+#define MPI_ARGVS_NULL ((char***)0)
+#define MPI_ERRCODES_IGNORE ((int*)0)
 
-// HACKING
-#define MPI_UNWEIGHTED NULL
-#define MPI_WEIGHTS_EMPTY NULL
-#define MPI_UB 0
-#define MPI_LB 0
-#define MPI_NULL_COPY_FN NULL
-#define MPI_NULL_DELETE_FN NULL
-#define MPI_COMM_NULL_COPY_FN NULL
-#define MPI_COMM_NULL_DELETE_FN NULL
-#define MPI_TYPE_NULL_COPY_FN NULL
-#define MPI_TYPE_NULL_DELETE_FN NULL
-#define MPI_WIN_NULL_COPY_FN NULL
-#define MPI_WIN_NULL_DELETE_FN NULL
+// These match OMPI (MPICH sets to 1)
+#define MPI_STATUSES_IGNORE ((MPI_Status*)0)
+#define MPI_STATUS_IGNORE   ((MPI_Status*)0)
+// These match OMPI (MPICH sets to extern-something)
+#define MPI_UNWEIGHTED    ((int*)2)
+#define MPI_WEIGHTS_EMPTY ((int*)3)
+
+#define MPI_NULL_COPY_FN        ((MPI_Copy_function)NULL)
+#define MPI_DUP_FN              ((MPI_Copy_function)NULL)
+#define MPI_NULL_DELETE_FN      ((MPI_Delete_function)NULL)
+#define MPI_COMM_NULL_COPY_FN   ((MPI_Comm_copy_attr_function)NULL)
+#define MPI_COMM_DUP_FN         ((MPI_Comm_copy_attr_function)NULL)
+#define MPI_COMM_NULL_DELETE_FN ((MPI_Comm_delete_attr_function)NULL)
+#define MPI_TYPE_NULL_COPY_FN   ((MPI_Type_copy_attr_function)NULL)
+#define MPI_TYPE_NULL_COPY_FN   ((MPI_Type_copy_attr_function)NULL)
+#define MPI_TYPE_NULL_DELETE_FN ((MPI_Type_delete_attr_function)NULL)
+#define MPI_WIN_NULL_COPY_FN    ((MPI_Win_copy_attr_function)NULL)
+#define MPI_WIN_NULL_COPY_FN    ((MPI_Win_copy_attr_function)NULL)
+#define MPI_WIN_NULL_DELETE_FN  ((MPI_Win_delete_attr_function)NULL)
 
 #endif

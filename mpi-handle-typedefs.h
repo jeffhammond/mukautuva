@@ -2,17 +2,25 @@
 #define MUK_MPI_HANDLE_TYPEDEFS_H
 
 #ifdef MUK_INTERNAL
-typedef void * MPI_Comm;
-typedef void * MPI_Datatype;
-typedef void * MPI_Errhandler;
-typedef void * MPI_File;
-typedef void * MPI_Group;
-typedef void * MPI_Info;
-typedef void * MPI_Message;
-typedef void * MPI_Op;
-typedef void * MPI_Request;
-typedef void * MPI_Session;
-typedef void * MPI_Win;
+#include <stddef.h>
+typedef union 
+{
+    void *      p;
+    int         i;
+    intptr_t    ip;
+}
+MUK_Handle;
+typedef MUK_Handle MPI_Comm;
+typedef MUK_Handle MPI_Datatype;
+typedef MUK_Handle MPI_Errhandler;
+typedef MUK_Handle MPI_File;
+typedef MUK_Handle MPI_Group;
+typedef MUK_Handle MPI_Info;
+typedef MUK_Handle MPI_Message;
+typedef MUK_Handle MPI_Op;
+typedef MUK_Handle MPI_Request;
+typedef MUK_Handle MPI_Session;
+typedef MUK_Handle MPI_Win;
 #else
 typedef struct MPI_ABI_Comm * MPI_Comm;
 typedef struct MPI_ABI_Datatype * MPI_Datatype;

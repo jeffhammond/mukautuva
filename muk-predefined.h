@@ -90,12 +90,14 @@ enum {
 // Assorted Constants
 enum {
     // these should be different and never valid ranks
-    MUK_PROC_NULL  = -2,
-    MUK_ANY_SOURCE = -3,
-    MUK_ROOT       = -4
+    // MUK and OMPI are the same.  MPICH in parentheses.
+    MUK_ANY_SOURCE = -1, // (-2)
+    MUK_PROC_NULL  = -2, // (-1)
+    MUK_ROOT       = -4  // (-3)
 };
 enum {
-    MUK_ANY_TAG    = -5
+    // MUK, MPICH and OMPI agree on this
+    MUK_ANY_TAG    = -1
 };
 enum {
     // MUK, MPICH and OMPI agree on this
