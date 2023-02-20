@@ -34,13 +34,8 @@ int main(int argc, char* argv[])
     usleep(1);
 
     {
-        printf("MPI_BYTE=" TYPE_FORMAT "\n",MPI_BYTE);
-        PRINT_REAL_HANDLE(MPI_BYTE);
-
         MPI_Datatype c1 = MPI_DATATYPE_NULL;
         MPI_Type_contiguous(100, MPI_BYTE, &c1);
-        printf("c1=" TYPE_FORMAT "\n",c1);
-        PRINT_REAL_HANDLE(c1);
         if (c1 == MPI_DATATYPE_NULL) {
             printf("fail 1\n");
             MPI_Abort(MPI_COMM_WORLD,1);
@@ -48,8 +43,6 @@ int main(int argc, char* argv[])
 
         MPI_Datatype c2 = MPI_DATATYPE_NULL;
         MPI_Type_contiguous(100, c1, &c2);
-        printf("c2=" TYPE_FORMAT "\n",c2);
-        PRINT_REAL_HANDLE(c2);
         if (c2 == MPI_DATATYPE_NULL) {
             printf("fail 2\n");
             MPI_Abort(MPI_COMM_WORLD,2);
@@ -70,8 +63,6 @@ int main(int argc, char* argv[])
             printf("c1 get_contents: ai[]=%d ad[]=" TYPE_FORMAT "\n", ai[0], ad[0]);
             MPI_Abort(MPI_COMM_WORLD,101);
         }
-        printf("1 ad[0]=" TYPE_FORMAT "\n",ad[0]);
-        PRINT_REAL_HANDLE(ad[0]);
 
         MPI_Type_get_envelope(c2, &ni, &na, &nd, &combiner);
         if (ni != 1 || na != 0 || nd != 1 || combiner != MPI_COMBINER_CONTIGUOUS) {
@@ -86,15 +77,12 @@ int main(int argc, char* argv[])
             printf("c2 get_contents: ai[]=%d ad[]=" TYPE_FORMAT "\n", ai[0], c3);
             MPI_Abort(MPI_COMM_WORLD,101);
         }
-        printf("2 ad[0]=" TYPE_FORMAT "\n",c3);
-        PRINT_REAL_HANDLE(c3);
 
         // now see if c3=ad[0] is the same as c1...
         MPI_Type_get_envelope(c3, &ni, &na, &nd, &combiner);
         if (ni != 1 || na != 0 || nd != 1 || combiner != MPI_COMBINER_CONTIGUOUS) {
             printf("ad[0] get_envelope: ni=%d na=%d nd=%d combiner=%d\n", ni, na, nd, combiner);
             printf("MPI_COMBINER_CONTIGUOUS = %d\n", MPI_COMBINER_CONTIGUOUS);
-            printf("MPI_COMBINER_DUP = %d\n", MPI_COMBINER_DUP);
             MPI_Abort(MPI_COMM_WORLD,5);
         }
 
@@ -103,8 +91,6 @@ int main(int argc, char* argv[])
             printf("ad[0] get_contents: ai[]=%d ad[]=" TYPE_FORMAT "\n", ai[0], ad[0]);
             MPI_Abort(MPI_COMM_WORLD,101);
         }
-        printf("3 ad[0]=" TYPE_FORMAT "\n",ad[0]);
-        PRINT_REAL_HANDLE(ad[0]);
 
         free(ai);
         free(ad);
