@@ -2383,6 +2383,9 @@ int WRAP_Alltoallw_init(const void *sendbuf, const int sendcounts[], const int s
     }
     rc = IMPL_Alltoallw_init(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *info, *request);
     WRAP_REQUEST_NULLIFY(request);
+    // THIS IS ILLEGAL - FIX IT
+    //if (sendtypes != NULL) free(impl_sendtypes);
+    //free(impl_recvtypes);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -2397,6 +2400,9 @@ int WRAP_Alltoallw_init_c(const void *sendbuf, const IMPL_Count sendcounts[], co
     }
     rc = IMPL_Alltoallw_init_c(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *info, *request);
     WRAP_REQUEST_NULLIFY(request);
+    // THIS IS ILLEGAL - FIX IT
+    //if (sendtypes != NULL) free(impl_sendtypes);
+    //free(impl_recvtypes);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4088,6 +4094,9 @@ int WRAP_Ialltoallw(const void *sendbuf, const int sendcounts[], const int sdisp
     }
     rc = IMPL_Ialltoallw(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *request);
     WRAP_REQUEST_NULLIFY(request);
+    // THIS IS ILLEGAL - FIX IT
+    //if (sendtypes != NULL) free(impl_sendtypes);
+    //free(impl_recvtypes);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4102,6 +4111,9 @@ int WRAP_Ialltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[], const 
     }
     rc = IMPL_Ialltoallw_c(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *request);
     WRAP_REQUEST_NULLIFY(request);
+    // THIS IS ILLEGAL - FIX IT
+    //if (sendtypes != NULL) free(impl_sendtypes);
+    //free(impl_recvtypes);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -6978,10 +6990,13 @@ static int ALLTOALLW_SETUP(const MPI_Comm * comm, const MPI_Datatype* sendtypes[
     if (rc != MPI_SUCCESS) {
         return MPI_ERR_INTERN;
     }
-    *impl_sendtypes = malloc(np * sizeof(MPI_Datatype));
-    if (impl_sendtypes == NULL) return MPI_ERR_INTERN;
-    for (int i=0; i<np; i++) {
-        (*impl_sendtypes)[i] = *(sendtypes[i]);
+    // if MPI_IN_PLACE, sendtypes can be NULL
+    if (sendtypes != NULL) {
+        *impl_sendtypes = malloc(np * sizeof(MPI_Datatype));
+        if (impl_sendtypes == NULL) return MPI_ERR_INTERN;
+        for (int i=0; i<np; i++) {
+            (*impl_sendtypes)[i] = *(sendtypes[i]);
+        }
     }
     *impl_recvtypes = malloc(np * sizeof(MPI_Datatype));
     if (impl_recvtypes == NULL) return MPI_ERR_INTERN;
