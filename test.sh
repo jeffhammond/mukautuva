@@ -16,7 +16,8 @@ else
     OMPIRUN=/usr/bin/mpirun.openmpi
     OMPILIB=/usr/lib/x86_64-linux-gnu/libmpi.so
     MPICHRUN=/usr/bin/mpirun.mpich
-    MPICHLIB=/usr/lib/x86_64-linux-gnu/libmpich.so
+    #MPICHLIB=/usr/lib/x86_64-linux-gnu/libmpich.so
+    MPICHLIB=/opt/mpich/gcc/debug-ch4ucx/lib/libmpi.so
     IMPIRUN=/opt/intel/oneapi/mpi/2021.8.0/bin/mpirun
     IMPILIB=/opt/intel/oneapi/mpi/2021.8.0/lib/debug/libmpi.so
     #IMPILIB=/opt/intel/oneapi/mpi/2021.8.0/lib/release/libmpi.so

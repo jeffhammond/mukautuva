@@ -350,7 +350,16 @@ int IMPL_LOCK_EXCLUSIVE = MPI_LOCK_EXCLUSIVE;
 int IMPL_LOCK_SHARED = MPI_LOCK_SHARED;
 
 // No Process Message Handle
+#if 0
 MPI_Message IMPL_MESSAGE_NO_PROC = MPI_MESSAGE_NO_PROC;
+#else
+typedef union MPI_Message_union
+{
+    MPI_Message handle;
+    void *      dummy;
+} MPI_Message_union;
+MPI_Message_union IMPL_MESSAGE_NO_PROC = { .handle = MPI_MESSAGE_NO_PROC };
+#endif
 
 #if 0
 //Fortran status array size and reserved index values (C only)

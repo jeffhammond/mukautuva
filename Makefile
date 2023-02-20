@@ -9,6 +9,7 @@ else
     MPICHCC=/usr/bin/mpicc.mpich
     CC=gcc
     CFLAGS=-fmax-errors=5 # GCC
+    #CFLAGS+=-fsanitize=address
 endif
 
 CFLAGS	+= -g3 -O0 -Wall -Wextra #-Werror # -Wpedantic
