@@ -2355,8 +2355,8 @@ int WRAP_Alltoallw(const void *sendbuf, const int sendcounts[], const int sdispl
         return ERROR_CODE_IMPL_TO_MUK(rc);
     }
     rc = IMPL_Alltoallw(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm);
+    if (sendtypes != NULL) free(impl_sendtypes);
     free(impl_recvtypes);
-    free(impl_sendtypes);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -2369,6 +2369,8 @@ int WRAP_Alltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[], const I
         return ERROR_CODE_IMPL_TO_MUK(rc);
     }
     rc = IMPL_Alltoallw_c(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm);
+    if (sendtypes != NULL) free(impl_sendtypes);
+    free(impl_recvtypes);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4327,6 +4329,9 @@ int WRAP_Ineighbor_alltoallw(const void *sendbuf, const int sendcounts[], const 
     }
     rc = IMPL_Ineighbor_alltoallw(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *request);
     WRAP_REQUEST_NULLIFY(request);
+    // THIS IS ILLEGAL - FIX IT
+    //if (sendtypes != NULL) free(impl_sendtypes);
+    //free(impl_recvtypes);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4341,6 +4346,9 @@ int WRAP_Ineighbor_alltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[
     }
     rc = IMPL_Ineighbor_alltoallw_c(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *request);
     WRAP_REQUEST_NULLIFY(request);
+    // THIS IS ILLEGAL - FIX IT
+    //if (sendtypes != NULL) free(impl_sendtypes);
+    //free(impl_recvtypes);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4895,6 +4903,8 @@ int WRAP_Neighbor_alltoallw(const void *sendbuf, const int sendcounts[], const I
         return ERROR_CODE_IMPL_TO_MUK(rc);
     }
     rc = IMPL_Neighbor_alltoallw(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm);
+    if (sendtypes != NULL) free(impl_sendtypes);
+    free(impl_recvtypes);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4907,6 +4917,8 @@ int WRAP_Neighbor_alltoallw_c(const void *sendbuf, const IMPL_Count sendcounts[]
         return ERROR_CODE_IMPL_TO_MUK(rc);
     }
     rc = IMPL_Neighbor_alltoallw_c(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm);
+    if (sendtypes != NULL) free(impl_sendtypes);
+    free(impl_recvtypes);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4921,6 +4933,9 @@ int WRAP_Neighbor_alltoallw_init(const void *sendbuf, const int sendcounts[], co
     }
     rc = IMPL_Neighbor_alltoallw_init(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *info, *request);
     WRAP_REQUEST_NULLIFY(request);
+    // THIS IS ILLEGAL - FIX IT
+    //if (sendtypes != NULL) free(impl_sendtypes);
+    //free(impl_recvtypes);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -4935,6 +4950,9 @@ int WRAP_Neighbor_alltoallw_init_c(const void *sendbuf, const IMPL_Count sendcou
     }
     rc = IMPL_Neighbor_alltoallw_init_c(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, *comm, *info, *request);
     WRAP_REQUEST_NULLIFY(request);
+    // THIS IS ILLEGAL - FIX IT
+    //if (sendtypes != NULL) free(impl_sendtypes);
+    //free(impl_recvtypes);
     return ERROR_CODE_IMPL_TO_MUK(rc);
 }
 
