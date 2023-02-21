@@ -10,10 +10,10 @@ else
     CC=gcc
     #CFLAGS=-fmax-errors=5 # GCC
     #CFLAGS+=-fsanitize=address
-    CFLAGS+=-Wno-unused-parameter -Wno-unused-variable
+    CFLAGS+=-Wno-unused-parameter -Wno-unused-variable -Wno-unused-function
 endif
 
-CFLAGS	+= -g3 -O0 -Wall -Wextra -Werror # -Wpedantic
+CFLAGS	+= -g3 -O0 -Wall -Wextra # -Werror # -Wpedantic
 CFLAGS	+= -fPIC
 SOFLAGS	= -shared
 
@@ -56,10 +56,10 @@ libinit.o: libinit.c muk.h muk-dl.h $(MPI_H)
 libinit.i: libinit.c muk.h muk-dl.h $(MPI_H)
 	$(CC) $(CFLAGS) -E $< -o $@
 
-mpich-wrap.so: mpich-predefined.o mpich-functions.o mpich-load-functions.o mpich-keyval.o
+mpich-wrap.so: mpich-predefined.o mpich-functions.o mpich-rma-functions.o mpich-type-functions.o mpich-wait-functions.o mpich-file-functions.o mpich-load-functions.o mpich-keyval.o
 	$(MPICHCC) $(SOFLAGS) $^ -o $@
 
-ompi-wrap.so: ompi-predefined.o ompi-functions.o ompi-load-functions.o ompi-keyval.o
+ompi-wrap.so: ompi-predefined.o ompi-functions.o ompi-rma-functions.o ompi-type-functions.o ompi-wait-functions.o ompi-file-functions.o ompi-load-functions.o ompi-keyval.o
 	$(OMPICC) $(SOFLAGS) $^ -o $@
 
 mpich-predefined.o: impl-predefined.c muk-predefined.h
@@ -76,6 +76,38 @@ mpich-functions.o: impl-functions.c impl-fpointers.h impl-status.h impl-handle-c
 ompi-functions.o: impl-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
 		  impl-predefined-op.h impl-constant-conversions.h impl-alltoallw.h impl-linked-list.h \
 		  wrap-handle-typedefs.h
+	$(OMPICC) $(CFLAGS) -c $< -o $@
+
+mpich-rma-functions.o: impl-rma-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
+		   impl-predefined-op.h impl-constant-conversions.h wrap-handle-typedefs.h
+	$(MPICHCC) $(CFLAGS) -c $< -o $@
+
+ompi-rma-functions.o: impl-rma-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
+		  impl-predefined-op.h impl-constant-conversions.h wrap-handle-typedefs.h
+	$(OMPICC) $(CFLAGS) -c $< -o $@
+
+mpich-type-functions.o: impl-type-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
+		   impl-predefined-op.h impl-constant-conversions.h wrap-handle-typedefs.h
+	$(MPICHCC) $(CFLAGS) -c $< -o $@
+
+ompi-type-functions.o: impl-type-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
+		  impl-predefined-op.h impl-constant-conversions.h wrap-handle-typedefs.h
+	$(OMPICC) $(CFLAGS) -c $< -o $@
+
+mpich-wait-functions.o: impl-wait-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
+		   impl-predefined-op.h impl-constant-conversions.h wrap-handle-typedefs.h
+	$(MPICHCC) $(CFLAGS) -c $< -o $@
+
+ompi-wait-functions.o: impl-wait-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
+		  impl-predefined-op.h impl-constant-conversions.h wrap-handle-typedefs.h
+	$(OMPICC) $(CFLAGS) -c $< -o $@
+
+mpich-file-functions.o: impl-file-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
+		   impl-predefined-op.h impl-constant-conversions.h wrap-handle-typedefs.h
+	$(MPICHCC) $(CFLAGS) -c $< -o $@
+
+ompi-file-functions.o: impl-file-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
+		  impl-predefined-op.h impl-constant-conversions.h wrap-handle-typedefs.h
 	$(OMPICC) $(CFLAGS) -c $< -o $@
 
 mpich-load-functions.o: impl-load-functions.c impl-fpointers.h

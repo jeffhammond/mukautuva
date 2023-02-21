@@ -4,7 +4,7 @@
 // declaration for impl-functions.c symbol
 extern int (*IMPL_Error_class)(int errorcode, int *errorclass);
 
-int ERROR_CODE_IMPL_TO_MUK(int error_c)
+static int ERROR_CODE_IMPL_TO_MUK(int error_c)
 {
     if (error_c == 0) return 0;
 
@@ -125,7 +125,7 @@ int ERROR_CODE_IMPL_TO_MUK(int error_c)
     }
 }
 
-int ERROR_CODE_MUK_TO_IMPL(int error_muk)
+static int ERROR_CODE_MUK_TO_IMPL(int error_muk)
 {
          if (error_muk == MUK_SUCCESS                    ) { return MPI_SUCCESS;                   }
     else if (error_muk == MUK_ERR_BUFFER                 ) { return MPI_ERR_BUFFER;                }
@@ -221,8 +221,7 @@ int ERROR_CODE_MUK_TO_IMPL(int error_muk)
     }
 }
 
-
-int COMBINER_CODE_IMPL_TO_MUK(int in)
+static int COMBINER_CODE_IMPL_TO_MUK(int in)
 {
          if (in == MPI_COMBINER_CONTIGUOUS)     { return MUK_COMBINER_CONTIGUOUS; }
     else if (in == MPI_COMBINER_DARRAY)         { return MUK_COMBINER_DARRAY; }
@@ -271,7 +270,7 @@ static inline int RANK_MUK_TO_IMPL(int rank_muk)
 }
 
 // mode constant conversion - this needs to handle multiple modes OR-ed together
-int IO_MODE_MUK_TO_IMPL(int mode_muk)
+static int IO_MODE_MUK_TO_IMPL(int mode_muk)
 {
     int mode_impl = 0;
     if (mode_muk & MUK_MODE_APPEND)          { mode_impl |= MPI_MODE_APPEND; }
@@ -286,7 +285,7 @@ int IO_MODE_MUK_TO_IMPL(int mode_muk)
     return mode_impl;
 }
 
-static inline int IO_MODE_IMPL_TO_MUK(int mode_impl)
+static int IO_MODE_IMPL_TO_MUK(int mode_impl)
 {
     int mode_muk = 0;
     if (mode_impl & MUK_MODE_APPEND)          { mode_muk |= MPI_MODE_APPEND; }
@@ -302,7 +301,7 @@ static inline int IO_MODE_IMPL_TO_MUK(int mode_impl)
 }
 
 // mode constant conversion - this needs to handle multiple modes OR-ed together
-static inline int RMA_MODE_MUK_TO_IMPL(int mode_muk)
+static int RMA_MODE_MUK_TO_IMPL(int mode_muk)
 {
     int mode_impl = 0;
     if (mode_muk & MUK_MODE_NOCHECK)         { mode_impl |= MPI_MODE_NOCHECK; }
@@ -314,7 +313,7 @@ static inline int RMA_MODE_MUK_TO_IMPL(int mode_muk)
 }
 
 // predefined attribute conversion
-static inline int KEY_MUK_TO_IMPL(int key_muk)
+static int KEY_MUK_TO_IMPL(int key_muk)
 {
          if (key_muk == MUK_TAG_UB)            { return MPI_TAG_UB; }
     else if (key_muk == MUK_IO)                { return MPI_IO; }

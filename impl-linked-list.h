@@ -25,7 +25,8 @@ typedef struct op_fptr_pair_s
 }
 op_fptr_pair_t;
 
-op_fptr_pair_t * op_fptr_pair_list = NULL;
+// impl-functions.c
+extern op_fptr_pair_t * op_fptr_pair_list;
 
 static WRAP_User_function * lookup_op_pair(MPI_Op op)
 {
@@ -156,7 +157,8 @@ typedef struct req_cookie_pair_s
 }
 req_cookie_pair_t;
 
-req_cookie_pair_t * req_cookie_pair_list = NULL;
+// impl-functions.c
+extern req_cookie_pair_t * req_cookie_pair_list;
 
 static void add_cookie_pair_to_list(const MPI_Request * request, reduce_trampoline_cookie_t * cookie)
 {
