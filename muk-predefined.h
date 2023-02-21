@@ -258,4 +258,7 @@ enum {
     MUK_TYPECLASS_REAL
 };
 
+#define MUK_BOTTOM ((void *)0)
+#define MUK_IN_PLACE ((void *)1)
+
 #endif

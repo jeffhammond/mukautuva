@@ -8,11 +8,12 @@ else
     OMPICC=/usr/bin/mpicc.openmpi
     MPICHCC=/usr/bin/mpicc.mpich
     CC=gcc
-    CFLAGS=-fmax-errors=5 # GCC
+    #CFLAGS=-fmax-errors=5 # GCC
     #CFLAGS+=-fsanitize=address
+    CFLAGS+=-Wno-unused-parameter -Wno-unused-variable
 endif
 
-CFLAGS	+= -g3 -O0 -Wall -Wextra #-Werror # -Wpedantic
+CFLAGS	+= -g3 -O0 -Wall -Wextra -Werror # -Wpedantic
 CFLAGS	+= -fPIC
 SOFLAGS	= -shared
 
@@ -55,10 +56,10 @@ libinit.o: libinit.c muk.h muk-dl.h $(MPI_H)
 libinit.i: libinit.c muk.h muk-dl.h $(MPI_H)
 	$(CC) $(CFLAGS) -E $< -o $@
 
-mpich-wrap.so: mpich-predefined.o mpich-functions.o
+mpich-wrap.so: mpich-predefined.o mpich-functions.o mpich-load-functions.o mpich-keyval.o
 	$(MPICHCC) $(SOFLAGS) $^ -o $@
 
-ompi-wrap.so: ompi-predefined.o ompi-functions.o
+ompi-wrap.so: ompi-predefined.o ompi-functions.o ompi-load-functions.o ompi-keyval.o
 	$(OMPICC) $(SOFLAGS) $^ -o $@
 
 mpich-predefined.o: impl-predefined.c muk-predefined.h
@@ -67,10 +68,26 @@ mpich-predefined.o: impl-predefined.c muk-predefined.h
 ompi-predefined.o: impl-predefined.c muk-predefined.h
 	$(OMPICC) $(CFLAGS) -c $< -o $@
 
-mpich-functions.o: impl-functions.c
+mpich-functions.o: impl-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
+		   impl-predefined-op.h impl-constant-conversions.h impl-alltoallw.h impl-linked-list.h \
+		   wrap-handle-typedefs.h
 	$(MPICHCC) $(CFLAGS) -c $< -o $@
 
-ompi-functions.o: impl-functions.c
+ompi-functions.o: impl-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
+		  impl-predefined-op.h impl-constant-conversions.h impl-alltoallw.h impl-linked-list.h \
+		  wrap-handle-typedefs.h
+	$(OMPICC) $(CFLAGS) -c $< -o $@
+
+mpich-load-functions.o: impl-load-functions.c impl-fpointers.h
+	$(MPICHCC) $(CFLAGS) -c $< -o $@
+
+ompi-load-functions.o: impl-load-functions.c impl-fpointers.h
+	$(OMPICC) $(CFLAGS) -c $< -o $@
+
+mpich-keyval.o: impl-keyval.c impl-fpointers.h
+	$(MPICHCC) $(CFLAGS) -c $< -o $@
+
+ompi-keyval.o: impl-keyval.c impl-fpointers.h
 	$(OMPICC) $(CFLAGS) -c $< -o $@
 
 check: $(RUNTESTS)

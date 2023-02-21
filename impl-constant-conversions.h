@@ -243,6 +243,9 @@ int COMBINER_CODE_IMPL_TO_MUK(int in)
     else                                        { return MUK_UNDEFINED; }
 }
 
+//static inline int TAG_MUK_TO_IMPL(int tag_muk)
+#define TAG_MUK_TO_IMPL(tag) (tag)
+
 static inline int RANK_MUK_TO_IMPL(int rank_muk)
 {
     // predefined constants are always negative
