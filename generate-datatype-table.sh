@@ -73,6 +73,20 @@ for t in \
     MPI_LB \
     MPI_UB \
     ; do
-    echo "#define ${t} ((MPI_Datatype)${c})"
+    #echo "#define ${t} ((MPI_Datatype)${c})"
+    u=$(echo "$t" | sed "s/MPI/MUK/")
+    #echo "${t} ${u}"
+# FORWARD
+#    echo "#ifdef ${t}
+#    else if (datatype.ip == (intptr_t)${u}) {
+#        return ${t};
+#    }
+##endif"
+# BACKWARD
+    echo "#ifdef ${t}
+    else if (datatype == ${t}) {
+        wrap.ip = (intptr_t)${u};
+    }
+#endif"
     let c++
 done
