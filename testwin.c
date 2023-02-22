@@ -28,12 +28,20 @@ int main(int argc, char* argv[])
     MPI_Win_allocate(1,1,MPI_INFO_NULL,MPI_COMM_WORLD,&ba,&a);
     MPI_Win_fence(0,a);
     MPI_Win_free(&a);
+    if (a != MPI_WIN_NULL) {
+        printf("win null? %d\n",a==MPI_WIN_NULL);
+        MPI_Abort(MPI_COMM_WORLD,1);
+    }
 
     // this is broken because OMPI sucks
-#if 0
+#if 1
     MPI_Win_allocate_shared(8,8,MPI_INFO_NULL,MPI_COMM_WORLD,&bas,&as);
     MPI_Win_fence(0,as);
     MPI_Win_free(&as);
+    if (as != MPI_WIN_NULL) {
+        printf("win null? %d\n",as==MPI_WIN_NULL);
+        MPI_Abort(MPI_COMM_WORLD,2);
+    }
 #else
     (void)as;
     (void)bas;
@@ -42,6 +50,10 @@ int main(int argc, char* argv[])
     MPI_Win_create(&bc,1,1,MPI_INFO_NULL,MPI_COMM_WORLD,&c);
     MPI_Win_fence(0,c);
     MPI_Win_free(&c);
+    if (c != MPI_WIN_NULL) {
+        printf("win null? %d\n",c==MPI_WIN_NULL);
+        MPI_Abort(MPI_COMM_WORLD,3);
+    }
 
     char b;
     MPI_Win_create_dynamic(MPI_INFO_NULL,MPI_COMM_WORLD,&cd);
@@ -51,6 +63,7 @@ int main(int argc, char* argv[])
     MPI_Win_free(&cd);
     if (cd != MPI_WIN_NULL) {
         printf("win null? %d\n",cd==MPI_WIN_NULL);
+        MPI_Abort(MPI_COMM_WORLD,4);
     }
 
     fflush(0);
