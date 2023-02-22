@@ -56,7 +56,7 @@ static inline WRAP_Comm OUTPUT_MPI_Comm(MPI_Comm comm)
 #error NO ABI
 #endif
     }
-     return wrap;
+    return wrap;
 }
 
 // DATATYPE
@@ -798,6 +798,19 @@ static inline MPI_Errhandler CONVERT_MPI_Errhandler(WRAP_Errhandler errhandler)
 #endif
 }
 
+static inline WRAP_Errhandler OUTPUT_MPI_Errhandler(MPI_Errhandler errhandler)
+{
+    WRAP_Errhandler wrap;
+#ifdef MPICH
+    wrap.i = errhandler;
+#elif OPEN_MPI
+    wrap.p = errhandler;
+#else
+#error NO ABI
+#endif
+    return wrap;
+}
+
 // FILE
 
 static inline MPI_File CONVERT_MPI_File(WRAP_File fh)
@@ -812,16 +825,67 @@ static inline MPI_File CONVERT_MPI_File(WRAP_File fh)
 #endif
 }
 
-static inline MPI_Group CONVERT_MPI_Group(WRAP_Group group)
+static inline WRAP_File OUTPUT_MPI_File(MPI_File fh)
 {
+    WRAP_File wrap;
 #ifdef MPICH
-    return group.i;
+    // ADIOS is an exception to MPICH handle design
+    wrap.p = fh;
 #elif OPEN_MPI
-    return group.p;
+    wrap.p = fh;
 #else
 #error NO ABI
 #endif
+    return wrap;
 }
+
+// GROUP
+
+static inline MPI_Group CONVERT_MPI_Group(WRAP_Group group)
+{
+    if (group.ip == (intptr_t)MUK_GROUP_NULL) {
+printf("%s %d\n",__func__,__LINE__);
+        return MPI_GROUP_NULL;
+    }
+    else if (group.ip == (intptr_t)MUK_GROUP_EMPTY) {
+printf("%s %d\n",__func__,__LINE__);
+        return MPI_GROUP_EMPTY;
+    }
+    else {
+#ifdef MPICH
+        return group.i;
+#elif OPEN_MPI
+        return group.p;
+#else
+#error NO ABI
+#endif
+    }
+}
+
+static inline WRAP_Group OUTPUT_MPI_Group(MPI_Group group)
+{
+    WRAP_Group wrap;
+    if (group == MPI_GROUP_NULL) {
+printf("%s %d\n",__func__,__LINE__);
+        wrap.ip = (intptr_t)MUK_GROUP_NULL;
+    }
+    else if (group == MPI_GROUP_EMPTY) {
+printf("%s %d\n",__func__,__LINE__);
+        wrap.ip = (intptr_t)MUK_GROUP_EMPTY;
+    }
+    else {
+#ifdef MPICH
+        wrap.i = group;
+#elif OPEN_MPI
+        wrap.p = group;
+#else
+#error NO ABI
+#endif
+    }
+    return wrap;
+}
+
+//
 
 static inline MPI_Info CONVERT_MPI_Info(WRAP_Info info)
 {
@@ -842,103 +906,6 @@ static inline MPI_Info CONVERT_MPI_Info(WRAP_Info info)
     }
 }
 
-static inline MPI_Message CONVERT_MPI_Message(WRAP_Message op)
-{
-#ifdef MPICH
-    return op.i;
-#elif OPEN_MPI
-    return op.p;
-#else
-#error NO ABI
-#endif
-}
-
-static inline MPI_Op CONVERT_MPI_Op(WRAP_Op op)
-{
-#ifdef MPICH
-    return op.i;
-#elif OPEN_MPI
-    return op.p;
-#else
-#error NO ABI
-#endif
-}
-
-static inline MPI_Request CONVERT_MPI_Request(WRAP_Request request)
-{
-#ifdef MPICH
-    return request.i;
-#elif OPEN_MPI
-    return request.p;
-#else
-#error NO ABI
-#endif
-}
-
-#if MPI_VERSION >= 4
-static inline MPI_Session CONVERT_MPI_Session(WRAP_Session session)
-{
-#ifdef MPICH
-    return session.i;
-#elif OPEN_MPI
-    return session.p;
-#else
-#error NO ABI
-#endif
-}
-#endif
-
-static inline MPI_Win CONVERT_MPI_Win(WRAP_Win win)
-{
-#ifdef MPICH
-    return win.i;
-#elif OPEN_MPI
-    return win.p;
-#else
-#error NO ABI
-#endif
-}
-
-static inline WRAP_Errhandler OUTPUT_MPI_Errhandler(MPI_Errhandler errhandler)
-{
-    WRAP_Errhandler wrap;
-#ifdef MPICH
-    wrap.i = errhandler;
-#elif OPEN_MPI
-    wrap.p = errhandler;
-#else
-#error NO ABI
-#endif
-     return wrap;
-}
-
-static inline WRAP_File OUTPUT_MPI_File(MPI_File fh)
-{
-    WRAP_File wrap;
-#ifdef MPICH
-    // ADIOS is an exception to MPICH handle design
-    wrap.p = fh;
-#elif OPEN_MPI
-    wrap.p = fh;
-#else
-#error NO ABI
-#endif
-     return wrap;
-}
-
-static inline WRAP_Group OUTPUT_MPI_Group(MPI_Group group)
-{
-    WRAP_Group wrap;
-#ifdef MPICH
-    wrap.i = group;
-#elif OPEN_MPI
-    wrap.p = group;
-#else
-#error NO ABI
-#endif
-     return wrap;
-}
-
 static inline WRAP_Info OUTPUT_MPI_Info(MPI_Info info)
 {
     WRAP_Info wrap;
@@ -949,7 +916,20 @@ static inline WRAP_Info OUTPUT_MPI_Info(MPI_Info info)
 #else
 #error NO ABI
 #endif
-     return wrap;
+    return wrap;
+}
+
+// MESSAGE
+
+static inline MPI_Message CONVERT_MPI_Message(WRAP_Message op)
+{
+#ifdef MPICH
+    return op.i;
+#elif OPEN_MPI
+    return op.p;
+#else
+#error NO ABI
+#endif
 }
 
 static inline WRAP_Message OUTPUT_MPI_Message(MPI_Message op)
@@ -962,7 +942,20 @@ static inline WRAP_Message OUTPUT_MPI_Message(MPI_Message op)
 #else
 #error NO ABI
 #endif
-     return wrap;
+    return wrap;
+}
+
+// OP
+
+static inline MPI_Op CONVERT_MPI_Op(WRAP_Op op)
+{
+#ifdef MPICH
+    return op.i;
+#elif OPEN_MPI
+    return op.p;
+#else
+#error NO ABI
+#endif
 }
 
 static inline WRAP_Op OUTPUT_MPI_Op(MPI_Op op)
@@ -975,23 +968,59 @@ static inline WRAP_Op OUTPUT_MPI_Op(MPI_Op op)
 #else
 #error NO ABI
 #endif
-     return wrap;
+    return wrap;
+}
+
+// REQUEST
+
+static inline MPI_Request CONVERT_MPI_Request(WRAP_Request request)
+{
+    if (request.ip == (intptr_t)MUK_REQUEST_NULL) {
+        return MPI_REQUEST_NULL;
+    }
+    else {
+#ifdef MPICH
+        return request.i;
+#elif OPEN_MPI
+        return request.p;
+#else
+#error NO ABI
+#endif
+    }
 }
 
 static inline WRAP_Request OUTPUT_MPI_Request(MPI_Request request)
 {
     WRAP_Request wrap;
+    if (request == MPI_REQUEST_NULL) {
+        wrap.ip = (intptr_t)MUK_REQUEST_NULL;
+    }
+    else {
 #ifdef MPICH
-    wrap.i = request;
+        wrap.i = request;
 #elif OPEN_MPI
-    wrap.p = request;
+        wrap.p = request;
 #else
 #error NO ABI
 #endif
-     return wrap;
+    }
+    return wrap;
 }
 
+// SESSION
+
 #if MPI_VERSION >= 4
+static inline MPI_Session CONVERT_MPI_Session(WRAP_Session session)
+{
+#ifdef MPICH
+    return session.i;
+#elif OPEN_MPI
+    return session.p;
+#else
+#error NO ABI
+#endif
+}
+
 static inline WRAP_Session OUTPUT_MPI_Session(MPI_Session session)
 {
     WRAP_Session wrap;
@@ -1002,9 +1031,22 @@ static inline WRAP_Session OUTPUT_MPI_Session(MPI_Session session)
 #else
 #error NO ABI
 #endif
-     return wrap;
+    return wrap;
 }
 #endif
+
+// WIN
+
+static inline MPI_Win CONVERT_MPI_Win(WRAP_Win win)
+{
+#ifdef MPICH
+    return win.i;
+#elif OPEN_MPI
+    return win.p;
+#else
+#error NO ABI
+#endif
+}
 
 static inline WRAP_Win OUTPUT_MPI_Win(MPI_Win win)
 {
@@ -1016,8 +1058,10 @@ static inline WRAP_Win OUTPUT_MPI_Win(MPI_Win win)
 #else
 #error NO ABI
 #endif
-     return wrap;
+    return wrap;
 }
+
+// OTHER
 
 static inline bool IS_IN_PLACE(const void* ptr)
 {

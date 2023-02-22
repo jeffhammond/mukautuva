@@ -147,17 +147,17 @@ int main(int argc, char* argv[])
     free(ranks2);
     MPI_Barrier(MPI_COMM_WORLD);
 
+    MPI_Group_free(&group_world);
+    if (group_world != MPI_GROUP_NULL) {
+        printf("freed group is not null\n");
+        MPI_Abort(MPI_COMM_WORLD,1);
+    }
+
     MPI_Group_free(&union1);
     MPI_Group_free(&diff1);
     MPI_Group_free(&incl1);
     MPI_Group_free(&excl1);
     MPI_Group_free(&dup1);
-    MPI_Group_free(&group_world);
-
-    if (group_world != MPI_GROUP_NULL) {
-        printf("freed group is not null\n");
-        MPI_Abort(MPI_COMM_WORLD,1);
-    }
 
     fflush(0);
     usleep(1);
