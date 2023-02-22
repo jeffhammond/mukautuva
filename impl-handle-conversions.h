@@ -845,11 +845,9 @@ static inline WRAP_File OUTPUT_MPI_File(MPI_File fh)
 static inline MPI_Group CONVERT_MPI_Group(WRAP_Group group)
 {
     if (group.ip == (intptr_t)MUK_GROUP_NULL) {
-printf("%s %d\n",__func__,__LINE__);
         return MPI_GROUP_NULL;
     }
     else if (group.ip == (intptr_t)MUK_GROUP_EMPTY) {
-printf("%s %d\n",__func__,__LINE__);
         return MPI_GROUP_EMPTY;
     }
     else {
@@ -867,11 +865,9 @@ static inline WRAP_Group OUTPUT_MPI_Group(MPI_Group group)
 {
     WRAP_Group wrap;
     if (group == MPI_GROUP_NULL) {
-printf("%s %d\n",__func__,__LINE__);
         wrap.ip = (intptr_t)MUK_GROUP_NULL;
     }
     else if (group == MPI_GROUP_EMPTY) {
-printf("%s %d\n",__func__,__LINE__);
         wrap.ip = (intptr_t)MUK_GROUP_EMPTY;
     }
     else {
