@@ -258,7 +258,24 @@ enum {
     MUK_TYPECLASS_REAL
 };
 
-#define MUK_BOTTOM ((void *)0)
+// Buffer Address Constants
+// MPICH, OMPI and MUK agree
+#define MUK_BOTTOM   ((void *)0)
+// OMPI and MUK agree.  MPICH is -1
 #define MUK_IN_PLACE ((void *)1)
+
+// Constants Specifying Empty or Ignored Input
+// These match MPICH and OMPI
+#define MUK_ARGV_NULL  ((char**)0)
+#define MUK_ARGVS_NULL ((char***)0)
+#define MUK_ERRCODES_IGNORE ((int*)0)
+
+// These match OMPI (MPICH sets to 1)
+#define MUK_STATUSES_IGNORE ((void*)0)
+#define MUK_STATUS_IGNORE   ((void*)0)
+
+// These match OMPI (MPICH sets to extern-something)
+#define MUK_UNWEIGHTED    ((int*)2)
+#define MUK_WEIGHTS_EMPTY ((int*)3)
 
 #endif
