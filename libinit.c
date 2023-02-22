@@ -779,7 +779,8 @@ int MPI_Finalize(void)
         WRAP_Finalize_handle_key();
     }
     int rc = MUK_Finalize();
-    return WRAP_CODE_IMPL_TO_MUK(rc);
+    // WRAP_CODE_IMPL_TO_MUK calls Error_class so we cannot call it after Finalize
+    return rc; //WRAP_CODE_IMPL_TO_MUK(rc);
 }
 
 int MPI_Finalized(int * flag)
@@ -790,7 +791,8 @@ int MPI_Finalized(int * flag)
         return MPI_SUCCESS;
     }
     int rc = MUK_Finalized(flag);
-    return WRAP_CODE_IMPL_TO_MUK(rc);
+    // WRAP_CODE_IMPL_TO_MUK calls Error_class so we cannot call it after Finalize
+    return rc; //WRAP_CODE_IMPL_TO_MUK(rc);
 }
 
 int MPI_Initialized(int * flag)
