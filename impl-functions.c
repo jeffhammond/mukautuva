@@ -29,6 +29,11 @@ req_cookie_pair_t * req_cookie_pair_list = NULL;
 void trampoline(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
 {
     int rc;
+    (void)rc;
+    (void)invec;
+    (void)inoutvec;
+    (void)len;
+    (void)datatype;
 #if 0
     int flag;
     reduce_trampoline_cookie_t * cookie = NULL;
@@ -49,6 +54,12 @@ void trampoline(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
 
 void trampoline_c(void *invec, void *inoutvec, MPI_Count *len, MPI_Datatype * datatype)
 {
+    int rc;
+    (void)rc;
+    (void)invec;
+    (void)inoutvec;
+    (void)len;
+    (void)datatype;
 }
 
 // WRAP->IMPL functions
@@ -427,7 +438,7 @@ int WRAP_Attr_delete(WRAP_Comm comm, int keyval)
 int WRAP_Attr_get(WRAP_Comm comm, int keyval, void *attribute_val, int *flag)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    int rc = IMPL_Attr_get(impl_comm, keyval, attribute_val, flag);
+    int rc = IMPL_Attr_get(impl_comm, KEY_MUK_TO_IMPL(keyval), attribute_val, flag);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -775,6 +786,7 @@ int WRAP_Comm_get_errhandler(WRAP_Comm comm, WRAP_Errhandler *errhandler)
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Errhandler impl_errhandler;
     int rc = IMPL_Comm_get_errhandler(impl_comm, &impl_errhandler);
+    *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -1889,9 +1901,9 @@ int WRAP_Info_get_nthkey(WRAP_Info info, int n, char *key)
 
 int WRAP_Info_get_string(WRAP_Info info, const char *key, int *buflen, char *value, int *flag)
 {
-    MPI_Info impl_info = CONVERT_MPI_Info(info);
     int rc;
 #if MPI_VERSION >= 4
+    MPI_Info impl_info = CONVERT_MPI_Info(info);
     rc = IMPL_Info_get_string(impl_info, key, buflen, value, flag);
 #else
     printf("MPI_Info_get_string is missing\n");
@@ -2585,7 +2597,8 @@ int WRAP_Op_create(WRAP_User_function *user_fn, int commute, WRAP_Op *op)
     MPI_Op impl_op;
     int rc = IMPL_Op_create(trampoline, commute, &impl_op);
     *op = OUTPUT_MPI_Op(impl_op);
-    add_op_pair_to_list(user_fn, impl_op);
+    (void)user_fn;
+    //add_op_pair_to_list(user_fn, impl_op);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -2595,6 +2608,7 @@ int WRAP_Op_create_c(WRAP_User_function_c *user_fn, int commute, WRAP_Op *op)
     MPI_Op impl_op;
     int rc = IMPL_Op_create_c(trampoline_c, commute, &impl_op);
     *op = OUTPUT_MPI_Op(impl_op);
+    (void)user_fn;
     //add_op_pair_to_list(user_fn, impl_op);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }

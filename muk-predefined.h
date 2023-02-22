@@ -1,6 +1,19 @@
 #ifndef MUK_PREDEFINED_H
 #define MUK_PREDEFINED_H
 
+// handle this better
+typedef struct MUK_ABI_Comm * MUK_Comm;
+typedef struct MUK_ABI_Datatype * MUK_Datatype;
+typedef struct MUK_ABI_Errhandler * MUK_Errhandler;
+typedef struct MUK_ABI_File * MUK_File;
+typedef struct MUK_ABI_Group * MUK_Group;
+typedef struct MUK_ABI_Info * MUK_Info;
+typedef struct MUK_ABI_Message * MUK_Message;
+typedef struct MUK_ABI_Op * MUK_Op;
+typedef struct MUK_ABI_Request * MUK_Request;
+typedef struct MUK_ABI_Session * MUK_Session;
+typedef struct MUK_ABI_Win * MUK_Win;
+
 // error codes
 enum {
     MUK_SUCCESS                         =  0,
@@ -114,6 +127,7 @@ enum {
     MUK_LOCK_SHARED    = -9
 };
 
+#if 0
 //Fortran status array size and reserved index values (C only)
 enum {
     // 256-bit Status is proposed
@@ -128,6 +142,94 @@ enum {
     MUK_INTEGER_KIND    = -1,
     MUK_OFFSET_KIND     = -1
 };
+#endif
+
+// Error-handling specifiers
+#define MUK_ERRHANDLER_NULL (MUK_Errhandler)0
+#define MUK_ERRORS_ARE_FATAL (MUK_Errhandler)1
+#define MUK_ERRORS_RETURN (MUK_Errhandler) 2
+#define MUK_ERRORS_ABORT (MUK_Errhandler) 3
+
+// Named Predefined Datatypes
+#define MUK_DATATYPE_NULL ((MUK_Datatype)0)
+#define MUK_CHAR ((MUK_Datatype)1)
+#define MUK_SHORT ((MUK_Datatype)2)
+#define MUK_INT ((MUK_Datatype)3)
+#define MUK_LONG ((MUK_Datatype)4)
+#define MUK_LONG_LONG_INT ((MUK_Datatype)5)
+#define MUK_LONG_LONG ((MUK_Datatype)6)
+#define MUK_SIGNED_CHAR ((MUK_Datatype)7)
+#define MUK_UNSIGNED_CHAR ((MUK_Datatype)8)
+#define MUK_UNSIGNED_SHORT ((MUK_Datatype)9)
+#define MUK_UNSIGNED ((MUK_Datatype)10)
+#define MUK_UNSIGNED_LONG ((MUK_Datatype)11)
+#define MUK_UNSIGNED_LONG_LONG ((MUK_Datatype)12)
+#define MUK_FLOAT ((MUK_Datatype)13)
+#define MUK_DOUBLE ((MUK_Datatype)14)
+#define MUK_LONG_DOUBLE ((MUK_Datatype)15)
+#define MUK_WCHAR ((MUK_Datatype)16)
+#define MUK_C_BOOL ((MUK_Datatype)17)
+#define MUK_INT8_T ((MUK_Datatype)18)
+#define MUK_INT16_T ((MUK_Datatype)19)
+#define MUK_INT32_T ((MUK_Datatype)20)
+#define MUK_INT64_T ((MUK_Datatype)21)
+#define MUK_UINT8_T ((MUK_Datatype)22)
+#define MUK_UINT16_T ((MUK_Datatype)23)
+#define MUK_UINT32_T ((MUK_Datatype)24)
+#define MUK_UINT64_T ((MUK_Datatype)25)
+#define MUK_AINT ((MUK_Datatype)26)
+#define MUK_COUNT ((MUK_Datatype)27)
+#define MUK_OFFSET ((MUK_Datatype)28)
+#define MUK_C_COMPLEX ((MUK_Datatype)29)
+#define MUK_C_FLOAT_COMPLEX ((MUK_Datatype)30)
+#define MUK_C_DOUBLE_COMPLEX ((MUK_Datatype)31)
+#define MUK_C_LONG_DOUBLE_COMPLEX ((MUK_Datatype)32)
+#define MUK_BYTE ((MUK_Datatype)33)
+#define MUK_PACKED ((MUK_Datatype)34)
+#define MUK_CXX_BOOL ((MUK_Datatype)35)
+#define MUK_CXX_FLOAT_COMPLEX ((MUK_Datatype)36)
+#define MUK_CXX_DOUBLE_COMPLEX ((MUK_Datatype)37)
+#define MUK_CXX_LONG_DOUBLE_COMPLEX ((MUK_Datatype)38)
+#define MUK_INTEGER ((MUK_Datatype)39)
+#define MUK_REAL ((MUK_Datatype)40)
+#define MUK_DOUBLE_PRECISION ((MUK_Datatype)41)
+#define MUK_COMPLEX ((MUK_Datatype)42)
+#define MUK_LOGICAL ((MUK_Datatype)43)
+#define MUK_CHARACTER ((MUK_Datatype)44)
+#define MUK_DOUBLE_COMPLEX ((MUK_Datatype)45)
+#define MUK_INTEGER1 ((MUK_Datatype)46)
+#define MUK_INTEGER2 ((MUK_Datatype)47)
+#define MUK_INTEGER4 ((MUK_Datatype)48)
+#define MUK_INTEGER8 ((MUK_Datatype)49)
+#define MUK_INTEGER16 ((MUK_Datatype)50)
+#define MUK_REAL2 ((MUK_Datatype)51)
+#define MUK_REAL4 ((MUK_Datatype)52)
+#define MUK_REAL8 ((MUK_Datatype)53)
+#define MUK_REAL16 ((MUK_Datatype)54)
+#define MUK_COMPLEX4 ((MUK_Datatype)55)
+#define MUK_COMPLEX8 ((MUK_Datatype)56)
+#define MUK_COMPLEX16 ((MUK_Datatype)57)
+#define MUK_COMPLEX32 ((MUK_Datatype)58)
+#define MUK_FLOAT_INT ((MUK_Datatype)59)
+#define MUK_DOUBLE_INT ((MUK_Datatype)60)
+#define MUK_LONG_INT ((MUK_Datatype)61)
+#define MUK_2INT ((MUK_Datatype)62)
+#define MUK_SHORT_INT ((MUK_Datatype)63)
+#define MUK_LONG_DOUBLE_INT ((MUK_Datatype)64)
+#define MUK_2REAL ((MUK_Datatype)65)
+#define MUK_2DOUBLE_PRECISION ((MUK_Datatype)66)
+#define MUK_2INTEGER ((MUK_Datatype)67)
+#define MUK_LB ((MUK_Datatype)68)
+#define MUK_UB ((MUK_Datatype)69)
+
+// Reserved communicators
+#define MUK_COMM_NULL  ((MUK_Comm)0)
+#define MUK_COMM_SELF  ((MUK_Comm)1)
+#define MUK_COMM_WORLD ((MUK_Comm)2)
+
+// Reserved groups
+#define MUK_GROUP_NULL  ((MUK_Group)0)
+#define MUK_GROUP_EMPTY ((MUK_Group)1)
 
 // Communicator split type constants
 enum {
@@ -144,6 +246,39 @@ enum {
     MUK_SIMILAR     = 2,
     MUK_UNEQUAL     = 3
 };
+
+// Environmental inquiry info key
+#define MUK_INFO_NULL (MUK_Info)0
+#define MUK_INFO_ENV  (MUK_Info)1
+
+// Collective Operations
+#define MUK_OP_NULL ((MUK_Op)0)
+#define MUK_MAX ((MUK_Op)1)
+#define MUK_MIN ((MUK_Op)2)
+#define MUK_SUM ((MUK_Op)3)
+#define MUK_PROD ((MUK_Op)4)
+#define MUK_LAND ((MUK_Op)5)
+#define MUK_BAND ((MUK_Op)6)
+#define MUK_LOR ((MUK_Op)7)
+#define MUK_BOR ((MUK_Op)8)
+#define MUK_LXOR ((MUK_Op)9)
+#define MUK_BXOR ((MUK_Op)10)
+#define MUK_MAXLOC ((MUK_Op)11)
+#define MUK_MINLOC ((MUK_Op)12)
+#define MUK_REPLACE ((MUK_Op)13)
+#define MUK_NO_OP ((MUK_Op)14)
+
+// Predefined message handles
+#define MUK_MESSAGE_NULL (MUK_Message)0
+#define MUK_MESSAGE_NO_PROC ((MUK_Message)1)
+
+// Null Handles
+#define MUK_REQUEST_NULL (MUK_Request)0
+#define MUK_FILE_NULL (MUK_File)0
+#define MUK_WIN_NULL (MUK_Win)0
+#if 1 //MUK_VERSION >= 4
+#define MUK_SESSION_NULL (MUK_Session)0
+#endif
 
 // Topologies
 enum {

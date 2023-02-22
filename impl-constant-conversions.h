@@ -1,6 +1,8 @@
 #ifndef MUK_IMPL_CONSTANT_CONVERSIONS_H
 #define MUK_IMPL_CONSTANT_CONVERSIONS_H
 
+#define MAYBE_UNUSED __attribute__((unused))
+
 // success is the common case, so static inline it.
 // jump to the error conversion only when necessary.
 // the ERROR_CODE functions need to be symbols because
@@ -21,6 +23,7 @@ static inline int RETURN_CODE_MUK_TO_IMPL(int error_muk)
     return ERROR_CODE_MUK_TO_IMPL(error_muk);
 }
 
+MAYBE_UNUSED
 static int COMBINER_CODE_IMPL_TO_MUK(int in)
 {
          if (in == MPI_COMBINER_CONTIGUOUS)     { return MUK_COMBINER_CONTIGUOUS; }
@@ -45,6 +48,7 @@ static int COMBINER_CODE_IMPL_TO_MUK(int in)
 //static inline int TAG_MUK_TO_IMPL(int tag_muk)
 #define TAG_MUK_TO_IMPL(tag) (tag)
 
+MAYBE_UNUSED
 static inline int RANK_MUK_TO_IMPL(int rank_muk)
 {
     // predefined constants are always negative
@@ -70,6 +74,7 @@ static inline int RANK_MUK_TO_IMPL(int rank_muk)
 }
 
 // mode constant conversion - this needs to handle multiple modes OR-ed together
+MAYBE_UNUSED
 static int IO_MODE_MUK_TO_IMPL(int mode_muk)
 {
     int mode_impl = 0;
@@ -85,6 +90,7 @@ static int IO_MODE_MUK_TO_IMPL(int mode_muk)
     return mode_impl;
 }
 
+MAYBE_UNUSED
 static int IO_MODE_IMPL_TO_MUK(int mode_impl)
 {
     int mode_muk = 0;
@@ -101,6 +107,7 @@ static int IO_MODE_IMPL_TO_MUK(int mode_impl)
 }
 
 // mode constant conversion - this needs to handle multiple modes OR-ed together
+MAYBE_UNUSED
 static int RMA_MODE_MUK_TO_IMPL(int mode_muk)
 {
     int mode_impl = 0;
@@ -113,6 +120,7 @@ static int RMA_MODE_MUK_TO_IMPL(int mode_muk)
 }
 
 // predefined attribute conversion
+MAYBE_UNUSED
 static int KEY_MUK_TO_IMPL(int key_muk)
 {
          if (key_muk == MUK_TAG_UB)            { return MPI_TAG_UB; }

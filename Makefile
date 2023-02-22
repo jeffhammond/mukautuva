@@ -10,7 +10,7 @@ else
     CC=gcc
     CFLAGS=-fmax-errors=5 # GCC
     #CFLAGS+=-fsanitize=address
-    CFLAGS+=-Wno-unused-parameter -Wno-unused-variable -Wno-unused-function
+    #CFLAGS+=-Wno-unused-parameter -Wno-unused-variable -Wno-unused-function
 endif
 
 CFLAGS	+= -g3 -O0 -Wall -Wextra -Werror # -Wpedantic

@@ -143,85 +143,85 @@ enum {
 #define MPI_ERRORS_ABORT (MPI_Errhandler) 3
 
 // Named Predefined Datatypes
-#define MPI_DATATYPE_NULL ((MPI_Datatype)0)
-#define MPI_CHAR ((MPI_Datatype)1)
-#define MPI_SHORT ((MPI_Datatype)2)
-#define MPI_INT ((MPI_Datatype)3)
-#define MPI_LONG ((MPI_Datatype)4)
-#define MPI_LONG_LONG_INT ((MPI_Datatype)5)
-#define MPI_LONG_LONG ((MPI_Datatype)6)
-#define MPI_SIGNED_CHAR ((MPI_Datatype)7)
-#define MPI_UNSIGNED_CHAR ((MPI_Datatype)8)
-#define MPI_UNSIGNED_SHORT ((MPI_Datatype)9)
-#define MPI_UNSIGNED ((MPI_Datatype)10)
-#define MPI_UNSIGNED_LONG ((MPI_Datatype)11)
-#define MPI_UNSIGNED_LONG_LONG ((MPI_Datatype)12)
-#define MPI_FLOAT ((MPI_Datatype)13)
-#define MPI_DOUBLE ((MPI_Datatype)14)
-#define MPI_LONG_DOUBLE ((MPI_Datatype)15)
-#define MPI_WCHAR ((MPI_Datatype)16)
-#define MPI_C_BOOL ((MPI_Datatype)17)
-#define MPI_INT8_T ((MPI_Datatype)18)
-#define MPI_INT16_T ((MPI_Datatype)19)
-#define MPI_INT32_T ((MPI_Datatype)20)
-#define MPI_INT64_T ((MPI_Datatype)21)
-#define MPI_UINT8_T ((MPI_Datatype)22)
-#define MPI_UINT16_T ((MPI_Datatype)23)
-#define MPI_UINT32_T ((MPI_Datatype)24)
-#define MPI_UINT64_T ((MPI_Datatype)25)
-#define MPI_AINT ((MPI_Datatype)26)
-#define MPI_COUNT ((MPI_Datatype)27)
-#define MPI_OFFSET ((MPI_Datatype)28)
-#define MPI_C_COMPLEX ((MPI_Datatype)29)
-#define MPI_C_FLOAT_COMPLEX ((MPI_Datatype)30)
-#define MPI_C_DOUBLE_COMPLEX ((MPI_Datatype)31)
-#define MPI_C_LONG_DOUBLE_COMPLEX ((MPI_Datatype)32)
-#define MPI_BYTE ((MPI_Datatype)33)
-#define MPI_PACKED ((MPI_Datatype)34)
-#define MPI_CXX_BOOL ((MPI_Datatype)35)
-#define MPI_CXX_FLOAT_COMPLEX ((MPI_Datatype)36)
-#define MPI_CXX_DOUBLE_COMPLEX ((MPI_Datatype)37)
-#define MPI_CXX_LONG_DOUBLE_COMPLEX ((MPI_Datatype)38)
-#define MPI_INTEGER ((MPI_Datatype)39)
-#define MPI_REAL ((MPI_Datatype)40)
-#define MPI_DOUBLE_PRECISION ((MPI_Datatype)41)
-#define MPI_COMPLEX ((MPI_Datatype)42)
-#define MPI_LOGICAL ((MPI_Datatype)43)
-#define MPI_CHARACTER ((MPI_Datatype)44)
-#define MPI_DOUBLE_COMPLEX ((MPI_Datatype)45)
-#define MPI_INTEGER1 ((MPI_Datatype)46)
-#define MPI_INTEGER2 ((MPI_Datatype)47)
-#define MPI_INTEGER4 ((MPI_Datatype)48)
-#define MPI_INTEGER8 ((MPI_Datatype)49)
-#define MPI_INTEGER16 ((MPI_Datatype)50)
-#define MPI_REAL2 ((MPI_Datatype)51)
-#define MPI_REAL4 ((MPI_Datatype)52)
-#define MPI_REAL8 ((MPI_Datatype)53)
-#define MPI_REAL16 ((MPI_Datatype)54)
-#define MPI_COMPLEX4 ((MPI_Datatype)55)
-#define MPI_COMPLEX8 ((MPI_Datatype)56)
-#define MPI_COMPLEX16 ((MPI_Datatype)57)
-#define MPI_COMPLEX32 ((MPI_Datatype)58)
-#define MPI_FLOAT_INT ((MPI_Datatype)59)
-#define MPI_DOUBLE_INT ((MPI_Datatype)60)
-#define MPI_LONG_INT ((MPI_Datatype)61)
-#define MPI_2INT ((MPI_Datatype)62)
-#define MPI_SHORT_INT ((MPI_Datatype)63)
-#define MPI_LONG_DOUBLE_INT ((MPI_Datatype)64)
-#define MPI_2REAL ((MPI_Datatype)65)
-#define MPI_2DOUBLE_PRECISION ((MPI_Datatype)66)
-#define MPI_2INTEGER ((MPI_Datatype)67)
-#define MPI_LB ((MPI_Datatype)68)
-#define MPI_UB ((MPI_Datatype)69)
+#define MPI_DATATYPE_NULL ((MPI_Datatype)MUK_DATATYPE_NULL)
+#define MPI_CHAR ((MPI_Datatype)MUK_CHAR)
+#define MPI_SHORT ((MPI_Datatype)MUK_SHORT)
+#define MPI_INT ((MPI_Datatype)MUK_INT)
+#define MPI_LONG ((MPI_Datatype)MUK_LONG)
+#define MPI_LONG_LONG_INT ((MPI_Datatype)MUK_LONG_LONG_INT)
+#define MPI_LONG_LONG ((MPI_Datatype)MUK_LONG_LONG)
+#define MPI_SIGNED_CHAR ((MPI_Datatype)MUK_SIGNED_CHAR)
+#define MPI_UNSIGNED_CHAR ((MPI_Datatype)MUK_UNSIGNED_CHAR)
+#define MPI_UNSIGNED_SHORT ((MPI_Datatype)MUK_UNSIGNED_SHORT)
+#define MPI_UNSIGNED ((MPI_Datatype)MUK_UNSIGNED)
+#define MPI_UNSIGNED_LONG ((MPI_Datatype)MUK_UNSIGNED_LONG)
+#define MPI_UNSIGNED_LONG_LONG ((MPI_Datatype)MUK_UNSIGNED_LONG_LONG)
+#define MPI_FLOAT ((MPI_Datatype)MUK_FLOAT)
+#define MPI_DOUBLE ((MPI_Datatype)MUK_DOUBLE)
+#define MPI_LONG_DOUBLE ((MPI_Datatype)MUK_LONG_DOUBLE)
+#define MPI_WCHAR ((MPI_Datatype)MUK_WCHAR)
+#define MPI_C_BOOL ((MPI_Datatype)MUK_C_BOOL)
+#define MPI_INT8_T ((MPI_Datatype)MUK_INT8_T)
+#define MPI_INT16_T ((MPI_Datatype)MUK_INT16_T)
+#define MPI_INT32_T ((MPI_Datatype)MUK_INT32_T)
+#define MPI_INT64_T ((MPI_Datatype)MUK_INT64_T)
+#define MPI_UINT8_T ((MPI_Datatype)MUK_UINT8_T)
+#define MPI_UINT16_T ((MPI_Datatype)MUK_UINT16_T)
+#define MPI_UINT32_T ((MPI_Datatype)MUK_UINT32_T)
+#define MPI_UINT64_T ((MPI_Datatype)MUK_UINT64_T)
+#define MPI_AINT ((MPI_Datatype)MUK_AINT)
+#define MPI_COUNT ((MPI_Datatype)MUK_COUNT)
+#define MPI_OFFSET ((MPI_Datatype)MUK_OFFSET)
+#define MPI_C_COMPLEX ((MPI_Datatype)MUK_C_COMPLEX)
+#define MPI_C_FLOAT_COMPLEX ((MPI_Datatype)MUK_C_FLOAT_COMPLEX)
+#define MPI_C_DOUBLE_COMPLEX ((MPI_Datatype)MUK_C_DOUBLE_COMPLEX)
+#define MPI_C_LONG_DOUBLE_COMPLEX ((MPI_Datatype)MUK_C_LONG_DOUBLE_COMPLEX)
+#define MPI_BYTE ((MPI_Datatype)MUK_BYTE)
+#define MPI_PACKED ((MPI_Datatype)MUK_PACKED)
+#define MPI_CXX_BOOL ((MPI_Datatype)MUK_CXX_BOOL)
+#define MPI_CXX_FLOAT_COMPLEX ((MPI_Datatype)MUK_CXX_FLOAT_COMPLEX)
+#define MPI_CXX_DOUBLE_COMPLEX ((MPI_Datatype)MUK_CXX_DOUBLE_COMPLEX)
+#define MPI_CXX_LONG_DOUBLE_COMPLEX ((MPI_Datatype)MUK_CXX_LONG_DOUBLE_COMPLEX)
+#define MPI_INTEGER ((MPI_Datatype)MUK_INTEGER)
+#define MPI_REAL ((MPI_Datatype)MUK_REAL)
+#define MPI_DOUBLE_PRECISION ((MPI_Datatype)MUK_DOUBLE_PRECISION)
+#define MPI_COMPLEX ((MPI_Datatype)MUK_COMPLEX)
+#define MPI_LOGICAL ((MPI_Datatype)MUK_LOGICAL)
+#define MPI_CHARACTER ((MPI_Datatype)MUK_CHARACTER)
+#define MPI_DOUBLE_COMPLEX ((MPI_Datatype)MUK_DOUBLE_COMPLEX)
+#define MPI_INTEGER1 ((MPI_Datatype)MUK_INTEGER1)
+#define MPI_INTEGER2 ((MPI_Datatype)MUK_INTEGER2)
+#define MPI_INTEGER4 ((MPI_Datatype)MUK_INTEGER4)
+#define MPI_INTEGER8 ((MPI_Datatype)MUK_INTEGER8)
+#define MPI_INTEGER16 ((MPI_Datatype)MUK_INTEGER16)
+#define MPI_REAL2 ((MPI_Datatype)MUK_REAL2)
+#define MPI_REAL4 ((MPI_Datatype)MUK_REAL4)
+#define MPI_REAL8 ((MPI_Datatype)MUK_REAL8)
+#define MPI_REAL16 ((MPI_Datatype)MUK_REAL16)
+#define MPI_COMPLEX4 ((MPI_Datatype)MUK_COMPLEX4)
+#define MPI_COMPLEX8 ((MPI_Datatype)MUK_COMPLEX8)
+#define MPI_COMPLEX16 ((MPI_Datatype)MUK_COMPLEX16)
+#define MPI_COMPLEX32 ((MPI_Datatype)MUK_COMPLEX32)
+#define MPI_FLOAT_INT ((MPI_Datatype)MUK_FLOAT_INT)
+#define MPI_DOUBLE_INT ((MPI_Datatype)MUK_DOUBLE_INT)
+#define MPI_LONG_INT ((MPI_Datatype)MUK_LONG_INT)
+#define MPI_2INT ((MPI_Datatype)MUK_2INT)
+#define MPI_SHORT_INT ((MPI_Datatype)MUK_SHORT_INT)
+#define MPI_LONG_DOUBLE_INT ((MPI_Datatype)MUK_LONG_DOUBLE_INT)
+#define MPI_2REAL ((MPI_Datatype)MUK_2REAL)
+#define MPI_2DOUBLE_PRECISION ((MPI_Datatype)MUK_2DOUBLE_PRECISION)
+#define MPI_2INTEGER ((MPI_Datatype)MUK_2INTEGER)
+#define MPI_LB ((MPI_Datatype)MUK_LB)
+#define MPI_UB ((MPI_Datatype)MUK_UB)
 
 // Reserved communicators
-#define MPI_COMM_NULL (MPI_Comm)0
-#define MPI_COMM_SELF (MPI_Comm)1
-#define MPI_COMM_WORLD (MPI_Comm)2
+#define MPI_COMM_NULL  ((MPI_Comm)MUK_COMM_NULL)
+#define MPI_COMM_SELF  ((MPI_Comm)MUK_COMM_SELF)
+#define MPI_COMM_WORLD ((MPI_Comm)MUK_COMM_WORLD)
 
 // Reserved groups
-#define MPI_GROUP_NULL (MPI_Group)0
-#define MPI_GROUP_EMPTY (MPI_Group)1
+#define MPI_GROUP_NULL  ((MPI_Group)MUK_GROUP_NULL)
+#define MPI_GROUP_EMPTY ((MPI_Group)MUK_GROUP_EMPTY)
 
 // Communicator split type constants
 enum {
@@ -241,36 +241,36 @@ enum {
 };
 
 // Environmental inquiry info key
-#define MPI_INFO_NULL (MPI_Info)0
-#define MPI_INFO_ENV  (MPI_Info)1
+#define MPI_INFO_NULL (MPI_Info)MUK_INFO_NULL
+#define MPI_INFO_ENV  (MPI_Info)MUK_INFO_ENV
 
 // Collective Operations
-#define MPI_OP_NULL ((MPI_Op)0)
-#define MPI_MAX ((MPI_Op)1)
-#define MPI_MIN ((MPI_Op)2)
-#define MPI_SUM ((MPI_Op)3)
-#define MPI_PROD ((MPI_Op)4)
-#define MPI_LAND ((MPI_Op)5)
-#define MPI_BAND ((MPI_Op)6)
-#define MPI_LOR ((MPI_Op)7)
-#define MPI_BOR ((MPI_Op)8)
-#define MPI_LXOR ((MPI_Op)9)
-#define MPI_BXOR ((MPI_Op)10)
-#define MPI_MAXLOC ((MPI_Op)11)
-#define MPI_MINLOC ((MPI_Op)12)
-#define MPI_REPLACE ((MPI_Op)13)
-#define MPI_NO_OP ((MPI_Op)14)
+#define MPI_OP_NULL ((MPI_Op)MUK_OP_NULL)
+#define MPI_MAX ((MPI_Op)MUK_MAX)
+#define MPI_MIN ((MPI_Op)MUK_MIN)
+#define MPI_SUM ((MPI_Op)MUK_SUM)
+#define MPI_PROD ((MPI_Op)MUK_PROD)
+#define MPI_LAND ((MPI_Op)MUK_LAND)
+#define MPI_BAND ((MPI_Op)MUK_BAND)
+#define MPI_LOR ((MPI_Op)MUK_LOR)
+#define MPI_BOR ((MPI_Op)MUK_BOR)
+#define MPI_LXOR ((MPI_Op)MUK_LXOR)
+#define MPI_BXOR ((MPI_Op)MUK_BXOR)
+#define MPI_MAXLOC ((MPI_Op)MUK_MAXLOC)
+#define MPI_MINLOC ((MPI_Op)MUK_MINLOC)
+#define MPI_REPLACE ((MPI_Op)MUK_REPLACE)
+#define MPI_NO_OP ((MPI_Op)MUK_NO_OP)
 
 // Predefined message handles
-#define MPI_MESSAGE_NULL (MPI_Message)0
-#define MPI_MESSAGE_NO_PROC ((MPI_Message)1)
+#define MPI_MESSAGE_NULL ((MPI_Message)MUK_MESSAGE_NULL)
+#define MPI_MESSAGE_NO_PROC ((MPI_Message)MUK_MESSAGE_NO_PROC)
 
 // Null Handles
-#define MPI_REQUEST_NULL (MPI_Request)0
-#define MPI_FILE_NULL (MPI_File)0
-#define MPI_WIN_NULL (MPI_Win)0
+#define MPI_REQUEST_NULL ((MPI_Request)MUK_REQUEST_NULL)
+#define MPI_FILE_NULL ((MPI_File)MUK_FILE_NULL)
+#define MPI_WIN_NULL ((MPI_Win)MUK_WIN_NULL)
 #if 1 //MPI_VERSION >= 4
-#define MPI_SESSION_NULL (MPI_Session)0
+#define MPI_SESSION_NULL ((MPI_Session)MUK_SESSION_NULL)
 #endif
 
 // Topologies
@@ -387,23 +387,17 @@ enum {
 };
 
 // Buffer Address Constants
-// MPICH, OMPI and MUK agree
-#define MPI_BOTTOM   ((void *)0)
-// OMPI and MUK agree.  MPICH is -1
-#define MPI_IN_PLACE ((void *)1)
+#define MPI_BOTTOM   MUK_BOTTOM
+#define MPI_IN_PLACE MUK_IN_PLACE
 
 // Constants Specifying Empty or Ignored Input
-// These match MPICH and OMPI
-#define MPI_ARGV_NULL  ((char**)0)
-#define MPI_ARGVS_NULL ((char***)0)
-#define MPI_ERRCODES_IGNORE ((int*)0)
-
-// These match OMPI (MPICH sets to 1)
-#define MPI_STATUSES_IGNORE ((MPI_Status*)0)
-#define MPI_STATUS_IGNORE   ((MPI_Status*)0)
-// These match OMPI (MPICH sets to extern-something)
-#define MPI_UNWEIGHTED    ((int*)2)
-#define MPI_WEIGHTS_EMPTY ((int*)3)
+#define MPI_ARGV_NULL       MUK_ARGV_NULL
+#define MPI_ARGVS_NULL      MUK_ARGVS_NULL
+#define MPI_ERRCODES_IGNORE MUK_ERRCODES_IGNORE
+#define MPI_STATUSES_IGNORE MUK_STATUSES_IGNORE
+#define MPI_STATUS_IGNORE   MUK_STATUS_IGNORE
+#define MPI_UNWEIGHTED      MUK_UNWEIGHTED
+#define MPI_WEIGHTS_EMPTY   MUK_WEIGHTS_EMPTY
 
 #define MPI_NULL_COPY_FN        ((MPI_Copy_function)NULL)
 #define MPI_DUP_FN              ((MPI_Copy_function)NULL)

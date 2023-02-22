@@ -1,6 +1,9 @@
 #ifndef IMPL_PREDEFINED_OP_H
 #define IMPL_PREDEFINED_OP_H
 
+#define MAYBE_UNUSED __attribute__((unused))
+
+MAYBE_UNUSED
 static bool IS_PREDEFINED_OP(MPI_Op op)
 {
     // it is ideal to optimize the branching order here by ordering the tests

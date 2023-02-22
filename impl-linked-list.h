@@ -28,6 +28,25 @@ op_fptr_pair_t;
 // impl-functions.c
 extern op_fptr_pair_t * op_fptr_pair_list;
 
+// This is to implement the crude garbage collector for cookies
+// created by nonblocking reductions with user-defined ops,
+// which cannot be freed until the user function is called
+// (or else the lookup will segfault, obviously).
+typedef struct req_cookie_pair_s
+{
+    const MPI_Request          * request;
+    reduce_trampoline_cookie_t * cookie;
+
+    // for the linked list
+    struct req_cookie_pair_s * next;
+    struct req_cookie_pair_s * prev;
+}
+req_cookie_pair_t;
+
+// impl-functions.c
+extern req_cookie_pair_t * req_cookie_pair_list;
+
+#if 0
 static WRAP_User_function * lookup_op_pair(MPI_Op op)
 {
     WRAP_User_function * user_fn = NULL;
@@ -142,24 +161,6 @@ static void cleanup_reduce_trampoline_cookie(reduce_trampoline_cookie_t * cookie
     }
 }
 
-// This is to implement the crude garbage collector for cookies
-// created by nonblocking reductions with user-defined ops,
-// which cannot be freed until the user function is called
-// (or else the lookup will segfault, obviously).
-typedef struct req_cookie_pair_s
-{
-    const MPI_Request          * request;
-    reduce_trampoline_cookie_t * cookie;
-
-    // for the linked list
-    struct req_cookie_pair_s * next;
-    struct req_cookie_pair_s * prev;
-}
-req_cookie_pair_t;
-
-// impl-functions.c
-extern req_cookie_pair_t * req_cookie_pair_list;
-
 static void add_cookie_pair_to_list(const MPI_Request * request, reduce_trampoline_cookie_t * cookie)
 {
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
@@ -244,3 +245,4 @@ static void cleanup_ireduce_trampoline_cookie(reduce_trampoline_cookie_t * cooki
 
 #endif
 
+#endif
