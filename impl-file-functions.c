@@ -30,6 +30,7 @@ int WRAP_File_call_errhandler(WRAP_File fh, int errorcode)
 int WRAP_File_close(WRAP_File *fh)
 {
     MPI_File impl_fh;
+    MPI_File impl_fh = CONVERT_MPI_File(*fh);
     int rc = IMPL_File_close(&impl_fh);
     *fh = OUTPUT_MPI_File(impl_fh);
     return RETURN_CODE_IMPL_TO_MUK(rc);
