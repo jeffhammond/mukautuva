@@ -98,12 +98,6 @@ enum {
     MPI_ERR_LASTCODE                   = MUK_ERR_LASTCODE
 };
 
-// Buffer Address Constants
-// this matches MPICH and OMPI
-#define MPI_BOTTOM ((void *)0)
-// this matches OMPI (MPICH uses -1)
-#define MPI_IN_PLACE ((void *)1)
-
 // Assorted Constants
 enum {
     // these should be different
@@ -391,6 +385,12 @@ enum {
     MPI_TYPECLASS_INTEGER = MUK_TYPECLASS_INTEGER,
     MPI_TYPECLASS_REAL    = MUK_TYPECLASS_REAL
 };
+
+// Buffer Address Constants
+// MPICH, OMPI and MUK agree
+#define MPI_BOTTOM   ((void *)0)
+// OMPI and MUK agree.  MPICH is -1
+#define MPI_IN_PLACE ((void *)1)
 
 // Constants Specifying Empty or Ignored Input
 // These match MPICH and OMPI
