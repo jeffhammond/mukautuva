@@ -793,53 +793,95 @@ static inline WRAP_Datatype OUTPUT_MPI_Datatype(MPI_Datatype datatype)
 
 static inline MPI_Errhandler CONVERT_MPI_Errhandler(WRAP_Errhandler errhandler)
 {
+    if (errhandler.ip == (intptr_t)MUK_ERRHANDLER_NULL) {
+        return MPI_ERRHANDLER_NULL;
+    }
+    else if (errhandler.ip == (intptr_t)MUK_ERRORS_ARE_FATAL) {
+        return MPI_ERRORS_ARE_FATAL;
+    }
+    else if (errhandler.ip == (intptr_t)MUK_ERRORS_RETURN) {
+        return MPI_ERRORS_RETURN;
+    }
+#if MPI_VERSION >= 4
+    else if (errhandler.ip == (intptr_t)MUK_ERRORS_ABORT) {
+        return MPI_ERRORS_ABORT;
+    }
+#endif
+    else {
 #ifdef MPICH
-    return errhandler.i;
+        return errhandler.i;
 #elif OPEN_MPI
-    return errhandler.p;
+        return errhandler.p;
 #else
 #error NO ABI
 #endif
+    }
 }
 
 static inline WRAP_Errhandler OUTPUT_MPI_Errhandler(MPI_Errhandler errhandler)
 {
     WRAP_Errhandler wrap;
+    if (errhandler == MPI_ERRHANDLER_NULL) {
+        wrap.ip = (intptr_t)MUK_ERRHANDLER_NULL;
+    }
+    else if (errhandler == MPI_ERRORS_ARE_FATAL) {
+        wrap.ip = (intptr_t)MUK_ERRORS_ARE_FATAL;
+    }
+    else if (errhandler == MPI_ERRORS_RETURN) {
+        wrap.ip = (intptr_t)MUK_ERRORS_RETURN;
+    }
+#if MPI_VERSION >= 4
+    else if (errhandler == MPI_ERRORS_ABORT) {
+        wrap.ip = (intptr_t)MUK_ERRORS_ABORT;
+    }
+#endif
+    else {
 #ifdef MPICH
-    wrap.i = errhandler;
+        wrap.i = errhandler;
 #elif OPEN_MPI
-    wrap.p = errhandler;
+        wrap.p = errhandler;
 #else
 #error NO ABI
 #endif
+    }
     return wrap;
 }
 
 // FILE
 
-static inline MPI_File CONVERT_MPI_File(WRAP_File fh)
+static inline MPI_File CONVERT_MPI_File(WRAP_File file)
 {
+    if (file.ip == (intptr_t)MUK_FILE_NULL) {
+        return MPI_FILE_NULL;
+    }
+    else {
 #ifdef MPICH
-    // ADIOS is an exception to MPICH handle design
-    return fh.p;
+        // ADIOS is an exception to MPICH handle design
+        return file.p;
 #elif OPEN_MPI
-    return fh.p;
+        return file.p;
 #else
 #error NO ABI
 #endif
+    }
 }
 
-static inline WRAP_File OUTPUT_MPI_File(MPI_File fh)
+static inline WRAP_File OUTPUT_MPI_File(MPI_File file)
 {
     WRAP_File wrap;
+    if (file == MPI_FILE_NULL) {
+        wrap.ip = (intptr_t)MUK_FILE_NULL;
+    }
+    else {
 #ifdef MPICH
-    // ADIOS is an exception to MPICH handle design
-    wrap.p = fh;
+        // ADIOS is an exception to MPICH handle design
+        wrap.p = file;
 #elif OPEN_MPI
-    wrap.p = fh;
+        wrap.p = file;
 #else
 #error NO ABI
 #endif
+    }
     return wrap;
 }
 
@@ -909,39 +951,63 @@ static inline MPI_Info CONVERT_MPI_Info(WRAP_Info info)
 static inline WRAP_Info OUTPUT_MPI_Info(MPI_Info info)
 {
     WRAP_Info wrap;
+    if (info == MPI_INFO_NULL) {
+        wrap.ip = (intptr_t)MUK_INFO_NULL;
+    }
+    else if (info == MPI_INFO_ENV) {
+        wrap.ip = (intptr_t)MUK_INFO_ENV;
+    }
+    else {
 #ifdef MPICH
-    wrap.i = info;
+        wrap.i = info;
 #elif OPEN_MPI
-    wrap.p = info;
+        wrap.p = info;
 #else
 #error NO ABI
 #endif
+    }
     return wrap;
 }
 
 // MESSAGE
 
-static inline MPI_Message CONVERT_MPI_Message(WRAP_Message op)
+static inline MPI_Message CONVERT_MPI_Message(WRAP_Message message)
 {
+    if (message.ip == (intptr_t)MUK_MESSAGE_NULL) {
+        return MPI_MESSAGE_NULL;
+    }
+    else if (message.ip == (intptr_t)MUK_MESSAGE_NO_PROC) {
+        return MPI_MESSAGE_NO_PROC;
+    }
+    else {
 #ifdef MPICH
-    return op.i;
+        return message.i;
 #elif OPEN_MPI
-    return op.p;
+        return message.p;
 #else
 #error NO ABI
 #endif
+    }
 }
 
-static inline WRAP_Message OUTPUT_MPI_Message(MPI_Message op)
+static inline WRAP_Message OUTPUT_MPI_Message(MPI_Message message)
 {
     WRAP_Message wrap;
+    if (message == MPI_MESSAGE_NULL) {
+        wrap.ip = (intptr_t)MUK_MESSAGE_NULL;
+    }
+    else if (message == MPI_MESSAGE_NO_PROC) {
+        wrap.ip = (intptr_t)MUK_MESSAGE_NO_PROC;
+    }
+    else {
 #ifdef MPICH
-    wrap.i = op;
+        wrap.i = message;
 #elif OPEN_MPI
-    wrap.p = op;
+        wrap.p = message;
 #else
 #error NO ABI
 #endif
+    }
     return wrap;
 }
 
