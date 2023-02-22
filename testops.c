@@ -78,6 +78,7 @@ int main(int argc, char* argv[])
     MPI_Barrier(MPI_COMM_WORLD);
     usleep(1);
 
+    if (me==0) printf("built-in ops\n");
     for (int o=0; o<(int)(sizeof(ops)/sizeof(ops[0])); o++)
     {
         MPI_Op op = ops[o];
@@ -124,6 +125,7 @@ int main(int argc, char* argv[])
         MPI_Barrier(MPI_COMM_WORLD);
     }
 
+    if (me==0) printf("custom op\n");
     {
         MPI_Op custom = MPI_OP_NULL;
         rc = MPI_Op_create(&my_reduce_op, 0, &custom);
@@ -150,6 +152,7 @@ int main(int argc, char* argv[])
         }
     }
 
+    if (me==0) printf("3 custom ops - allreduce\n");
     {
         MPI_Op f1 = MPI_OP_NULL;
         MPI_Op f2 = MPI_OP_NULL;
@@ -225,6 +228,7 @@ int main(int argc, char* argv[])
         }
     }
 
+    if (me==0) printf("3 custom ops - iallreduce\n");
     {
         MPI_Op f1 = MPI_OP_NULL;
         MPI_Op f2 = MPI_OP_NULL;

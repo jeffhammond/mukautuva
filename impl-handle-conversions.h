@@ -949,25 +949,119 @@ static inline WRAP_Message OUTPUT_MPI_Message(MPI_Message op)
 
 static inline MPI_Op CONVERT_MPI_Op(WRAP_Op op)
 {
+    if (op.ip == (intptr_t)MUK_SUM) {
+        return MPI_SUM;
+    }
+    else if (op.ip == (intptr_t)MUK_NO_OP) {
+        return MPI_NO_OP;
+    }
+    else if (op.ip == (intptr_t)MUK_REPLACE) {
+        return MPI_REPLACE;
+    }
+    else if (op.ip == (intptr_t)MUK_MAX) {
+        return MPI_MAX;
+    }
+    else if (op.ip == (intptr_t)MUK_MIN) {
+        return MPI_MIN;
+    }
+    else if (op.ip == (intptr_t)MUK_LAND) {
+        return MPI_LAND;
+    }
+    else if (op.ip == (intptr_t)MUK_BAND) {
+        return MPI_BAND;
+    }
+    else if (op.ip == (intptr_t)MUK_LOR) {
+        return MPI_LOR;
+    }
+    else if (op.ip == (intptr_t)MUK_BOR) {
+        return MPI_BOR;
+    }
+    else if (op.ip == (intptr_t)MUK_LXOR) {
+        return MPI_LXOR;
+    }
+    else if (op.ip == (intptr_t)MUK_BXOR) {
+        return MPI_BXOR;
+    }
+    else if (op.ip == (intptr_t)MUK_MAXLOC) {
+        return MPI_MAXLOC;
+    }
+    else if (op.ip == (intptr_t)MUK_MINLOC) {
+        return MPI_MINLOC;
+    }
+    else if (op.ip == (intptr_t)MUK_OP_NULL) {
+        return MPI_OP_NULL;
+    }
+    else if (op.ip == (intptr_t)MUK_PROD) {
+        return MPI_PROD;
+    }
+    else {
 #ifdef MPICH
-    return op.i;
+        return op.i;
 #elif OPEN_MPI
-    return op.p;
+        return op.p;
 #else
 #error NO ABI
 #endif
+    }
 }
 
 static inline WRAP_Op OUTPUT_MPI_Op(MPI_Op op)
 {
     WRAP_Op wrap;
+    if (op == MPI_SUM) {
+        wrap.ip = (intptr_t)MUK_SUM;
+    }
+    else if (op == MPI_NO_OP) {
+        wrap.ip = (intptr_t)MUK_NO_OP;
+    }
+    else if (op == MPI_REPLACE) {
+        wrap.ip = (intptr_t)MUK_REPLACE;
+    }
+    else if (op == MPI_MAX) {
+        wrap.ip = (intptr_t)MUK_MAX;
+    }
+    else if (op == MPI_MIN) {
+        wrap.ip = (intptr_t)MUK_MIN;
+    }
+    else if (op == MPI_LAND) {
+        wrap.ip = (intptr_t)MUK_LAND;
+    }
+    else if (op == MPI_BAND) {
+        wrap.ip = (intptr_t)MUK_BAND;
+    }
+    else if (op == MPI_LOR) {
+        wrap.ip = (intptr_t)MUK_LOR;
+    }
+    else if (op == MPI_BOR) {
+        wrap.ip = (intptr_t)MUK_BOR;
+    }
+    else if (op == MPI_LXOR) {
+        wrap.ip = (intptr_t)MUK_LXOR;
+    }
+    else if (op == MPI_BXOR) {
+        wrap.ip = (intptr_t)MUK_BXOR;
+    }
+    else if (op == MPI_MAXLOC) {
+        wrap.ip = (intptr_t)MUK_MAXLOC;
+    }
+    else if (op == MPI_MINLOC) {
+        wrap.ip = (intptr_t)MUK_MINLOC;
+    }
+    else if (op == MPI_OP_NULL) {
+        wrap.ip = (intptr_t)MUK_OP_NULL;
+    }
+    else if (op == MPI_PROD) {
+        wrap.ip = (intptr_t)MUK_PROD;
+    }
+    else {
 #ifdef MPICH
-    wrap.i = op;
+        wrap.i = op;
 #elif OPEN_MPI
-    wrap.p = op;
+        wrap.p = op;
 #else
 #error NO ABI
 #endif
+    }
     return wrap;
 }
 
