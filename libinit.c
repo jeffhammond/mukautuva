@@ -2930,7 +2930,6 @@ int MPI_Intercomm_merge(MPI_Comm intercomm, int high, MPI_Comm *newintracomm)
 
 int MPI_Iprobe(int source, int tag, MPI_Comm comm, int *flag, MPI_Status *status)
 {
-    printf("MPI_Iprobe: status=%p\n", status);
     return MUK_Iprobe(source, tag, comm, flag, status);
 }
 
