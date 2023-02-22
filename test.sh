@@ -22,7 +22,7 @@ else
     IMPILIB=/opt/intel/oneapi/mpi/2021.8.0/lib/debug/libmpi.so
     #IMPILIB=/opt/intel/oneapi/mpi/2021.8.0/lib/release/libmpi.so
     DBG=gdb
-    DBGARGS="-ex \"set width 1000\" -ex \"thread apply all bt\" -ex run -ex bt -ex \"set confirm off\" -ex quit --args"
+    DBGARGS='-ex "set width 1000" -ex "thread apply all bt" -ex run -ex bt -ex "set confirm off" -ex quit --args'
 fi
 
 NP=2
