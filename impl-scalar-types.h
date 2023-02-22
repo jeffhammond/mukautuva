@@ -8,8 +8,12 @@ typedef long long int WRAP_Count;
 typedef long long int WRAP_Offset;
 #elif defined(MPICH)
 typedef long int WRAP_Aint;
-typedef long int WRAP_Count;
-typedef long int WRAP_Offset;
+// Linux?
+//typedef long int WRAP_Count;
+//typedef long int WRAP_Offset;
+// Mac
+typedef long long int WRAP_Count;
+typedef long long int WRAP_Offset;
 #else
 #error NO ABI
 #endif

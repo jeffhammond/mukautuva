@@ -211,7 +211,7 @@ int WRAP_Allreduce(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype 
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Op impl_op = CONVERT_MPI_Op(op);
-    int rc;
+    int rc = MPI_SUCCESS;
     if (IS_PREDEFINED_OP(impl_op)) {
         rc = IMPL_Allreduce(sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm);
     }
@@ -1278,7 +1278,7 @@ int WRAP_Group_excl(WRAP_Group group, int n, const int ranks[], WRAP_Group *newg
 
 int WRAP_Group_free(WRAP_Group *group)
 {
-    MPI_Group impl_group;
+    MPI_Group impl_group = CONVERT_MPI_Group(*group);
     int rc = IMPL_Group_free(&impl_group);
     *group = OUTPUT_MPI_Group(impl_group);
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -1999,7 +1999,7 @@ int WRAP_Ireduce(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype da
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Op impl_op = CONVERT_MPI_Op(op);
-    int rc;
+    int rc = MPI_SUCCESS;
     if (IS_PREDEFINED_OP(impl_op)) {
         MPI_Request impl_request;
         rc = IMPL_Ireduce(sendbuf, recvbuf, count, impl_datatype, impl_op, root, impl_comm, &impl_request);
@@ -2820,7 +2820,7 @@ int WRAP_Reduce(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype dat
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Op impl_op = CONVERT_MPI_Op(op);
-    int rc;
+    int rc = MPI_SUCCESS;
     if (IS_PREDEFINED_OP(impl_op)) {
         rc = IMPL_Reduce(sendbuf, recvbuf, count, impl_datatype, impl_op, RANK_MUK_TO_IMPL(root), impl_comm);
     }

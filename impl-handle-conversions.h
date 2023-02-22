@@ -401,12 +401,13 @@ static inline MPI_Datatype CONVERT_MPI_Datatype(WRAP_Datatype datatype)
         return MPI_2INTEGER;
     }
 #endif
-#ifdef MPI_LB
+// Open-MPI defines these such that they do not work
+#if defined(MPI_LB) && !defined(OPEN_MPI)
     else if (datatype.ip == (intptr_t)MUK_LB) {
         return MPI_LB;
     }
 #endif
-#ifdef MPI_UB
+#if defined(MPI_UB) && !defined(OPEN_MPI)
     else if (datatype.ip == (intptr_t)MUK_UB) {
         return MPI_UB;
     }
@@ -763,12 +764,12 @@ static inline WRAP_Datatype OUTPUT_MPI_Datatype(MPI_Datatype datatype)
         wrap.ip = (intptr_t)MUK_2INTEGER;
     }
 #endif
-#ifdef MPI_LB
+#if defined(MPI_LB) && !defined(OPEN_MPI)
     else if (datatype == MPI_LB) {
         wrap.ip = (intptr_t)MUK_LB;
     }
 #endif
-#ifdef MPI_UB
+#if defined(MPI_UB) && !defined(OPEN_MPI)
     else if (datatype == MPI_UB) {
         wrap.ip = (intptr_t)MUK_UB;
     }

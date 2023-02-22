@@ -152,12 +152,12 @@ int main(int argc, char* argv[])
         printf("freed group is not null\n");
         MPI_Abort(MPI_COMM_WORLD,1);
     }
+    MPI_Group_free(&dup1);
 
     MPI_Group_free(&union1);
     MPI_Group_free(&diff1);
     MPI_Group_free(&incl1);
     MPI_Group_free(&excl1);
-    MPI_Group_free(&dup1);
 
     fflush(0);
     usleep(1);
