@@ -1176,25 +1176,35 @@ static inline WRAP_Request OUTPUT_MPI_Request(MPI_Request request)
 #if MPI_VERSION >= 4
 static inline MPI_Session CONVERT_MPI_Session(WRAP_Session session)
 {
+    if (session.ip == (intptr_t)MUK_SESSION_NULL) {
+        return MPI_SESSION_NULL;
+    }
+    else {
 #ifdef MPICH
-    return session.i;
+        return session.i;
 #elif OPEN_MPI
-    return session.p;
+        return session.p;
 #else
 #error NO ABI
 #endif
+    }
 }
 
 static inline WRAP_Session OUTPUT_MPI_Session(MPI_Session session)
 {
     WRAP_Session wrap;
+    if (session == MPI_SESSION_NULL) {
+        wrap.ip = (intptr_t)MUK_SESSION_NULL;
+    }
+    else {
 #ifdef MPICH
-    wrap.i = session;
+        wrap.i = session;
 #elif OPEN_MPI
-    wrap.p = session;
+        wrap.p = session;
 #else
 #error NO ABI
 #endif
+    }
     return wrap;
 }
 #endif
