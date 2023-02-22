@@ -23,9 +23,9 @@ int main(int argc, char* argv[])
 
     MPI_Win a, as, c, cd;
     void *ba, *bas;
-    char bc;
+    char bc[1024], b[1024];
 
-    MPI_Win_allocate(1,1,MPI_INFO_NULL,MPI_COMM_WORLD,&ba,&a);
+    MPI_Win_allocate(1024,1,MPI_INFO_NULL,MPI_COMM_WORLD,&ba,&a);
     MPI_Win_fence(0,a);
     MPI_Win_free(&a);
     if (a != MPI_WIN_NULL) {
@@ -33,21 +33,16 @@ int main(int argc, char* argv[])
         MPI_Abort(MPI_COMM_WORLD,1);
     }
 
-    // this is broken because OMPI sucks
-#if 1
-    MPI_Win_allocate_shared(8,8,MPI_INFO_NULL,MPI_COMM_WORLD,&bas,&as);
+    MPI_Win_allocate_shared(1024,1,MPI_INFO_NULL,MPI_COMM_WORLD,&bas,&as);
     MPI_Win_fence(0,as);
     MPI_Win_free(&as);
     if (as != MPI_WIN_NULL) {
         printf("win null? %d\n",as==MPI_WIN_NULL);
         MPI_Abort(MPI_COMM_WORLD,2);
     }
-#else
-    (void)as;
-    (void)bas;
-#endif
 
-    MPI_Win_create(&bc,1,1,MPI_INFO_NULL,MPI_COMM_WORLD,&c);
+    // this is broken because OMPI sucks
+    MPI_Win_create(&bc,1024,1,MPI_INFO_NULL,MPI_COMM_WORLD,&c);
     MPI_Win_fence(0,c);
     MPI_Win_free(&c);
     if (c != MPI_WIN_NULL) {
@@ -55,9 +50,8 @@ int main(int argc, char* argv[])
         MPI_Abort(MPI_COMM_WORLD,3);
     }
 
-    char b;
     MPI_Win_create_dynamic(MPI_INFO_NULL,MPI_COMM_WORLD,&cd);
-    MPI_Win_attach(cd,&b,1);
+    MPI_Win_attach(cd,&b,1024);
     MPI_Win_fence(0,cd);
     MPI_Win_detach(cd,&b);
     MPI_Win_free(&cd);
