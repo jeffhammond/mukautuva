@@ -13,7 +13,7 @@ else
     CFLAGS+=-Wno-unused-parameter -Wno-unused-variable -Wno-unused-function
 endif
 
-CFLAGS	+= -g3 -O0 -Wall -Wextra # -Werror # -Wpedantic
+CFLAGS	+= -g3 -O0 -Wall -Wextra -Werror # -Wpedantic
 CFLAGS	+= -fPIC
 SOFLAGS	= -shared
 
