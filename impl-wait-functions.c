@@ -30,7 +30,7 @@ int WRAP_Cancel(WRAP_Request *request)
     // It is erroneous to call MPI_REQUEST_FREE or MPI_CANCEL for a request
     // associated with a nonblocking collective operation.
     //remove_cookie_pair_from_list(*request);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Get_count(const WRAP_Status *status, WRAP_Datatype datatype, int *count)
@@ -39,7 +39,7 @@ int WRAP_Get_count(const WRAP_Status *status, WRAP_Datatype datatype, int *count
     WRAP_Status_to_MPI_Status(status, &impl_status);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_Get_count(&impl_status, impl_datatype, count);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Get_count_c(const WRAP_Status *status, WRAP_Datatype datatype, WRAP_Count *count)
@@ -48,7 +48,7 @@ int WRAP_Get_count_c(const WRAP_Status *status, WRAP_Datatype datatype, WRAP_Cou
     WRAP_Status_to_MPI_Status(status, &impl_status);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_Get_count_c(&impl_status, impl_datatype, count);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Get_elements(const WRAP_Status *status, WRAP_Datatype datatype, int *count)
@@ -57,7 +57,7 @@ int WRAP_Get_elements(const WRAP_Status *status, WRAP_Datatype datatype, int *co
     MPI_Status impl_status;
     WRAP_Status_to_MPI_Status(status, &impl_status);
     int rc = IMPL_Get_elements(&impl_status, impl_datatype, count);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Get_elements_c(const WRAP_Status *status, WRAP_Datatype datatype, WRAP_Count *count)
@@ -66,7 +66,7 @@ int WRAP_Get_elements_c(const WRAP_Status *status, WRAP_Datatype datatype, WRAP_
     MPI_Status impl_status;
     WRAP_Status_to_MPI_Status(status, &impl_status);
     int rc = IMPL_Get_elements_c(&impl_status, impl_datatype, count);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Get_elements_x(const WRAP_Status *status, WRAP_Datatype datatype, WRAP_Count *count)
@@ -75,7 +75,7 @@ int WRAP_Get_elements_x(const WRAP_Status *status, WRAP_Datatype datatype, WRAP_
     MPI_Status impl_status;
     WRAP_Status_to_MPI_Status(status, &impl_status);
     int rc = IMPL_Get_elements_x(&impl_status, impl_datatype, count);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Request_free(WRAP_Request *request)
@@ -86,7 +86,7 @@ int WRAP_Request_free(WRAP_Request *request)
     // It is erroneous to call MPI_REQUEST_FREE or MPI_CANCEL for a request
     // associated with a nonblocking collective operation.
     //remove_cookie_pair_from_list(*request);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Request_get_status(WRAP_Request request, int *flag, WRAP_Status *status)
@@ -102,7 +102,7 @@ int WRAP_Request_get_status(WRAP_Request request, int *flag, WRAP_Status *status
     if (*flag) {
         MPI_Status_to_WRAP_Status(&impl_status, status);
     }
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Start(WRAP_Request *request)
@@ -110,7 +110,7 @@ int WRAP_Start(WRAP_Request *request)
     MPI_Request impl_request = CONVERT_MPI_Request(*request);
     int rc = IMPL_Start(&impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Startall(int count, WRAP_Request array_of_requests[])
@@ -124,26 +124,26 @@ int WRAP_Startall(int count, WRAP_Request array_of_requests[])
         array_of_requests[i] = OUTPUT_MPI_Request(impl_array_of_requests[i]);
     }
     free(impl_array_of_requests);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 #ifdef SUPPORT_F08
 int WRAP_Status_f082c(const WRAP_F08_status *f08_status, WRAP_Status *c_status)
 {
     int rc = IMPL_Status_f082c(f08_status, c_status);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Status_f082f(const WRAP_F08_status *f08_status, WRAP_Fint *f_status)
 {
     int rc = IMPL_Status_f082f(f08_status, f_status);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Status_f2f08(const WRAP_Fint *f_status, WRAP_F08_status *f08_status)
 {
     int rc = IMPL_Status_f2f08(f_status, f08_status);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
 
@@ -153,7 +153,7 @@ int WRAP_Status_set_cancelled(WRAP_Status *status, int flag)
     WRAP_Status_to_MPI_Status(status, &impl_status);
     int rc = IMPL_Status_set_cancelled(&impl_status, flag);
     MPI_Status_to_WRAP_Status(&impl_status, status);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Status_set_elements(WRAP_Status *status, WRAP_Datatype datatype, int count)
@@ -163,7 +163,7 @@ int WRAP_Status_set_elements(WRAP_Status *status, WRAP_Datatype datatype, int co
     WRAP_Status_to_MPI_Status(status, &impl_status);
     int rc = IMPL_Status_set_elements(&impl_status, impl_datatype, count);
     MPI_Status_to_WRAP_Status(&impl_status, status);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Status_set_elements_c(WRAP_Status *status, WRAP_Datatype datatype, WRAP_Count count)
@@ -173,7 +173,7 @@ int WRAP_Status_set_elements_c(WRAP_Status *status, WRAP_Datatype datatype, WRAP
     WRAP_Status_to_MPI_Status(status, &impl_status);
     int rc = IMPL_Status_set_elements_c(&impl_status, impl_datatype, count);
     MPI_Status_to_WRAP_Status(&impl_status, status);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Status_set_elements_x(WRAP_Status *status, WRAP_Datatype datatype, WRAP_Count count)
@@ -183,7 +183,7 @@ int WRAP_Status_set_elements_x(WRAP_Status *status, WRAP_Datatype datatype, WRAP
     WRAP_Status_to_MPI_Status(status, &impl_status);
     int rc = IMPL_Status_set_elements_x(&impl_status, impl_datatype, count);
     MPI_Status_to_WRAP_Status(&impl_status, status);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Test(WRAP_Request *request, int *flag, WRAP_Status *status)
@@ -207,7 +207,7 @@ int WRAP_Test(WRAP_Request *request, int *flag, WRAP_Status *status)
         }
         //remove_cookie_pair_from_list(*request);
     }
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Test_cancelled(const WRAP_Status *status, int *flag)
@@ -215,7 +215,7 @@ int WRAP_Test_cancelled(const WRAP_Status *status, int *flag)
     MPI_Status impl_status;
     WRAP_Status_to_MPI_Status(status, &impl_status);
     int rc = IMPL_Test_cancelled(&impl_status, flag);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Testall(int count, WRAP_Request array_of_requests[], int *flag, WRAP_Status *array_of_statuses)
@@ -251,7 +251,7 @@ int WRAP_Testall(int count, WRAP_Request array_of_requests[], int *flag, WRAP_St
     free(impl_requests);
     if (!ignore) free(impl_statuses);
 
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Testany(int count, WRAP_Request array_of_requests[], int *indx, int *flag, WRAP_Status *status)
@@ -283,7 +283,7 @@ int WRAP_Testany(int count, WRAP_Request array_of_requests[], int *indx, int *fl
 
     free(impl_requests);
 
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Testsome(int incount, WRAP_Request array_of_requests[], int *outcount, int array_of_indices[], WRAP_Status *array_of_statuses)
@@ -320,7 +320,7 @@ int WRAP_Testsome(int incount, WRAP_Request array_of_requests[], int *outcount, 
     free(impl_requests);
     if (!ignore) free(impl_statuses);
 
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Wait(WRAP_Request *request, WRAP_Status *status)
@@ -334,7 +334,7 @@ int WRAP_Wait(WRAP_Request *request, WRAP_Status *status)
         MPI_Status_to_WRAP_Status(&impl_status, status);
     }
     //remove_cookie_pair_from_list(*request);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Waitall(int count, WRAP_Request array_of_requests[], WRAP_Status *array_of_statuses)
@@ -372,7 +372,7 @@ int WRAP_Waitall(int count, WRAP_Request array_of_requests[], WRAP_Status *array
     free(impl_requests);
     if (!ignore) free(impl_statuses);
 
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Waitany(int count, WRAP_Request array_of_requests[], int *indx, WRAP_Status *status)
@@ -403,7 +403,7 @@ int WRAP_Waitany(int count, WRAP_Request array_of_requests[], int *indx, WRAP_St
 
     free(impl_requests);
 
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Waitsome(int incount, WRAP_Request array_of_requests[], int *outcount, int array_of_indices[], WRAP_Status *array_of_statuses)
@@ -440,5 +440,5 @@ int WRAP_Waitsome(int incount, WRAP_Request array_of_requests[], int *outcount, 
     free(impl_requests);
     if (!ignore) free(impl_statuses);
 
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }

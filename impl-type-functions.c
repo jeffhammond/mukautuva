@@ -25,7 +25,7 @@ int WRAP_Type_commit(WRAP_Datatype *datatype)
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(*datatype);
     int rc = IMPL_Type_commit(&impl_datatype);
     *datatype = OUTPUT_MPI_Datatype(impl_datatype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_contiguous(int count, WRAP_Datatype oldtype, WRAP_Datatype *newtype)
@@ -34,7 +34,7 @@ int WRAP_Type_contiguous(int count, WRAP_Datatype oldtype, WRAP_Datatype *newtyp
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_contiguous(count, impl_oldtype, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 #if MPI_VERSION >= 4
@@ -44,7 +44,7 @@ int WRAP_Type_contiguous_c(WRAP_Count count, WRAP_Datatype oldtype, WRAP_Datatyp
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_contiguous_c(count, impl_oldtype, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
 
@@ -61,7 +61,7 @@ int WRAP_Type_create_darray(int size, int rank, int ndims, const int array_of_gs
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_create_darray(size, rank, ndims, array_of_gsizes, array_of_distribs, array_of_dargs, array_of_psizes, impl_order, impl_oldtype, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_create_darray_c(int size, int rank, int ndims, const WRAP_Count array_of_gsizes[], const int array_of_distribs[], const int array_of_dargs[], const int array_of_psizes[], int order, WRAP_Datatype oldtype, WRAP_Datatype *newtype)
@@ -77,7 +77,7 @@ int WRAP_Type_create_darray_c(int size, int rank, int ndims, const WRAP_Count ar
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_create_darray_c(size, rank, ndims, array_of_gsizes, array_of_distribs, array_of_dargs, array_of_psizes, impl_order, impl_oldtype, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_create_f90_complex(int p, int r, WRAP_Datatype *newtype)
@@ -85,7 +85,7 @@ int WRAP_Type_create_f90_complex(int p, int r, WRAP_Datatype *newtype)
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_create_f90_complex(p, r, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_create_f90_integer(int r, WRAP_Datatype *newtype)
@@ -93,7 +93,7 @@ int WRAP_Type_create_f90_integer(int r, WRAP_Datatype *newtype)
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_create_f90_integer(r, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_create_f90_real(int p, int r, WRAP_Datatype *newtype)
@@ -101,7 +101,7 @@ int WRAP_Type_create_f90_real(int p, int r, WRAP_Datatype *newtype)
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_create_f90_real(p, r, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_create_hindexed(int count, const int array_of_blocklengths[], const WRAP_Aint array_of_displacements[], WRAP_Datatype oldtype, WRAP_Datatype *newtype)
@@ -110,7 +110,7 @@ int WRAP_Type_create_hindexed(int count, const int array_of_blocklengths[], cons
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_create_hindexed(count, array_of_blocklengths, array_of_displacements, impl_oldtype, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_create_hindexed_block(int count, int blocklength, const WRAP_Aint array_of_displacements[], WRAP_Datatype oldtype, WRAP_Datatype *newtype)
@@ -119,7 +119,7 @@ int WRAP_Type_create_hindexed_block(int count, int blocklength, const WRAP_Aint 
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_create_hindexed_block(count, blocklength, array_of_displacements, impl_oldtype, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 #if MPI_VERSION >= 4
@@ -129,7 +129,7 @@ int WRAP_Type_create_hindexed_block_c(WRAP_Count count, WRAP_Count blocklength, 
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_create_hindexed_block_c(count, blocklength, array_of_displacements, impl_oldtype, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
 
@@ -140,7 +140,7 @@ int WRAP_Type_create_hindexed_c(WRAP_Count count, const WRAP_Count array_of_bloc
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_create_hindexed_c(count, array_of_blocklengths, array_of_displacements, impl_oldtype, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
 
@@ -150,7 +150,7 @@ int WRAP_Type_create_hvector(int count, int blocklength, WRAP_Aint stride, WRAP_
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_create_hvector(count, blocklength, stride, impl_oldtype, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 #if MPI_VERSION >= 4
@@ -160,7 +160,7 @@ int WRAP_Type_create_hvector_c(WRAP_Count count, WRAP_Count blocklength, WRAP_Co
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_create_hvector_c(count, blocklength, stride, impl_oldtype, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
 
@@ -170,7 +170,7 @@ int WRAP_Type_create_indexed_block(int count, int blocklength, const int array_o
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_create_indexed_block(count, blocklength, array_of_displacements, impl_oldtype, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 #if MPI_VERSION >= 4
@@ -180,7 +180,7 @@ int WRAP_Type_create_indexed_block_c(WRAP_Count count, WRAP_Count blocklength, c
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_create_indexed_block_c(count, blocklength, array_of_displacements, impl_oldtype, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
 
@@ -189,7 +189,7 @@ int WRAP_Type_create_keyval(WRAP_Type_copy_attr_function *type_copy_attr_fn, WRA
 {
     int rc = IMPL_Type_create_keyval(type_copy_attr_fn, type_delete_attr_fn, type_keyval, extra_state);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
 
@@ -199,7 +199,7 @@ int WRAP_Type_create_resized(WRAP_Datatype oldtype, WRAP_Aint lb, WRAP_Aint exte
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_create_resized(impl_oldtype, lb, extent, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 #if MPI_VERSION >= 4
@@ -209,7 +209,7 @@ int WRAP_Type_create_resized_c(WRAP_Datatype oldtype, WRAP_Count lb, WRAP_Count 
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_create_resized_c(impl_oldtype, lb, extent, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
 
@@ -223,7 +223,7 @@ int WRAP_Type_create_struct(int count, const int array_of_blocklengths[], const 
     int rc = IMPL_Type_create_struct(count, array_of_blocklengths, array_of_displacements, impl_array_of_types, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
     free(impl_array_of_types);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 #if MPI_VERSION >= 4
@@ -237,7 +237,7 @@ int WRAP_Type_create_struct_c(WRAP_Count count, const WRAP_Count array_of_blockl
     int rc = IMPL_Type_create_struct_c(count, array_of_blocklengths, array_of_displacements, impl_array_of_types, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
     free(impl_array_of_types);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
 
@@ -254,7 +254,7 @@ int WRAP_Type_create_subarray(int ndims, const int array_of_sizes[], const int a
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_create_subarray(ndims, array_of_sizes, array_of_subsizes, array_of_starts, impl_order, impl_oldtype, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_create_subarray_c(int ndims, const WRAP_Count array_of_sizes[], const WRAP_Count array_of_subsizes[], const WRAP_Count array_of_starts[], int order, WRAP_Datatype oldtype, WRAP_Datatype *newtype)
@@ -270,14 +270,14 @@ int WRAP_Type_create_subarray_c(int ndims, const WRAP_Count array_of_sizes[], co
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_create_subarray_c(ndims, array_of_sizes, array_of_subsizes, array_of_starts, impl_order, impl_oldtype, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_delete_attr(WRAP_Datatype datatype, int type_keyval)
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_Type_delete_attr(impl_datatype, type_keyval);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_dup(WRAP_Datatype oldtype, WRAP_Datatype *newtype)
@@ -286,14 +286,14 @@ int WRAP_Type_dup(WRAP_Datatype oldtype, WRAP_Datatype *newtype)
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_dup(impl_oldtype, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_extent(WRAP_Datatype datatype, WRAP_Aint *extent)
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_Type_extent(impl_datatype, extent);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_free(WRAP_Datatype *datatype)
@@ -301,20 +301,20 @@ int WRAP_Type_free(WRAP_Datatype *datatype)
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(*datatype);
     int rc = IMPL_Type_free(&impl_datatype);
     *datatype = OUTPUT_MPI_Datatype(impl_datatype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_free_keyval(int *type_keyval)
 {
     int rc = IMPL_Type_free_keyval(type_keyval);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_get_attr(WRAP_Datatype datatype, int type_keyval, void *attribute_val, int *flag)
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_Type_get_attr(impl_datatype, type_keyval, attribute_val, flag);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_get_contents(WRAP_Datatype datatype, int max_integers, int max_addresses, int max_datatypes, int array_of_integers[], WRAP_Aint array_of_addresses[], WRAP_Datatype array_of_datatypes[])
@@ -326,7 +326,7 @@ int WRAP_Type_get_contents(WRAP_Datatype datatype, int max_integers, int max_add
         array_of_datatypes[i] = OUTPUT_MPI_Datatype(impl_array_of_datatypes[i]);
     }
     free(impl_array_of_datatypes);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 #if MPI_VERSION >= 4
@@ -339,7 +339,7 @@ int WRAP_Type_get_contents_c(WRAP_Datatype datatype, WRAP_Count max_integers, WR
         array_of_datatypes[i] = OUTPUT_MPI_Datatype(impl_array_of_datatypes[i]);
     }
     free(impl_array_of_datatypes);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
 
@@ -348,7 +348,7 @@ int WRAP_Type_get_envelope(WRAP_Datatype datatype, int *num_integers, int *num_a
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_Type_get_envelope(impl_datatype, num_integers, num_addresses, num_datatypes, combiner);
     *combiner = COMBINER_CODE_IMPL_TO_MUK(*combiner);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 #if MPI_VERSION >= 4
@@ -357,7 +357,7 @@ int WRAP_Type_get_envelope_c(WRAP_Datatype datatype, WRAP_Count *num_integers, W
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_Type_get_envelope_c(impl_datatype, num_integers, num_addresses, num_large_counts, num_datatypes, combiner);
     *combiner = COMBINER_CODE_IMPL_TO_MUK(*combiner);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
 
@@ -365,7 +365,7 @@ int WRAP_Type_get_extent(WRAP_Datatype datatype, WRAP_Aint *lb, WRAP_Aint *exten
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_Type_get_extent(impl_datatype, lb, extent);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 #if MPI_VERSION >= 4
@@ -373,7 +373,7 @@ int WRAP_Type_get_extent_c(WRAP_Datatype datatype, WRAP_Count *lb, WRAP_Count *e
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_Type_get_extent_c(impl_datatype, lb, extent);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
 
@@ -381,21 +381,21 @@ int WRAP_Type_get_extent_x(WRAP_Datatype datatype, WRAP_Count *lb, WRAP_Count *e
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_Type_get_extent_x(impl_datatype, lb, extent);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_get_name(WRAP_Datatype datatype, char *type_name, int *resultlen)
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_Type_get_name(impl_datatype, type_name, resultlen);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_get_true_extent(WRAP_Datatype datatype, WRAP_Aint *true_lb, WRAP_Aint *true_extent)
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_Type_get_true_extent(impl_datatype, true_lb, true_extent);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 #if MPI_VERSION >= 4
@@ -403,7 +403,7 @@ int WRAP_Type_get_true_extent_c(WRAP_Datatype datatype, WRAP_Count *true_lb, WRA
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_Type_get_true_extent_c(impl_datatype, true_lb, true_extent);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
 
@@ -411,7 +411,7 @@ int WRAP_Type_get_true_extent_x(WRAP_Datatype datatype, WRAP_Count *true_lb, WRA
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_Type_get_true_extent_x(impl_datatype, true_lb, true_extent);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_hindexed(int count, int array_of_blocklengths[], WRAP_Aint array_of_displacements[], WRAP_Datatype oldtype, WRAP_Datatype *newtype)
@@ -420,7 +420,7 @@ int WRAP_Type_hindexed(int count, int array_of_blocklengths[], WRAP_Aint array_o
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_hindexed(count, array_of_blocklengths, array_of_displacements, impl_oldtype, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_hvector(int count, int blocklength, WRAP_Aint stride, WRAP_Datatype oldtype, WRAP_Datatype *newtype)
@@ -429,7 +429,7 @@ int WRAP_Type_hvector(int count, int blocklength, WRAP_Aint stride, WRAP_Datatyp
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_hvector(count, blocklength, stride, impl_oldtype, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_indexed(int count, const int array_of_blocklengths[], const int array_of_displacements[], WRAP_Datatype oldtype, WRAP_Datatype *newtype)
@@ -438,7 +438,7 @@ int WRAP_Type_indexed(int count, const int array_of_blocklengths[], const int ar
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_indexed(count, array_of_blocklengths, array_of_displacements, impl_oldtype, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 #if MPI_VERSION >= 4
@@ -448,7 +448,7 @@ int WRAP_Type_indexed_c(WRAP_Count count, const WRAP_Count array_of_blocklengths
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_indexed_c(count, array_of_blocklengths, array_of_displacements, impl_oldtype, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
 
@@ -456,7 +456,7 @@ int WRAP_Type_lb(WRAP_Datatype datatype, WRAP_Aint *displacement)
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_Type_lb(impl_datatype, displacement);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_match_size(int typeclass, int size, WRAP_Datatype *datatype)
@@ -478,28 +478,28 @@ int WRAP_Type_match_size(int typeclass, int size, WRAP_Datatype *datatype)
     }
     int rc = IMPL_Type_match_size(impl_typeclass, size, &impl_datatype);
     *datatype = OUTPUT_MPI_Datatype(impl_datatype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_set_attr(WRAP_Datatype datatype, int type_keyval, void *attribute_val)
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_Type_set_attr(impl_datatype, type_keyval, attribute_val);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_set_name(WRAP_Datatype datatype, const char *type_name)
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_Type_set_name(impl_datatype, type_name);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_size(WRAP_Datatype datatype, int *size)
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_Type_size(impl_datatype, size);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 #if MPI_VERSION >= 4
@@ -507,7 +507,7 @@ int WRAP_Type_size_c(WRAP_Datatype datatype, WRAP_Count *size)
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_Type_size_c(impl_datatype, size);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
 
@@ -515,7 +515,7 @@ int WRAP_Type_size_x(WRAP_Datatype datatype, WRAP_Count *size)
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_Type_size_x(impl_datatype, size);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_struct(int count, int array_of_blocklengths[], WRAP_Aint array_of_displacements[], WRAP_Datatype array_of_types[], WRAP_Datatype *newtype)
@@ -528,14 +528,14 @@ int WRAP_Type_struct(int count, int array_of_blocklengths[], WRAP_Aint array_of_
     int rc = IMPL_Type_struct(count, array_of_blocklengths, array_of_displacements, impl_array_of_types, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
     free(impl_array_of_types);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_ub(WRAP_Datatype datatype, WRAP_Aint *displacement)
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_Type_ub(impl_datatype, displacement);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Type_vector(int count, int blocklength, int stride, WRAP_Datatype oldtype, WRAP_Datatype *newtype)
@@ -544,7 +544,7 @@ int WRAP_Type_vector(int count, int blocklength, int stride, WRAP_Datatype oldty
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_vector(count, blocklength, stride, impl_oldtype, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 #if MPI_VERSION >= 4
@@ -554,6 +554,6 @@ int WRAP_Type_vector_c(WRAP_Count count, WRAP_Count blocklength, WRAP_Count stri
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_vector_c(count, blocklength, stride, impl_oldtype, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
-    return ERROR_CODE_IMPL_TO_MUK(rc);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
