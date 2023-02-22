@@ -1,6 +1,7 @@
 #ifndef WRAP_HANDLE_TYPEDEFS_H
 #define WRAP_HANDLE_TYPEDEFS_H
 
+#include "impl-scalar-types.h"
 #include "impl-status.h"
 
 typedef union

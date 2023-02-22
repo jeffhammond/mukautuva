@@ -1,6 +1,9 @@
 #ifndef MUK_IMPL_HANDLE_CONVERSIONS_H
 #define MUK_IMPL_HANDLE_CONVERSIONS_H
 
+//#include "impl-scalar-types.h"
+#include "wrap-handle-typedefs.h"
+
 /*
 typedef union
 {
@@ -1063,16 +1066,6 @@ static inline WRAP_Win OUTPUT_MPI_Win(MPI_Win win)
 static inline bool IS_IN_PLACE(const void* ptr)
 {
     return ((intptr_t)ptr == (intptr_t)MUK_IN_PLACE);
-}
-
-static inline bool IS_STATUS_IGNORE(const WRAP_Status * status)
-{
-    return ((intptr_t)status == (intptr_t)MUK_STATUS_IGNORE);
-}
-
-static inline bool IS_STATUSES_IGNORE(const WRAP_Status * status)
-{
-    return ((intptr_t)status == (intptr_t)MUK_STATUSES_IGNORE);
 }
 
 #endif

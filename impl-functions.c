@@ -11,12 +11,12 @@
 //#include "muk-dl.h"
 #include "muk-predefined.h"
 
-#include "impl-scalar-types.h"
-#include "wrap-handle-typedefs.h"
+//#include "impl-scalar-types.h"
+//#include "impl-status.h"
+//#include "wrap-handle-typedefs.h"
 
 #define MUK_EXTERN extern
 #include "impl-fpointers.h"
-#include "impl-status.h"
 #include "impl-predefined-op.h"
 #include "impl-linked-list.h"
 #include "impl-constant-conversions.h"

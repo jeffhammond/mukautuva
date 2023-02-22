@@ -30,6 +30,16 @@ typedef struct
 WRAP_F08_status;
 #endif
 
+static inline bool IS_STATUS_IGNORE(const WRAP_Status * status)
+{
+    return ((intptr_t)status == (intptr_t)MUK_STATUS_IGNORE);
+}
+
+static inline bool IS_STATUSES_IGNORE(const WRAP_Status * status)
+{
+    return ((intptr_t)status == (intptr_t)MUK_STATUSES_IGNORE);
+}
+
 static inline void WRAP_Status_empty(const bool ignore, WRAP_Status * w)
 {
     if (ignore) return;
@@ -57,12 +67,10 @@ static inline void WRAP_Status_empty(const bool ignore, WRAP_Status * w)
 
 static inline void WRAP_Status_to_MPI_Status(const WRAP_Status * w, MPI_Status * m)
 {
-#if 0
-    if ((intptr_t)w == (intptr_t)IMPL_STATUS_IGNORE) {
+    if (IS_STATUSES_IGNORE(w)) {
         printf("WRAP_Status_to_MPI_Status passed STATUS_IGNORE\n");
         return;
     }
-#endif
     if (w == NULL || m == NULL) {
         printf("WRAP_Status_to_MPI_Status passed NULL (w=%p m=%p)\n",w,m);
         return;
@@ -83,12 +91,10 @@ static inline void WRAP_Status_to_MPI_Status(const WRAP_Status * w, MPI_Status *
 
 static inline void MPI_Status_to_WRAP_Status(const MPI_Status * m, WRAP_Status * w)
 {
-#if 0
-    if ((intptr_t)w == (intptr_t)IMPL_STATUS_IGNORE) {
+    if (IS_STATUSES_IGNORE(w)) {
         printf("MPI_Status_to_WRAP_Status passed STATUS_IGNORE\n");
         return;
     }
-#endif
     if (w == NULL || m == NULL) {
         printf("MPI_Status_to_WRAP_Status passed NULL (m=%p w=%p)\n",m,w);
         return;

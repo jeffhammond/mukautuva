@@ -1,6 +1,8 @@
 #ifndef IMPL_LINKED_LIST_H
 #define IMPL_LINKED_LIST_H
 
+#include "wrap-handle-typedefs.h"
+
 // crazy stuff to support user-defined reductions
 
 // impl-keyval.c
