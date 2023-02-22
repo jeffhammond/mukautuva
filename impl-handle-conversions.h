@@ -1137,25 +1137,35 @@ static inline WRAP_Session OUTPUT_MPI_Session(MPI_Session session)
 
 static inline MPI_Win CONVERT_MPI_Win(WRAP_Win win)
 {
+    if (win.ip == (intptr_t)MUK_WIN_NULL) {
+        return MPI_WIN_NULL;
+    }
+    else {
 #ifdef MPICH
-    return win.i;
+        return win.i;
 #elif OPEN_MPI
-    return win.p;
+        return win.p;
 #else
 #error NO ABI
 #endif
+    }
 }
 
 static inline WRAP_Win OUTPUT_MPI_Win(MPI_Win win)
 {
     WRAP_Win wrap;
+    if (win == MPI_WIN_NULL) {
+        wrap.ip = (intptr_t)MUK_WIN_NULL;
+    }
+    else {
 #ifdef MPICH
-    wrap.i = win;
+        wrap.i = win;
 #elif OPEN_MPI
-    wrap.p = win;
+        wrap.p = win;
 #else
 #error NO ABI
 #endif
+    }
     return wrap;
 }
 
