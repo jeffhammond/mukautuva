@@ -1007,6 +1007,10 @@ static inline MPI_Op CONVERT_MPI_Op(WRAP_Op op)
 
 static inline WRAP_Op OUTPUT_MPI_Op(MPI_Op op)
 {
+    // I do not know any scenario where backwards conversion
+    // of built-ins will be required, but implement this
+    // anyways just to be safe, because adding extra branches
+    // in Op_create does not matter.
     WRAP_Op wrap;
     if (op == MPI_SUM) {
         wrap.ip = (intptr_t)MUK_SUM;
