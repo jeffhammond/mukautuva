@@ -24,6 +24,11 @@ int main(int argc, char* argv[])
     MPI_Barrier(MPI_COMM_WORLD);
     usleep(1);
 
+    if (np < 2) {
+        printf("this test requires np > 1\n");
+        MPI_Abort(MPI_COMM_WORLD,np);
+    }
+
     // Example 5.22 An elaborate example.
     {
         int   position, i = 200;
