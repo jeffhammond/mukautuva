@@ -354,7 +354,7 @@ int WRAP_Win_detach(WRAP_Win win, const void *base)
 int WRAP_Win_fence(int assert, WRAP_Win win)
 {
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Win_fence(assert, impl_win);
+    int rc = IMPL_Win_fence(RMA_MODE_MUK_TO_IMPL(assert), impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -457,14 +457,14 @@ int WRAP_Win_lock(int lock_type, int rank, int assert, WRAP_Win win)
     } else if (lock_type == MUK_LOCK_SHARED) {
         impl_type = MPI_LOCK_SHARED;
     }
-    int rc = IMPL_Win_lock(impl_type, rank, assert, impl_win);
+    int rc = IMPL_Win_lock(impl_type, rank, RMA_MODE_MUK_TO_IMPL(assert), impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Win_lock_all(int assert, WRAP_Win win)
 {
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Win_lock_all(assert, impl_win);
+    int rc = IMPL_Win_lock_all(RMA_MODE_MUK_TO_IMPL(assert), impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -472,7 +472,7 @@ int WRAP_Win_post(WRAP_Group group, int assert, WRAP_Win win)
 {
     MPI_Group impl_group = CONVERT_MPI_Group(group);
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Win_post(impl_group, assert, impl_win);
+    int rc = IMPL_Win_post(impl_group, RMA_MODE_MUK_TO_IMPL(assert), impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -526,7 +526,7 @@ int WRAP_Win_start(WRAP_Group group, int assert, WRAP_Win win)
 {
     MPI_Group impl_group = CONVERT_MPI_Group(group);
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Win_start(impl_group, assert, impl_win);
+    int rc = IMPL_Win_start(impl_group, RMA_MODE_MUK_TO_IMPL(assert), impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
