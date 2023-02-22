@@ -271,12 +271,11 @@ int WRAP_Testany(int count, WRAP_Request array_of_requests[], int *indx, int *fl
         // with flag = true, index = MPI_UNDEFINED, and an empty status.
         if (*indx != MPI_UNDEFINED) {
             array_of_requests[*indx] = OUTPUT_MPI_Request(impl_requests[*indx]);
-            MPI_Status_to_WRAP_Status(&impl_status, status);
-            if (impl_requests[*indx] == MPI_REQUEST_NULL) {
-                //remove_cookie_pair_from_list(array_of_requests[*indx]);
-            }
             if (!ignore) {
                 MPI_Status_to_WRAP_Status(&impl_status, status);
+            }
+            if (impl_requests[*indx] == MPI_REQUEST_NULL) {
+                //remove_cookie_pair_from_list(array_of_requests[*indx]);
             }
         }
     }
