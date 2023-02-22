@@ -7,16 +7,11 @@
 #include <assert.h>
 
 #include <mpi.h>
-typedef ptrdiff_t WRAP_Aint;
-typedef ptrdiff_t WRAP_Count;
-typedef ptrdiff_t WRAP_Offset;
-typedef MPI_Aint   IMPL_Aint;
-typedef MPI_Count  IMPL_Count;
-typedef MPI_Offset IMPL_Offset;
 
 //#include "muk-dl.h"
 #include "muk-predefined.h"
 
+#include "impl-scalar-types.h"
 #include "wrap-handle-typedefs.h"
 
 #define MUK_EXTERN extern

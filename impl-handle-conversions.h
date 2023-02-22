@@ -291,4 +291,9 @@ static inline bool IS_STATUS_IGNORE(const WRAP_Status * status)
     return ((intptr_t)status == (intptr_t)MUK_STATUS_IGNORE);
 }
 
+static inline bool IS_STATUSES_IGNORE(const WRAP_Status * status)
+{
+    return ((intptr_t)status == (intptr_t)MUK_STATUSES_IGNORE);
+}
+
 #endif

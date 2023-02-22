@@ -7,16 +7,11 @@
 #include <assert.h>
 
 #include <mpi.h>
-typedef ptrdiff_t WRAP_Aint;
-typedef ptrdiff_t WRAP_Count;
-typedef ptrdiff_t WRAP_Offset;
-typedef MPI_Aint   IMPL_Aint;
-typedef MPI_Count  IMPL_Count;
-typedef MPI_Offset IMPL_Offset;
 
 //#include "muk-dl.h"
 #include "muk-predefined.h"
 
+#include "impl-scalar-types.h"
 #include "wrap-handle-typedefs.h"
 
 #define MUK_EXTERN extern
@@ -26,7 +21,7 @@ typedef MPI_Offset IMPL_Offset;
 
 // WRAP->IMPL functions
 
-int WRAP_Accumulate(const void *origin_addr, int origin_count, WRAP_Datatype origin_datatype, int target_rank, IMPL_Aint target_disp, int target_count, WRAP_Datatype target_datatype, WRAP_Op op, WRAP_Win win)
+int WRAP_Accumulate(const void *origin_addr, int origin_count, WRAP_Datatype origin_datatype, int target_rank, WRAP_Aint target_disp, int target_count, WRAP_Datatype target_datatype, WRAP_Op op, WRAP_Win win)
 {
     MPI_Datatype impl_origin_datatype = CONVERT_MPI_Datatype(origin_datatype);
     MPI_Datatype impl_target_datatype = CONVERT_MPI_Datatype(target_datatype);

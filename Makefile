@@ -8,7 +8,7 @@ else
     OMPICC=/usr/bin/mpicc.openmpi
     MPICHCC=/usr/bin/mpicc.mpich
     CC=gcc
-    #CFLAGS=-fmax-errors=5 # GCC
+    CFLAGS=-fmax-errors=5 # GCC
     #CFLAGS+=-fsanitize=address
     CFLAGS+=-Wno-unused-parameter -Wno-unused-variable -Wno-unused-function
 endif
