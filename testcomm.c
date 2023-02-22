@@ -62,6 +62,7 @@ int main(int argc, char* argv[])
         MPI_Barrier(shared);
 
         MPI_Comm_free(&split);
+        MPI_Comm_free(&oddeven);
 
         MPI_Comm_free(&shared);
         if (shared != MPI_COMM_NULL) {
