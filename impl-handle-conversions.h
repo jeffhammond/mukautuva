@@ -13,13 +13,24 @@ MUK_Handle;
 
 static inline MPI_Comm CONVERT_MPI_Comm(WRAP_Comm comm)
 {
+    if (comm.ip == (intptr_t)MUK_COMM_WORLD) {
+        return MPI_COMM_WORLD;
+    }
+    else if (comm.ip == (intptr_t)MUK_COMM_SELF) {
+        return MPI_COMM_SELF;
+    }
+    else if (comm.ip == (intptr_t)MUK_COMM_NULL) {
+        return MPI_COMM_NULL;
+    }
+    else {
 #ifdef MPICH
-    return comm.i;
+        return comm.i;
 #elif OPEN_MPI
-    return comm.p;
+        return comm.p;
 #else
 #error NO ABI
 #endif
+    }
 }
 
 static inline MPI_Datatype CONVERT_MPI_Datatype(WRAP_Datatype datatype)
@@ -69,13 +80,21 @@ static inline MPI_Group CONVERT_MPI_Group(WRAP_Group group)
 
 static inline MPI_Info CONVERT_MPI_Info(WRAP_Info info)
 {
+    if (info.ip == (intptr_t)MUK_INFO_NULL) {
+        return MPI_INFO_NULL;
+    }
+    else if (info.ip == (intptr_t)MUK_INFO_ENV) {
+        return MPI_INFO_ENV;
+    }
+    else {
 #ifdef MPICH
-    return info.i;
+        return info.i;
 #elif OPEN_MPI
-    return info.p;
+        return info.p;
 #else
 #error NO ABI
 #endif
+    }
 }
 
 static inline MPI_Message CONVERT_MPI_Message(WRAP_Message op)
@@ -138,13 +157,24 @@ static inline MPI_Win CONVERT_MPI_Win(WRAP_Win win)
 static inline WRAP_Comm OUTPUT_MPI_Comm(MPI_Comm comm)
 {
     WRAP_Comm wrap;
+    if (comm == MPI_COMM_NULL) {
+        wrap.ip = (intptr_t)MUK_COMM_NULL;
+    }
+    else if (comm == MPI_COMM_WORLD) {
+        wrap.ip = (intptr_t)MUK_COMM_WORLD;
+    }
+    else if (comm == MPI_COMM_SELF) {
+        wrap.ip = (intptr_t)MUK_COMM_SELF;
+    }
+    else {
 #ifdef MPICH
-    wrap.i = comm;
+        wrap.i = comm;
 #elif OPEN_MPI
-    wrap.p = comm;
+        wrap.p = comm;
 #else
 #error NO ABI
 #endif
+    }
      return wrap;
 }
 
