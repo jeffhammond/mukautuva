@@ -41,6 +41,22 @@ libs: libmuk.a libmuk.so
 
 MPI_H = mpi.h mpi-constants.h mpi-handle-typedefs.h mpi-typedefs.h mpi-predefined.h mpi-prototypes.h muk-predefined.h
 
+IMPL_H =    impl-alltoallw.h impl-constant-conversions.h \
+	    impl-fpointers.h impl-handle-conversions.h \
+	    impl-linked-list.h impl-predefined-op.h \
+	    impl-scalar-types.h impl-status.h
+
+IMPL_FUNCTION_C :=  impl-functions.c impl-load-functions.c impl-keyval.c \
+		    impl-constant-conversions.c impl-predefined.c \
+		    impl-commgroup-functions.c impl-rma-functions.c \
+		    impl-wait-functions.c impl-session-functions.c \
+		    impl-file-functions.c impl-reduce-functions.c \
+		    impl-type-functions.c
+
+IMPL_FUNCTION_O := $(patsubst %.c,%.o,$(IMPL_FUNCTION_C))
+MPICH_FUNCTION_O := $(subst impl,mpich,$(IMPL_FUNCTION_O))
+OMPI_FUNCTION_O := $(subst impl,ompi,$(IMPL_FUNCTION_O))
+
 # this just tests if mpi.h can be compiled without errors
 header.o: header.c $(MPI_H)
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -57,10 +73,10 @@ libinit.o: libinit.c muk.h muk-dl.h $(MPI_H)
 libinit.i: libinit.c muk.h muk-dl.h $(MPI_H)
 	$(CC) $(CFLAGS) -E $< -o $@
 
-mpich-wrap.so: mpich-predefined.o mpich-functions.o mpich-reduce-functions.o mpich-session-functions.o mpich-rma-functions.o mpich-commgroup-functions.o mpich-type-functions.o mpich-wait-functions.o mpich-file-functions.o mpich-load-functions.o mpich-keyval.o mpich-constant-conversions.o
+mpich-wrap.so: $(MPICH_FUNCTION_O)
 	$(MPICHCC) $(SOFLAGS) $^ -o $@
 
-ompi-wrap.so: ompi-predefined.o ompi-functions.o ompi-reduce-functions.o ompi-session-functions.o ompi-rma-functions.o ompi-commgroup-functions.o ompi-type-functions.o ompi-wait-functions.o ompi-file-functions.o ompi-load-functions.o ompi-keyval.o ompi-constant-conversions.o
+ompi-wrap.so: $(OMPI_FUNCTION_O)
 	$(OMPICC) $(SOFLAGS) $^ -o $@
 
 mpich-predefined.o: impl-predefined.c muk-predefined.h
@@ -69,88 +85,70 @@ mpich-predefined.o: impl-predefined.c muk-predefined.h
 ompi-predefined.o: impl-predefined.c muk-predefined.h
 	$(OMPICC) $(CFLAGS) -c $< -o $@
 
-mpich-functions.o: impl-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
-		   impl-predefined-op.h impl-constant-conversions.h impl-alltoallw.h impl-linked-list.h \
-		   wrap-handle-typedefs.h
+mpich-functions.o: impl-functions.c $(IMPL_H)
 	$(MPICHCC) $(CFLAGS) -c $< -o $@
 
-ompi-functions.o: impl-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
-		  impl-predefined-op.h impl-constant-conversions.h impl-alltoallw.h impl-linked-list.h \
-		  wrap-handle-typedefs.h
+ompi-functions.o: impl-functions.c $(IMPL_H)
 	$(OMPICC) $(CFLAGS) -c $< -o $@
 
-mpich-commgroup-functions.o: impl-commgroup-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
-		   impl-predefined-op.h impl-constant-conversions.h wrap-handle-typedefs.h
+mpich-commgroup-functions.o: impl-commgroup-functions.c $(IMPL_H)
 	$(MPICHCC) $(CFLAGS) -c $< -o $@
 
-ompi-commgroup-functions.o: impl-commgroup-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
-		  impl-predefined-op.h impl-constant-conversions.h wrap-handle-typedefs.h
+ompi-commgroup-functions.o: impl-commgroup-functions.c $(IMPL_H)
 	$(OMPICC) $(CFLAGS) -c $< -o $@
 
-mpich-reduce-functions.o: impl-reduce-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
-		   impl-predefined-op.h impl-constant-conversions.h wrap-handle-typedefs.h
+mpich-reduce-functions.o: impl-reduce-functions.c $(IMPL_H)
 	$(MPICHCC) $(CFLAGS) -c $< -o $@
 
-ompi-reduce-functions.o: impl-reduce-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
-		  impl-predefined-op.h impl-constant-conversions.h wrap-handle-typedefs.h
+ompi-reduce-functions.o: impl-reduce-functions.c $(IMPL_H)
 	$(OMPICC) $(CFLAGS) -c $< -o $@
 
-mpich-rma-functions.o: impl-rma-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
-		   impl-predefined-op.h impl-constant-conversions.h wrap-handle-typedefs.h
+mpich-rma-functions.o: impl-rma-functions.c $(IMPL_H)
 	$(MPICHCC) $(CFLAGS) -c $< -o $@
 
-ompi-rma-functions.o: impl-rma-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
-		  impl-predefined-op.h impl-constant-conversions.h wrap-handle-typedefs.h
+ompi-rma-functions.o: impl-rma-functions.c $(IMPL_H)
 	$(OMPICC) $(CFLAGS) -c $< -o $@
 
-mpich-type-functions.o: impl-type-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
-		   impl-predefined-op.h impl-constant-conversions.h wrap-handle-typedefs.h
+mpich-type-functions.o: impl-type-functions.c $(IMPL_H)
 	$(MPICHCC) $(CFLAGS) -c $< -o $@
 
-ompi-type-functions.o: impl-type-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
-		  impl-predefined-op.h impl-constant-conversions.h wrap-handle-typedefs.h
+ompi-type-functions.o: impl-type-functions.c $(IMPL_H)
 	$(OMPICC) $(CFLAGS) -c $< -o $@
 
-mpich-wait-functions.o: impl-wait-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
-		   impl-predefined-op.h impl-constant-conversions.h wrap-handle-typedefs.h
+mpich-wait-functions.o: impl-wait-functions.c $(IMPL_H)
 	$(MPICHCC) $(CFLAGS) -c $< -o $@
 
-ompi-wait-functions.o: impl-wait-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
-		  impl-predefined-op.h impl-constant-conversions.h wrap-handle-typedefs.h
+ompi-wait-functions.o: impl-wait-functions.c $(IMPL_H)
 	$(OMPICC) $(CFLAGS) -c $< -o $@
 
-mpich-file-functions.o: impl-file-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
-		   impl-predefined-op.h impl-constant-conversions.h wrap-handle-typedefs.h
+mpich-file-functions.o: impl-file-functions.c $(IMPL_H)
 	$(MPICHCC) $(CFLAGS) -c $< -o $@
 
-ompi-file-functions.o: impl-file-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
-		  impl-predefined-op.h impl-constant-conversions.h wrap-handle-typedefs.h
+ompi-file-functions.o: impl-file-functions.c $(IMPL_H)
 	$(OMPICC) $(CFLAGS) -c $< -o $@
 
-mpich-session-functions.o: impl-session-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
-		   impl-predefined-op.h impl-constant-conversions.h wrap-handle-typedefs.h
+mpich-session-functions.o: impl-session-functions.c $(IMPL_H)
 	$(MPICHCC) $(CFLAGS) -c $< -o $@
 
-ompi-session-functions.o: impl-session-functions.c impl-fpointers.h impl-status.h impl-handle-conversions.h \
-		  impl-predefined-op.h impl-constant-conversions.h wrap-handle-typedefs.h
+ompi-session-functions.o: impl-session-functions.c $(IMPL_H)
 	$(OMPICC) $(CFLAGS) -c $< -o $@
 
-mpich-load-functions.o: impl-load-functions.c impl-fpointers.h
+mpich-load-functions.o: impl-load-functions.c $(IMPL_H)
 	$(MPICHCC) $(CFLAGS) -c $< -o $@
 
-ompi-load-functions.o: impl-load-functions.c impl-fpointers.h
+ompi-load-functions.o: impl-load-functions.c $(IMPL_H)
 	$(OMPICC) $(CFLAGS) -c $< -o $@
 
-mpich-constant-conversions.o: impl-constant-conversions.c impl-fpointers.h
+mpich-constant-conversions.o: impl-constant-conversions.c $(IMPL_H)
 	$(MPICHCC) $(CFLAGS) -c $< -o $@
 
-ompi-constant-conversions.o: impl-constant-conversions.c impl-fpointers.h
+ompi-constant-conversions.o: impl-constant-conversions.c $(IMPL_H)
 	$(OMPICC) $(CFLAGS) -c $< -o $@
 
-mpich-keyval.o: impl-keyval.c impl-fpointers.h
+mpich-keyval.o: impl-keyval.c $(IMPL_H)
 	$(MPICHCC) $(CFLAGS) -c $< -o $@
 
-ompi-keyval.o: impl-keyval.c impl-fpointers.h
+ompi-keyval.o: impl-keyval.c $(IMPL_H)
 	$(OMPICC) $(CFLAGS) -c $< -o $@
 
 check: $(RUNTESTS)
