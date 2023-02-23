@@ -313,7 +313,7 @@ int WRAP_Type_free_keyval(int *type_keyval)
 int WRAP_Type_get_attr(WRAP_Datatype datatype, int type_keyval, void *attribute_val, int *flag)
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    int rc = IMPL_Type_get_attr(impl_datatype, type_keyval, attribute_val, flag);
+    int rc = IMPL_Type_get_attr(impl_datatype, KEY_MUK_TO_IMPL(type_keyval), attribute_val, flag);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 

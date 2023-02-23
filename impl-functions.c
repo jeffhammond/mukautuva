@@ -797,7 +797,7 @@ int WRAP_Comm_free_keyval(int *comm_keyval)
 int WRAP_Comm_get_attr(WRAP_Comm comm, int comm_keyval, void *attribute_val, int *flag)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    int rc = IMPL_Comm_get_attr(impl_comm, comm_keyval, attribute_val, flag);
+    int rc = IMPL_Comm_get_attr(impl_comm, KEY_MUK_TO_IMPL(comm_keyval), attribute_val, flag);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 

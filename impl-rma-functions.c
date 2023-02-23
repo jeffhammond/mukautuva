@@ -403,7 +403,7 @@ int WRAP_Win_free_keyval(int *win_keyval)
 int WRAP_Win_get_attr(WRAP_Win win, int win_keyval, void *attribute_val, int *flag)
 {
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Win_get_attr(impl_win, win_keyval, attribute_val, flag);
+    int rc = IMPL_Win_get_attr(impl_win, KEY_MUK_TO_IMPL(win_keyval), attribute_val, flag);
     // this is the only place this is needed, so we inline it
     if (**(int**)attribute_val == MPI_WIN_SEPARATE) {
         **(int**)attribute_val = MUK_WIN_SEPARATE;
