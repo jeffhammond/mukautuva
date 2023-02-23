@@ -518,3 +518,37 @@ int WRAP_Intercomm_merge(WRAP_Comm intercomm, int high, WRAP_Comm *newintracomm)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
+int WRAP_Lookup_name(const char *service_name, WRAP_Info info, char *port_name)
+{
+    MPI_Info impl_info = CONVERT_MPI_Info(info);
+    int rc = IMPL_Lookup_name(service_name, impl_info, port_name);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Publish_name(const char *service_name, WRAP_Info info, const char *port_name)
+{
+    MPI_Info impl_info = CONVERT_MPI_Info(info);
+    int rc = IMPL_Publish_name(service_name, impl_info, port_name);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Unpublish_name(const char *service_name, WRAP_Info info, const char *port_name)
+{
+    MPI_Info impl_info = CONVERT_MPI_Info(info);
+    int rc = IMPL_Unpublish_name(service_name, impl_info, port_name);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Open_port(WRAP_Info info, char *port_name)
+{
+    MPI_Info impl_info = CONVERT_MPI_Info(info);
+    int rc = IMPL_Open_port(impl_info, port_name);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Close_port(const char *port_name)
+{
+    int rc = IMPL_Close_port(port_name);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+

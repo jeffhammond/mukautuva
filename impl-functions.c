@@ -656,12 +656,6 @@ int WRAP_Cartdim_get(WRAP_Comm comm, int *ndims)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Close_port(const char *port_name)
-{
-    int rc = IMPL_Close_port(port_name);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
 #if 0
 int WRAP_Errhandler_create(WRAP_Comm_errhandler_function *comm_errhandler_fn, WRAP_Errhandler *errhandler)
 {
@@ -1857,13 +1851,6 @@ int WRAP_Keyval_free(int *keyval)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Lookup_name(const char *service_name, WRAP_Info info, char *port_name)
-{
-    MPI_Info impl_info = CONVERT_MPI_Info(info);
-    int rc = IMPL_Lookup_name(service_name, impl_info, port_name);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
 int WRAP_Mprobe(int source, int tag, WRAP_Comm comm, WRAP_Message *message, WRAP_Status *status)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
@@ -2194,13 +2181,6 @@ int WRAP_Op_free(WRAP_Op *op)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Open_port(WRAP_Info info, char *port_name)
-{
-    MPI_Info impl_info = CONVERT_MPI_Info(info);
-    int rc = IMPL_Open_port(impl_info, port_name);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
 int WRAP_Pack(const void *inbuf, int incount, WRAP_Datatype datatype, void *outbuf, int outsize, int *position, WRAP_Comm comm)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
@@ -2332,13 +2312,6 @@ int WRAP_Psend_init(const void *buf, int partitions, WRAP_Count count, WRAP_Data
     MPI_Request impl_request;
     int rc = IMPL_Psend_init(buf, partitions, count, impl_datatype, dest, tag, impl_comm, impl_info, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Publish_name(const char *service_name, WRAP_Info info, const char *port_name)
-{
-    MPI_Info impl_info = CONVERT_MPI_Info(info);
-    int rc = IMPL_Publish_name(service_name, impl_info, port_name);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -3010,10 +2983,3 @@ int WRAP_Unpack_external_c(const char datarep[], const void *inbuf, WRAP_Count i
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
-
-int WRAP_Unpublish_name(const char *service_name, WRAP_Info info, const char *port_name)
-{
-    MPI_Info impl_info = CONVERT_MPI_Info(info);
-    int rc = IMPL_Unpublish_name(service_name, impl_info, port_name);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
