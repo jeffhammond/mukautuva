@@ -21,6 +21,66 @@
 
 // WRAP->IMPL functions
 
+int WRAP_Cart_coords(WRAP_Comm comm, int rank, int maxdims, int coords[])
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    int rc = IMPL_Cart_coords(impl_comm, rank, maxdims, coords);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Cart_create(WRAP_Comm comm_old, int ndims, const int dims[], const int periods[], int reorder, WRAP_Comm *comm_cart)
+{
+    MPI_Comm impl_comm_old = CONVERT_MPI_Comm(comm_old);
+    MPI_Comm impl_comm_cart;
+    int rc = IMPL_Cart_create(impl_comm_old, ndims, dims, periods, reorder, &impl_comm_cart);
+    *comm_cart = OUTPUT_MPI_Comm(impl_comm_cart);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Cart_get(WRAP_Comm comm, int maxdims, int dims[], int periods[], int coords[])
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    int rc = IMPL_Cart_get(impl_comm, maxdims, dims, periods, coords);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Cart_map(WRAP_Comm comm, int ndims, const int dims[], const int periods[], int *newrank)
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    int rc = IMPL_Cart_map(impl_comm, ndims, dims, periods, newrank);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Cart_rank(WRAP_Comm comm, const int coords[], int *rank)
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    int rc = IMPL_Cart_rank(impl_comm, coords, rank);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Cart_shift(WRAP_Comm comm, int direction, int disp, int *rank_source, int *rank_dest)
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    int rc = IMPL_Cart_shift(impl_comm, direction, disp, rank_source, rank_dest);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Cart_sub(WRAP_Comm comm, const int remain_dims[], WRAP_Comm *newcomm)
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    MPI_Comm impl_newcomm;
+    int rc = IMPL_Cart_sub(impl_comm, remain_dims, &impl_newcomm);
+    *newcomm = OUTPUT_MPI_Comm(impl_newcomm);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Cartdim_get(WRAP_Comm comm, int *ndims)
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    int rc = IMPL_Cartdim_get(impl_comm, ndims);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
 int WRAP_Comm_accept(const char *port_name, WRAP_Info info, int root, WRAP_Comm comm, WRAP_Comm *newcomm)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
@@ -372,6 +432,50 @@ int WRAP_Dist_graph_neighbors_count(WRAP_Comm comm, int *indegree, int *outdegre
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
+int WRAP_Graph_create(WRAP_Comm comm_old, int nnodes, const int indx[], const int edges[], int reorder, WRAP_Comm *comm_graph)
+{
+    MPI_Comm impl_comm_old = CONVERT_MPI_Comm(comm_old);
+    MPI_Comm impl_comm_graph;
+    int rc = IMPL_Graph_create(impl_comm_old, nnodes, indx, edges, reorder, &impl_comm_graph);
+    *comm_graph = OUTPUT_MPI_Comm(impl_comm_graph);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Graph_get(WRAP_Comm comm, int maxindex, int maxedges, int indx[], int edges[])
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    int rc = IMPL_Graph_get(impl_comm, maxindex, maxedges, indx, edges);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Graph_map(WRAP_Comm comm, int nnodes, const int indx[], const int edges[], int *newrank)
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    int rc = IMPL_Graph_map(impl_comm, nnodes, indx, edges, newrank);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Graph_neighbors(WRAP_Comm comm, int rank, int maxneighbors, int neighbors[])
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    int rc = IMPL_Graph_neighbors(impl_comm, rank, maxneighbors, neighbors);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Graph_neighbors_count(WRAP_Comm comm, int rank, int *nneighbors)
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    int rc = IMPL_Graph_neighbors_count(impl_comm, rank, nneighbors);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Graphdims_get(WRAP_Comm comm, int *nnodes, int *nedges)
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    int rc = IMPL_Graphdims_get(impl_comm, nnodes, nedges);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
 int WRAP_Group_compare(WRAP_Group group1, WRAP_Group group2, int *result)
 {
     MPI_Group impl_group1 = CONVERT_MPI_Group(group1);
@@ -515,6 +619,13 @@ int WRAP_Intercomm_merge(WRAP_Comm intercomm, int high, WRAP_Comm *newintracomm)
     MPI_Comm impl_newintracomm;
     int rc = IMPL_Intercomm_merge(impl_intercomm, high, &impl_newintracomm);
     *newintracomm = OUTPUT_MPI_Comm(impl_newintracomm);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Topo_test(WRAP_Comm comm, int *status)
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    int rc = IMPL_Topo_test(impl_comm, status);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
