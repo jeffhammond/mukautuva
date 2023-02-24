@@ -12,16 +12,23 @@ extern int TYPE_HANDLE_KEY;
 
 typedef struct
 {
-    MPI_Datatype         dt;
-    WRAP_User_function * fp;
+    MPI_Datatype           dt;
+    union {
+        WRAP_User_function   * fp_i;
+        WRAP_User_function_c * fp_c;
+    } fp;
+    bool large_c;
 }
 reduce_trampoline_cookie_t;
 
 typedef struct op_fptr_pair_s
 {
-    // from MUK
     MPI_Op               op;
-    WRAP_User_function * fp;
+    union {
+        WRAP_User_function   * fp_i;
+        WRAP_User_function_c * fp_c;
+    } fp;
+    bool large_c;
 
     // for the linked list
     struct op_fptr_pair_s * next;
@@ -29,16 +36,13 @@ typedef struct op_fptr_pair_s
 }
 op_fptr_pair_t;
 
-// impl-functions.c
-extern op_fptr_pair_t * op_fptr_pair_list;
-
 // This is to implement the crude garbage collector for cookies
 // created by nonblocking reductions with user-defined ops,
 // which cannot be freed until the user function is called
 // (or else the lookup will segfault, obviously).
 typedef struct req_cookie_pair_s
 {
-    const MPI_Request          * request;
+    MPI_Request                  request;
     reduce_trampoline_cookie_t * cookie;
 
     // for the linked list
@@ -48,33 +52,53 @@ typedef struct req_cookie_pair_s
 req_cookie_pair_t;
 
 // impl-functions.c
+extern op_fptr_pair_t    * op_fptr_pair_list;
 extern req_cookie_pair_t * req_cookie_pair_list;
 
 MAYBE_UNUSED
-static WRAP_User_function * lookup_op_pair(MPI_Op op)
+static bool lookup_op_pair(const MPI_Op op, WRAP_User_function ** fn_i, WRAP_User_function_c ** fn_c , bool * is_large)
 {
-    WRAP_User_function * user_fn = NULL;
+    *fn_i = NULL;
+    *fn_c = NULL;
+    *is_large  = false;
+
     op_fptr_pair_t * current = op_fptr_pair_list;
     if (op_fptr_pair_list == NULL) {
         printf("op_fptr_pair_list is NULL - this should be impossible.\n");
+        return false;
     }
+
     while (current) {
         if (current->op == op) {
-            user_fn = current->fp;
-            break;
+            if (current->large_c) {
+                *is_large  = true;
+                *fn_c = current->fp.fp_c;
+            } else {
+                *is_large  = false;
+                *fn_i = current->fp.fp_i;
+            }
+            return true;
+            //break;
         }
         current = current->next;
     }
-    return user_fn;
+    return false;
 }
 
 MAYBE_UNUSED
-static void add_op_pair_to_list(WRAP_User_function *user_fn, MPI_Op op)
+static void add_op_pair_to_list(bool is_large, MPI_Op op, WRAP_User_function *user_fn_i, WRAP_User_function_c *user_fn_c)
 {
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
     op_fptr_pair_t * pair = malloc(sizeof(op_fptr_pair_t));
     pair->op = op;
-    pair->fp = user_fn;
+    if (is_large) {
+        assert(user_fn_i == NULL);
+        pair->fp.fp_c = user_fn_c;
+    } else {
+        assert(user_fn_c == NULL);
+        pair->fp.fp_i = user_fn_i;
+    }
+    pair->large_c = is_large;
     pair->prev = NULL;
     pair->next = NULL;
 
@@ -131,8 +155,12 @@ static reduce_trampoline_cookie_t * bake_reduce_trampoline_cookie(MPI_Op op, MPI
     int rc;
 
     // Part 1: look up the user function associated with the MPI_Op argument
-    WRAP_User_function * user_fn = lookup_op_pair(op);
-    if (user_fn == NULL) {
+    //WRAP_User_function * user_fn = lookup_op_pair(op);
+    WRAP_User_function   * user_fn_i = NULL;;
+    WRAP_User_function_c * user_fn_c = NULL;
+    bool is_large = false;
+    bool found = lookup_op_pair(op, &user_fn_i, &user_fn_c, &is_large);
+    if (found == false) {
         printf("bake_reduce_trampoline_cookie: failed to find valid op<->fn mapping.\n");
         return NULL;
     }
@@ -147,7 +175,12 @@ static reduce_trampoline_cookie_t * bake_reduce_trampoline_cookie(MPI_Op op, MPI
     // Part 3: bake the cookie
     reduce_trampoline_cookie_t * cookie = malloc(sizeof(reduce_trampoline_cookie_t));
     cookie->dt = datatype;
-    cookie->fp = user_fn;
+    if (is_large) {
+        cookie->fp.fp_c = user_fn_c;
+    } else {
+        cookie->fp.fp_i = user_fn_i;
+    }
+    cookie->large_c = is_large;
     rc = IMPL_Type_set_attr(*dup, TYPE_HANDLE_KEY, cookie);
     if (rc) {
         printf("bake_reduce_trampoline_cookie: Type_set_attr failed\n");
@@ -170,7 +203,7 @@ static void cleanup_reduce_trampoline_cookie(reduce_trampoline_cookie_t * cookie
 }
 
 MAYBE_UNUSED
-static void add_cookie_pair_to_list(const MPI_Request * request, reduce_trampoline_cookie_t * cookie)
+static void add_cookie_pair_to_list(const MPI_Request request, reduce_trampoline_cookie_t * cookie)
 {
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
     req_cookie_pair_t * pair = malloc(sizeof(req_cookie_pair_t));
@@ -195,7 +228,7 @@ static void add_cookie_pair_to_list(const MPI_Request * request, reduce_trampoli
 // in a performance-critical way (in a loop in e.g. Waitall)
 // so ideally it should be inlined.
 MAYBE_UNUSED
-static inline void remove_cookie_pair_from_list(const MPI_Request * request)
+static inline void remove_cookie_pair_from_list(const MPI_Request request)
 {
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
 
@@ -245,7 +278,7 @@ static inline void remove_cookie_pair_from_list(const MPI_Request * request)
 }
 
 MAYBE_UNUSED
-static void cleanup_ireduce_trampoline_cookie(reduce_trampoline_cookie_t * cookie, const MPI_Request * request, MPI_Datatype * dup)
+static void cleanup_ireduce_trampoline_cookie(reduce_trampoline_cookie_t * cookie, const MPI_Request request, MPI_Datatype * dup)
 {
     add_cookie_pair_to_list(request, cookie);
     int rc = IMPL_Type_free(dup);
