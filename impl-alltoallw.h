@@ -24,13 +24,13 @@ static int ALLTOALLW_SETUP(bool in_place, const MPI_Comm comm, const WRAP_Dataty
         *impl_sendtypes = malloc(np * sizeof(MPI_Datatype));
         if (*impl_sendtypes == NULL) return MPI_ERR_INTERN;
         for (int i=0; i<np; i++) {
-            *(impl_sendtypes[i]) = CONVERT_MPI_Datatype(sendtypes[i]);
+            (*impl_sendtypes)[i] = CONVERT_MPI_Datatype(sendtypes[i]);
         }
     }
     *impl_recvtypes = malloc(np * sizeof(MPI_Datatype));
     if (*impl_recvtypes == NULL) return MPI_ERR_INTERN;
     for (int i=0; i<np; i++) {
-        *(impl_recvtypes[i]) = CONVERT_MPI_Datatype(recvtypes[i]);
+        (*impl_recvtypes)[i] = CONVERT_MPI_Datatype(recvtypes[i]);
     }
     return MPI_SUCCESS;
 }

@@ -285,10 +285,11 @@ int WRAP_Alltoallw(const void *sendbuf, const int sendcounts[], const int sdispl
 {
     const bool in_place = IS_IN_PLACE(sendbuf);
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    MPI_Datatype * impl_sendtypes;
-    MPI_Datatype * impl_recvtypes;
+    MPI_Datatype * impl_sendtypes = NULL;
+    MPI_Datatype * impl_recvtypes = NULL;
     int rc = ALLTOALLW_SETUP(in_place, impl_comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
     if (rc != MPI_SUCCESS) {
+        printf("ALLTOALLW_SETUP failed: %d\n",rc);
         return RETURN_CODE_IMPL_TO_MUK(rc);
     }
     rc = IMPL_Alltoallw(in_place ? MPI_IN_PLACE : sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, impl_comm);
