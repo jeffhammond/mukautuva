@@ -103,6 +103,60 @@ int WRAP_Op_free(WRAP_Op *op)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
+int WRAP_Reduce_local(const void *inbuf, void *inoutbuf, int count, WRAP_Datatype datatype, WRAP_Op op)
+{
+    const bool in_place = IS_IN_PLACE(inbuf);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
+    MPI_Op       impl_op       = CONVERT_MPI_Op(op);
+    int rc = MPI_SUCCESS;
+    if (IS_PREDEFINED_OP(impl_op)) {
+        rc = IMPL_Reduce_local(in_place ? MPI_IN_PLACE : inbuf, inoutbuf, count, impl_datatype, impl_op);
+    }
+    else {
+        // bake the cookie
+        MPI_Datatype dup;
+        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
+        if (cookie == NULL) {
+            printf("%s: cookied failed to bake.\n",__func__);
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+        // do the reduction
+        rc = IMPL_Reduce_local(in_place ? MPI_IN_PLACE : inbuf, inoutbuf, count, dup, impl_op);
+        // cleanup
+        cleanup_reduce_trampoline_cookie(cookie, &dup);
+    }
+    end:
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Reduce_local_c(const void *inbuf, void *inoutbuf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Op op)
+{
+    const bool in_place = IS_IN_PLACE(inbuf);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
+    MPI_Op       impl_op       = CONVERT_MPI_Op(op);
+    int rc = MPI_SUCCESS;
+    if (IS_PREDEFINED_OP(impl_op)) {
+        rc = IMPL_Reduce_local_c(in_place ? MPI_IN_PLACE : inbuf, inoutbuf, count, impl_datatype, impl_op);
+    }
+    else {
+        // bake the cookie
+        MPI_Datatype dup;
+        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
+        if (cookie == NULL) {
+            printf("%s: cookied failed to bake.\n",__func__);
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+        // do the reduction
+        rc = IMPL_Reduce_local_c(in_place ? MPI_IN_PLACE : inbuf, inoutbuf, count, dup, impl_op);
+        // cleanup
+        cleanup_reduce_trampoline_cookie(cookie, &dup);
+    }
+    end:
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
 int WRAP_Allreduce(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm)
 {
     const bool in_place = IS_IN_PLACE(sendbuf);
@@ -158,6 +212,68 @@ int WRAP_Allreduce_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_
     end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
+
+int WRAP_Iallreduce(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm, WRAP_Request *request)
+{
+    const bool in_place = IS_IN_PLACE(sendbuf);
+    MPI_Comm     impl_comm     = CONVERT_MPI_Comm(comm);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
+    MPI_Op       impl_op       = CONVERT_MPI_Op(op);
+    MPI_Request impl_request   = MPI_REQUEST_NULL;
+    int rc = MPI_SUCCESS;
+    if (IS_PREDEFINED_OP(impl_op)) {
+        rc = IMPL_Iallreduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, &impl_request);
+    }
+    else {
+        // bake the cookie
+        MPI_Datatype dup;
+        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
+        if (cookie == NULL) {
+            printf("%s: cookied failed to bake.\n",__func__);
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+        // do the reduction
+        rc = IMPL_Iallreduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, &impl_request);
+        // cleanup
+        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+    }
+    end:
+    *request = OUTPUT_MPI_Request(impl_request);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+#if MPI_VERSION >= 4
+int WRAP_Iallreduce_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm, WRAP_Request *request)
+{
+    const bool in_place = IS_IN_PLACE(sendbuf);
+    MPI_Comm     impl_comm     = CONVERT_MPI_Comm(comm);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
+    MPI_Op       impl_op       = CONVERT_MPI_Op(op);
+    MPI_Request impl_request   = MPI_REQUEST_NULL;
+    int rc = MPI_SUCCESS;
+    if (IS_PREDEFINED_OP(impl_op)) {
+        rc = IMPL_Iallreduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, &impl_request);
+    }
+    else {
+        // bake the cookie
+        MPI_Datatype dup;
+        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
+        if (cookie == NULL) {
+            printf("%s: cookied failed to bake.\n",__func__);
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+        // do the reduction
+        rc = IMPL_Iallreduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, &impl_request);
+        // cleanup
+        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+    }
+    end:
+    *request = OUTPUT_MPI_Request(impl_request);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+#endif
 
 int WRAP_Allreduce_init(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm, WRAP_Info info, WRAP_Request *request)
 {
@@ -223,16 +339,15 @@ int WRAP_Allreduce_init_c(const void *sendbuf, void *recvbuf, WRAP_Count count, 
 }
 #endif
 
-int WRAP_Iallreduce(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm, WRAP_Request *request)
+int WRAP_Reduce(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype datatype, WRAP_Op op, int root, WRAP_Comm comm)
 {
     const bool in_place = IS_IN_PLACE(sendbuf);
-    MPI_Comm     impl_comm     = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Op       impl_op       = CONVERT_MPI_Op(op);
-    MPI_Request impl_request   = MPI_REQUEST_NULL;
+    MPI_Comm     impl_comm     = CONVERT_MPI_Comm(comm);
     int rc = MPI_SUCCESS;
     if (IS_PREDEFINED_OP(impl_op)) {
-        rc = IMPL_Iallreduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, &impl_request);
+        rc = IMPL_Reduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, RANK_MUK_TO_IMPL(root), impl_comm);
     }
     else {
         // bake the cookie
@@ -244,26 +359,23 @@ int WRAP_Iallreduce(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype
             goto end;
         }
         // do the reduction
-        rc = IMPL_Iallreduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, &impl_request);
+        rc = IMPL_Reduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm);
         // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        cleanup_reduce_trampoline_cookie(cookie, &dup);
     }
     end:
-    *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
-#if MPI_VERSION >= 4
-int WRAP_Iallreduce_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm, WRAP_Request *request)
+int WRAP_Reduce_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Op op, int root, WRAP_Comm comm)
 {
     const bool in_place = IS_IN_PLACE(sendbuf);
-    MPI_Comm     impl_comm     = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Op       impl_op       = CONVERT_MPI_Op(op);
-    MPI_Request impl_request   = MPI_REQUEST_NULL;
+    MPI_Comm     impl_comm     = CONVERT_MPI_Comm(comm);
     int rc = MPI_SUCCESS;
     if (IS_PREDEFINED_OP(impl_op)) {
-        rc = IMPL_Iallreduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, &impl_request);
+        rc = IMPL_Reduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, RANK_MUK_TO_IMPL(root), impl_comm);
     }
     else {
         // bake the cookie
@@ -275,15 +387,13 @@ int WRAP_Iallreduce_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP
             goto end;
         }
         // do the reduction
-        rc = IMPL_Iallreduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, &impl_request);
+        rc = IMPL_Reduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm);
         // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        cleanup_reduce_trampoline_cookie(cookie, &dup);
     }
     end:
-    *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Ireduce(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype datatype, WRAP_Op op, int root, WRAP_Comm comm, WRAP_Request *request)
 {
@@ -294,7 +404,7 @@ int WRAP_Ireduce(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype da
     MPI_Request impl_request   = MPI_REQUEST_NULL;
     int rc = MPI_SUCCESS;
     if (IS_PREDEFINED_OP(impl_op)) {
-        rc = IMPL_Ireduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, root, impl_comm, &impl_request);
+        rc = IMPL_Ireduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
     }
     else {
         // bake the cookie
@@ -306,7 +416,7 @@ int WRAP_Ireduce(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype da
             goto end;
         }
         // do the reduction
-        rc = IMPL_Ireduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, root, impl_comm, &impl_request);
+        rc = IMPL_Ireduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
         // cleanup
         cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
     }
@@ -325,7 +435,7 @@ int WRAP_Ireduce_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Da
     MPI_Request impl_request   = MPI_REQUEST_NULL;
     int rc = MPI_SUCCESS;
     if (IS_PREDEFINED_OP(impl_op)) {
-        rc = IMPL_Ireduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, root, impl_comm, &impl_request);
+        rc = IMPL_Ireduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
     }
     else {
         // bake the cookie
@@ -337,7 +447,7 @@ int WRAP_Ireduce_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Da
             goto end;
         }
         // do the reduction
-        rc = IMPL_Ireduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, root, impl_comm, &impl_request);
+        rc = IMPL_Ireduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
         // cleanup
         cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
     }
@@ -346,6 +456,124 @@ int WRAP_Ireduce_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Da
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
+
+int WRAP_Reduce_init(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype datatype, WRAP_Op op, int root, WRAP_Comm comm, WRAP_Info info, WRAP_Request *request)
+{
+    const bool in_place = IS_IN_PLACE(sendbuf);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
+    MPI_Op       impl_op       = CONVERT_MPI_Op(op);
+    MPI_Comm     impl_comm     = CONVERT_MPI_Comm(comm);
+    MPI_Info     impl_info     = CONVERT_MPI_Info(info);
+    MPI_Request  impl_request  = MPI_REQUEST_NULL;
+    int rc = MPI_SUCCESS;
+    if (IS_PREDEFINED_OP(impl_op)) {
+        rc = IMPL_Reduce_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
+    }
+    else {
+        // bake the cookie
+        MPI_Datatype dup;
+        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
+        if (cookie == NULL) {
+            printf("%s: cookied failed to bake.\n",__func__);
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+        // do the reduction
+        rc = IMPL_Reduce_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
+        // cleanup
+        cleanup_reduce_trampoline_cookie(cookie, &dup);
+    }
+    end:
+    *request = OUTPUT_MPI_Request(impl_request);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Reduce_init_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Op op, int root, WRAP_Comm comm, WRAP_Info info, WRAP_Request *request)
+{
+    const bool in_place = IS_IN_PLACE(sendbuf);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
+    MPI_Op       impl_op       = CONVERT_MPI_Op(op);
+    MPI_Comm     impl_comm     = CONVERT_MPI_Comm(comm);
+    MPI_Info     impl_info     = CONVERT_MPI_Info(info);
+    MPI_Request  impl_request  = MPI_REQUEST_NULL;
+    int rc = MPI_SUCCESS;
+    if (IS_PREDEFINED_OP(impl_op)) {
+        rc = IMPL_Reduce_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
+    }
+    else {
+        // bake the cookie
+        MPI_Datatype dup;
+        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
+        if (cookie == NULL) {
+            printf("%s: cookied failed to bake.\n",__func__);
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+        // do the reduction
+        rc = IMPL_Reduce_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
+        // cleanup
+        cleanup_reduce_trampoline_cookie(cookie, &dup);
+    }
+    end:
+    *request = OUTPUT_MPI_Request(impl_request);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Reduce_scatter(const void *sendbuf, void *recvbuf, const int recvcounts[], WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm)
+{
+    const bool in_place = IS_IN_PLACE(sendbuf);
+    MPI_Comm     impl_comm     = CONVERT_MPI_Comm(comm);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
+    MPI_Op       impl_op       = CONVERT_MPI_Op(op);
+    int rc = MPI_SUCCESS;
+    if (IS_PREDEFINED_OP(impl_op)) {
+        rc = IMPL_Reduce_scatter(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, impl_datatype, impl_op, impl_comm);
+    }
+    else {
+        // bake the cookie
+        MPI_Datatype dup;
+        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
+        if (cookie == NULL) {
+            printf("%s: cookied failed to bake.\n",__func__);
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+        // do the reduction
+        rc = IMPL_Reduce_scatter(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, dup, impl_op, impl_comm);
+        // cleanup
+        cleanup_reduce_trampoline_cookie(cookie, &dup);
+    }
+    end:
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Reduce_scatter_c(const void *sendbuf, void *recvbuf, const WRAP_Count recvcounts[], WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm)
+{
+    const bool in_place = IS_IN_PLACE(sendbuf);
+    MPI_Comm     impl_comm     = CONVERT_MPI_Comm(comm);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
+    MPI_Op       impl_op       = CONVERT_MPI_Op(op);
+    int rc = MPI_SUCCESS;
+    if (IS_PREDEFINED_OP(impl_op)) {
+        rc = IMPL_Reduce_scatter_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, impl_datatype, impl_op, impl_comm);
+    }
+    else {
+        // bake the cookie
+        MPI_Datatype dup;
+        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
+        if (cookie == NULL) {
+            printf("%s: cookied failed to bake.\n",__func__);
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+        // do the reduction
+        rc = IMPL_Reduce_scatter_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, dup, impl_op, impl_comm);
+        // cleanup
+        cleanup_reduce_trampoline_cookie(cookie, &dup);
+    }
+    end:
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
 
 int WRAP_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int recvcounts[], WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm, WRAP_Request *request)
 {
@@ -409,6 +637,90 @@ int WRAP_Ireduce_scatter_c(const void *sendbuf, void *recvbuf, const WRAP_Count 
 }
 #endif
 
+int WRAP_Reduce_scatter_init(const void *sendbuf, void *recvbuf, const int recvcounts[], WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm, WRAP_Info info, WRAP_Request *request)
+{
+    const bool in_place = IS_IN_PLACE(sendbuf);
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
+    MPI_Info impl_info = CONVERT_MPI_Info(info);
+    MPI_Op impl_op = CONVERT_MPI_Op(op);
+    MPI_Request impl_request;
+    int rc = IMPL_Reduce_scatter_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, impl_datatype, impl_op, impl_comm, impl_info, &impl_request);
+    *request = OUTPUT_MPI_Request(impl_request);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+#if MPI_VERSION >= 4
+int WRAP_Reduce_scatter_init_c(const void *sendbuf, void *recvbuf, const WRAP_Count recvcounts[], WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm, WRAP_Info info, WRAP_Request *request)
+{
+    const bool in_place = IS_IN_PLACE(sendbuf);
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
+    MPI_Info impl_info = CONVERT_MPI_Info(info);
+    MPI_Op impl_op = CONVERT_MPI_Op(op);
+    MPI_Request impl_request;
+    int rc = IMPL_Reduce_scatter_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, impl_datatype, impl_op, impl_comm, impl_info, &impl_request);
+    *request = OUTPUT_MPI_Request(impl_request);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+#endif
+
+int WRAP_Reduce_scatter_block(const void *sendbuf, void *recvbuf, int recvcount, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm)
+{
+    const bool in_place = IS_IN_PLACE(sendbuf);
+    MPI_Comm     impl_comm     = CONVERT_MPI_Comm(comm);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
+    MPI_Op       impl_op       = CONVERT_MPI_Op(op);
+    int rc = MPI_SUCCESS;
+    if (IS_PREDEFINED_OP(impl_op)) {
+        rc = IMPL_Reduce_scatter_block(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, impl_datatype, impl_op, impl_comm);
+    }
+    else {
+        // bake the cookie
+        MPI_Datatype dup;
+        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
+        if (cookie == NULL) {
+            printf("%s: cookied failed to bake.\n",__func__);
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+        // do the reduction
+        rc = IMPL_Reduce_scatter_block(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, dup, impl_op, impl_comm);
+        // cleanup
+        cleanup_reduce_trampoline_cookie(cookie, &dup);
+    }
+    end:
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Reduce_scatter_block_c(const void *sendbuf, void *recvbuf, WRAP_Count recvcount, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm)
+{
+    const bool in_place = IS_IN_PLACE(sendbuf);
+    MPI_Comm     impl_comm     = CONVERT_MPI_Comm(comm);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
+    MPI_Op       impl_op       = CONVERT_MPI_Op(op);
+    int rc = MPI_SUCCESS;
+    if (IS_PREDEFINED_OP(impl_op)) {
+        rc = IMPL_Reduce_scatter_block_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, impl_datatype, impl_op, impl_comm);
+    }
+    else {
+        // bake the cookie
+        MPI_Datatype dup;
+        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
+        if (cookie == NULL) {
+            printf("%s: cookied failed to bake.\n",__func__);
+            rc = MPI_ERR_INTERN;
+            goto end;
+        }
+        // do the reduction
+        rc = IMPL_Reduce_scatter_block_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, dup, impl_op, impl_comm);
+        // cleanup
+        cleanup_reduce_trampoline_cookie(cookie, &dup);
+    }
+    end:
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
 int WRAP_Ireduce_scatter_block(const void *sendbuf, void *recvbuf, int recvcount, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm, WRAP_Request *request)
 {
     const bool in_place = IS_IN_PLACE(sendbuf);
@@ -471,171 +783,6 @@ int WRAP_Ireduce_scatter_block_c(const void *sendbuf, void *recvbuf, WRAP_Count 
 }
 #endif
 
-
-int WRAP_Reduce(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype datatype, WRAP_Op op, int root, WRAP_Comm comm)
-{
-    const bool in_place = IS_IN_PLACE(sendbuf);
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_Op       impl_op       = CONVERT_MPI_Op(op);
-    MPI_Comm     impl_comm     = CONVERT_MPI_Comm(comm);
-    int rc = MPI_SUCCESS;
-    if (IS_PREDEFINED_OP(impl_op)) {
-        rc = IMPL_Reduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, RANK_MUK_TO_IMPL(root), impl_comm);
-    }
-    else {
-        // bake the cookie
-        MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
-        rc = IMPL_Reduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm);
-        // cleanup
-        cleanup_reduce_trampoline_cookie(cookie, &dup);
-    }
-    end:
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Reduce_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Op op, int root, WRAP_Comm comm)
-{
-    const bool in_place = IS_IN_PLACE(sendbuf);
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_Op       impl_op       = CONVERT_MPI_Op(op);
-    MPI_Comm     impl_comm     = CONVERT_MPI_Comm(comm);
-    int rc = MPI_SUCCESS;
-    if (IS_PREDEFINED_OP(impl_op)) {
-        rc = IMPL_Reduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, root, impl_comm);
-    }
-    else {
-        // bake the cookie
-        MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
-        rc = IMPL_Reduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm);
-        // cleanup
-        cleanup_reduce_trampoline_cookie(cookie, &dup);
-    }
-    end:
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Reduce_init(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype datatype, WRAP_Op op, int root, WRAP_Comm comm, WRAP_Info info, WRAP_Request *request)
-{
-    const bool in_place = IS_IN_PLACE(sendbuf);
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_Op       impl_op       = CONVERT_MPI_Op(op);
-    MPI_Comm     impl_comm     = CONVERT_MPI_Comm(comm);
-    MPI_Info     impl_info     = CONVERT_MPI_Info(info);
-    MPI_Request  impl_request  = MPI_REQUEST_NULL;
-    int rc = MPI_SUCCESS;
-    if (IS_PREDEFINED_OP(impl_op)) {
-        rc = IMPL_Reduce_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, root, impl_comm, impl_info, &impl_request);
-    }
-    else {
-        // bake the cookie
-        MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
-        rc = IMPL_Reduce_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
-        // cleanup
-        cleanup_reduce_trampoline_cookie(cookie, &dup);
-    }
-    end:
-    *request = OUTPUT_MPI_Request(impl_request);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Reduce_init_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Op op, int root, WRAP_Comm comm, WRAP_Info info, WRAP_Request *request)
-{
-    const bool in_place = IS_IN_PLACE(sendbuf);
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_Op       impl_op       = CONVERT_MPI_Op(op);
-    MPI_Comm     impl_comm     = CONVERT_MPI_Comm(comm);
-    MPI_Info     impl_info     = CONVERT_MPI_Info(info);
-    MPI_Request  impl_request  = MPI_REQUEST_NULL;
-    int rc = MPI_SUCCESS;
-    if (IS_PREDEFINED_OP(impl_op)) {
-        rc = IMPL_Reduce_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, root, impl_comm, impl_info, &impl_request);
-    }
-    else {
-        // bake the cookie
-        MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
-        rc = IMPL_Reduce_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
-        // cleanup
-        cleanup_reduce_trampoline_cookie(cookie, &dup);
-    }
-    end:
-    *request = OUTPUT_MPI_Request(impl_request);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Reduce_local(const void *inbuf, void *inoutbuf, int count, WRAP_Datatype datatype, WRAP_Op op)
-{
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_Op impl_op = CONVERT_MPI_Op(op);
-    int rc = IMPL_Reduce_local(inbuf, inoutbuf, count, impl_datatype, impl_op);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Reduce_local_c(const void *inbuf, void *inoutbuf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Op op)
-{
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_Op impl_op = CONVERT_MPI_Op(op);
-    int rc = IMPL_Reduce_local_c(inbuf, inoutbuf, count, impl_datatype, impl_op);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Reduce_scatter(const void *sendbuf, void *recvbuf, const int recvcounts[], WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm)
-{
-    const bool in_place = IS_IN_PLACE(sendbuf);
-    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_Op impl_op = CONVERT_MPI_Op(op);
-    int rc = IMPL_Reduce_scatter(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, impl_datatype, impl_op, impl_comm);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Reduce_scatter_block(const void *sendbuf, void *recvbuf, int recvcount, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm)
-{
-    const bool in_place = IS_IN_PLACE(sendbuf);
-    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_Op impl_op = CONVERT_MPI_Op(op);
-    int rc = IMPL_Reduce_scatter_block(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, impl_datatype, impl_op, impl_comm);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Reduce_scatter_block_c(const void *sendbuf, void *recvbuf, WRAP_Count recvcount, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm)
-{
-    const bool in_place = IS_IN_PLACE(sendbuf);
-    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_Op impl_op = CONVERT_MPI_Op(op);
-    int rc = IMPL_Reduce_scatter_block_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, impl_datatype, impl_op, impl_comm);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
 int WRAP_Reduce_scatter_block_init(const void *sendbuf, void *recvbuf, int recvcount, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm, WRAP_Info info, WRAP_Request *request)
 {
     const bool in_place = IS_IN_PLACE(sendbuf);
@@ -664,40 +811,22 @@ int WRAP_Reduce_scatter_block_init_c(const void *sendbuf, void *recvbuf, WRAP_Co
 }
 #endif
 
-int WRAP_Reduce_scatter_c(const void *sendbuf, void *recvbuf, const WRAP_Count recvcounts[], WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm)
+int WRAP_Scan(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm)
 {
-    const bool in_place = IS_IN_PLACE(sendbuf);
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Op impl_op = CONVERT_MPI_Op(op);
-    int rc = IMPL_Reduce_scatter_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, impl_datatype, impl_op, impl_comm);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Reduce_scatter_init(const void *sendbuf, void *recvbuf, const int recvcounts[], WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm, WRAP_Info info, WRAP_Request *request)
-{
-    const bool in_place = IS_IN_PLACE(sendbuf);
-    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_Info impl_info = CONVERT_MPI_Info(info);
-    MPI_Op impl_op = CONVERT_MPI_Op(op);
-    MPI_Request impl_request;
-    int rc = IMPL_Reduce_scatter_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, impl_datatype, impl_op, impl_comm, impl_info, &impl_request);
-    *request = OUTPUT_MPI_Request(impl_request);
+    int rc = IMPL_Scan(sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 #if MPI_VERSION >= 4
-int WRAP_Reduce_scatter_init_c(const void *sendbuf, void *recvbuf, const WRAP_Count recvcounts[], WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm, WRAP_Info info, WRAP_Request *request)
+int WRAP_Scan_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm)
 {
-    const bool in_place = IS_IN_PLACE(sendbuf);
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_Info impl_info = CONVERT_MPI_Info(info);
     MPI_Op impl_op = CONVERT_MPI_Op(op);
-    MPI_Request impl_request;
-    int rc = IMPL_Reduce_scatter_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, impl_datatype, impl_op, impl_comm, impl_info, &impl_request);
-    *request = OUTPUT_MPI_Request(impl_request);
+    int rc = IMPL_Scan_c(sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
@@ -728,6 +857,32 @@ int WRAP_Iscan_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Data
 }
 #endif
 
+int WRAP_Scan_init(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm, WRAP_Info info, WRAP_Request *request)
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
+    MPI_Info impl_info = CONVERT_MPI_Info(info);
+    MPI_Op impl_op = CONVERT_MPI_Op(op);
+    MPI_Request impl_request;
+    int rc = IMPL_Scan_init(sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, impl_info, &impl_request);
+    *request = OUTPUT_MPI_Request(impl_request);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+#if MPI_VERSION >= 4
+int WRAP_Scan_init_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm, WRAP_Info info, WRAP_Request *request)
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
+    MPI_Info impl_info = CONVERT_MPI_Info(info);
+    MPI_Op impl_op = CONVERT_MPI_Op(op);
+    MPI_Request impl_request;
+    int rc = IMPL_Scan_init_c(sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, impl_info, &impl_request);
+    *request = OUTPUT_MPI_Request(impl_request);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+#endif
+
 int WRAP_Exscan(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm)
 {
     const bool in_place = IS_IN_PLACE(sendbuf);
@@ -746,6 +901,32 @@ int WRAP_Exscan_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Dat
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Op impl_op = CONVERT_MPI_Op(op);
     int rc = IMPL_Exscan_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+#endif
+
+int WRAP_Iexscan(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm, WRAP_Request *request)
+{
+    const bool in_place = IS_IN_PLACE(sendbuf);
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
+    MPI_Op impl_op = CONVERT_MPI_Op(op);
+    MPI_Request impl_request;
+    int rc = IMPL_Iexscan(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, &impl_request);
+    *request = OUTPUT_MPI_Request(impl_request);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+#if MPI_VERSION >= 4
+int WRAP_Iexscan_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm, WRAP_Request *request)
+{
+    const bool in_place = IS_IN_PLACE(sendbuf);
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
+    MPI_Op impl_op = CONVERT_MPI_Op(op);
+    MPI_Request impl_request;
+    int rc = IMPL_Iexscan_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, &impl_request);
+    *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
@@ -777,76 +958,3 @@ int WRAP_Exscan_init_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRA
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
-
-int WRAP_Iexscan(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm, WRAP_Request *request)
-{
-    const bool in_place = IS_IN_PLACE(sendbuf);
-    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_Op impl_op = CONVERT_MPI_Op(op);
-    MPI_Request impl_request;
-    int rc = IMPL_Iexscan(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, &impl_request);
-    *request = OUTPUT_MPI_Request(impl_request);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-#if MPI_VERSION >= 4
-int WRAP_Iexscan_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm, WRAP_Request *request)
-{
-    const bool in_place = IS_IN_PLACE(sendbuf);
-    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_Op impl_op = CONVERT_MPI_Op(op);
-    MPI_Request impl_request;
-    int rc = IMPL_Iexscan_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, &impl_request);
-    *request = OUTPUT_MPI_Request(impl_request);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-#endif
-
-int WRAP_Scan(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm)
-{
-    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_Op impl_op = CONVERT_MPI_Op(op);
-    int rc = IMPL_Scan(sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-#if MPI_VERSION >= 4
-int WRAP_Scan_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm)
-{
-    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_Op impl_op = CONVERT_MPI_Op(op);
-    int rc = IMPL_Scan_c(sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-#endif
-
-int WRAP_Scan_init(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm, WRAP_Info info, WRAP_Request *request)
-{
-    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_Info impl_info = CONVERT_MPI_Info(info);
-    MPI_Op impl_op = CONVERT_MPI_Op(op);
-    MPI_Request impl_request;
-    int rc = IMPL_Scan_init(sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, impl_info, &impl_request);
-    *request = OUTPUT_MPI_Request(impl_request);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-#if MPI_VERSION >= 4
-int WRAP_Scan_init_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Op op, WRAP_Comm comm, WRAP_Info info, WRAP_Request *request)
-{
-    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_Info impl_info = CONVERT_MPI_Info(info);
-    MPI_Op impl_op = CONVERT_MPI_Op(op);
-    MPI_Request impl_request;
-    int rc = IMPL_Scan_init_c(sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, impl_info, &impl_request);
-    *request = OUTPUT_MPI_Request(impl_request);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-#endif
-
