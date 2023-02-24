@@ -24,7 +24,10 @@ cd osu*
 
 Run tests:
 ```
+# Linux
 for t in `find . -type f -executable -print` ; do LD_LIBRARY_PATH=${MUK_PATH} mpirun -n 2 ./$t ; done
+# Mac
+for t in `find . -type f -perm 755  -print` ; do LD_LIBRARY_PATH=${MUK_PATH} mpirun -n 2 ./$t ; done
 ```
 
 At least one RMA test with Open-MPI requires `--mca osc ucx` (vader bug). https://github.com/jeffhammond/mukautuva/issues/2
