@@ -3,6 +3,8 @@
 
 #include "wrap-handle-typedefs.h"
 
+#define MAYBE_UNUSED __attribute__((unused))
+
 // crazy stuff to support user-defined reductions
 
 // impl-keyval.c
@@ -48,7 +50,7 @@ req_cookie_pair_t;
 // impl-functions.c
 extern req_cookie_pair_t * req_cookie_pair_list;
 
-#if 0
+MAYBE_UNUSED
 static WRAP_User_function * lookup_op_pair(MPI_Op op)
 {
     WRAP_User_function * user_fn = NULL;
@@ -66,6 +68,7 @@ static WRAP_User_function * lookup_op_pair(MPI_Op op)
     return user_fn;
 }
 
+MAYBE_UNUSED
 static void add_op_pair_to_list(WRAP_User_function *user_fn, MPI_Op op)
 {
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
@@ -87,6 +90,7 @@ static void add_op_pair_to_list(WRAP_User_function *user_fn, MPI_Op op)
     }
 }
 
+MAYBE_UNUSED
 static void remove_op_pair_from_list(MPI_Op op)
 {
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
@@ -121,6 +125,7 @@ static void remove_op_pair_from_list(MPI_Op op)
     free(current);
 }
 
+MAYBE_UNUSED
 static reduce_trampoline_cookie_t * bake_reduce_trampoline_cookie(MPI_Op op, MPI_Datatype datatype, MPI_Datatype * dup)
 {
     int rc;
@@ -154,6 +159,7 @@ static reduce_trampoline_cookie_t * bake_reduce_trampoline_cookie(MPI_Op op, MPI
     return cookie;
 }
 
+MAYBE_UNUSED
 static void cleanup_reduce_trampoline_cookie(reduce_trampoline_cookie_t * cookie, MPI_Datatype * dup)
 {
     free(cookie);
@@ -163,6 +169,7 @@ static void cleanup_reduce_trampoline_cookie(reduce_trampoline_cookie_t * cookie
     }
 }
 
+MAYBE_UNUSED
 static void add_cookie_pair_to_list(const MPI_Request * request, reduce_trampoline_cookie_t * cookie)
 {
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
@@ -187,6 +194,7 @@ static void add_cookie_pair_to_list(const MPI_Request * request, reduce_trampoli
 // this is the only one of these functions that is called
 // in a performance-critical way (in a loop in e.g. Waitall)
 // so ideally it should be inlined.
+MAYBE_UNUSED
 static inline void remove_cookie_pair_from_list(const MPI_Request * request)
 {
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
@@ -236,6 +244,7 @@ static inline void remove_cookie_pair_from_list(const MPI_Request * request)
     free(current);
 }
 
+MAYBE_UNUSED
 static void cleanup_ireduce_trampoline_cookie(reduce_trampoline_cookie_t * cookie, const MPI_Request * request, MPI_Datatype * dup)
 {
     add_cookie_pair_to_list(request, cookie);
@@ -244,7 +253,5 @@ static void cleanup_ireduce_trampoline_cookie(reduce_trampoline_cookie_t * cooki
         printf("Type_free failed: %d\n",rc);
     }
 }
-
-#endif
 
 #endif
