@@ -282,7 +282,7 @@ int WRAP_Allreduce_init(const void *sendbuf, void *recvbuf, int count, WRAP_Data
     MPI_Op       impl_op       = CONVERT_MPI_Op(op);
     MPI_Comm     impl_comm     = CONVERT_MPI_Comm(comm);
     MPI_Info     impl_info     = CONVERT_MPI_Info(info);
-    MPI_Request  impl_request;
+    MPI_Request  impl_request  = MPI_REQUEST_NULL;
     int rc = MPI_SUCCESS;
     if (IS_PREDEFINED_OP(impl_op)) {
         rc = IMPL_Allreduce_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, impl_info, &impl_request);
@@ -314,7 +314,7 @@ int WRAP_Allreduce_init_c(const void *sendbuf, void *recvbuf, WRAP_Count count, 
     MPI_Op       impl_op       = CONVERT_MPI_Op(op);
     MPI_Comm     impl_comm     = CONVERT_MPI_Comm(comm);
     MPI_Info     impl_info     = CONVERT_MPI_Info(info);
-    MPI_Request  impl_request;
+    MPI_Request  impl_request  = MPI_REQUEST_NULL;
     int rc = MPI_SUCCESS;
     if (IS_PREDEFINED_OP(impl_op)) {
         rc = IMPL_Allreduce_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, impl_info, &impl_request);
