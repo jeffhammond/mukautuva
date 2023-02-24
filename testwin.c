@@ -14,7 +14,7 @@
 int main(int argc, char* argv[])
 {
     int rc;
-    rc = MPI_Init(&argc,&argv);
+    MPI_Init(&argc,&argv);
 
     int me, np;
     MPI_Comm_rank(MPI_COMM_WORLD,&me);
@@ -25,7 +25,11 @@ int main(int argc, char* argv[])
     void *ba, *bas;
     char bc[1024], b[1024];
 
-    MPI_Win_allocate(1024,1,MPI_INFO_NULL,MPI_COMM_WORLD,&ba,&a);
+    rc = MPI_Win_allocate(1024,1,MPI_INFO_NULL,MPI_COMM_WORLD,&ba,&a);
+    if (rc) {
+        printf("rc = %d line = %d\n", rc, __LINE__);
+        MPI_Abort(MPI_COMM_WORLD,rc);
+    }
     MPI_Win_fence(0,a);
     MPI_Win_free(&a);
     if (a != MPI_WIN_NULL) {
@@ -33,7 +37,11 @@ int main(int argc, char* argv[])
         MPI_Abort(MPI_COMM_WORLD,1);
     }
 
-    MPI_Win_allocate_shared(1024,1,MPI_INFO_NULL,MPI_COMM_WORLD,&bas,&as);
+    rc = MPI_Win_allocate_shared(1024,1,MPI_INFO_NULL,MPI_COMM_WORLD,&bas,&as);
+    if (rc) {
+        printf("rc = %d line = %d\n", rc, __LINE__);
+        MPI_Abort(MPI_COMM_WORLD,rc);
+    }
     MPI_Win_fence(0,as);
     MPI_Win_free(&as);
     if (as != MPI_WIN_NULL) {
@@ -41,8 +49,12 @@ int main(int argc, char* argv[])
         MPI_Abort(MPI_COMM_WORLD,2);
     }
 
-    // this is broken because OMPI sucks
-    MPI_Win_create(&bc,1024,1,MPI_INFO_NULL,MPI_COMM_WORLD,&c);
+    // this is broken with OMPI and np=1
+    rc = MPI_Win_create(&bc,1024,1,MPI_INFO_NULL,MPI_COMM_WORLD,&c);
+    if (rc) {
+        printf("rc = %d line = %d\n", rc, __LINE__);
+        MPI_Abort(MPI_COMM_WORLD,rc);
+    }
     MPI_Win_fence(0,c);
     MPI_Win_free(&c);
     if (c != MPI_WIN_NULL) {
@@ -50,7 +62,11 @@ int main(int argc, char* argv[])
         MPI_Abort(MPI_COMM_WORLD,3);
     }
 
-    MPI_Win_create_dynamic(MPI_INFO_NULL,MPI_COMM_WORLD,&cd);
+    rc = MPI_Win_create_dynamic(MPI_INFO_NULL,MPI_COMM_WORLD,&cd);
+    if (rc) {
+        printf("rc = %d line = %d\n", rc, __LINE__);
+        MPI_Abort(MPI_COMM_WORLD,rc);
+    }
     MPI_Win_attach(cd,&b,1024);
     MPI_Win_fence(0,cd);
     MPI_Win_detach(cd,&b);
@@ -65,7 +81,7 @@ int main(int argc, char* argv[])
     MPI_Barrier(MPI_COMM_WORLD);
     if (me==0) printf("all done\n");
 
-    rc = MPI_Finalize();
+    MPI_Finalize();
 
-    return rc;
+    return 0;
 }
