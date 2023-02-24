@@ -12,7 +12,7 @@ if [ `uname -s` == Darwin ] ; then
     DBG=lldb
     DBGARGS="--one-line 'run' --one-line-on-crash 'bt' --one-line 'quit' --"
 else
-    OPTS="--mca osc ucx"
+    #OPTS="--mca osc ucx"
     OMPIRUN=/usr/bin/mpirun.openmpi
     OMPILIB=/usr/lib/x86_64-linux-gnu/libmpi.so
     MPICHRUN=/usr/bin/mpirun.mpich
@@ -26,7 +26,7 @@ else
 fi
 
 NP=2
-OPTS="${OPTS} -quiet"
+#OPTS="${OPTS} -quiet"
 
 make -j $1 && \
 MPI_LIB=${OMPILIB} ${OMPIRUN} ${OPTS} -n ${NP} $1 || \
