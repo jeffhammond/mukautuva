@@ -188,14 +188,6 @@ int WRAP_Status_set_elements_x(WRAP_Status *status, WRAP_Datatype datatype, WRAP
 
 int WRAP_Test(WRAP_Request *request, int *flag, WRAP_Status *status)
 {
-#if 0
-    if (**request == MPI_REQUEST_NULL) {
-        //printf("WRAP_Test: request=%p *request=%p **request=MPI_REQUEST_NULL\n", request, *request);
-        *flag = 1;
-        WRAP_Status_empty(ignore,status);
-        return MPI_SUCCESS;
-    }
-#endif
     const bool ignore = IS_STATUS_IGNORE(status);
     MPI_Request impl_request = CONVERT_MPI_Request(*request);
     MPI_Status impl_status;

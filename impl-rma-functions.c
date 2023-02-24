@@ -323,7 +323,6 @@ int WRAP_Win_create_dynamic(WRAP_Info info, WRAP_Comm comm, WRAP_Win *win)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
-#if 0
 int WRAP_Win_create_errhandler(WRAP_Win_errhandler_function *win_errhandler_fn, WRAP_Errhandler *errhandler)
 {
     int rc = IMPL_Win_create_errhandler(win_errhandler_fn, errhandler);
@@ -335,7 +334,6 @@ int WRAP_Win_create_keyval(WRAP_Win_copy_attr_function *win_copy_attr_fn, WRAP_W
     int rc = IMPL_Win_create_keyval(win_copy_attr_fn, win_delete_attr_fn, win_keyval, extra_state);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Win_delete_attr(WRAP_Win win, int win_keyval)
 {

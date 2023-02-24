@@ -8,12 +8,7 @@
 
 #include <mpi.h>
 
-//#include "muk-dl.h"
 #include "muk-predefined.h"
-
-//#include "impl-scalar-types.h"
-//#include "impl-status.h"
-//#include "wrap-handle-typedefs.h"
 
 #define MUK_EXTERN extern
 #include "impl-fpointers.h"
@@ -496,17 +491,17 @@ int WRAP_Buffer_detach_c(void *buffer_addr, WRAP_Count *size)
 }
 #endif
 
-#if 0
 int WRAP_Errhandler_create(WRAP_Comm_errhandler_function *comm_errhandler_fn, WRAP_Errhandler *errhandler)
 {
-    int rc = IMPL_Errhandler_create(comm_errhandler_fn, errhandler);
+    MPI_Errhandler impl_errhandler;
+    int rc = IMPL_Errhandler_create(comm_errhandler_fn, &impl_errhandler);
+    *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Errhandler_free(WRAP_Errhandler *errhandler)
 {
-    MPI_Errhandler impl_errhandler;
+    MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(*errhandler);
     int rc = IMPL_Errhandler_free(&impl_errhandler);
     *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -654,7 +649,6 @@ int WRAP_Grequest_complete(WRAP_Request request)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
-#if 0
 int WRAP_Grequest_start(WRAP_Grequest_query_function *query_fn, WRAP_Grequest_free_function *free_fn, WRAP_Grequest_cancel_function *cancel_fn, void *extra_state, WRAP_Request *request)
 {
     MPI_Request impl_request = CONVERT_MPI_Request(*request);
@@ -662,7 +656,6 @@ int WRAP_Grequest_start(WRAP_Grequest_query_function *query_fn, WRAP_Grequest_fr
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Iallgather(const void *sendbuf, int sendcount, WRAP_Datatype sendtype, void *recvbuf, int recvcount, WRAP_Datatype recvtype, WRAP_Comm comm, WRAP_Request *request)
 {
@@ -1376,13 +1369,11 @@ int WRAP_Issend_c(const void *buf, WRAP_Count count, WRAP_Datatype datatype, int
 }
 #endif
 
-#if 0
 int WRAP_Keyval_create(WRAP_Copy_function *copy_fn, WRAP_Delete_function *delete_fn, int *keyval, void *extra_state)
 {
     int rc = IMPL_Keyval_create(copy_fn, delete_fn, keyval, extra_state);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Keyval_free(int *keyval)
 {

@@ -1,16 +1,6 @@
 #ifndef IMPL_STATUS_H
 #define IMPL_STATUS_H
 
-#if 0
-#include <stdio.h>
-#include <string.h>
-
-// this is the MPI implementation header
-#include <mpi.h>
-
-#include "muk-predefined.h"
-#endif
-
 // status typedef
 typedef struct
 {

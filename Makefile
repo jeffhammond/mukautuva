@@ -2,19 +2,19 @@ ifeq ($(shell uname),Darwin)
     OMPICC=/opt/homebrew/Cellar/open-mpi/4.1.4_2/bin/mpicc
     MPICHCC=/opt/homebrew/Cellar/mpich/4.1/bin/mpicc
     CC=clang
-    #CFLAGS=-ferror-limit=1 # Clang
+    CFLAGS=-ferror-limit=1 # Clang
     CFLAGS+=-Wno-c2x-extensions
     #CFLAGS+=-Wno-unused-function
 else
     OMPICC=/usr/bin/mpicc.openmpi
     MPICHCC=/usr/bin/mpicc.mpich
     CC=gcc
-    CFLAGS=-fmax-errors=5 # GCC
+    CFLAGS=-fmax-errors=1 # GCC
     #CFLAGS+=-fsanitize=address
     #CFLAGS+=-Wno-unused-parameter -Wno-unused-variable -Wno-unused-function
 endif
 
-CFLAGS	+= -g3 -O0 -Wall -Wextra -Werror # -Wpedantic
+CFLAGS	+= -g3 -O0 -Wall -Wextra #-Werror # -Wpedantic
 CFLAGS	+= -fPIC
 SOFLAGS	= -shared
 

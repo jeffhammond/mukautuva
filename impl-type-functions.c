@@ -184,14 +184,11 @@ int WRAP_Type_create_indexed_block_c(WRAP_Count count, WRAP_Count blocklength, c
 }
 #endif
 
-#if 0
 int WRAP_Type_create_keyval(WRAP_Type_copy_attr_function *type_copy_attr_fn, WRAP_Type_delete_attr_function *type_delete_attr_fn, int *type_keyval, void *extra_state)
 {
     int rc = IMPL_Type_create_keyval(type_copy_attr_fn, type_delete_attr_fn, type_keyval, extra_state);
-    *newtype = OUTPUT_MPI_Datatype(impl_newtype);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Type_create_resized(WRAP_Datatype oldtype, WRAP_Aint lb, WRAP_Aint extent, WRAP_Datatype *newtype)
 {

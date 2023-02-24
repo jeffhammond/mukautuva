@@ -32,63 +32,6 @@ int (*WRAP_CODE_IMPL_TO_MUK)(int error_c);
 void (*WRAP_Init_handle_key)(void);
 void (*WRAP_Finalize_handle_key)(void);
 
-#if 0
-// I need these for null handle versions.
-// The impl layer sets *handle = &IMPL_HANDLE_NULL,
-// which is pmuk_mpi_handle_null.  Then I detect
-// that and change it to MUK_HANDLE_NULL.
-// WARNING: these functions have zero type safety (void**) so check carefully.
-void ** pmuk_mpi_request_null = NULL;
-static inline void MUK_REQUEST_NULLIFY(MPI_Request * h)
-{
-}
-
-void ** pmuk_mpi_group_null = NULL;
-static inline void MUK_GROUP_NULLIFY(MPI_Group * h)
-{
-}
-void ** pmuk_mpi_comm_null = NULL;
-static inline void MUK_COMM_NULLIFY(MPI_Comm * h)
-{
-}
-void ** pmuk_mpi_datatype_null = NULL;
-static inline void MUK_DATATYPE_NULLIFY(MPI_Datatype * h)
-{
-}
-void ** pmuk_mpi_op_null = NULL;
-static inline void MUK_OP_NULLIFY(MPI_Op * h)
-{
-}
-void ** pmuk_mpi_errhandler_null = NULL;
-static inline void MUK_ERRHANDLER_NULLIFY(MPI_Errhandler * h)
-{
-}
-void ** pmuk_mpi_file_null = NULL;
-static inline void MUK_FILE_NULLIFY(MPI_File * h)
-{
-}
-void ** pmuk_mpi_info_null = NULL;
-static inline void MUK_INFO_NULLIFY(MPI_Info * h)
-{
-}
-void ** pmuk_mpi_session_null = NULL;
-static inline void MUK_SESSION_NULLIFY(MPI_Session * h)
-{
-}
-void ** pmuk_mpi_win_null = NULL;
-static inline void MUK_WIN_NULLIFY(MPI_Win * h)
-{
-}
-void ** pmuk_mpi_message_null = NULL;
-static inline void MUK_MESSAGE_NULLIFY(MPI_Message * h)
-{
-}
-
-static inline void MUK_DATATYPE_CONVERT(MPI_Datatype * h)
-{
-}
-#endif
-
 // alkaa = start
 static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
 {
@@ -3149,7 +3092,6 @@ int MPI_Issend_c(const void *buf, MPI_Count count, MPI_Datatype datatype, int de
     return rc;
 }
 
-#if 0 // deleted
 int MPI_Keyval_create(MPI_Copy_function *copy_fn, MPI_Delete_function *delete_fn, int *keyval, void *extra_state)
 {
     return MUK_Keyval_create(copy_fn, delete_fn, keyval, extra_state);
@@ -3159,7 +3101,6 @@ int MPI_Keyval_free(int *keyval)
 {
     return MUK_Keyval_free(keyval);
 }
-#endif
 
 int MPI_Lookup_name(const char *service_name, MPI_Info info, char *port_name)
 {

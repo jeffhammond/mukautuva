@@ -32,7 +32,7 @@ int WRAP_Session_call_errhandler(WRAP_Session session, int errorcode)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
-#if 0
+#if MPI_VERSION >= 4
 int WRAP_Session_create_errhandler(WRAP_Session_errhandler_function *session_errhandler_fn, WRAP_Errhandler *errhandler)
 {
     int rc = IMPL_Session_create_errhandler(session_errhandler_fn, errhandler);

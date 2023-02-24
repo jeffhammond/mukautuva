@@ -127,7 +127,7 @@ enum {
     MUK_LOCK_SHARED    = -9
 };
 
-#if 0
+#if FORTRAN
 //Fortran status array size and reserved index values (C only)
 enum {
     // 256-bit Status is proposed

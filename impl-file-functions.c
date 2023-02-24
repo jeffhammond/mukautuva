@@ -35,13 +35,13 @@ int WRAP_File_close(WRAP_File *fh)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
-#if 0
 int WRAP_File_create_errhandler(WRAP_File_errhandler_function *file_errhandler_fn, WRAP_Errhandler *errhandler)
 {
-    int rc = IMPL_File_create_errhandler(file_errhandler_fn, errhandler);
+    MPI_Errhandler impl_errhandler;
+    int rc = IMPL_File_create_errhandler(file_errhandler_fn, &impl_errhandler);
+    *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_File_delete(const char *filename, WRAP_Info info)
 {

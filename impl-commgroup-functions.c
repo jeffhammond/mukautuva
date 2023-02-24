@@ -8,7 +8,6 @@
 
 #include <mpi.h>
 
-//#include "muk-dl.h"
 #include "muk-predefined.h"
 
 #include "impl-scalar-types.h"
@@ -126,7 +125,6 @@ int WRAP_Comm_create(WRAP_Comm comm, WRAP_Group group, WRAP_Comm *newcomm)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
-#if 0
 int WRAP_Comm_create_errhandler(WRAP_Comm_errhandler_function *comm_errhandler_fn, WRAP_Errhandler *errhandler)
 {
     MPI_Errhandler impl_errhandler;
@@ -134,7 +132,6 @@ int WRAP_Comm_create_errhandler(WRAP_Comm_errhandler_function *comm_errhandler_f
     *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Comm_create_from_group(WRAP_Group group, const char *stringtag, WRAP_Info info, WRAP_Errhandler errhandler, WRAP_Comm *newcomm)
 {
@@ -157,13 +154,11 @@ int WRAP_Comm_create_group(WRAP_Comm comm, WRAP_Group group, int tag, WRAP_Comm 
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
-#if 0
 int WRAP_Comm_create_keyval(WRAP_Comm_copy_attr_function *comm_copy_attr_fn, WRAP_Comm_delete_attr_function *comm_delete_attr_fn, int *comm_keyval, void *extra_state)
 {
     int rc = IMPL_Comm_create_keyval(comm_copy_attr_fn, comm_delete_attr_fn, comm_keyval, extra_state);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Comm_delete_attr(WRAP_Comm comm, int comm_keyval)
 {

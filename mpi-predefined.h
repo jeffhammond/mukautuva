@@ -74,7 +74,7 @@ enum {
 #endif
     MPI_ERR_WIN                        = MUK_ERR_WIN,
     MPI_T_ERR_CANNOT_INIT              = MUK_T_ERR_CANNOT_INIT,
-#if 0
+#if MPICH_BUG_IS_FIXED
     MPI_T_ERR_NOT_ACCESSIBLE           = MUK_T_ERR_NOT_ACCESSIBLE,
 #endif
     MPI_T_ERR_NOT_INITIALIZED          = MUK_T_ERR_NOT_INITIALIZED,

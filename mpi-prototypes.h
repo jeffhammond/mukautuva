@@ -1,7 +1,7 @@
 #ifndef MUK_MPI_PROTOTYPES_H
 #define MUK_MPI_PROTOTYPES_H
 
-#if 0
+#if FORTRAN
 int MPI_Status_f082c(const MPI_F08_status *f08_status, MPI_Status *c_status);
 int MPI_Status_f082f(const MPI_F08_status *f08_status, MPI_Fint *f_status);
 int MPI_Status_f2f08(const MPI_Fint *f_status, MPI_F08_status *f08_status);

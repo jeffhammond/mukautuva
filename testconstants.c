@@ -84,7 +84,7 @@ static int all_integer_constants [] = {
 #endif
     MPI_ERR_WIN,
     MPI_T_ERR_CANNOT_INIT,
-#if 0
+#if MPICH_BUG_IS_FIXED
     MPI_T_ERR_NOT_ACCESSIBLE,
 #endif
     MPI_T_ERR_NOT_INITIALIZED,

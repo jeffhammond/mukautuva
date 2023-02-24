@@ -1,16 +1,6 @@
 #ifndef IMPL_ALLTOALLW_H
 #define IMPL_ALLTOALLW_H
 
-#if 0
-#include <stdlib.h>
-#include <stdbool.h>
-#include <mpi.h>
-
-#include "impl-fpointers.h"
-#include "impl-handle-conversions.h"
-#include "wrap-handle-typedefs.h"
-#endif
-
 static int ALLTOALLW_SETUP(bool in_place, const MPI_Comm comm, const WRAP_Datatype sendtypes[], const WRAP_Datatype recvtypes[],
                            MPI_Datatype ** impl_sendtypes, MPI_Datatype ** impl_recvtypes)
 {
