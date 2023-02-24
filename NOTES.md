@@ -1,3 +1,11 @@
+# General
+
+```
+export MUK_PATH=${MUK_PATH}
+export MUK_PATH=${HOME}/Work/MPI/mukautuva
+export LD_LIBRARY_PATH=${MUK_PATH}
+```
+
 # My Tests
 
 ```
@@ -8,13 +16,14 @@ for t in testcoll.x testcomm.x testinit.x testreqs.x testwin.x testgroup.x testt
 
 ```
 wget https://mvapich.cse.ohio-state.edu/download/mvapich/osu-micro-benchmarks-7.0.1.tar.gz
+tar -xzf osu*gz
 cd osu*
-./configure CC=gcc CXX=g++ CFLAGS=-g3 --enable-g  CPPFLAGS=-I/home/jhammond/mukautuva LDFLAGS=-L/home/jhammond/mukautuva LIBS=-lmuk && make -j8
+./configure CC=gcc CXX=g++ CFLAGS=-g3 --enable-g  CPPFLAGS=-I${MUK_PATH} LDFLAGS=-L${MUK_PATH} LIBS=-lmuk && make -j8
 ```
 
 Run tests:
 ```
-for t in `find . -type f -executable -print` ; do LD_LIBRARY_PATH=/home/jhammond/mukautuva mpirun -n 2 ./$t ; done
+for t in `find . -type f -executable -print` ; do LD_LIBRARY_PATH=${MUK_PATH} mpirun -n 2 ./$t ; done
 ```
 
 At least one RMA test with Open-MPI requires `--mca osc ucx` (vader bug). https://github.com/jeffhammond/mukautuva/issues/2
@@ -30,7 +39,7 @@ git clone https://github.com/pmodels/armci-mpi.git
 
 Configure like this, e.g.:
 ```
-./configure CC=gcc CFLAGS=-g3 --enable-g CPPFLAGS=-I${HOME}/mukautuva LDFLAGS="-L${HOME}/mukautuva -Wl,-rpath=${HOME}/mukautuva" LIBS=-lmuk
+./configure CC=gcc CFLAGS=-g3 --enable-g CPPFLAGS=-I${MUK_PATH} LDFLAGS="-L${MUK_PATH} -Wl,-rpath=${MUK_PATH}" LIBS=-lmuk
 ```
 
 Currently, Mukautuva plus Open-MPI crash in `MPI_Group_translate_ranks` so we disable rank translation caching.
@@ -54,22 +63,22 @@ This does not work.
 
 Maybe...
 ```sh
-./configure CC=gcc CFLAGS=-I${HOME}/mukautuva LDFLAGS="-L${HOME}/mukautuva" LIBS="-lmuk" --disable-cxx --disable-spawn --enable-strictmpi --disable-fortran MPICC=gcc MPICXX=false MPIFC=false CXX=g++ FC=gfortran
+./configure CC=gcc CFLAGS=-I${MUK_PATH} LDFLAGS="-L${MUK_PATH}" LIBS="-lmuk" --disable-cxx --disable-spawn --enable-strictmpi --disable-fortran MPICC=gcc MPICXX=false MPIFC=false CXX=g++ FC=gfortran
 ```
 
 Latest...
 
 ```sh
-export LD_LIBRARY_PATH=${HOME}/mukautuva
-mkdir ${HOME}/mukautuva/bin
-ln -s `which gcc` ${HOME}/mukautuva/bin/mpicc
+export LD_LIBRARY_PATH=${MUK_PATH}
+mkdir ${MUK_PATH}/bin
+ln -s `which gcc` ${MUK_PATH}/bin/mpicc
 ```
 
 ```
 wget https://www.mpich.org/static/downloads/4.1/mpich-testsuite-4.1.tar.gz
 tar -xaf mpich-testsuite-4.1.tar.gz
 cd mpich-testsuite-4.1/
-./configure CC=gcc CXX=g++ FC=false CPPFLAGS="-I${HOME}/mukautuva" LDFLAGS="-L${HOME}/mukautuva" LIBS="-lmuk" --enable-strictmpi --with-mpi=${HOME}/mukautuva
+./configure CC=gcc CXX=g++ FC=false CPPFLAGS="-I${MUK_PATH}" LDFLAGS="-L${MUK_PATH}" LIBS="-lmuk" --enable-strictmpi --with-mpi=${MUK_PATH}
 ```
 
 Useful:
