@@ -4,6 +4,7 @@
 export MUK_PATH=${MUK_PATH}
 export MUK_PATH=${HOME}/Work/MPI/mukautuva
 export LD_LIBRARY_PATH=${MUK_PATH}
+export DYLD_LIBRARY_PATH=${MUK_PATH}
 ```
 
 # My Tests
