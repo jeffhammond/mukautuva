@@ -399,17 +399,17 @@ enum {
 #define MPI_UNWEIGHTED      MUK_UNWEIGHTED
 #define MPI_WEIGHTS_EMPTY   MUK_WEIGHTS_EMPTY
 
-#define MPI_NULL_COPY_FN        ((MPI_Copy_function*)NULL)
-#define MPI_DUP_FN              ((MPI_Copy_function*)NULL)
-#define MPI_NULL_DELETE_FN      ((MPI_Delete_function*)NULL)
-#define MPI_COMM_NULL_COPY_FN   ((MPI_Comm_copy_attr_function*)NULL)
-#define MPI_COMM_DUP_FN         ((MPI_Comm_copy_attr_function*)NULL)
-#define MPI_COMM_NULL_DELETE_FN ((MPI_Comm_delete_attr_function*)NULL)
-#define MPI_TYPE_NULL_COPY_FN   ((MPI_Type_copy_attr_function*)NULL)
-#define MPI_TYPE_NULL_COPY_FN   ((MPI_Type_copy_attr_function*)NULL)
-#define MPI_TYPE_NULL_DELETE_FN ((MPI_Type_delete_attr_function*)NULL)
-#define MPI_WIN_NULL_COPY_FN    ((MPI_Win_copy_attr_function*)NULL)
-#define MPI_WIN_NULL_COPY_FN    ((MPI_Win_copy_attr_function*)NULL)
-#define MPI_WIN_NULL_DELETE_FN  ((MPI_Win_delete_attr_function*)NULL)
+#define MPI_NULL_COPY_FN        ((MPI_Copy_function*)MUK_NULL_COPY_FN)
+#define MPI_DUP_FN              ((MPI_Copy_function*)MUK_DUP_FN)
+#define MPI_NULL_DELETE_FN      ((MPI_Delete_function*)MUK_NULL_DELETE_FN)
+#define MPI_COMM_NULL_COPY_FN   ((MPI_Comm_copy_attr_function*)MUK_COMM_NULL_COPY_FN)
+#define MPI_COMM_DUP_FN         ((MPI_Comm_copy_attr_function*)MUK_COMM_DUP_FN)
+#define MPI_COMM_NULL_DELETE_FN ((MPI_Comm_delete_attr_function*)MUK_COMM_NULL_DELETE_FN)
+#define MPI_TYPE_NULL_COPY_FN   ((MPI_Type_copy_attr_function*)MUK_TYPE_NULL_COPY_FN)
+#define MPI_TYPE_NULL_COPY_FN   ((MPI_Type_copy_attr_function*)MUK_TYPE_NULL_COPY_FN)
+#define MPI_TYPE_NULL_DELETE_FN ((MPI_Type_delete_attr_function*)MUK_TYPE_NULL_DELETE_FN)
+#define MPI_WIN_NULL_COPY_FN    ((MPI_Win_copy_attr_function*)MUK_WIN_NULL_COPY_FN)
+#define MPI_WIN_NULL_COPY_FN    ((MPI_Win_copy_attr_function*)MUK_WIN_NULL_COPY_FN)
+#define MPI_WIN_NULL_DELETE_FN  ((MPI_Win_delete_attr_function*)MUK_WIN_NULL_DELETE_FN)
 
 #endif

@@ -413,4 +413,57 @@ enum {
 #define MUK_UNWEIGHTED    ((int*)2)
 #define MUK_WEIGHTS_EMPTY ((int*)3)
 
+#include <stddef.h>
+
+// basic typedefs
+typedef ptrdiff_t MUK_Aint;
+typedef ptrdiff_t MUK_Count;
+typedef ptrdiff_t MUK_Offset;
+
+// status typedef
+typedef struct
+{
+    int MPI_SOURCE;
+    int MPI_TAG;
+    int MPI_ERROR;
+    int __kielletty__[5];
+}
+MUK_Status;
+
+typedef void MUK_User_function(void *invec, void *inoutvec, int *len, MUK_Datatype *datatype);
+typedef void MUK_User_function_c(void *invec, void *inoutvec, MUK_Count *len, MUK_Datatype *datatype);
+typedef int MUK_Comm_copy_attr_function(MUK_Comm oldcomm, int comm_keyval, void *extra_state, void *attribute_val_in, void *attribute_val_out, int *flag);
+typedef int MUK_Comm_delete_attr_function(MUK_Comm comm, int comm_keyval, void *attribute_val, void *extra_state);
+typedef int MUK_Win_copy_attr_function(MUK_Win oldwin, int win_keyval, void *extra_state, void *attribute_val_in, void *attribute_val_out, int *flag);
+typedef int MUK_Win_delete_attr_function(MUK_Win win, int win_keyval, void *attribute_val, void *extra_state);
+typedef int MUK_Type_copy_attr_function(MUK_Datatype oldtype, int type_keyval, void *extra_state, void *attribute_val_in, void *attribute_val_out, int *flag);
+typedef int MUK_Type_delete_attr_function(MUK_Datatype datatype, int type_keyval, void *attribute_val, void *extra_state);
+typedef void MUK_Comm_errhandler_function(MUK_Comm *comm, int *error_code, ...);
+typedef void MUK_Win_errhandler_function(MUK_Win *win, int *error_code, ...);
+typedef void MUK_File_errhandler_function(MUK_File *file, int *error_code, ...);
+typedef void MUK_Session_errhandler_function(MUK_Session *session, int *error_code, ...);
+typedef int MUK_Grequest_query_function(void *extra_state, MUK_Status *status);
+typedef int MUK_Grequest_free_function(void *extra_state);
+typedef int MUK_Grequest_cancel_function(void *extra_state, int complete);
+typedef int MUK_Datarep_extent_function(MUK_Datatype datatype, MUK_Aint *extent, void *extra_state);
+typedef int MUK_Datarep_conversion_function(void *userbuf, MUK_Datatype datatype, int count, void *filebuf, MUK_Offset position, void *extra_state);
+typedef int MUK_Datarep_conversion_function_c(void *userbuf, MUK_Datatype datatype, MUK_Count count, void *filebuf, MUK_Offset position, void *extra_state);
+
+// these are deprecated
+typedef int MUK_Copy_function(MUK_Comm oldcomm, int keyval, void *extra_state, void *attribute_val_in, void *attribute_val_out, int *flag);
+typedef int MUK_Delete_function(MUK_Comm comm, int keyval, void *attribute_val, void *extra_state);
+
+#define MUK_NULL_COPY_FN        ((MUK_Copy_function*)NULL)
+#define MUK_DUP_FN              ((MUK_Copy_function*)NULL)
+#define MUK_NULL_DELETE_FN      ((MUK_Delete_function*)NULL)
+#define MUK_COMM_NULL_COPY_FN   ((MUK_Comm_copy_attr_function*)NULL)
+#define MUK_COMM_DUP_FN         ((MUK_Comm_copy_attr_function*)NULL)
+#define MUK_COMM_NULL_DELETE_FN ((MUK_Comm_delete_attr_function*)NULL)
+#define MUK_TYPE_NULL_COPY_FN   ((MUK_Type_copy_attr_function*)NULL)
+#define MUK_TYPE_NULL_COPY_FN   ((MUK_Type_copy_attr_function*)NULL)
+#define MUK_TYPE_NULL_DELETE_FN ((MUK_Type_delete_attr_function*)NULL)
+#define MUK_WIN_NULL_COPY_FN    ((MUK_Win_copy_attr_function*)NULL)
+#define MUK_WIN_NULL_COPY_FN    ((MUK_Win_copy_attr_function*)NULL)
+#define MUK_WIN_NULL_DELETE_FN  ((MUK_Win_delete_attr_function*)NULL)
+
 #endif
