@@ -325,7 +325,9 @@ int WRAP_Win_create_dynamic(WRAP_Info info, WRAP_Comm comm, WRAP_Win *win)
 
 int WRAP_Win_create_errhandler(WRAP_Win_errhandler_function *win_errhandler_fn, WRAP_Errhandler *errhandler)
 {
-    int rc = IMPL_Win_create_errhandler(win_errhandler_fn, errhandler);
+    MPI_Errhandler impl_errhandler;
+    int rc = IMPL_Win_create_errhandler(win_errhandler_fn, &impl_errhandler);
+    *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
