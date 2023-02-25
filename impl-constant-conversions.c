@@ -1,4 +1,9 @@
+#if DEBUG
+#include <stdio.h>
+#endif
+
 #include <mpi.h>
+
 #include "muk-predefined.h"
 
 // declaration for impl-functions.c symbol
