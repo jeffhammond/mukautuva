@@ -427,7 +427,7 @@ int WRAP_Bsend(const void *buf, int count, WRAP_Datatype datatype, int dest, int
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    int rc = IMPL_Bsend(buf, count, impl_datatype, dest, tag, impl_comm);
+    int rc = IMPL_Bsend(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -436,7 +436,7 @@ int WRAP_Bsend_c(const void *buf, WRAP_Count count, WRAP_Datatype datatype, int 
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    int rc = IMPL_Bsend_c(buf, count, impl_datatype, dest, tag, impl_comm);
+    int rc = IMPL_Bsend_c(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
@@ -446,7 +446,7 @@ int WRAP_Bsend_init(const void *buf, int count, WRAP_Datatype datatype, int dest
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Bsend_init(buf, count, impl_datatype, dest, tag, impl_comm, &impl_request);
+    int rc = IMPL_Bsend_init(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -457,7 +457,7 @@ int WRAP_Bsend_init_c(const void *buf, WRAP_Count count, WRAP_Datatype datatype,
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Bsend_init_c(buf, count, impl_datatype, dest, tag, impl_comm, &impl_request);
+    int rc = IMPL_Bsend_init_c(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -835,7 +835,7 @@ int WRAP_Ibsend(const void *buf, int count, WRAP_Datatype datatype, int dest, in
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Ibsend(buf, count, impl_datatype, dest, tag, impl_comm, &impl_request);
+    int rc = IMPL_Ibsend(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -846,7 +846,7 @@ int WRAP_Ibsend_c(const void *buf, WRAP_Count count, WRAP_Datatype datatype, int
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Ibsend_c(buf, count, impl_datatype, dest, tag, impl_comm, &impl_request);
+    int rc = IMPL_Ibsend_c(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -910,7 +910,7 @@ int WRAP_Improbe(int source, int tag, WRAP_Comm comm, int *flag, WRAP_Message *m
     MPI_Comm    impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Message impl_message  = CONVERT_MPI_Message(*message);;
     MPI_Status  impl_status;
-    int rc = IMPL_Improbe(RANK_MUK_TO_IMPL(source), tag, impl_comm, flag, &impl_message, ignore ? MPI_STATUS_IGNORE : &impl_status);
+    int rc = IMPL_Improbe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), impl_comm, flag, &impl_message, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     *message = OUTPUT_MPI_Message(impl_message);
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -1177,8 +1177,8 @@ int WRAP_Iprobe(int source, int tag, WRAP_Comm comm, int *flag, WRAP_Status *sta
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     const bool ignore = IS_STATUS_IGNORE(status);
-    MPI_Status impl_status;
-    int rc = IMPL_Iprobe(RANK_MUK_TO_IMPL(source), tag, impl_comm, flag, ignore ? MPI_STATUS_IGNORE : &impl_status);
+    MPI_Status impl_status = {0};
+    int rc = IMPL_Iprobe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), impl_comm, flag, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1188,7 +1188,7 @@ int WRAP_Irecv(void *buf, int count, WRAP_Datatype datatype, int source, int tag
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Irecv(buf, count, impl_datatype, RANK_MUK_TO_IMPL(source), tag, impl_comm, &impl_request);
+    int rc = IMPL_Irecv(buf, count, impl_datatype, RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1199,7 +1199,7 @@ int WRAP_Irecv_c(void *buf, WRAP_Count count, WRAP_Datatype datatype, int source
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Irecv_c(buf, count, impl_datatype, RANK_MUK_TO_IMPL(source), tag, impl_comm, &impl_request);
+    int rc = IMPL_Irecv_c(buf, count, impl_datatype, RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1210,7 +1210,7 @@ int WRAP_Irsend(const void *buf, int count, WRAP_Datatype datatype, int dest, in
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Irsend(buf, count, impl_datatype, dest, tag, impl_comm, &impl_request);
+    int rc = IMPL_Irsend(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1221,7 +1221,7 @@ int WRAP_Irsend_c(const void *buf, WRAP_Count count, WRAP_Datatype datatype, int
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Irsend_c(buf, count, impl_datatype, dest, tag, impl_comm, &impl_request);
+    int rc = IMPL_Irsend_c(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1284,7 +1284,7 @@ int WRAP_Isend(const void *buf, int count, WRAP_Datatype datatype, int dest, int
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Isend(buf, count, impl_datatype, dest, tag, impl_comm, &impl_request);
+    int rc = IMPL_Isend(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1295,7 +1295,7 @@ int WRAP_Isend_c(const void *buf, WRAP_Count count, WRAP_Datatype datatype, int 
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Isend_c(buf, count, impl_datatype, dest, tag, impl_comm, &impl_request);
+    int rc = IMPL_Isend_c(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1308,7 +1308,7 @@ int WRAP_Isendrecv(const void *sendbuf, int sendcount, WRAP_Datatype sendtype, i
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     MPI_Request impl_request;
-    int rc = IMPL_Isendrecv(sendbuf, sendcount, impl_sendtype, dest, sendtag, recvbuf, recvcount, impl_recvtype, source, recvtag, impl_comm, &impl_request);
+    int rc = IMPL_Isendrecv(sendbuf, sendcount, impl_sendtype, dest, TAG_MUK_TO_IMPL(sendtag), recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(recvtag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1321,7 +1321,7 @@ int WRAP_Isendrecv_c(const void *sendbuf, WRAP_Count sendcount, WRAP_Datatype se
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     MPI_Request impl_request;
-    int rc = IMPL_Isendrecv_c(sendbuf, sendcount, impl_sendtype, dest, sendtag, recvbuf, recvcount, impl_recvtype, source, recvtag, impl_comm, &impl_request);
+    int rc = IMPL_Isendrecv_c(sendbuf, sendcount, impl_sendtype, dest, TAG_MUK_TO_IMPL(sendtag), recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(recvtag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1333,7 +1333,7 @@ int WRAP_Isendrecv_replace(void *buf, int count, WRAP_Datatype datatype, int des
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Isendrecv_replace(buf, count, impl_datatype, dest, sendtag, source, recvtag, impl_comm, &impl_request);
+    int rc = IMPL_Isendrecv_replace(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(sendtag), RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(recvtag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1345,7 +1345,7 @@ int WRAP_Isendrecv_replace_c(void *buf, WRAP_Count count, WRAP_Datatype datatype
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Isendrecv_replace_c(buf, count, impl_datatype, dest, sendtag, source, recvtag, impl_comm, &impl_request);
+    int rc = IMPL_Isendrecv_replace_c(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(sendtag), RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(recvtag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1356,7 +1356,7 @@ int WRAP_Issend(const void *buf, int count, WRAP_Datatype datatype, int dest, in
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Issend(buf, count, impl_datatype, dest, tag, impl_comm, &impl_request);
+    int rc = IMPL_Issend(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1367,7 +1367,7 @@ int WRAP_Issend_c(const void *buf, WRAP_Count count, WRAP_Datatype datatype, int
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Issend_c(buf, count, impl_datatype, dest, tag, impl_comm, &impl_request);
+    int rc = IMPL_Issend_c(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1379,7 +1379,7 @@ int WRAP_Mprobe(int source, int tag, WRAP_Comm comm, WRAP_Message *message, WRAP
     const bool ignore = IS_STATUS_IGNORE(status);
     MPI_Message impl_message;
     MPI_Status  impl_status;
-    int rc = IMPL_Mprobe(RANK_MUK_TO_IMPL(source), tag, impl_comm, &impl_message, ignore ? MPI_STATUS_IGNORE : &impl_status);
+    int rc = IMPL_Mprobe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), impl_comm, &impl_message, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     *message = OUTPUT_MPI_Message(impl_message);
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -1402,7 +1402,7 @@ int WRAP_Mrecv_c(void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Messa
     const bool ignore = IS_STATUS_IGNORE(status);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Message  impl_message  = CONVERT_MPI_Message(*message);;
-    MPI_Status impl_status;
+    MPI_Status impl_status = {0};
     int rc = IMPL_Mrecv_c(buf, count, impl_datatype, &impl_message, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     *message = OUTPUT_MPI_Message(impl_message);
@@ -1773,7 +1773,7 @@ int WRAP_Precv_init(void *buf, int partitions, WRAP_Count count, WRAP_Datatype d
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
     MPI_Request impl_request;
-    int rc = IMPL_Precv_init(buf, partitions, count, impl_datatype, dest, tag, impl_comm, impl_info, &impl_request);
+    int rc = IMPL_Precv_init(buf, partitions, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm, impl_info, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1782,8 +1782,8 @@ int WRAP_Probe(int source, int tag, WRAP_Comm comm, WRAP_Status *status)
 {
     const bool ignore = IS_STATUS_IGNORE(status);
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    MPI_Status impl_status;
-    int rc = IMPL_Probe(source, tag, impl_comm, &impl_status);
+    MPI_Status impl_status = {0};
+    int rc = IMPL_Probe(source, TAG_MUK_TO_IMPL(tag), impl_comm, &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1794,7 +1794,7 @@ int WRAP_Psend_init(const void *buf, int partitions, WRAP_Count count, WRAP_Data
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
     MPI_Request impl_request;
-    int rc = IMPL_Psend_init(buf, partitions, count, impl_datatype, dest, tag, impl_comm, impl_info, &impl_request);
+    int rc = IMPL_Psend_init(buf, partitions, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm, impl_info, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1804,8 +1804,8 @@ int WRAP_Recv(void *buf, int count, WRAP_Datatype datatype, int source, int tag,
     const bool ignore = IS_STATUS_IGNORE(status);
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_Status impl_status;
-    int rc = IMPL_Recv(buf, count, impl_datatype, source, tag, impl_comm, &impl_status);
+    MPI_Status impl_status = {0};
+    int rc = IMPL_Recv(buf, count, impl_datatype, RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), impl_comm, &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1815,8 +1815,8 @@ int WRAP_Recv_c(void *buf, WRAP_Count count, WRAP_Datatype datatype, int source,
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     const bool ignore = IS_STATUS_IGNORE(status);
-    MPI_Status impl_status;
-    int rc = IMPL_Recv_c(buf, count, impl_datatype, RANK_MUK_TO_IMPL(source), tag, impl_comm, ignore ? MPI_STATUS_IGNORE : &impl_status);
+    MPI_Status impl_status = {0};
+    int rc = IMPL_Recv_c(buf, count, impl_datatype, RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), impl_comm, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1826,7 +1826,7 @@ int WRAP_Recv_init(void *buf, int count, WRAP_Datatype datatype, int source, int
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Recv_init(buf, count, impl_datatype, source, tag, impl_comm, &impl_request);
+    int rc = IMPL_Recv_init(buf, count, impl_datatype, RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1837,7 +1837,7 @@ int WRAP_Recv_init_c(void *buf, WRAP_Count count, WRAP_Datatype datatype, int so
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Recv_init_c(buf, count, impl_datatype, source, tag, impl_comm, &impl_request);
+    int rc = IMPL_Recv_init_c(buf, count, impl_datatype, RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1863,7 +1863,7 @@ int WRAP_Rsend(const void *buf, int count, WRAP_Datatype datatype, int dest, int
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    int rc = IMPL_Rsend(buf, count, impl_datatype, dest, tag, impl_comm);
+    int rc = IMPL_Rsend(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -1872,7 +1872,7 @@ int WRAP_Rsend_c(const void *buf, WRAP_Count count, WRAP_Datatype datatype, int 
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    int rc = IMPL_Rsend_c(buf, count, impl_datatype, dest, tag, impl_comm);
+    int rc = IMPL_Rsend_c(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
@@ -1882,7 +1882,7 @@ int WRAP_Rsend_init(const void *buf, int count, WRAP_Datatype datatype, int dest
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Rsend_init(buf, count, impl_datatype, dest, tag, impl_comm, &impl_request);
+    int rc = IMPL_Rsend_init(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1893,7 +1893,7 @@ int WRAP_Rsend_init_c(const void *buf, WRAP_Count count, WRAP_Datatype datatype,
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Rsend_init_c(buf, count, impl_datatype, dest, tag, impl_comm, &impl_request);
+    int rc = IMPL_Rsend_init_c(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1995,7 +1995,7 @@ int WRAP_Send(const void *buf, int count, WRAP_Datatype datatype, int dest, int 
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    int rc = IMPL_Send(buf, count, impl_datatype, dest, tag, impl_comm);
+    int rc = IMPL_Send(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -2004,7 +2004,7 @@ int WRAP_Send_c(const void *buf, WRAP_Count count, WRAP_Datatype datatype, int d
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    int rc = IMPL_Send_c(buf, count, impl_datatype, dest, tag, impl_comm);
+    int rc = IMPL_Send_c(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
@@ -2014,7 +2014,7 @@ int WRAP_Send_init(const void *buf, int count, WRAP_Datatype datatype, int dest,
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Send_init(buf, count, impl_datatype, dest, tag, impl_comm, &impl_request);
+    int rc = IMPL_Send_init(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -2025,7 +2025,7 @@ int WRAP_Send_init_c(const void *buf, WRAP_Count count, WRAP_Datatype datatype, 
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Send_init_c(buf, count, impl_datatype, dest, tag, impl_comm, &impl_request);
+    int rc = IMPL_Send_init_c(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -2037,7 +2037,7 @@ int WRAP_Sendrecv(const void *sendbuf, int sendcount, WRAP_Datatype sendtype, in
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     const bool ignore = IS_STATUS_IGNORE(status);
-    MPI_Status impl_status;
+    MPI_Status impl_status = {0};
     int rc = IMPL_Sendrecv(sendbuf, sendcount, impl_sendtype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(sendtag), recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(recvtag), impl_comm, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -2049,7 +2049,7 @@ int WRAP_Sendrecv_c(const void *sendbuf, WRAP_Count sendcount, WRAP_Datatype sen
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     const bool ignore = IS_STATUS_IGNORE(status);
-    MPI_Status impl_status;
+    MPI_Status impl_status = {0};
     int rc = IMPL_Sendrecv_c(sendbuf, sendcount, impl_sendtype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(sendtag), recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(recvtag), impl_comm, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -2060,7 +2060,7 @@ int WRAP_Sendrecv_replace(void *buf, int count, WRAP_Datatype datatype, int dest
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     const bool ignore = IS_STATUS_IGNORE(status);
-    MPI_Status impl_status;
+    MPI_Status impl_status = {0};
     int rc = IMPL_Sendrecv_replace(buf, count, impl_datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(sendtag), RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(recvtag), impl_comm, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -2071,7 +2071,7 @@ int WRAP_Sendrecv_replace_c(void *buf, WRAP_Count count, WRAP_Datatype datatype,
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     const bool ignore = IS_STATUS_IGNORE(status);
-    MPI_Status impl_status;
+    MPI_Status impl_status = {0};
     int rc = IMPL_Sendrecv_replace_c(buf, count, impl_datatype, RANK_MUK_TO_IMPL(dest), TAG_MUK_TO_IMPL(sendtag), RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(recvtag), impl_comm, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -2081,7 +2081,7 @@ int WRAP_Ssend(const void *buf, int count, WRAP_Datatype datatype, int dest, int
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    int rc = IMPL_Ssend(buf, count, impl_datatype, dest, tag, impl_comm);
+    int rc = IMPL_Ssend(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -2090,7 +2090,7 @@ int WRAP_Ssend_c(const void *buf, WRAP_Count count, WRAP_Datatype datatype, int 
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    int rc = IMPL_Ssend_c(buf, count, impl_datatype, dest, tag, impl_comm);
+    int rc = IMPL_Ssend_c(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
@@ -2100,7 +2100,7 @@ int WRAP_Ssend_init(const void *buf, int count, WRAP_Datatype datatype, int dest
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Ssend_init(buf, count, impl_datatype, dest, tag, impl_comm, &impl_request);
+    int rc = IMPL_Ssend_init(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -2111,7 +2111,7 @@ int WRAP_Ssend_init_c(const void *buf, WRAP_Count count, WRAP_Datatype datatype,
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Ssend_init_c(buf, count, impl_datatype, dest, tag, impl_comm, &impl_request);
+    int rc = IMPL_Ssend_init_c(buf, count, impl_datatype, dest, TAG_MUK_TO_IMPL(tag), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
