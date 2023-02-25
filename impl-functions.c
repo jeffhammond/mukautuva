@@ -1301,6 +1301,7 @@ int WRAP_Isend_c(const void *buf, WRAP_Count count, WRAP_Datatype datatype, int 
 }
 #endif
 
+#if MPI_VERSION >= 4
 int WRAP_Isendrecv(const void *sendbuf, int sendcount, WRAP_Datatype sendtype, int dest, int sendtag, void *recvbuf, int recvcount, WRAP_Datatype recvtype, int source, int recvtag, WRAP_Comm comm, WRAP_Request *request)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
@@ -1311,6 +1312,7 @@ int WRAP_Isendrecv(const void *sendbuf, int sendcount, WRAP_Datatype sendtype, i
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
+#endif
 
 #if MPI_VERSION >= 4
 int WRAP_Isendrecv_c(const void *sendbuf, WRAP_Count sendcount, WRAP_Datatype sendtype, int dest, int sendtag, void *recvbuf, WRAP_Count recvcount, WRAP_Datatype recvtype, int source, int recvtag, WRAP_Comm comm, WRAP_Request *request)
@@ -1325,6 +1327,7 @@ int WRAP_Isendrecv_c(const void *sendbuf, WRAP_Count sendcount, WRAP_Datatype se
 }
 #endif
 
+#if MPI_VERSION >= 4
 int WRAP_Isendrecv_replace(void *buf, int count, WRAP_Datatype datatype, int dest, int sendtag, int source, int recvtag, WRAP_Comm comm, WRAP_Request *request)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
@@ -1334,6 +1337,7 @@ int WRAP_Isendrecv_replace(void *buf, int count, WRAP_Datatype datatype, int des
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
+#endif
 
 #if MPI_VERSION >= 4
 int WRAP_Isendrecv_replace_c(void *buf, WRAP_Count count, WRAP_Datatype datatype, int dest, int sendtag, int source, int recvtag, WRAP_Comm comm, WRAP_Request *request)
