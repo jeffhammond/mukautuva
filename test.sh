@@ -15,6 +15,8 @@ else
     #OPTS="--mca osc ucx"
     OMPIRUN=/usr/bin/mpirun.openmpi
     OMPILIB=/usr/lib/x86_64-linux-gnu/libmpi.so
+    #OMPIRUN=/opt/ompi/gcc-debug/bin/mpirun
+    #OMPILIB=/opt/ompi/gcc-debug/lib/libmpi.so
     MPICHRUN=/usr/bin/mpirun.mpich
     #MPICHLIB=/usr/lib/x86_64-linux-gnu/libmpich.so
     MPICHLIB=/opt/mpich/gcc/debug-ch4ucx/lib/libmpi.so
