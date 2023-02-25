@@ -6,6 +6,7 @@
 #include <string.h>
 #include <assert.h>
 
+#define OMPI_WANT_MPI_INTERFACE_WARNING 0
 #include <mpi.h>
 
 #include "muk-predefined.h"
