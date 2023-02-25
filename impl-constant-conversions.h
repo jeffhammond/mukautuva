@@ -59,6 +59,10 @@ static inline int RANK_MUK_TO_IMPL(int rank_muk)
     else if (rank_muk == MUK_ANY_SOURCE) {
         return MPI_ANY_SOURCE;
     }
+    // This gets used by MPICH at least, as an initialization value.
+    else if (rank_muk == MUK_UNDEFINED) {
+        return MPI_UNDEFINED;
+    }
     else if (rank_muk == MUK_PROC_NULL) {
         return MPI_PROC_NULL;
     }
@@ -83,6 +87,10 @@ static inline int RANK_IMPL_TO_MUK(int rank_impl)
     }
     else if (rank_impl == MPI_ANY_SOURCE) {
         return MUK_ANY_SOURCE;
+    }
+    // This gets used by MPICH at least, as an initialization value.
+    else if (rank_impl == MPI_UNDEFINED) {
+        return MUK_UNDEFINED;
     }
     else if (rank_impl == MPI_PROC_NULL) {
         return MUK_PROC_NULL;
