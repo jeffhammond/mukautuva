@@ -45,8 +45,9 @@ static int COMBINER_CODE_IMPL_TO_MUK(int in)
     else                                        { return MUK_UNDEFINED; }
 }
 
-//static inline int TAG_MUK_TO_IMPL(int tag_muk)
+// MUK, MPICH and OMPI agree that ANY_TAG = -1 so no conversion is required.
 #define TAG_MUK_TO_IMPL(tag) (tag)
+#define TAG_IMPL_TO_MUK(tag) (tag)
 
 MAYBE_UNUSED
 static inline int RANK_MUK_TO_IMPL(int rank_muk)
@@ -70,6 +71,33 @@ static inline int RANK_MUK_TO_IMPL(int rank_muk)
         printf("RANK_MUK_TO_IMPL rank=%d\n", rank_muk);
 #endif
         return rank_muk;
+    }
+}
+
+MAYBE_UNUSED
+static inline int RANK_IMPL_TO_MUK(int rank_impl)
+{
+    // predefined constants are always negative
+    if (rank_impl >= 0) {
+        return rank_impl;
+    }
+    else if (rank_impl == MPI_ANY_SOURCE) {
+        return MUK_ANY_SOURCE;
+    }
+    else if (rank_impl == MPI_PROC_NULL) {
+        return MUK_PROC_NULL;
+    }
+#if 0
+    // this one only applies to intercomms
+    else if (rank_impl == MPI_ROOT) {
+        return MUK_ROOT;
+    }
+#endif
+    else {
+#if 1
+        printf("RANK_IMPL_TO_MUK rank=%d\n", rank_impl);
+#endif
+        return rank_impl;
     }
 }
 
