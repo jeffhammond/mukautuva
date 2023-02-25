@@ -2801,11 +2801,17 @@ int MPI_Ineighbor_alltoallw_c(const void *sendbuf, const MPI_Count sendcounts[],
 
 int MPI_Info_create(MPI_Info *info)
 {
+    if (MUK_Info_create == NULL) {
+        return MPI_ERR_INTERN;
+    }
     return MUK_Info_create(info);
 }
 
 int MPI_Info_create_env(int argc, char *argv[], MPI_Info *info)
 {
+    if (MUK_Info_create_env == NULL) {
+        return MPI_ERR_INTERN;
+    }
     return MUK_Info_create_env(argc, argv, info);
 }
 
@@ -2816,11 +2822,17 @@ int MPI_Info_delete(MPI_Info info, const char *key)
 
 int MPI_Info_dup(MPI_Info info, MPI_Info *newinfo)
 {
+    if (MUK_Info_dup == NULL) {
+        return MPI_ERR_INTERN;
+    }
     return MUK_Info_dup(info, newinfo);
 }
 
 int MPI_Info_free(MPI_Info *info)
 {
+    if (MUK_Info_free == NULL) {
+        return MPI_ERR_INTERN;
+    }
     int rc = MUK_Info_free(info);
     //MUK_INFO_NULLIFY(info);
     return rc;
@@ -2843,6 +2855,9 @@ int MPI_Info_get_nthkey(MPI_Info info, int n, char *key)
 
 int MPI_Info_get_string(MPI_Info info, const char *key, int *buflen, char *value, int *flag)
 {
+    if (MUK_Info_get_string == NULL) {
+        return MPI_ERR_INTERN;
+    }
     return MUK_Info_get_string(info, key, buflen, value, flag);
 }
 
@@ -2853,6 +2868,9 @@ int MPI_Info_get_valuelen(MPI_Info info, const char *key, int *valuelen, int *fl
 
 int MPI_Info_set(MPI_Info info, const char *key, const char *value)
 {
+    if (MUK_Info_set == NULL) {
+        return MPI_ERR_INTERN;
+    }
     return MUK_Info_set(info, key, value);
 }
 
