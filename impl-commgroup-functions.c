@@ -159,10 +159,14 @@ int WRAP_Comm_create_keyval(WRAP_Comm_copy_attr_function *comm_copy_attr_fn, WRA
     MPI_Comm_copy_attr_function * impl_comm_copy_attr_fn = (MPI_Comm_copy_attr_function*)comm_copy_attr_fn;
     if ((intptr_t)comm_copy_attr_fn == (intptr_t)MUK_COMM_NULL_COPY_FN) {
         impl_comm_copy_attr_fn = MPI_COMM_NULL_COPY_FN;
+    } else {
+        printf("%s : %d FIXME\n",__func__,__LINE__);
     }
     MPI_Comm_delete_attr_function * impl_comm_delete_attr_fn = (MPI_Comm_delete_attr_function*)comm_delete_attr_fn;
     if ((intptr_t)comm_delete_attr_fn == (intptr_t)MUK_COMM_NULL_DELETE_FN) {
         impl_comm_delete_attr_fn = MPI_COMM_NULL_DELETE_FN;
+    } else {
+        printf("%s : %d FIXME\n",__func__,__LINE__);
     }
     int rc = IMPL_Comm_create_keyval(impl_comm_copy_attr_fn, impl_comm_delete_attr_fn, comm_keyval, extra_state);
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -175,16 +179,49 @@ int WRAP_Comm_delete_attr(WRAP_Comm comm, int comm_keyval)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
+int WRAP_Comm_free_keyval(int *comm_keyval)
+{
+    int rc = IMPL_Comm_free_keyval(comm_keyval);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Comm_get_attr(WRAP_Comm comm, int comm_keyval, void *attribute_val, int *flag)
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    int rc = IMPL_Comm_get_attr(impl_comm, KEY_MUK_TO_IMPL(comm_keyval), attribute_val, flag);
+#if 0
+    // FIXME for comm if necessary
+    // this is the only place this is needed, so we inline it
+    if (**(int**)attribute_val == MPI_WIN_SEPARATE) {
+        **(int**)attribute_val = MUK_WIN_SEPARATE;
+    } else if (**(int**)attribute_val == MPI_WIN_UNIFIED) {
+        **(int**)attribute_val = MUK_WIN_UNIFIED;
+    }
+#endif
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Comm_set_attr(WRAP_Comm comm, int comm_keyval, void *attribute_val)
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    int rc = IMPL_Comm_set_attr(impl_comm, comm_keyval, attribute_val);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
 // deleted versions of the above
 int WRAP_Keyval_create(WRAP_Copy_function *copy_fn, WRAP_Delete_function *delete_fn, int *keyval, void *extra_state)
 {
     MPI_Copy_function * impl_copy_fn = (MPI_Copy_function*)copy_fn;
     if ((intptr_t)copy_fn == (intptr_t)MUK_NULL_COPY_FN) {
         impl_copy_fn = MPI_NULL_COPY_FN;
+    } else {
+        printf("%s : %d FIXME\n",__func__,__LINE__);
     }
     MPI_Delete_function * impl_delete_fn = (MPI_Delete_function*)delete_fn;
     if ((intptr_t)delete_fn == (intptr_t)MUK_NULL_DELETE_FN) {
         impl_delete_fn = MPI_NULL_DELETE_FN;
+    } else {
+        printf("%s : %d FIXME\n",__func__,__LINE__);
     }
     int rc = IMPL_Keyval_create(impl_copy_fn, impl_delete_fn, keyval, extra_state);
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -228,19 +265,6 @@ int WRAP_Comm_free(WRAP_Comm *comm)
     MPI_Comm impl_comm = CONVERT_MPI_Comm(*comm);
     int rc = IMPL_Comm_free(&impl_comm);
     *comm = OUTPUT_MPI_Comm(impl_comm);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Comm_free_keyval(int *comm_keyval)
-{
-    int rc = IMPL_Comm_free_keyval(comm_keyval);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Comm_get_attr(WRAP_Comm comm, int comm_keyval, void *attribute_val, int *flag)
-{
-    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    int rc = IMPL_Comm_get_attr(impl_comm, KEY_MUK_TO_IMPL(comm_keyval), attribute_val, flag);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -337,13 +361,6 @@ int WRAP_Comm_remote_size(WRAP_Comm comm, int *size)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     int rc = IMPL_Comm_remote_size(impl_comm, size);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Comm_set_attr(WRAP_Comm comm, int comm_keyval, void *attribute_val)
-{
-    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    int rc = IMPL_Comm_set_attr(impl_comm, comm_keyval, attribute_val);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 

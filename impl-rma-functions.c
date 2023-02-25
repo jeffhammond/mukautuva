@@ -21,6 +21,50 @@
 
 // WRAP->IMPL functions
 
+int WRAP_Win_create_keyval(WRAP_Win_copy_attr_function *win_copy_attr_fn, WRAP_Win_delete_attr_function *win_delete_attr_fn, int *win_keyval, void *extra_state)
+{
+    MPI_Win_copy_attr_function * impl_win_copy_attr_fn = (MPI_Win_copy_attr_function*)win_copy_attr_fn;
+    if ((intptr_t)win_copy_attr_fn == (intptr_t)MUK_WIN_NULL_COPY_FN) {
+        impl_win_copy_attr_fn = MPI_WIN_NULL_COPY_FN;
+    } else {
+        printf("%s : %d FIXME\n",__func__,__LINE__);
+    }
+    MPI_Win_delete_attr_function * impl_win_delete_attr_fn = (MPI_Win_delete_attr_function*)win_delete_attr_fn;
+    if ((intptr_t)win_delete_attr_fn == (intptr_t)MUK_WIN_NULL_DELETE_FN) {
+        impl_win_delete_attr_fn = MPI_WIN_NULL_DELETE_FN;
+    } else {
+        printf("%s : %d FIXME\n",__func__,__LINE__);
+    }
+    int rc = IMPL_Win_create_keyval(impl_win_copy_attr_fn, impl_win_delete_attr_fn, win_keyval, extra_state);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Win_free_keyval(int *win_keyval)
+{
+    int rc = IMPL_Win_free_keyval(win_keyval);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Win_get_attr(WRAP_Win win, int win_keyval, void *attribute_val, int *flag)
+{
+    MPI_Win impl_win = CONVERT_MPI_Win(win);
+    int rc = IMPL_Win_get_attr(impl_win, KEY_MUK_TO_IMPL(win_keyval), attribute_val, flag);
+    // this is the only place this is needed, so we inline it
+    if (**(int**)attribute_val == MPI_WIN_SEPARATE) {
+        **(int**)attribute_val = MUK_WIN_SEPARATE;
+    } else if (**(int**)attribute_val == MPI_WIN_UNIFIED) {
+        **(int**)attribute_val = MUK_WIN_UNIFIED;
+    }
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Win_delete_attr(WRAP_Win win, int win_keyval)
+{
+    MPI_Win impl_win = CONVERT_MPI_Win(win);
+    int rc = IMPL_Win_delete_attr(impl_win, win_keyval);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
 int WRAP_Accumulate(const void *origin_addr, int origin_count, WRAP_Datatype origin_datatype, int target_rank, WRAP_Aint target_disp, int target_count, WRAP_Datatype target_datatype, WRAP_Op op, WRAP_Win win)
 {
     MPI_Datatype impl_origin_datatype = CONVERT_MPI_Datatype(origin_datatype);
@@ -331,27 +375,6 @@ int WRAP_Win_create_errhandler(WRAP_Win_errhandler_function *win_errhandler_fn, 
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Win_create_keyval(WRAP_Win_copy_attr_function *win_copy_attr_fn, WRAP_Win_delete_attr_function *win_delete_attr_fn, int *win_keyval, void *extra_state)
-{
-    MPI_Win_copy_attr_function * impl_win_copy_attr_fn = (MPI_Win_copy_attr_function*)win_copy_attr_fn;
-    if ((intptr_t)win_copy_attr_fn == (intptr_t)MUK_WIN_NULL_COPY_FN) {
-        impl_win_copy_attr_fn = MPI_WIN_NULL_COPY_FN;
-    }
-    MPI_Win_delete_attr_function * impl_win_delete_attr_fn = (MPI_Win_delete_attr_function*)win_delete_attr_fn;
-    if ((intptr_t)win_delete_attr_fn == (intptr_t)MUK_WIN_NULL_DELETE_FN) {
-        impl_win_delete_attr_fn = MPI_WIN_NULL_DELETE_FN;
-    }
-    int rc = IMPL_Win_create_keyval(impl_win_copy_attr_fn, impl_win_delete_attr_fn, win_keyval, extra_state);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Win_delete_attr(WRAP_Win win, int win_keyval)
-{
-    MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Win_delete_attr(impl_win, win_keyval);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
 int WRAP_Win_detach(WRAP_Win win, const void *base)
 {
     MPI_Win impl_win = CONVERT_MPI_Win(win);
@@ -399,25 +422,6 @@ int WRAP_Win_free(WRAP_Win *win)
     MPI_Win impl_win = CONVERT_MPI_Win(*win);
     int rc = IMPL_Win_free(&impl_win);
     *win = OUTPUT_MPI_Win(impl_win);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Win_free_keyval(int *win_keyval)
-{
-    int rc = IMPL_Win_free_keyval(win_keyval);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Win_get_attr(WRAP_Win win, int win_keyval, void *attribute_val, int *flag)
-{
-    MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Win_get_attr(impl_win, KEY_MUK_TO_IMPL(win_keyval), attribute_val, flag);
-    // this is the only place this is needed, so we inline it
-    if (**(int**)attribute_val == MPI_WIN_SEPARATE) {
-        **(int**)attribute_val = MUK_WIN_SEPARATE;
-    } else if (**(int**)attribute_val == MPI_WIN_UNIFIED) {
-        **(int**)attribute_val = MUK_WIN_UNIFIED;
-    }
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
