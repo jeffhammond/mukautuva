@@ -897,7 +897,7 @@ int WRAP_Igatherv_c(const void *sendbuf, WRAP_Count sendcount, WRAP_Datatype sen
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
-    MPI_Request impl_request;
+    MPI_Request  impl_request;
     int rc = IMPL_Igatherv_c(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcounts, displs, impl_recvtype, root, impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -907,9 +907,9 @@ int WRAP_Igatherv_c(const void *sendbuf, WRAP_Count sendcount, WRAP_Datatype sen
 int WRAP_Improbe(int source, int tag, WRAP_Comm comm, int *flag, WRAP_Message *message, WRAP_Status *status)
 {
     const bool ignore = IS_STATUS_IGNORE(status);
-    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    MPI_Message impl_message;
-    MPI_Status impl_status;
+    MPI_Comm    impl_comm = CONVERT_MPI_Comm(comm);
+    MPI_Message impl_message  = CONVERT_MPI_Message(*message);;
+    MPI_Status  impl_status;
     int rc = IMPL_Improbe(RANK_MUK_TO_IMPL(source), tag, impl_comm, flag, &impl_message, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     *message = OUTPUT_MPI_Message(impl_message);
@@ -919,8 +919,8 @@ int WRAP_Improbe(int source, int tag, WRAP_Comm comm, int *flag, WRAP_Message *m
 int WRAP_Imrecv(void *buf, int count, WRAP_Datatype datatype, WRAP_Message *message, WRAP_Request *request)
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_Message impl_message;
-    MPI_Request impl_request;
+    MPI_Message  impl_message  = CONVERT_MPI_Message(*message);;
+    MPI_Request  impl_request;
     int rc = IMPL_Imrecv(buf, count, impl_datatype, &impl_message, &impl_request);
     *message = OUTPUT_MPI_Message(impl_message);
     *request = OUTPUT_MPI_Request(impl_request);
@@ -930,8 +930,8 @@ int WRAP_Imrecv(void *buf, int count, WRAP_Datatype datatype, WRAP_Message *mess
 int WRAP_Imrecv_c(void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Message *message, WRAP_Request *request)
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_Message impl_message;
-    MPI_Request impl_request;
+    MPI_Message  impl_message  = CONVERT_MPI_Message(*message);;
+    MPI_Request  impl_request;
     int rc = IMPL_Imrecv_c(buf, count, impl_datatype, &impl_message, &impl_request);
     *message = OUTPUT_MPI_Message(impl_message);
     *request = OUTPUT_MPI_Request(impl_request);
@@ -1374,7 +1374,7 @@ int WRAP_Mprobe(int source, int tag, WRAP_Comm comm, WRAP_Message *message, WRAP
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     const bool ignore = IS_STATUS_IGNORE(status);
     MPI_Message impl_message;
-    MPI_Status impl_status;
+    MPI_Status  impl_status;
     int rc = IMPL_Mprobe(RANK_MUK_TO_IMPL(source), tag, impl_comm, &impl_message, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     *message = OUTPUT_MPI_Message(impl_message);
@@ -1385,22 +1385,22 @@ int WRAP_Mrecv(void *buf, int count, WRAP_Datatype datatype, WRAP_Message *messa
 {
     const bool ignore = IS_STATUS_IGNORE(status);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_Message impl_message;
-    MPI_Status impl_status;
+    MPI_Message  impl_message  = CONVERT_MPI_Message(*message);;
+    MPI_Status   impl_status;
     int rc = IMPL_Mrecv(buf, count, impl_datatype, &impl_message, ignore ? MPI_STATUS_IGNORE : &impl_status);
-    MPI_Status_to_WRAP_Status(&impl_status, status);
+    if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     *message = OUTPUT_MPI_Message(impl_message);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Mrecv_c(void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Message *message, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     const bool ignore = IS_STATUS_IGNORE(status);
-    MPI_Message impl_message;
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
+    MPI_Message  impl_message  = CONVERT_MPI_Message(*message);;
     MPI_Status impl_status;
     int rc = IMPL_Mrecv_c(buf, count, impl_datatype, &impl_message, ignore ? MPI_STATUS_IGNORE : &impl_status);
-    MPI_Status_to_WRAP_Status(&impl_status, status);
+    if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     *message = OUTPUT_MPI_Message(impl_message);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
