@@ -666,8 +666,24 @@ int WRAP_Intercomm_merge(WRAP_Comm intercomm, int high, WRAP_Comm *newintracomm)
 
 int WRAP_Topo_test(WRAP_Comm comm, int *status)
 {
+    // The output value status is one of the following:
+    // MPI_GRAPH    MPI_CART    MPI_DIST_GRAPH    MPI_UNDEFINED
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    int rc = IMPL_Topo_test(impl_comm, status);
+    int impl_status;
+    int rc = IMPL_Topo_test(impl_comm, &impl_status);
+    // This is the only place we need this, so inline it.
+    if (impl_status == MPI_GRAPH) {
+        *status = MUK_GRAPH;
+    }
+    else if (impl_status == MPI_CART) {
+        *status = MUK_CART;
+    }
+    else if (impl_status == MPI_DIST_GRAPH) {
+        *status = MUK_DIST_GRAPH;
+    }
+    else if (impl_status == MPI_UNDEFINED) {
+        *status = MUK_UNDEFINED;
+    }
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
