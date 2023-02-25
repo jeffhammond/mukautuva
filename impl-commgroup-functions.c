@@ -156,7 +156,15 @@ int WRAP_Comm_create_group(WRAP_Comm comm, WRAP_Group group, int tag, WRAP_Comm 
 
 int WRAP_Comm_create_keyval(WRAP_Comm_copy_attr_function *comm_copy_attr_fn, WRAP_Comm_delete_attr_function *comm_delete_attr_fn, int *comm_keyval, void *extra_state)
 {
-    int rc = IMPL_Comm_create_keyval(comm_copy_attr_fn, comm_delete_attr_fn, comm_keyval, extra_state);
+    MPI_Comm_copy_attr_function * impl_comm_copy_attr_fn = (MPI_Comm_copy_attr_function*)comm_copy_attr_fn;
+    if ((intptr_t)comm_copy_attr_fn == (intptr_t)MUK_COMM_NULL_COPY_FN) {
+        impl_comm_copy_attr_fn = MPI_COMM_NULL_COPY_FN;
+    }
+    MPI_Comm_delete_attr_function * impl_comm_delete_attr_fn = (MPI_Comm_delete_attr_function*)comm_delete_attr_fn;
+    if ((intptr_t)comm_delete_attr_fn == (intptr_t)MUK_COMM_NULL_DELETE_FN) {
+        impl_comm_delete_attr_fn = MPI_COMM_NULL_DELETE_FN;
+    }
+    int rc = IMPL_Comm_create_keyval(impl_comm_copy_attr_fn, impl_comm_delete_attr_fn, comm_keyval, extra_state);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -164,6 +172,27 @@ int WRAP_Comm_delete_attr(WRAP_Comm comm, int comm_keyval)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     int rc = IMPL_Comm_delete_attr(impl_comm, comm_keyval);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+// deleted versions of the above
+int WRAP_Keyval_create(WRAP_Copy_function *copy_fn, WRAP_Delete_function *delete_fn, int *keyval, void *extra_state)
+{
+    MPI_Copy_function * impl_copy_fn = (MPI_Copy_function*)copy_fn;
+    if ((intptr_t)copy_fn == (intptr_t)MUK_NULL_COPY_FN) {
+        impl_copy_fn = MPI_NULL_COPY_FN;
+    }
+    MPI_Delete_function * impl_delete_fn = (MPI_Delete_function*)delete_fn;
+    if ((intptr_t)delete_fn == (intptr_t)MUK_NULL_DELETE_FN) {
+        impl_delete_fn = MPI_NULL_DELETE_FN;
+    }
+    int rc = IMPL_Keyval_create(impl_copy_fn, impl_delete_fn, keyval, extra_state);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Keyval_free(int *keyval)
+{
+    int rc = IMPL_Keyval_free(keyval);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 

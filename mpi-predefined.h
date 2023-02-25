@@ -406,10 +406,10 @@ enum {
 #define MPI_COMM_DUP_FN         ((MPI_Comm_copy_attr_function*)MUK_COMM_DUP_FN)
 #define MPI_COMM_NULL_DELETE_FN ((MPI_Comm_delete_attr_function*)MUK_COMM_NULL_DELETE_FN)
 #define MPI_TYPE_NULL_COPY_FN   ((MPI_Type_copy_attr_function*)MUK_TYPE_NULL_COPY_FN)
-#define MPI_TYPE_NULL_COPY_FN   ((MPI_Type_copy_attr_function*)MUK_TYPE_NULL_COPY_FN)
+#define MPI_TYPE_DUP_FN         ((MPI_Type_copy_attr_function*)MUK_TYPE_DUP_FN)
 #define MPI_TYPE_NULL_DELETE_FN ((MPI_Type_delete_attr_function*)MUK_TYPE_NULL_DELETE_FN)
 #define MPI_WIN_NULL_COPY_FN    ((MPI_Win_copy_attr_function*)MUK_WIN_NULL_COPY_FN)
-#define MPI_WIN_NULL_COPY_FN    ((MPI_Win_copy_attr_function*)MUK_WIN_NULL_COPY_FN)
+#define MPI_WIN_DUP_FN          ((MPI_Win_copy_attr_function*)MUK_WIN_DUP_FN)
 #define MPI_WIN_NULL_DELETE_FN  ((MPI_Win_delete_attr_function*)MUK_WIN_NULL_DELETE_FN)
 
 #endif

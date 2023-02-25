@@ -333,7 +333,15 @@ int WRAP_Win_create_errhandler(WRAP_Win_errhandler_function *win_errhandler_fn, 
 
 int WRAP_Win_create_keyval(WRAP_Win_copy_attr_function *win_copy_attr_fn, WRAP_Win_delete_attr_function *win_delete_attr_fn, int *win_keyval, void *extra_state)
 {
-    int rc = IMPL_Win_create_keyval(win_copy_attr_fn, win_delete_attr_fn, win_keyval, extra_state);
+    MPI_Win_copy_attr_function * impl_win_copy_attr_fn = (MPI_Win_copy_attr_function*)win_copy_attr_fn;
+    if ((intptr_t)win_copy_attr_fn == (intptr_t)MUK_WIN_NULL_COPY_FN) {
+        impl_win_copy_attr_fn = MPI_WIN_NULL_COPY_FN;
+    }
+    MPI_Win_delete_attr_function * impl_win_delete_attr_fn = (MPI_Win_delete_attr_function*)win_delete_attr_fn;
+    if ((intptr_t)win_delete_attr_fn == (intptr_t)MUK_WIN_NULL_DELETE_FN) {
+        impl_win_delete_attr_fn = MPI_WIN_NULL_DELETE_FN;
+    }
+    int rc = IMPL_Win_create_keyval(impl_win_copy_attr_fn, impl_win_delete_attr_fn, win_keyval, extra_state);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 

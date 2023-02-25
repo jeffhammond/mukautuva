@@ -1369,18 +1369,6 @@ int WRAP_Issend_c(const void *buf, WRAP_Count count, WRAP_Datatype datatype, int
 }
 #endif
 
-int WRAP_Keyval_create(WRAP_Copy_function *copy_fn, WRAP_Delete_function *delete_fn, int *keyval, void *extra_state)
-{
-    int rc = IMPL_Keyval_create(copy_fn, delete_fn, keyval, extra_state);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Keyval_free(int *keyval)
-{
-    int rc = IMPL_Keyval_free(keyval);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
 int WRAP_Mprobe(int source, int tag, WRAP_Comm comm, WRAP_Message *message, WRAP_Status *status)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
