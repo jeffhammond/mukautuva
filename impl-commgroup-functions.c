@@ -61,7 +61,10 @@ int WRAP_Cart_rank(WRAP_Comm comm, const int coords[], int *rank)
 int WRAP_Cart_shift(WRAP_Comm comm, int direction, int disp, int *rank_source, int *rank_dest)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    int rc = IMPL_Cart_shift(impl_comm, direction, disp, rank_source, rank_dest);
+    int impl_rank_source, impl_rank_dest;
+    int rc = IMPL_Cart_shift(impl_comm, direction, disp, &impl_rank_source, &impl_rank_dest);
+    *rank_source = RANK_MUK_TO_IMPL(impl_rank_source);
+    *rank_dest   = RANK_MUK_TO_IMPL(impl_rank_dest);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -190,6 +193,9 @@ int WRAP_Comm_get_attr(WRAP_Comm comm, int comm_keyval, void *attribute_val, int
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     int rc = IMPL_Comm_get_attr(impl_comm, KEY_MUK_TO_IMPL(comm_keyval), attribute_val, flag);
+    if (comm_keyval == MUK_HOST) {
+        **(int**)attribute_val = RANK_IMPL_TO_MUK(**(int**)attribute_val);
+    }
 #if 0
     // FIXME for comm if necessary
     // this is the only place this is needed, so we inline it
@@ -463,7 +469,7 @@ int WRAP_Dist_graph_create_adjacent(WRAP_Comm comm_old, int indegree, const int 
 int WRAP_Dist_graph_neighbors(WRAP_Comm comm, int maxindegree, int sources[], int sourceweights[], int maxoutdegree, int destinations[], int destweights[])
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    int rc = IMPL_Dist_graph_neighbors(impl_comm, maxindegree, sources, WEIGHTS_MUK_TO_IMPL(sourceweights), maxoutdegree, destinations, destweights);
+    int rc = IMPL_Dist_graph_neighbors(impl_comm, maxindegree, sources, sourceweights, maxoutdegree, destinations, destweights);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -493,7 +499,13 @@ int WRAP_Graph_get(WRAP_Comm comm, int maxindex, int maxedges, int indx[], int e
 int WRAP_Graph_map(WRAP_Comm comm, int nnodes, const int indx[], const int edges[], int *newrank)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    int rc = IMPL_Graph_map(impl_comm, nnodes, indx, edges, newrank);
+    int impl_newrank;
+    int rc = IMPL_Graph_map(impl_comm, nnodes, indx, edges, &impl_newrank);
+    if (impl_newrank == MPI_UNDEFINED) {
+        *newrank = MUK_UNDEFINED;
+    } else {
+        *newrank = impl_newrank;
+    }
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
