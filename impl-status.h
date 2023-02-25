@@ -1,6 +1,10 @@
 #ifndef IMPL_STATUS_H
 #define IMPL_STATUS_H
 
+#include <string.h>
+
+#include "impl-constant-conversions.h"
+
 // status typedef
 typedef struct
 {
@@ -49,7 +53,7 @@ static inline void WRAP_Status_empty(const bool ignore, WRAP_Status * w)
 
     w->MPI_SOURCE = MUK_ANY_SOURCE;
     w->MPI_TAG    = MUK_ANY_TAG;
-    w->MPI_ERROR  = 0; // MUK_SUCCESS;
+    w->MPI_ERROR  = MUK_SUCCESS;
 
 #if defined(MPICH)
     memset(w->__kielletty__, 0, 2*sizeof(int));
@@ -71,9 +75,13 @@ static inline void WRAP_Status_to_MPI_Status(const WRAP_Status * w, MPI_Status *
         return;
     }
 
-    m->MPI_SOURCE = w->MPI_SOURCE;
-    m->MPI_TAG    = w->MPI_TAG;
-    m->MPI_ERROR  = w->MPI_ERROR;
+    memset(m,0,sizeof(MPI_Status));
+
+    //printf("WRAP_Status = { .SOURCE=%d .TAG=%d .ERROR=%d } \n", w->MPI_SOURCE, w->MPI_TAG, w->MPI_ERROR);
+
+    m->MPI_SOURCE = RANK_MUK_TO_IMPL(w->MPI_SOURCE);
+    m->MPI_TAG    = TAG_MUK_TO_IMPL(w->MPI_TAG);
+    m->MPI_ERROR  = (w->MPI_ERROR) ? ERROR_CODE_MUK_TO_IMPL(w->MPI_ERROR) : 0;
 
 #if defined(MPICH)
     memcpy(&(m->count_lo), w->__kielletty__, 2*sizeof(int));
@@ -95,9 +103,11 @@ static inline void MPI_Status_to_WRAP_Status(const MPI_Status * m, WRAP_Status *
         return;
     }
 
-    w->MPI_SOURCE = m->MPI_SOURCE;
-    w->MPI_TAG    = m->MPI_TAG;
-    w->MPI_ERROR  = m->MPI_ERROR;
+    memset(w,0,sizeof(WRAP_Status));
+
+    w->MPI_SOURCE = RANK_IMPL_TO_MUK(m->MPI_SOURCE);
+    w->MPI_TAG    = TAG_IMPL_TO_MUK(m->MPI_TAG);
+    w->MPI_ERROR  = (m->MPI_ERROR) ? ERROR_CODE_IMPL_TO_MUK(m->MPI_ERROR) : 0;
 
 #if defined(MPICH)
     memcpy(w->__kielletty__, &(m->count_lo), 2*sizeof(int));
