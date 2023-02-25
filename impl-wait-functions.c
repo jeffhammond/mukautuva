@@ -91,16 +91,17 @@ int WRAP_Request_free(WRAP_Request *request)
 
 int WRAP_Request_get_status(WRAP_Request request, int *flag, WRAP_Status *status)
 {
+    const bool ignore = IS_STATUS_IGNORE(status);
     MPI_Request impl_request = CONVERT_MPI_Request(request);
     MPI_Status impl_status = {0};
     if (impl_request == MPI_REQUEST_NULL) {
         *flag = 1;
-        WRAP_Status_empty(false,status);
+        if (!ignore) WRAP_Status_empty(false,status);
         return MPI_SUCCESS;
     }
-    int rc = IMPL_Request_get_status(impl_request, flag, &impl_status);
+    int rc = IMPL_Request_get_status(impl_request, flag, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (*flag) {
-        MPI_Status_to_WRAP_Status(&impl_status, status);
+        if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     }
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
