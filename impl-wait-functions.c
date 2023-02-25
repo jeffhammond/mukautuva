@@ -222,7 +222,7 @@ int WRAP_Testall(int count, WRAP_Request array_of_requests[], int *flag, WRAP_St
 
     MPI_Status * impl_statuses = NULL;
     if (!ignore) {
-        impl_statuses = malloc(count * sizeof(MPI_Status));
+        impl_statuses = calloc(count, sizeof(MPI_Status));
         if (impl_statuses == NULL) return MPI_ERR_INTERN;
     }
 
@@ -289,7 +289,7 @@ int WRAP_Testsome(int incount, WRAP_Request array_of_requests[], int *outcount, 
 
     MPI_Status * impl_statuses = NULL;
     if (!ignore) {
-        impl_statuses = malloc(incount * sizeof(MPI_Status));
+        impl_statuses = calloc(incount, sizeof(MPI_Status));
         if (impl_statuses == NULL) return MPI_ERR_INTERN;
     }
 
@@ -340,7 +340,7 @@ int WRAP_Waitall(int count, WRAP_Request array_of_requests[], WRAP_Status *array
 
     MPI_Status * impl_statuses = NULL;
     if (!ignore) {
-        impl_statuses = malloc(count * sizeof(MPI_Status));
+        impl_statuses = calloc(count, sizeof(MPI_Status));
         if (impl_statuses == NULL) return MPI_ERR_INTERN;
     }
 
@@ -409,7 +409,7 @@ int WRAP_Waitsome(int incount, WRAP_Request array_of_requests[], int *outcount, 
 
     MPI_Status * impl_statuses = NULL;
     if (!ignore) {
-        impl_statuses = malloc(incount * sizeof(MPI_Status));
+        impl_statuses = calloc(incount, sizeof(MPI_Status));
         if (impl_statuses == NULL) return MPI_ERR_INTERN;
     }
 
