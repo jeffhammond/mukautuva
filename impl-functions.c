@@ -385,7 +385,7 @@ int WRAP_Bcast(void *buffer, int count, WRAP_Datatype datatype, int root, WRAP_C
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    int rc = IMPL_Bcast(buffer, count, impl_datatype, root, impl_comm);
+    int rc = IMPL_Bcast(buffer, count, impl_datatype, RANK_MUK_TO_IMPL(root), impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -394,7 +394,7 @@ int WRAP_Bcast_c(void *buffer, WRAP_Count count, WRAP_Datatype datatype, int roo
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    int rc = IMPL_Bcast_c(buffer, count, impl_datatype, root, impl_comm);
+    int rc = IMPL_Bcast_c(buffer, count, impl_datatype, RANK_MUK_TO_IMPL(root), impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
@@ -405,7 +405,7 @@ int WRAP_Bcast_init(void *buffer, int count, WRAP_Datatype datatype, int root, W
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
     MPI_Request impl_request;
-    int rc = IMPL_Bcast_init(buffer, count, impl_datatype, root, impl_comm, impl_info, &impl_request);
+    int rc = IMPL_Bcast_init(buffer, count, impl_datatype, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -417,7 +417,7 @@ int WRAP_Bcast_init_c(void *buffer, WRAP_Count count, WRAP_Datatype datatype, in
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
     MPI_Request impl_request;
-    int rc = IMPL_Bcast_init_c(buffer, count, impl_datatype, root, impl_comm, impl_info, &impl_request);
+    int rc = IMPL_Bcast_init_c(buffer, count, impl_datatype, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -542,7 +542,7 @@ int WRAP_Gather(const void *sendbuf, int sendcount, WRAP_Datatype sendtype, void
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
-    int rc = IMPL_Gather(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, root, impl_comm);
+    int rc = IMPL_Gather(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -553,7 +553,7 @@ int WRAP_Gather_c(const void *sendbuf, WRAP_Count sendcount, WRAP_Datatype sendt
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
-    int rc = IMPL_Gather_c(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, root, impl_comm);
+    int rc = IMPL_Gather_c(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
@@ -566,7 +566,7 @@ int WRAP_Gather_init(const void *sendbuf, int sendcount, WRAP_Datatype sendtype,
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
     MPI_Request impl_request;
-    int rc = IMPL_Gather_init(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, root, impl_comm, impl_info, &impl_request);
+    int rc = IMPL_Gather_init(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -580,7 +580,7 @@ int WRAP_Gather_init_c(const void *sendbuf, WRAP_Count sendcount, WRAP_Datatype 
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
     MPI_Request impl_request;
-    int rc = IMPL_Gather_init_c(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, root, impl_comm, impl_info, &impl_request);
+    int rc = IMPL_Gather_init_c(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -592,7 +592,7 @@ int WRAP_Gatherv(const void *sendbuf, int sendcount, WRAP_Datatype sendtype, voi
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
-    int rc = IMPL_Gatherv(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcounts, displs, impl_recvtype, root, impl_comm);
+    int rc = IMPL_Gatherv(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcounts, displs, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -603,7 +603,7 @@ int WRAP_Gatherv_c(const void *sendbuf, WRAP_Count sendcount, WRAP_Datatype send
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
-    int rc = IMPL_Gatherv_c(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcounts, displs, impl_recvtype, root, impl_comm);
+    int rc = IMPL_Gatherv_c(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcounts, displs, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
@@ -616,7 +616,7 @@ int WRAP_Gatherv_init(const void *sendbuf, int sendcount, WRAP_Datatype sendtype
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
     MPI_Request impl_request;
-    int rc = IMPL_Gatherv_init(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcounts, displs, impl_recvtype, root, impl_comm, impl_info, &impl_request);
+    int rc = IMPL_Gatherv_init(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcounts, displs, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -630,7 +630,7 @@ int WRAP_Gatherv_init_c(const void *sendbuf, WRAP_Count sendcount, WRAP_Datatype
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
     MPI_Request impl_request;
-    int rc = IMPL_Gatherv_init_c(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcounts, displs, impl_recvtype, root, impl_comm, impl_info, &impl_request);
+    int rc = IMPL_Gatherv_init_c(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcounts, displs, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -813,7 +813,7 @@ int WRAP_Ibcast(void *buffer, int count, WRAP_Datatype datatype, int root, WRAP_
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Ibcast(buffer, count, impl_datatype, root, impl_comm, &impl_request);
+    int rc = IMPL_Ibcast(buffer, count, impl_datatype, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -824,7 +824,7 @@ int WRAP_Ibcast_c(void *buffer, WRAP_Count count, WRAP_Datatype datatype, int ro
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
-    int rc = IMPL_Ibcast_c(buffer, count, impl_datatype, root, impl_comm, &impl_request);
+    int rc = IMPL_Ibcast_c(buffer, count, impl_datatype, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -859,7 +859,7 @@ int WRAP_Igather(const void *sendbuf, int sendcount, WRAP_Datatype sendtype, voi
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     MPI_Request impl_request;
-    int rc = IMPL_Igather(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, root, impl_comm, &impl_request);
+    int rc = IMPL_Igather(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -872,7 +872,7 @@ int WRAP_Igather_c(const void *sendbuf, WRAP_Count sendcount, WRAP_Datatype send
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     MPI_Request impl_request;
-    int rc = IMPL_Igather_c(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, root, impl_comm, &impl_request);
+    int rc = IMPL_Igather_c(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -885,7 +885,7 @@ int WRAP_Igatherv(const void *sendbuf, int sendcount, WRAP_Datatype sendtype, vo
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     MPI_Request impl_request;
-    int rc = IMPL_Igatherv(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcounts, displs, impl_recvtype, root, impl_comm, &impl_request);
+    int rc = IMPL_Igatherv(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcounts, displs, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -898,7 +898,7 @@ int WRAP_Igatherv_c(const void *sendbuf, WRAP_Count sendcount, WRAP_Datatype sen
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     MPI_Request  impl_request;
-    int rc = IMPL_Igatherv_c(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcounts, displs, impl_recvtype, root, impl_comm, &impl_request);
+    int rc = IMPL_Igatherv_c(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcounts, displs, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1234,7 +1234,7 @@ int WRAP_Iscatter(const void *sendbuf, int sendcount, WRAP_Datatype sendtype, vo
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     MPI_Request impl_request;
-    int rc = IMPL_Iscatter(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, root, impl_comm, &impl_request);
+    int rc = IMPL_Iscatter(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1247,7 +1247,7 @@ int WRAP_Iscatter_c(const void *sendbuf, WRAP_Count sendcount, WRAP_Datatype sen
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     MPI_Request impl_request;
-    int rc = IMPL_Iscatter_c(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, root, impl_comm, &impl_request);
+    int rc = IMPL_Iscatter_c(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1260,7 +1260,7 @@ int WRAP_Iscatterv(const void *sendbuf, const int sendcounts[], const int displs
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     MPI_Request impl_request;
-    int rc = IMPL_Iscatterv(in_place ? MPI_IN_PLACE : sendbuf, sendcounts, displs, impl_sendtype, recvbuf, recvcount, impl_recvtype, root, impl_comm, &impl_request);
+    int rc = IMPL_Iscatterv(in_place ? MPI_IN_PLACE : sendbuf, sendcounts, displs, impl_sendtype, recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1273,7 +1273,7 @@ int WRAP_Iscatterv_c(const void *sendbuf, const WRAP_Count sendcounts[], const W
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     MPI_Request impl_request;
-    int rc = IMPL_Iscatterv_c(in_place ? MPI_IN_PLACE : sendbuf, sendcounts, displs, impl_sendtype, recvbuf, recvcount, impl_recvtype, root, impl_comm, &impl_request);
+    int rc = IMPL_Iscatterv_c(in_place ? MPI_IN_PLACE : sendbuf, sendcounts, displs, impl_sendtype, recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1904,7 +1904,7 @@ int WRAP_Scatter(const void *sendbuf, int sendcount, WRAP_Datatype sendtype, voi
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
-    int rc = IMPL_Scatter(sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, root, impl_comm);
+    int rc = IMPL_Scatter(sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -1914,7 +1914,7 @@ int WRAP_Scatter_c(const void *sendbuf, WRAP_Count sendcount, WRAP_Datatype send
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
-    int rc = IMPL_Scatter_c(sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, root, impl_comm);
+    int rc = IMPL_Scatter_c(sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
@@ -1926,7 +1926,7 @@ int WRAP_Scatter_init(const void *sendbuf, int sendcount, WRAP_Datatype sendtype
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
     MPI_Request impl_request;
-    int rc = IMPL_Scatter_init(sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, root, impl_comm, impl_info, &impl_request);
+    int rc = IMPL_Scatter_init(sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1939,7 +1939,7 @@ int WRAP_Scatter_init_c(const void *sendbuf, WRAP_Count sendcount, WRAP_Datatype
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
     MPI_Request impl_request;
-    int rc = IMPL_Scatter_init_c(sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, root, impl_comm, impl_info, &impl_request);
+    int rc = IMPL_Scatter_init_c(sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1950,7 +1950,7 @@ int WRAP_Scatterv(const void *sendbuf, const int sendcounts[], const int displs[
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
-    int rc = IMPL_Scatterv(sendbuf, sendcounts, displs, impl_sendtype, recvbuf, recvcount, impl_recvtype, root, impl_comm);
+    int rc = IMPL_Scatterv(sendbuf, sendcounts, displs, impl_sendtype, recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -1960,7 +1960,7 @@ int WRAP_Scatterv_c(const void *sendbuf, const WRAP_Count sendcounts[], const WR
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
-    int rc = IMPL_Scatterv_c(sendbuf, sendcounts, displs, impl_sendtype, recvbuf, recvcount, impl_recvtype, root, impl_comm);
+    int rc = IMPL_Scatterv_c(sendbuf, sendcounts, displs, impl_sendtype, recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
@@ -1972,7 +1972,7 @@ int WRAP_Scatterv_init(const void *sendbuf, const int sendcounts[], const int di
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
     MPI_Request impl_request;
-    int rc = IMPL_Scatterv_init(sendbuf, sendcounts, displs, impl_sendtype, recvbuf, recvcount, impl_recvtype, root, impl_comm, impl_info, &impl_request);
+    int rc = IMPL_Scatterv_init(sendbuf, sendcounts, displs, impl_sendtype, recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1985,7 +1985,7 @@ int WRAP_Scatterv_init_c(const void *sendbuf, const WRAP_Count sendcounts[], con
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
     MPI_Request impl_request;
-    int rc = IMPL_Scatterv_init_c(sendbuf, sendcounts, displs, impl_sendtype, recvbuf, recvcount, impl_recvtype, root, impl_comm, impl_info, &impl_request);
+    int rc = IMPL_Scatterv_init_c(sendbuf, sendcounts, displs, impl_sendtype, recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
