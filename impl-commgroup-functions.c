@@ -445,7 +445,7 @@ int WRAP_Dist_graph_create(WRAP_Comm comm_old, int n, const int sources[], const
     MPI_Comm impl_comm_old = CONVERT_MPI_Comm(comm_old);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
     MPI_Comm impl_comm_dist_graph;
-    int rc = IMPL_Dist_graph_create(impl_comm_old, n, sources, degrees, destinations, weights, impl_info, reorder, &impl_comm_dist_graph);
+    int rc = IMPL_Dist_graph_create(impl_comm_old, n, sources, degrees, destinations, WEIGHTS_MUK_TO_IMPL(weights), impl_info, reorder, &impl_comm_dist_graph);
     *comm_dist_graph = OUTPUT_MPI_Comm(impl_comm_dist_graph);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -455,7 +455,7 @@ int WRAP_Dist_graph_create_adjacent(WRAP_Comm comm_old, int indegree, const int 
     MPI_Comm impl_comm_old = CONVERT_MPI_Comm(comm_old);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
     MPI_Comm impl_comm_dist_graph;
-    int rc = IMPL_Dist_graph_create_adjacent(impl_comm_old, indegree, sources, sourceweights, outdegree, destinations, destweights, impl_info, reorder, &impl_comm_dist_graph);
+    int rc = IMPL_Dist_graph_create_adjacent(impl_comm_old, indegree, sources, WEIGHTS_MUK_TO_IMPL(sourceweights), outdegree, destinations, WEIGHTS_MUK_TO_IMPL(destweights), impl_info, reorder, &impl_comm_dist_graph);
     *comm_dist_graph = OUTPUT_MPI_Comm(impl_comm_dist_graph);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -463,7 +463,7 @@ int WRAP_Dist_graph_create_adjacent(WRAP_Comm comm_old, int indegree, const int 
 int WRAP_Dist_graph_neighbors(WRAP_Comm comm, int maxindegree, int sources[], int sourceweights[], int maxoutdegree, int destinations[], int destweights[])
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    int rc = IMPL_Dist_graph_neighbors(impl_comm, maxindegree, sources, sourceweights, maxoutdegree, destinations, destweights);
+    int rc = IMPL_Dist_graph_neighbors(impl_comm, maxindegree, sources, WEIGHTS_MUK_TO_IMPL(sourceweights), maxoutdegree, destinations, destweights);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -682,6 +682,10 @@ int WRAP_Topo_test(WRAP_Comm comm, int *status)
         *status = MUK_DIST_GRAPH;
     }
     else if (impl_status == MPI_UNDEFINED) {
+        *status = MUK_UNDEFINED;
+    }
+    else {
+        printf("WRAP_Topo_test invalid status: %d\n", impl_status);
         *status = MUK_UNDEFINED;
     }
     return RETURN_CODE_IMPL_TO_MUK(rc);

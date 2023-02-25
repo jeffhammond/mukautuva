@@ -173,4 +173,12 @@ static int KEY_MUK_TO_IMPL(int key_muk)
     else if (key_muk == MUK_WIN_MODEL)         { return MPI_WIN_MODEL; }
     else                                       { return key_muk; }
 }
+
+MAYBE_UNUSED
+static const int * WEIGHTS_MUK_TO_IMPL(const int * weights_muk)
+{
+         if (weights_muk == MUK_UNWEIGHTED)    { return MPI_UNWEIGHTED; }
+    else if (weights_muk == MUK_WEIGHTS_EMPTY) { return MPI_WEIGHTS_EMPTY; }
+    else                                       { return weights_muk; }
+}
 #endif

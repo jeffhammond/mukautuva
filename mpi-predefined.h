@@ -275,9 +275,9 @@ enum {
 
 // Topologies
 enum {
-    MPI_GRAPH,
-    MPI_CART,
-    MPI_DIST_GRAPH
+    MPI_GRAPH      = MUK_GRAPH,
+    MPI_CART       = MUK_CART,
+    MPI_DIST_GRAPH = MUK_DIST_GRAPH
 };
 
 // Predefined functions
