@@ -3058,7 +3058,15 @@ int MPI_Isend_c(const void *buf, MPI_Count count, MPI_Datatype datatype, int des
 
 int MPI_Isendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, int dest, int sendtag, void *recvbuf, int recvcount, MPI_Datatype recvtype, int source, int recvtag, MPI_Comm comm, MPI_Request *request)
 {
-    return MUK_Isendrecv(sendbuf, sendcount, sendtype, dest, sendtag, recvbuf, recvcount, recvtype, source, recvtag, comm, request);
+    int rc;
+    if (MUK_Isendrecv == NULL) {
+        printf("MPI_Isendrecv is missing from the implementation wrapper.\n");
+        rc = MPI_ERR_INTERN;
+    }
+    else {
+        rc = MUK_Isendrecv(sendbuf, sendcount, sendtype, dest, sendtag, recvbuf, recvcount, recvtype, source, recvtag, comm, request);
+    }
+    return rc;
 }
 
 int MPI_Isendrecv_c(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype, int dest, int sendtag, void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, int source, int recvtag, MPI_Comm comm, MPI_Request *request)
@@ -3076,7 +3084,15 @@ int MPI_Isendrecv_c(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendt
 
 int MPI_Isendrecv_replace(void *buf, int count, MPI_Datatype datatype, int dest, int sendtag, int source, int recvtag, MPI_Comm comm, MPI_Request *request)
 {
-    return MUK_Isendrecv_replace(buf, count, datatype, dest, sendtag, source, recvtag, comm, request);
+    int rc;
+    if (MUK_Isendrecv_replace == NULL) {
+        printf("MPI_Isendrecv_replace is missing from the implementation wrapper.\n");
+        rc = MPI_ERR_INTERN;
+    }
+    else {
+        rc = MUK_Isendrecv_replace(buf, count, datatype, dest, sendtag, source, recvtag, comm, request);
+    }
+    return rc;
 }
 
 int MPI_Isendrecv_replace_c(void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int sendtag, int source, int recvtag, MPI_Comm comm, MPI_Request *request)
