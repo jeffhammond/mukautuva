@@ -909,7 +909,7 @@ int WRAP_Improbe(int source, int tag, WRAP_Comm comm, int *flag, WRAP_Message *m
     const bool ignore = IS_STATUS_IGNORE(status);
     MPI_Comm    impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Message impl_message  = CONVERT_MPI_Message(*message);;
-    MPI_Status  impl_status;
+    MPI_Status impl_status = {0};
     int rc = IMPL_Improbe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), impl_comm, flag, &impl_message, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     *message = OUTPUT_MPI_Message(impl_message);
@@ -1378,7 +1378,7 @@ int WRAP_Mprobe(int source, int tag, WRAP_Comm comm, WRAP_Message *message, WRAP
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     const bool ignore = IS_STATUS_IGNORE(status);
     MPI_Message impl_message;
-    MPI_Status  impl_status;
+    MPI_Status impl_status = {0};
     int rc = IMPL_Mprobe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), impl_comm, &impl_message, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     *message = OUTPUT_MPI_Message(impl_message);
@@ -1390,7 +1390,7 @@ int WRAP_Mrecv(void *buf, int count, WRAP_Datatype datatype, WRAP_Message *messa
     const bool ignore = IS_STATUS_IGNORE(status);
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Message  impl_message  = CONVERT_MPI_Message(*message);;
-    MPI_Status   impl_status;
+    MPI_Status impl_status = {0};
     int rc = IMPL_Mrecv(buf, count, impl_datatype, &impl_message, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     *message = OUTPUT_MPI_Message(impl_message);
