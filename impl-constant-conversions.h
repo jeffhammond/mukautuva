@@ -66,11 +66,19 @@ static inline int RANK_MUK_TO_IMPL(int rank_muk)
     else if (rank_muk == MUK_UNDEFINED) {
         return MPI_UNDEFINED;
     }
+#ifdef MPICH
+    else if (rank_muk == -269488145) {
+        return MPI_UNDEFINED;
+    }
+#endif
     // this one only applies to intercomms
     else if (rank_muk == MUK_ROOT) {
         return MPI_ROOT;
     }
     else {
+        // This will generate false-positive warnings with MPICH
+        // of the following form, so we handle this case above.
+        // RANK_MUK_TO_IMPL rank=-269488145=efefefef
 #if 1
         printf("RANK_MUK_TO_IMPL rank=%d=%x\n", rank_muk, rank_muk);
 #endif
