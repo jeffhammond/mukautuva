@@ -298,8 +298,8 @@ int WRAP_Alltoallw_c(const void *sendbuf, const WRAP_Count sendcounts[], const W
 {
     const bool in_place = IS_IN_PLACE(sendbuf);
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    MPI_Datatype * impl_sendtypes;
-    MPI_Datatype * impl_recvtypes;
+    MPI_Datatype * impl_sendtypes = NULL;
+    MPI_Datatype * impl_recvtypes = NULL;
     int rc = ALLTOALLW_SETUP(in_place, impl_comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
     if (rc != MPI_SUCCESS) {
         return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -316,8 +316,8 @@ int WRAP_Alltoallw_init(const void *sendbuf, const int sendcounts[], const int s
     const bool in_place = IS_IN_PLACE(sendbuf);
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
-    MPI_Datatype * impl_sendtypes;
-    MPI_Datatype * impl_recvtypes;
+    MPI_Datatype * impl_sendtypes = NULL;
+    MPI_Datatype * impl_recvtypes = NULL;
     int rc = ALLTOALLW_SETUP(in_place, impl_comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
     MPI_Request impl_request;
     rc = IMPL_Alltoallw_init(in_place ? MPI_IN_PLACE : sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, impl_comm, impl_info, &impl_request);
@@ -332,8 +332,8 @@ int WRAP_Alltoallw_init_c(const void *sendbuf, const WRAP_Count sendcounts[], co
     const bool in_place = IS_IN_PLACE(sendbuf);
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
-    MPI_Datatype * impl_sendtypes;
-    MPI_Datatype * impl_recvtypes;
+    MPI_Datatype * impl_sendtypes = NULL;
+    MPI_Datatype * impl_recvtypes = NULL;
     int rc = ALLTOALLW_SETUP(in_place, impl_comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
     MPI_Request impl_request;
     rc = IMPL_Alltoallw_init_c(in_place ? MPI_IN_PLACE : sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, impl_comm, impl_info, &impl_request);
@@ -743,8 +743,8 @@ int WRAP_Ialltoallv_c(const void *sendbuf, const WRAP_Count sendcounts[], const 
 int WRAP_Ialltoallw(const void *sendbuf, const int sendcounts[], const int sdispls[], const WRAP_Datatype sendtypes[], void *recvbuf, const int recvcounts[], const int rdispls[], const WRAP_Datatype recvtypes[], WRAP_Comm comm, WRAP_Request *request)
 {
     const bool in_place = IS_IN_PLACE(sendbuf);
-    MPI_Datatype * impl_sendtypes;
-    MPI_Datatype * impl_recvtypes;
+    MPI_Datatype * impl_sendtypes = NULL;
+    MPI_Datatype * impl_recvtypes = NULL;
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     int rc = ALLTOALLW_SETUP(in_place, impl_comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
     if (rc != MPI_SUCCESS) {
@@ -762,8 +762,8 @@ int WRAP_Ialltoallw(const void *sendbuf, const int sendcounts[], const int sdisp
 int WRAP_Ialltoallw_c(const void *sendbuf, const WRAP_Count sendcounts[], const WRAP_Aint sdispls[], const WRAP_Datatype sendtypes[], void *recvbuf, const WRAP_Count recvcounts[], const WRAP_Aint rdispls[], const WRAP_Datatype recvtypes[], WRAP_Comm comm, WRAP_Request *request)
 {
     const bool in_place = IS_IN_PLACE(sendbuf);
-    MPI_Datatype * impl_sendtypes;
-    MPI_Datatype * impl_recvtypes;
+    MPI_Datatype * impl_sendtypes = NULL;
+    MPI_Datatype * impl_recvtypes = NULL;
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     int rc = ALLTOALLW_SETUP(in_place, impl_comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
     if (rc != MPI_SUCCESS) {
@@ -1024,8 +1024,8 @@ int WRAP_Ineighbor_alltoallv_c(const void *sendbuf, const WRAP_Count sendcounts[
 int WRAP_Ineighbor_alltoallw(const void *sendbuf, const int sendcounts[], const WRAP_Aint sdispls[], const WRAP_Datatype sendtypes[], void *recvbuf, const int recvcounts[], const WRAP_Aint rdispls[], const WRAP_Datatype recvtypes[], WRAP_Comm comm, WRAP_Request *request)
 {
     const bool in_place = IS_IN_PLACE(sendbuf);
-    MPI_Datatype * impl_sendtypes;
-    MPI_Datatype * impl_recvtypes;
+    MPI_Datatype * impl_sendtypes = NULL;
+    MPI_Datatype * impl_recvtypes = NULL;
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     int rc = ALLTOALLW_SETUP(in_place, impl_comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
     if (rc != MPI_SUCCESS) {
@@ -1043,8 +1043,8 @@ int WRAP_Ineighbor_alltoallw(const void *sendbuf, const int sendcounts[], const 
 int WRAP_Ineighbor_alltoallw_c(const void *sendbuf, const WRAP_Count sendcounts[], const WRAP_Aint sdispls[], const WRAP_Datatype sendtypes[], void *recvbuf, const WRAP_Count recvcounts[], const WRAP_Aint rdispls[], const WRAP_Datatype recvtypes[], WRAP_Comm comm, WRAP_Request *request)
 {
     const bool in_place = IS_IN_PLACE(sendbuf);
-    MPI_Datatype * impl_sendtypes;
-    MPI_Datatype * impl_recvtypes;
+    MPI_Datatype * impl_sendtypes = NULL;
+    MPI_Datatype * impl_recvtypes = NULL;
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     int rc = ALLTOALLW_SETUP(in_place, impl_comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
     if (rc != MPI_SUCCESS) {
@@ -1596,8 +1596,8 @@ int WRAP_Neighbor_alltoallw(const void *sendbuf, const int sendcounts[], const W
 {
     const bool in_place = IS_IN_PLACE(sendbuf);
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    MPI_Datatype * impl_sendtypes;
-    MPI_Datatype * impl_recvtypes;
+    MPI_Datatype * impl_sendtypes = NULL;
+    MPI_Datatype * impl_recvtypes = NULL;
     int rc = ALLTOALLW_SETUP(in_place, impl_comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
     if (rc != MPI_SUCCESS) {
         return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -1612,8 +1612,8 @@ int WRAP_Neighbor_alltoallw_c(const void *sendbuf, const WRAP_Count sendcounts[]
 {
     const bool in_place = IS_IN_PLACE(sendbuf);
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    MPI_Datatype * impl_sendtypes;
-    MPI_Datatype * impl_recvtypes;
+    MPI_Datatype * impl_sendtypes = NULL;
+    MPI_Datatype * impl_recvtypes = NULL;
     int rc = ALLTOALLW_SETUP(in_place, impl_comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
     if (rc != MPI_SUCCESS) {
         return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -1629,8 +1629,8 @@ int WRAP_Neighbor_alltoallw_init(const void *sendbuf, const int sendcounts[], co
     const bool in_place = IS_IN_PLACE(sendbuf);
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
-    MPI_Datatype * impl_sendtypes;
-    MPI_Datatype * impl_recvtypes;
+    MPI_Datatype * impl_sendtypes = NULL;
+    MPI_Datatype * impl_recvtypes = NULL;
     int rc = ALLTOALLW_SETUP(in_place, impl_comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
     if (rc != MPI_SUCCESS) {
         return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -1649,8 +1649,8 @@ int WRAP_Neighbor_alltoallw_init_c(const void *sendbuf, const WRAP_Count sendcou
     const bool in_place = IS_IN_PLACE(sendbuf);
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
-    MPI_Datatype * impl_sendtypes;
-    MPI_Datatype * impl_recvtypes;
+    MPI_Datatype * impl_sendtypes = NULL;
+    MPI_Datatype * impl_recvtypes = NULL;
     int rc = ALLTOALLW_SETUP(in_place, impl_comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
     if (rc != MPI_SUCCESS) {
         return RETURN_CODE_IMPL_TO_MUK(rc);
