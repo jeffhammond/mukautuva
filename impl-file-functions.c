@@ -374,7 +374,7 @@ int WRAP_File_open(WRAP_Comm comm, const char *filename, int amode, WRAP_Info in
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
     MPI_File impl_fh;
-    int rc = IMPL_File_open(impl_comm, filename, amode, impl_info, &impl_fh);
+    int rc = IMPL_File_open(impl_comm, filename, IO_MODE_MUK_TO_IMPL(amode), impl_info, &impl_fh);
     *fh = OUTPUT_MPI_File(impl_fh);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
