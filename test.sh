@@ -12,6 +12,7 @@ if [ `uname -s` == Darwin ] ; then
     DBG=lldb
     DBGARGS="--one-line 'run' --one-line-on-crash 'bt' --one-line 'quit' --"
 else
+    export HWLOC_COMPONENTS=-gl
     #OPTS="--mca osc ucx"
     OMPIRUN=/usr/bin/mpirun.openmpi
     OMPILIB=/usr/lib/x86_64-linux-gnu/libmpi.so
