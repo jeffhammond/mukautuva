@@ -1145,6 +1145,7 @@ int WRAP_Info_get_string(WRAP_Info info, const char *key, int *buflen, char *val
 
     rc = IMPL_Info_get(impl_info, key, inbuflen, value, flag);
     if (!flag) goto end;
+    end:
 #else
     printf("MPI_Info_get_string is missing\n");
     (void)info;
@@ -1154,7 +1155,6 @@ int WRAP_Info_get_string(WRAP_Info info, const char *key, int *buflen, char *val
     (void)flag;
     rc = MPI_ERR_INTERN;
 #endif
-    end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
