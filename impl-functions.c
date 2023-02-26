@@ -1786,7 +1786,7 @@ int WRAP_Probe(int source, int tag, WRAP_Comm comm, WRAP_Status *status)
     const bool ignore = IS_STATUS_IGNORE(status);
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Status impl_status = {0};
-    int rc = IMPL_Probe(source, TAG_MUK_TO_IMPL(tag), impl_comm, &impl_status);
+    int rc = IMPL_Probe(RANK_MUK_TO_IMPL(source), TAG_MUK_TO_IMPL(tag), impl_comm, &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
