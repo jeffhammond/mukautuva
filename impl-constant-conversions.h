@@ -59,12 +59,12 @@ static inline int RANK_MUK_TO_IMPL(int rank_muk)
     else if (rank_muk == MUK_ANY_SOURCE) {
         return MPI_ANY_SOURCE;
     }
+    else if (rank_muk == MUK_PROC_NULL) {
+        return MPI_PROC_NULL;
+    }
     // This gets used by MPICH at least, as an initialization value.
     else if (rank_muk == MUK_UNDEFINED) {
         return MPI_UNDEFINED;
-    }
-    else if (rank_muk == MUK_PROC_NULL) {
-        return MPI_PROC_NULL;
     }
     // this one only applies to intercomms
     else if (rank_muk == MUK_ROOT) {
@@ -72,7 +72,7 @@ static inline int RANK_MUK_TO_IMPL(int rank_muk)
     }
     else {
 #if 1
-        printf("RANK_MUK_TO_IMPL rank=%d\n", rank_muk);
+        printf("RANK_MUK_TO_IMPL rank=%d=%x\n", rank_muk, rank_muk);
 #endif
         return rank_muk;
     }
@@ -103,7 +103,7 @@ static inline int RANK_IMPL_TO_MUK(int rank_impl)
 #endif
     else {
 #if 1
-        printf("RANK_IMPL_TO_MUK rank=%d\n", rank_impl);
+        printf("RANK_IMPL_TO_MUK rank=%d=%x\n", rank_impl, rank_impl);
 #endif
         return rank_impl;
     }

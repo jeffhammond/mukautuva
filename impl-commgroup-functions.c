@@ -653,9 +653,31 @@ int WRAP_Group_size(WRAP_Group group, int *size)
 
 int WRAP_Group_translate_ranks(WRAP_Group group1, int n, const int ranks1[], WRAP_Group group2, int ranks2[])
 {
+    int rc;
+    // MPI_PROC_NULL is a valid rank for input to MPI_GROUP_TRANSLATE_RANKS,
+    // which returns MPI_PROC_NULL as the translated rank.
     MPI_Group impl_group1 = CONVERT_MPI_Group(group1);
     MPI_Group impl_group2 = CONVERT_MPI_Group(group2);
-    int rc = IMPL_Group_translate_ranks(impl_group1, n, ranks1, impl_group2, ranks2);
+    int * impl_ranks1 = calloc(n,sizeof(int));
+    if (impl_ranks1 == NULL) {
+        rc = MPI_ERR_INTERN;
+        goto end;
+    }
+    for (int i=0; i<n; i++) {
+        impl_ranks1[i] = RANK_MUK_TO_IMPL(ranks1[i]);
+    }
+    int * impl_ranks2 = calloc(n,sizeof(int));
+    if (impl_ranks2 == NULL) {
+        rc = MPI_ERR_INTERN;
+        goto end;
+    }
+    rc = IMPL_Group_translate_ranks(impl_group1, n, impl_ranks1, impl_group2, impl_ranks2);
+    for (int i=0; i<n; i++) {
+        ranks2[i] = RANK_IMPL_TO_MUK(impl_ranks2[i]);
+    }
+    free(impl_ranks1);
+    free(impl_ranks2);
+    end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
