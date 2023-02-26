@@ -240,6 +240,27 @@ int WRAP_Keyval_free(int *keyval)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
+int WRAP_Attr_delete(WRAP_Comm comm, int keyval)
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    int rc = IMPL_Attr_delete(impl_comm, keyval);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Attr_get(WRAP_Comm comm, int keyval, void *attribute_val, int *flag)
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    int rc = IMPL_Attr_get(impl_comm, KEY_MUK_TO_IMPL(keyval), attribute_val, flag);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Attr_put(WRAP_Comm comm, int keyval, void *attribute_val)
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    int rc = IMPL_Attr_put(impl_comm, keyval, attribute_val);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
 int WRAP_Comm_disconnect(WRAP_Comm *comm)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(*comm);

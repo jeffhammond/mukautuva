@@ -343,27 +343,6 @@ int WRAP_Alltoallw_init_c(const void *sendbuf, const WRAP_Count sendcounts[], co
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Attr_delete(WRAP_Comm comm, int keyval)
-{
-    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    int rc = IMPL_Attr_delete(impl_comm, keyval);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Attr_get(WRAP_Comm comm, int keyval, void *attribute_val, int *flag)
-{
-    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    int rc = IMPL_Attr_get(impl_comm, KEY_MUK_TO_IMPL(keyval), attribute_val, flag);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Attr_put(WRAP_Comm comm, int keyval, void *attribute_val)
-{
-    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    int rc = IMPL_Attr_put(impl_comm, keyval, attribute_val);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
 int WRAP_Barrier(WRAP_Comm comm)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
@@ -1147,6 +1126,25 @@ int WRAP_Info_get_string(WRAP_Info info, const char *key, int *buflen, char *val
 #if MPI_VERSION >= 4
     MPI_Info impl_info = CONVERT_MPI_Info(info);
     rc = IMPL_Info_get_string(impl_info, key, buflen, value, flag);
+#elif 1
+    MPI_Info impl_info = CONVERT_MPI_Info(info);
+
+    // valuelen does not include the null terminator
+    int valuelen;
+    rc = IMPL_Info_get_valuelen(impl_info, key, &valuelen, flag);
+    if (!flag) goto end;
+
+    const int inbuflen = *buflen;
+
+    // In C, buflen includes the required space for the null terminator.
+    *buflen = valuelen + 1;
+
+    // The MPI_INFO_GET_STRING function can be used to obtain the size of the
+    // required buffer for a value string by setting the buflen to 0.
+    if (inbuflen == 0) goto end;
+
+    rc = IMPL_Info_get(impl_info, key, inbuflen, value, flag);
+    if (!flag) goto end;
 #else
     printf("MPI_Info_get_string is missing\n");
     (void)info;
@@ -1156,6 +1154,7 @@ int WRAP_Info_get_string(WRAP_Info info, const char *key, int *buflen, char *val
     (void)flag;
     rc = MPI_ERR_INTERN;
 #endif
+    end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
