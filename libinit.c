@@ -1,3 +1,6 @@
+#include <errno.h>  // strtol
+#include <limits.h> // INT_MAX
+
 #include "muk.h"
 #include "muk-dl.h"
 
@@ -37,14 +40,32 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
 {
     int rc;
 
-    char * soname;
-    char * env = getenv("MPI_LIB");
-    if (env == NULL) {
-        soname = LIBMPI_NAME;
-    } else {
-        soname = env;
+    int verbose = 0;
+    {
+        char * env = getenv("MUK_VERBOSE");
+        if (env != NULL) {
+            long val = strtol(env,NULL,10);
+            if (errno) {
+                printf("strtol errno=%d\n",errno);
+                verbose = 1;
+            } else if (val > INT_MAX) {
+                verbose = INT_MAX;
+            } else {
+                verbose = val;
+            }
+        }
     }
-    printf("soname = %s\n", soname);
+
+    char * soname;
+    {
+        char * env = getenv("MPI_LIB");
+        if (env == NULL) {
+            soname = LIBMPI_NAME;
+        } else {
+            soname = env;
+        }
+        if (verbose) printf("soname = %s\n", soname);
+    }
 
     void * h = dlopen(soname, RTLD_LAZY | RTLD_LOCAL);
     if (h == NULL) {
@@ -71,24 +92,24 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
         char lib_version[16384] = {0};
         int  lib_version_length;
         rc = MUK_Get_library_version(lib_version, &lib_version_length);
-        //printf("MPI_Get_library_version = %s\n", lib_version);
+        if (verbose > 1) printf("MPI_Get_library_version = %s\n", lib_version);
 
         char * pos;
         pos = strstr(lib_version, "Open MPI");
         if (pos != NULL) {
             whose_mpi = OMPI;
-            printf("Open-MPI\n");
+            if (verbose) printf("Open-MPI\n");
         }
         pos = strstr(lib_version, "MPICH");
         if (pos != NULL) {
             whose_mpi = MPICH;
-            printf("MPICH\n");
+            if (verbose) printf("MPICH\n");
         }
         // Intel(R) MPI Library 2021.8 for Linux* OS
         pos = strstr(lib_version, "Intel(R) MPI Library");
         if (pos != NULL) {
             whose_mpi = INTEL;
-            printf("INTEL\n");
+            if (verbose) printf("INTEL\n");
         }
 
         if (whose_mpi == OMPI) {
