@@ -251,6 +251,9 @@ int WRAP_Attr_get(WRAP_Comm comm, int keyval, void *attribute_val, int *flag)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     int rc = IMPL_Attr_get(impl_comm, KEY_MUK_TO_IMPL(keyval), attribute_val, flag);
+    if (keyval == MUK_HOST) {
+        **(int**)attribute_val = RANK_IMPL_TO_MUK(**(int**)attribute_val);
+    }
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
