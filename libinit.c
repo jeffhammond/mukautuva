@@ -4926,6 +4926,20 @@ int MPI_Win_wait(MPI_Win win)
 double MPI_Wtime(void) { return MUK_Wtime(); }
 double MPI_Wtick(void) { return MUK_Wtick(); }
 
+MPI_Aint MPI_Aint_add(MPI_Aint base, MPI_Aint disp)
+{
+    MPI_Aint result;
+    result = (MPI_Aint) ((intptr_t)base + (intptr_t)disp);
+    return result;
+}
+
+MPI_Aint MPI_Aint_diff(MPI_Aint addr1, MPI_Aint addr2)
+{
+    MPI_Aint result;
+    result = (MPI_Aint) ((intptr_t)addr1 - (intptr_t)addr2);
+    return result;
+}
+
 int MPI_Comm_spawn(const char *command, char *argv[], int maxprocs, MPI_Info info, int root, MPI_Comm comm, MPI_Comm *intercomm, int array_of_errcodes[])
 {
     printf("MPI_Comm_spawn is not implemented.\n");
