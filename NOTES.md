@@ -60,22 +60,15 @@ Debug a single test failure like this:
 
 # MPICH Test Suite
 
-This does not work.
+Required on Linux with Open-MPI (see https://github.com/open-mpi/ompi/issues/7701).
 ```sh
-./configure FC=false CXX=g++ CC=gcc LIBS=-lmuk CPPFLAGS=-I$HOME/mukautuva LDFLAGS=-L$HOME/mukautuva --with-mpi=/dev/null MPICC=gcc MPICXX=g++ --enable-fortran=none
+export HWLOC_COMPONENTS=-gl
 ```
-
-Maybe...
-```sh
-./configure CC=gcc CFLAGS=-I${MUK_PATH} LDFLAGS="-L${MUK_PATH}" LIBS="-lmuk" --disable-cxx --disable-spawn --enable-strictmpi --disable-fortran MPICC=gcc MPICXX=false MPIFC=false CXX=g++ FC=gfortran
-```
-
-Latest...
 
 ```sh
 export LD_LIBRARY_PATH=${MUK_PATH}
-mkdir ${MUK_PATH}/bin
-ln -s `which gcc` ${MUK_PATH}/bin/mpicc
+mkdir -p ${MUK_PATH}/bin
+ln -sf `which gcc` ${MUK_PATH}/bin/mpicc
 ```
 
 ```
@@ -85,10 +78,16 @@ cd mpich-testsuite-4.1/
 ./configure CC=gcc CXX=g++ FC=false CPPFLAGS="-I${MUK_PATH}" LDFLAGS="-L${MUK_PATH}" LIBS="-lmuk" --enable-strictmpi --with-mpi=${MUK_PATH}
 ```
 
-Useful:
+Useful for running multiple tests manually:
 ```sh
 find . -type f -executable -print
 for t in `find . -type f -executable -print` ; do echo Starting $t && mpirun -n 4 $t ; done
+```
+
+Run tests the right way:
+```
+MPIEXEC="mpirun.openmpi --oversubscribe --quiet" \
+./runtests -tests=testlist -maxnp=8 -verbose -showprogress -debug
 ```
 
 # Intel MPI Benchmarks
