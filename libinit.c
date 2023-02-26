@@ -4925,3 +4925,30 @@ int MPI_Win_wait(MPI_Win win)
 
 double MPI_Wtime(void) { return MUK_Wtime(); }
 double MPI_Wtick(void) { return MUK_Wtick(); }
+
+int MPI_Comm_spawn(const char *command, char *argv[], int maxprocs, MPI_Info info, int root, MPI_Comm comm, MPI_Comm *intercomm, int array_of_errcodes[])
+{
+    printf("MPI_Comm_spawn is not implemented.\n");
+    return MUK_Abort(comm, 1);
+    (void)command;
+    (void)argv;
+    (void)maxprocs;
+    (void)info;
+    (void)root;
+    (void)intercomm;
+    (void)array_of_errcodes;
+}
+
+int MPI_Comm_spawn_multiple(int count, char *array_of_commands[], char **array_of_argv[], const int array_of_maxprocs[], const MPI_Info array_of_info[], int root, MPI_Comm comm, MPI_Comm *intercomm, int array_of_errcodes[])
+{
+    printf("MPI_Comm_spawn_multiple is not implemented.\n");
+    return MUK_Abort(comm, 2);
+    (void)count;
+    (void)array_of_commands;
+    (void)array_of_argv;
+    (void)array_of_maxprocs;
+    (void)array_of_info;
+    (void)root;
+    (void)intercomm;
+    (void)array_of_errcodes;
+}
