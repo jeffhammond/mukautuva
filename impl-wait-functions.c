@@ -26,10 +26,10 @@ int WRAP_Cancel(WRAP_Request *request)
 {
     MPI_Request impl_request = CONVERT_MPI_Request(*request);
     int rc = IMPL_Cancel(&impl_request);
-    *request = OUTPUT_MPI_Request(impl_request);
     // It is erroneous to call MPI_REQUEST_FREE or MPI_CANCEL for a request
     // associated with a nonblocking collective operation.
-    //remove_cookie_pair_from_list(*request);
+    //remove_cookie_pair_from_list(CONVERT_MPI_Request(*request));
+    *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -82,10 +82,10 @@ int WRAP_Request_free(WRAP_Request *request)
 {
     MPI_Request impl_request = CONVERT_MPI_Request(*request);
     int rc = IMPL_Request_free(&impl_request);
-    *request = OUTPUT_MPI_Request(impl_request);
     // It is erroneous to call MPI_REQUEST_FREE or MPI_CANCEL for a request
     // associated with a nonblocking collective operation.
-    //remove_cookie_pair_from_list(*request);
+    //remove_cookie_pair_from_list(CONVERT_MPI_Request(*request));
+    *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -194,11 +194,11 @@ int WRAP_Test(WRAP_Request *request, int *flag, WRAP_Status *status)
     MPI_Status impl_status = {0};
     int rc = IMPL_Test(&impl_request, flag, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (*flag) {
-        *request = OUTPUT_MPI_Request(impl_request);
         if (!ignore) {
             MPI_Status_to_WRAP_Status(&impl_status, status);
         }
-        //remove_cookie_pair_from_list(*request);
+        remove_cookie_pair_from_list(CONVERT_MPI_Request(*request));
+        *request = OUTPUT_MPI_Request(impl_request);
     }
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -231,13 +231,13 @@ int WRAP_Testall(int count, WRAP_Request array_of_requests[], int *flag, WRAP_St
 
     if (*flag) {
         for (int i=0; i<count; i++) {
-            array_of_requests[i] = OUTPUT_MPI_Request(impl_requests[i]);
             if (!ignore) {
                 MPI_Status_to_WRAP_Status(&impl_statuses[i], &array_of_statuses[i]);
             }
             if (impl_requests[i] == MPI_REQUEST_NULL) {
-                //remove_cookie_pair_from_list(array_of_requests[i]);
+                remove_cookie_pair_from_list(CONVERT_MPI_Request(array_of_requests[i]));
             }
+            array_of_requests[i] = OUTPUT_MPI_Request(impl_requests[i]);
         }
     }
 
@@ -263,13 +263,13 @@ int WRAP_Testany(int count, WRAP_Request array_of_requests[], int *indx, int *fl
         // If the array contains no active handles then the call returns immediately
         // with flag = true, index = MPI_UNDEFINED, and an empty status.
         if (*indx != MPI_UNDEFINED) {
-            array_of_requests[*indx] = OUTPUT_MPI_Request(impl_requests[*indx]);
             if (!ignore) {
                 MPI_Status_to_WRAP_Status(&impl_status, status);
             }
             if (impl_requests[*indx] == MPI_REQUEST_NULL) {
-                //remove_cookie_pair_from_list(array_of_requests[*indx]);
+                remove_cookie_pair_from_list(CONVERT_MPI_Request(array_of_requests[*indx]));
             }
+            array_of_requests[*indx] = OUTPUT_MPI_Request(impl_requests[*indx]);
         }
     }
 
@@ -299,13 +299,13 @@ int WRAP_Testsome(int incount, WRAP_Request array_of_requests[], int *outcount, 
     if ((*outcount > 0) && (*outcount != MPI_UNDEFINED)) {
         for (int i=0; i<*outcount; i++) {
             const int j = array_of_indices[i];
-            array_of_requests[j] = OUTPUT_MPI_Request(impl_requests[j]);
             if (!ignore) {
                 MPI_Status_to_WRAP_Status(&impl_statuses[j], &array_of_statuses[j]);
             }
             if (impl_requests[j] == MPI_REQUEST_NULL) {
-                //remove_cookie_pair_from_list(array_of_requests[j]);
+                remove_cookie_pair_from_list(CONVERT_MPI_Request(array_of_requests[j]));
             }
+            array_of_requests[j] = OUTPUT_MPI_Request(impl_requests[j]);
         }
     }
 
@@ -321,11 +321,11 @@ int WRAP_Wait(WRAP_Request *request, WRAP_Status *status)
     MPI_Request impl_request = CONVERT_MPI_Request(*request);
     MPI_Status impl_status = {0};
     int rc = IMPL_Wait(&impl_request, ignore ? MPI_STATUS_IGNORE : &impl_status);
-    *request = OUTPUT_MPI_Request(impl_request);
     if (!ignore) {
         MPI_Status_to_WRAP_Status(&impl_status, status);
     }
-    //remove_cookie_pair_from_list(*request);
+    remove_cookie_pair_from_list(CONVERT_MPI_Request(*request));
+    *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -352,13 +352,13 @@ int WRAP_Waitall(int count, WRAP_Request array_of_requests[], WRAP_Status *array
     // The list may contain null or inactive handles. The call sets to empty the status of
     // each such entry.
     for (int i=0; i<count; i++) {
-        array_of_requests[i] = OUTPUT_MPI_Request(impl_requests[i]);
         if (!ignore) {
             MPI_Status_to_WRAP_Status(&impl_statuses[i], &array_of_statuses[i]);
         }
         if (impl_requests[i] == MPI_REQUEST_NULL) {
-            //remove_cookie_pair_from_list(array_of_requests[i]);
+            remove_cookie_pair_from_list(CONVERT_MPI_Request(array_of_requests[i]));
         }
+        array_of_requests[i] = OUTPUT_MPI_Request(impl_requests[i]);
     }
 
     free(impl_requests);
@@ -384,13 +384,13 @@ int WRAP_Waitany(int count, WRAP_Request array_of_requests[], int *indx, WRAP_St
     // or all entries are null or inactive), then the call returns
     // immediately with index = MPI_UNDEFINED, and an empty status.
     if (*indx != MPI_UNDEFINED) {
-        array_of_requests[*indx] = OUTPUT_MPI_Request(impl_requests[*indx]);
         if (!ignore) {
             MPI_Status_to_WRAP_Status(&impl_status, status);
         }
         if (impl_requests[*indx] == MPI_REQUEST_NULL) {
-            //remove_cookie_pair_from_list(array_of_requests[*indx]);
+            remove_cookie_pair_from_list(CONVERT_MPI_Request(array_of_requests[*indx]));
         }
+        array_of_requests[*indx] = OUTPUT_MPI_Request(impl_requests[*indx]);
     }
 
     free(impl_requests);
@@ -419,13 +419,13 @@ int WRAP_Waitsome(int incount, WRAP_Request array_of_requests[], int *outcount, 
     if ((*outcount > 0) && (*outcount != MPI_UNDEFINED)) {
         for (int i=0; i<*outcount; i++) {
             const int j = array_of_indices[i];
-            array_of_requests[j] = OUTPUT_MPI_Request(impl_requests[j]);
             if (!ignore) {
                 MPI_Status_to_WRAP_Status(&impl_statuses[j], &array_of_statuses[j]);
             }
             if (impl_requests[j] == MPI_REQUEST_NULL) {
-                //remove_cookie_pair_from_list(array_of_requests[j]);
+                remove_cookie_pair_from_list(CONVERT_MPI_Request(array_of_requests[j]));
             }
+            array_of_requests[j] = OUTPUT_MPI_Request(impl_requests[j]);
         }
     }
 
