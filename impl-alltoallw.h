@@ -27,7 +27,7 @@ static int ALLTOALLW_SETUP(bool in_place, const MPI_Comm comm, const WRAP_Dataty
         sendnum = size;
         recvnum = size;
     }
-    //printf("sendnum=%d recvnum=%d\n", sendnum, recvnum);
+    //printf("sendnum=%d recvnum=%d\n", sendnum, recvnum); fflush(0);
 
     if (!in_place) {
         *impl_sendtypes = malloc(sendnum * sizeof(MPI_Datatype));
