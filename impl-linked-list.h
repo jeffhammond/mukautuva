@@ -51,9 +51,29 @@ typedef struct req_cookie_pair_s
 }
 req_cookie_pair_t;
 
+// This is to implement the crude garbage collector for cookies
+// created by nonblocking alltoallw,
+// which cannot be freed until the user function is called
+// (or else the lookup will segfault, obviously).
+typedef struct req_alltoallw_pair_s
+{
+    MPI_Request    request;
+    MPI_Datatype * sendtypes;
+    MPI_Datatype * recvtypes;
+
+    // true if sendtypes is not allocated
+    bool           in_place;
+
+    // for the linked list
+    struct req_alltoallw_pair_s * next;
+    struct req_alltoallw_pair_s * prev;
+}
+req_alltoallw_pair_t;
+
 // impl-functions.c
-extern op_fptr_pair_t    * op_fptr_pair_list;
-extern req_cookie_pair_t * req_cookie_pair_list;
+extern op_fptr_pair_t       * op_fptr_pair_list;
+extern req_cookie_pair_t    * req_cookie_pair_list;
+extern req_alltoallw_pair_t * req_alltoallw_pair_list;
 
 MAYBE_UNUSED
 static bool lookup_op_pair(const MPI_Op op, WRAP_User_function ** fn_i, WRAP_User_function_c ** fn_c , bool * is_large)
