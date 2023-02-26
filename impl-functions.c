@@ -1228,12 +1228,12 @@ int WRAP_Irsend_c(const void *buf, WRAP_Count count, WRAP_Datatype datatype, int
 
 int WRAP_Iscatter(const void *sendbuf, int sendcount, WRAP_Datatype sendtype, void *recvbuf, int recvcount, WRAP_Datatype recvtype, int root, WRAP_Comm comm, WRAP_Request *request)
 {
-    const bool in_place = IS_IN_PLACE(sendbuf);
+    const bool in_place = IS_IN_PLACE(recvbuf);
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Request impl_request;
-    int rc = IMPL_Iscatter(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
+    int rc = IMPL_Iscatter(sendbuf, sendcount, impl_sendtype, in_place ? MPI_IN_PLACE : recvbuf,recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1241,12 +1241,12 @@ int WRAP_Iscatter(const void *sendbuf, int sendcount, WRAP_Datatype sendtype, vo
 #if MPI_VERSION >= 4
 int WRAP_Iscatter_c(const void *sendbuf, WRAP_Count sendcount, WRAP_Datatype sendtype, void *recvbuf, WRAP_Count recvcount, WRAP_Datatype recvtype, int root, WRAP_Comm comm, WRAP_Request *request)
 {
-    const bool in_place = IS_IN_PLACE(sendbuf);
+    const bool in_place = IS_IN_PLACE(recvbuf);
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Request impl_request;
-    int rc = IMPL_Iscatter_c(in_place ? MPI_IN_PLACE : sendbuf, sendcount, impl_sendtype, recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
+    int rc = IMPL_Iscatter_c(sendbuf, sendcount, impl_sendtype, in_place ? MPI_IN_PLACE : recvbuf,recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1254,12 +1254,12 @@ int WRAP_Iscatter_c(const void *sendbuf, WRAP_Count sendcount, WRAP_Datatype sen
 
 int WRAP_Iscatterv(const void *sendbuf, const int sendcounts[], const int displs[], WRAP_Datatype sendtype, void *recvbuf, int recvcount, WRAP_Datatype recvtype, int root, WRAP_Comm comm, WRAP_Request *request)
 {
-    const bool in_place = IS_IN_PLACE(sendbuf);
+    const bool in_place = IS_IN_PLACE(recvbuf);
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Request impl_request;
-    int rc = IMPL_Iscatterv(in_place ? MPI_IN_PLACE : sendbuf, sendcounts, displs, impl_sendtype, recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
+    int rc = IMPL_Iscatterv(sendbuf, sendcounts, displs, impl_sendtype, in_place ? MPI_IN_PLACE : recvbuf,recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -1267,12 +1267,12 @@ int WRAP_Iscatterv(const void *sendbuf, const int sendcounts[], const int displs
 #if MPI_VERSION >= 4
 int WRAP_Iscatterv_c(const void *sendbuf, const WRAP_Count sendcounts[], const WRAP_Aint displs[], WRAP_Datatype sendtype, void *recvbuf, WRAP_Count recvcount, WRAP_Datatype recvtype, int root, WRAP_Comm comm, WRAP_Request *request)
 {
-    const bool in_place = IS_IN_PLACE(sendbuf);
+    const bool in_place = IS_IN_PLACE(recvbuf);
     MPI_Datatype impl_sendtype = CONVERT_MPI_Datatype(sendtype);
     MPI_Datatype impl_recvtype = CONVERT_MPI_Datatype(recvtype);
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Request impl_request;
-    int rc = IMPL_Iscatterv_c(in_place ? MPI_IN_PLACE : sendbuf, sendcounts, displs, impl_sendtype, recvbuf, recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
+    int rc = IMPL_Iscatterv_c(sendbuf, sendcounts, displs, impl_sendtype, in_place ? MPI_IN_PLACE : recvbuf,recvcount, impl_recvtype, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
