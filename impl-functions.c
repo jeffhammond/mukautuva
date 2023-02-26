@@ -18,6 +18,10 @@
 #include "impl-handle-conversions.h"
 #include "impl-alltoallw.h"
 
+op_fptr_pair_t       * op_fptr_pair_list       = NULL;
+req_cookie_pair_t    * req_cookie_pair_list    = NULL;
+req_alltoallw_pair_t * req_alltoallw_pair_list = NULL;
+
 // WRAP->IMPL functions
 
 int WRAP_Abort(WRAP_Comm comm, int errorcode)

@@ -22,8 +22,9 @@
 #include "impl-constant-conversions.h"
 #include "impl-handle-conversions.h"
 
-op_fptr_pair_t * op_fptr_pair_list = NULL;
-req_cookie_pair_t * req_cookie_pair_list = NULL;
+// impl-functions.c
+extern op_fptr_pair_t    * op_fptr_pair_list;
+extern req_cookie_pair_t * req_cookie_pair_list;
 
 void trampoline(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
 {
