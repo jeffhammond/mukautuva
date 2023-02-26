@@ -396,6 +396,13 @@ int WRAP_Type_get_extent_x(WRAP_Datatype datatype, WRAP_Count *lb, WRAP_Count *e
 int WRAP_Type_get_name(WRAP_Datatype datatype, char *type_name, int *resultlen)
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
+    // MUK defines all the possible datatypes, without knowing if the implementation
+    // supports them, so we prevent crashes by doing this.
+    if (impl_datatype == MPI_DATATYPE_NULL) {
+        strcpy(type_name,"MPI_DATATYPE_NULL");
+        *resultlen = strlen("MPI_DATATYPE_NULL");
+        return MPI_ERR_TYPE;
+    }
     int rc = IMPL_Type_get_name(impl_datatype, type_name, resultlen);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
