@@ -34,7 +34,7 @@ static int ALLTOALLW_SETUP(bool in_place, const MPI_Comm comm, const WRAP_Dataty
     //printf("sendnum=%d recvnum=%d\n", sendnum, recvnum); fflush(0);
 
     if (!in_place) {
-        *impl_sendtypes = malloc(sendnum * sizeof(MPI_Datatype));
+        *impl_sendtypes = calloc(sendnum,sizeof(MPI_Datatype));
         if (*impl_sendtypes == NULL) return MPI_ERR_INTERN;
         for (int i=0; i<sendnum; i++) {
             (*impl_sendtypes)[i] = CONVERT_MPI_Datatype(sendtypes[i]);
@@ -47,7 +47,7 @@ static int ALLTOALLW_SETUP(bool in_place, const MPI_Comm comm, const WRAP_Dataty
 #endif
         }
     }
-    *impl_recvtypes = malloc(recvnum  * sizeof(MPI_Datatype));
+    *impl_recvtypes = calloc(recvnum,sizeof(MPI_Datatype));
     if (*impl_recvtypes == NULL) return MPI_ERR_INTERN;
     for (int i=0; i<recvnum; i++) {
         (*impl_recvtypes)[i] = CONVERT_MPI_Datatype(recvtypes[i]);

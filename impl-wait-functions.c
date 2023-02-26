@@ -116,7 +116,7 @@ int WRAP_Start(WRAP_Request *request)
 
 int WRAP_Startall(int count, WRAP_Request array_of_requests[])
 {
-    MPI_Request * impl_array_of_requests = malloc(count * sizeof(MPI_Request));
+    MPI_Request * impl_array_of_requests = calloc(count,sizeof(MPI_Request));
     for (int i=0; i<count; i++) {
         impl_array_of_requests[i] = CONVERT_MPI_Request(array_of_requests[i]);
     }
@@ -215,7 +215,7 @@ int WRAP_Testall(int count, WRAP_Request array_of_requests[], int *flag, WRAP_St
 {
     const bool ignore = IS_STATUSES_IGNORE(array_of_statuses);
 
-    MPI_Request * impl_requests = malloc(count * sizeof(MPI_Request));
+    MPI_Request * impl_requests = calloc(count,sizeof(MPI_Request));
     if (impl_requests == NULL) return MPI_ERR_INTERN;
     for (int i=0; i<count; i++) {
         impl_requests[i] = CONVERT_MPI_Request(array_of_requests[i]);
@@ -251,7 +251,7 @@ int WRAP_Testany(int count, WRAP_Request array_of_requests[], int *indx, int *fl
 {
     const bool ignore = IS_STATUS_IGNORE(status);
 
-    MPI_Request * impl_requests = malloc(count * sizeof(MPI_Request));
+    MPI_Request * impl_requests = calloc(count,sizeof(MPI_Request));
     if (impl_requests == NULL) return MPI_ERR_INTERN;
     for (int i=0; i<count; i++) {
         impl_requests[i] = CONVERT_MPI_Request(array_of_requests[i]);
@@ -282,7 +282,7 @@ int WRAP_Testsome(int incount, WRAP_Request array_of_requests[], int *outcount, 
 {
     const bool ignore = IS_STATUSES_IGNORE(array_of_statuses);
 
-    MPI_Request * impl_requests = malloc(incount * sizeof(MPI_Request));
+    MPI_Request * impl_requests = calloc(incount,sizeof(MPI_Request));
     if (impl_requests == NULL) return MPI_ERR_INTERN;
     for (int i=0; i<incount; i++) {
         impl_requests[i] = CONVERT_MPI_Request(array_of_requests[i]);
@@ -333,7 +333,7 @@ int WRAP_Waitall(int count, WRAP_Request array_of_requests[], WRAP_Status *array
 {
     const bool ignore = IS_STATUSES_IGNORE(array_of_statuses);
 
-    MPI_Request * impl_requests = malloc(count * sizeof(MPI_Request));
+    MPI_Request * impl_requests = calloc(count,sizeof(MPI_Request));
     if (impl_requests == NULL) return MPI_ERR_INTERN;
     for (int i=0; i<count; i++) {
         impl_requests[i] = CONVERT_MPI_Request(array_of_requests[i]);
@@ -371,7 +371,7 @@ int WRAP_Waitany(int count, WRAP_Request array_of_requests[], int *indx, WRAP_St
 {
     const bool ignore = IS_STATUS_IGNORE(status);
 
-    MPI_Request * impl_requests = malloc(count * sizeof(MPI_Request));
+    MPI_Request * impl_requests = calloc(count,sizeof(MPI_Request));
     if (impl_requests == NULL) return MPI_ERR_INTERN;
     for (int i=0; i<count; i++) {
         impl_requests[i] = CONVERT_MPI_Request(array_of_requests[i]);
@@ -402,7 +402,7 @@ int WRAP_Waitsome(int incount, WRAP_Request array_of_requests[], int *outcount, 
 {
     const bool ignore = IS_STATUSES_IGNORE(array_of_statuses);
 
-    MPI_Request * impl_requests = malloc(incount * sizeof(MPI_Request));
+    MPI_Request * impl_requests = calloc(incount,sizeof(MPI_Request));
     if (impl_requests == NULL) return MPI_ERR_INTERN;
     for (int i=0; i<incount; i++) {
         impl_requests[i] = CONVERT_MPI_Request(array_of_requests[i]);

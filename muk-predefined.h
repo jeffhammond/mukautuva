@@ -373,17 +373,21 @@ enum {
 
 enum {
     // File Operation Constants, Part 1
-    MUK_DISPLACEMENT_CURRENT,
+    MUK_DISPLACEMENT_CURRENT = -2,
     // File Operation Constants, Part 2
-    MUK_DISTRIBUTE_BLOCK,
-    MUK_DISTRIBUTE_CYCLIC,
-    MUK_DISTRIBUTE_DFLT_DARG,
-    MUK_DISTRIBUTE_NONE,
-    MUK_ORDER_C,
-    MUK_ORDER_FORTRAN,
-    MUK_SEEK_CUR,
-    MUK_SEEK_END,
-    MUK_SEEK_SET
+    // use MPICH values
+    MUK_DISTRIBUTE_BLOCK  = 121,
+    MUK_DISTRIBUTE_CYCLIC = 122,
+    MUK_DISTRIBUTE_NONE   = 123,
+    // This one has to be negative
+    MUK_DISTRIBUTE_DFLT_DARG = -1,
+    // Values are descriptive
+    MUK_ORDER_C        = 4321,
+    MUK_ORDER_FORTRAN  = 1234,
+    // use OMPI values
+    MUK_SEEK_CUR = 600,
+    MUK_SEEK_END = 602,
+    MUK_SEEK_SET = 604
 };
 
 // F90 Datatype Matching Constants

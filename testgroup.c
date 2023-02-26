@@ -75,7 +75,7 @@ int main(int argc, char* argv[])
 
     // test incl using all but rank 0
     MPI_Group incl1;
-    int * included = malloc((np-1)*sizeof(int));
+    int * included = calloc((np-1),sizeof(int));
     for (int i=1; i<np; i++) {
         included[i-1] = i;
     }
@@ -127,9 +127,9 @@ int main(int argc, char* argv[])
     }
 
     // test rank translation
-    int * ranks1 = malloc(np * sizeof(int));
+    int * ranks1 = calloc(np,sizeof(int));
     for (int i=0; i<np; i++) ranks1[i] = i;
-    int * ranks2 = malloc(np * sizeof(int));
+    int * ranks2 = calloc(np,sizeof(int));
     MPI_Group_translate_ranks(group_world,np,ranks1,incl1,ranks2);
     int errors = 0;
     errors += (ranks2[0] != MPI_UNDEFINED);

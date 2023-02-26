@@ -266,7 +266,7 @@ int WRAP_Type_create_resized_c(WRAP_Datatype oldtype, WRAP_Count lb, WRAP_Count 
 
 int WRAP_Type_create_struct(int count, const int array_of_blocklengths[], const WRAP_Aint array_of_displacements[], const WRAP_Datatype array_of_types[], WRAP_Datatype *newtype)
 {
-    MPI_Datatype * impl_array_of_types = malloc(count * sizeof(MPI_Datatype));
+    MPI_Datatype * impl_array_of_types = calloc(count,sizeof(MPI_Datatype));
     for (int i=0; i<count; i++) {
         impl_array_of_types[i] = CONVERT_MPI_Datatype(array_of_types[i]);
     }
@@ -280,7 +280,7 @@ int WRAP_Type_create_struct(int count, const int array_of_blocklengths[], const 
 #if MPI_VERSION >= 4
 int WRAP_Type_create_struct_c(WRAP_Count count, const WRAP_Count array_of_blocklengths[], const WRAP_Count array_of_displacements[], const WRAP_Datatype array_of_types[], WRAP_Datatype *newtype)
 {
-    MPI_Datatype * impl_array_of_types = malloc(count * sizeof(MPI_Datatype));
+    MPI_Datatype * impl_array_of_types = calloc(count,sizeof(MPI_Datatype));
     for (MPI_Count i=0; i<count; i++) {
         impl_array_of_types[i] = CONVERT_MPI_Datatype(array_of_types[i]);
     }
@@ -365,7 +365,7 @@ int WRAP_Type_get_attr(WRAP_Datatype datatype, int type_keyval, void *attribute_
 int WRAP_Type_get_contents(WRAP_Datatype datatype, int max_integers, int max_addresses, int max_datatypes, int array_of_integers[], WRAP_Aint array_of_addresses[], WRAP_Datatype array_of_datatypes[])
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_Datatype * impl_array_of_datatypes = malloc(max_datatypes * sizeof(MPI_Datatype));
+    MPI_Datatype * impl_array_of_datatypes = calloc(max_datatypes,sizeof(MPI_Datatype));
     int rc = IMPL_Type_get_contents(impl_datatype, max_integers, max_addresses, max_datatypes, array_of_integers, array_of_addresses, impl_array_of_datatypes);
     for (int i=0; i<max_datatypes; i++) {
         array_of_datatypes[i] = OUTPUT_MPI_Datatype(impl_array_of_datatypes[i]);
@@ -378,7 +378,7 @@ int WRAP_Type_get_contents(WRAP_Datatype datatype, int max_integers, int max_add
 int WRAP_Type_get_contents_c(WRAP_Datatype datatype, WRAP_Count max_integers, WRAP_Count max_addresses, WRAP_Count max_large_counts, WRAP_Count max_datatypes, int array_of_integers[], WRAP_Aint array_of_addresses[], WRAP_Count array_of_large_counts[], WRAP_Datatype array_of_datatypes[])
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_Datatype * impl_array_of_datatypes = malloc(max_datatypes * sizeof(MPI_Datatype));
+    MPI_Datatype * impl_array_of_datatypes = calloc(max_datatypes,sizeof(MPI_Datatype));
     int rc = IMPL_Type_get_contents_c(impl_datatype, max_integers, max_addresses, max_large_counts, max_datatypes, array_of_integers, array_of_addresses, array_of_large_counts, impl_array_of_datatypes);
     for (int i=0; i<max_datatypes; i++) {
         array_of_datatypes[i] = OUTPUT_MPI_Datatype(impl_array_of_datatypes[i]);
@@ -572,7 +572,7 @@ int WRAP_Type_size_x(WRAP_Datatype datatype, WRAP_Count *size)
 
 int WRAP_Type_struct(int count, int array_of_blocklengths[], WRAP_Aint array_of_displacements[], WRAP_Datatype array_of_types[], WRAP_Datatype *newtype)
 {
-    MPI_Datatype * impl_array_of_types = malloc(count * sizeof(MPI_Datatype));
+    MPI_Datatype * impl_array_of_types = calloc(count,sizeof(MPI_Datatype));
     for (int i=0; i<count; i++) {
         impl_array_of_types[i] = CONVERT_MPI_Datatype(array_of_types[i]);
     }

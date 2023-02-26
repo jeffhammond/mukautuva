@@ -198,12 +198,12 @@ int main(int argc, char* argv[])
         // MPICH fails around 131072 (https://github.com/pmodels/mpich/issues/6389)
         const int n = 100000;
 
-        int * buffer = malloc(2 * n * sizeof(int));
+        int * buffer = calloc(2*n,sizeof(int));
         for (int i=0; i<n; i++) {
             buffer[i]   =  i;    // send
             buffer[n+i] = -1000; // recv 
         }    
-        MPI_Request * r = malloc(2 * n * sizeof(MPI_Request));
+        MPI_Request * r = calloc(2*n,sizeof(MPI_Request));
 
         for (int i=0; i<n; i++) {
             MPI_Isend(&buffer[i], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[i]);
@@ -225,12 +225,12 @@ int main(int argc, char* argv[])
         // MPICH fails around 131072 (https://github.com/pmodels/mpich/issues/6389)
         const int n = 100000;
 
-        int * buffer = malloc(2 * n * sizeof(int));
+        int * buffer = calloc(2*n,sizeof(int));
         for (int i=0; i<n; i++) {
             buffer[i]   =  i;    // send
             buffer[n+i] = -1000; // recv 
         }    
-        MPI_Request * r = malloc(2 * n * sizeof(MPI_Request));
+        MPI_Request * r = calloc(2*n,sizeof(MPI_Request));
 
         for (int i=0; i<n; i++) {
             MPI_Isend(&buffer[i], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[i]);
@@ -254,12 +254,12 @@ int main(int argc, char* argv[])
 
         const int n = 1000;
 
-        int * buffer = malloc(2 * n * sizeof(int));
+        int * buffer = calloc(2*n,sizeof(int));
         for (int i=0; i<n; i++) {
             buffer[i]   =  i;    // send
             buffer[n+i] = -1000; // recv 
         }    
-        MPI_Request * r = malloc(2 * n * sizeof(MPI_Request));
+        MPI_Request * r = calloc(2*n,sizeof(MPI_Request));
 
         for (int i=0; i<n; i++) {
             MPI_Isend(&buffer[i], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[i]);
@@ -285,12 +285,12 @@ int main(int argc, char* argv[])
 
         const int n = 1000;
 
-        int * buffer = malloc(2 * n * sizeof(int));
+        int * buffer = calloc(2*n,sizeof(int));
         for (int i=0; i<n; i++) {
             buffer[i]   =  i;    // send
             buffer[n+i] = -1000; // recv 
         }    
-        MPI_Request * r = malloc(2 * n * sizeof(MPI_Request));
+        MPI_Request * r = calloc(2*n,sizeof(MPI_Request));
 
         for (int i=0; i<n; i++) {
             MPI_Isend(&buffer[i], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[i]);
@@ -316,12 +316,12 @@ int main(int argc, char* argv[])
 
         const int n = 1000;
 
-        int * buffer = malloc(2 * n * sizeof(int));
+        int * buffer = calloc(2*n,sizeof(int));
         for (int i=0; i<n; i++) {
             buffer[i]   =  i;    // send
             buffer[n+i] = -1000; // recv 
         }    
-        MPI_Request * r = malloc(2 * n * sizeof(MPI_Request));
+        MPI_Request * r = calloc(2*n,sizeof(MPI_Request));
 
         for (int i=0; i<n; i++) {
             MPI_Isend(&buffer[i], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[i]);
@@ -329,7 +329,7 @@ int main(int argc, char* argv[])
         }
 
         int done=0, outcount=0;
-        int * indx = malloc(2 * n * sizeof(int));
+        int * indx = calloc(2*n,sizeof(int));
         while (done < 2*n) {
             MPI_Waitsome(2*n,r,&outcount,indx,MPI_STATUSES_IGNORE);
             done += outcount;
@@ -349,12 +349,12 @@ int main(int argc, char* argv[])
 
         const int n = 1000;
 
-        int * buffer = malloc(2 * n * sizeof(int));
+        int * buffer = calloc(2*n,sizeof(int));
         for (int i=0; i<n; i++) {
             buffer[i]   =  i;    // send
             buffer[n+i] = -1000; // recv 
         }    
-        MPI_Request * r = malloc(2 * n * sizeof(MPI_Request));
+        MPI_Request * r = calloc(2*n,sizeof(MPI_Request));
 
         for (int i=0; i<n; i++) {
             MPI_Isend(&buffer[i], 1, MPI_INT, me, 99, MPI_COMM_WORLD, &r[i]);
@@ -362,7 +362,7 @@ int main(int argc, char* argv[])
         }
 
         int done=0, outcount=0;
-        int * indx = malloc(2 * n * sizeof(int));
+        int * indx = calloc(2*n,sizeof(int));
         while (done < 2*n) {
             MPI_Testsome(2*n,r,&outcount,indx,MPI_STATUSES_IGNORE);
             done += outcount;

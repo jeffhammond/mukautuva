@@ -27,8 +27,8 @@ int main(int argc, char* argv[])
     {
         if (me==0) printf("MPI_Ibcast\n");
 
-        MPI_Request * r = malloc(n*sizeof(MPI_Request));
-        int * x = malloc(n*sizeof(int));
+        MPI_Request * r = calloc(n,sizeof(MPI_Request));
+        int * x = calloc(n,sizeof(int));
         for (int i=0; i<n; i++) {
             x[i] =  np - me;
         }

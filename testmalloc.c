@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
 
     printf("iterations = %d, mallocs = %d\n", nr, nm);
 
-    void ** pp = malloc(nm*sizeof(void*));
+    void ** pp = calloc(nm,sizeof(void*));
 
     double t0,t1,t2,t3,tt01=0,tt12=0,tt23=0;
 
