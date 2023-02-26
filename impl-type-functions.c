@@ -74,9 +74,39 @@ int WRAP_Type_contiguous_c(WRAP_Count count, WRAP_Datatype oldtype, WRAP_Datatyp
 
 int WRAP_Type_create_darray(int size, int rank, int ndims, const int array_of_gsizes[], const int array_of_distribs[], const int array_of_dargs[], const int array_of_psizes[], int order, WRAP_Datatype oldtype, WRAP_Datatype *newtype)
 {
-    // FIXME
-    // CONVERT distribs
-    // CONVERT dargs
+    int rc;
+    int * impl_array_of_distribs = calloc(ndims,sizeof(int));
+    if (impl_array_of_distribs == NULL) {
+        rc = MPI_ERR_INTERN;
+        goto end;
+    }
+    int * impl_array_of_dargs = calloc(ndims,sizeof(int));
+    if (impl_array_of_dargs == NULL) {
+        rc = MPI_ERR_INTERN;
+        goto end;
+    }
+    for (int d=0; d<ndims; d++)
+    {
+        int dist = array_of_distribs[d];
+        if (dist == MUK_DISTRIBUTE_BLOCK) {
+            impl_array_of_distribs[d] = MPI_DISTRIBUTE_BLOCK;
+        }
+        else if (dist == MUK_DISTRIBUTE_CYCLIC) {
+            impl_array_of_distribs[d] = MPI_DISTRIBUTE_CYCLIC;
+        }
+        else if (dist == MUK_DISTRIBUTE_NONE) {
+            impl_array_of_distribs[d] = MPI_DISTRIBUTE_NONE;
+        }
+        else {
+            impl_array_of_distribs[d] = MPI_UNDEFINED;
+        }
+        int darg = array_of_dargs[d];
+        if (darg == MUK_DISTRIBUTE_DFLT_DARG) {
+            impl_array_of_dargs[d] = MUK_DISTRIBUTE_DFLT_DARG;
+        } else {
+            impl_array_of_dargs[d] = darg;
+        }
+    }
     int impl_order = MPI_UNDEFINED;
     if (order == MUK_ORDER_C) {
         impl_order = MPI_ORDER_C;
@@ -86,8 +116,11 @@ int WRAP_Type_create_darray(int size, int rank, int ndims, const int array_of_gs
     }
     MPI_Datatype impl_oldtype = CONVERT_MPI_Datatype(oldtype);
     MPI_Datatype impl_newtype;
-    int rc = IMPL_Type_create_darray(size, rank, ndims, array_of_gsizes, array_of_distribs, array_of_dargs, array_of_psizes, impl_order, impl_oldtype, &impl_newtype);
+    rc = IMPL_Type_create_darray(size, rank, ndims, array_of_gsizes, impl_array_of_distribs, impl_array_of_dargs, array_of_psizes, impl_order, impl_oldtype, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
+    free(impl_array_of_distribs);
+    free(impl_array_of_dargs);
+    end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
