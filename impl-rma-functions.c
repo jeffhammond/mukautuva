@@ -76,7 +76,7 @@ int WRAP_Accumulate(const void *origin_addr, int origin_count, WRAP_Datatype ori
     MPI_Datatype impl_target_datatype = CONVERT_MPI_Datatype(target_datatype);
     MPI_Op impl_op = CONVERT_MPI_Op(op);
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Accumulate(origin_addr, origin_count, impl_origin_datatype, target_rank, target_disp, target_count, impl_target_datatype, impl_op, impl_win);
+    int rc = IMPL_Accumulate(origin_addr, origin_count, impl_origin_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, impl_target_datatype, impl_op, impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -87,7 +87,7 @@ int WRAP_Accumulate_c(const void *origin_addr, WRAP_Count origin_count, WRAP_Dat
     MPI_Datatype impl_target_datatype = CONVERT_MPI_Datatype(target_datatype);
     MPI_Op impl_op = CONVERT_MPI_Op(op);
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Accumulate_c(origin_addr, origin_count, impl_origin_datatype, target_rank, target_disp, target_count, impl_target_datatype, impl_op, impl_win);
+    int rc = IMPL_Accumulate_c(origin_addr, origin_count, impl_origin_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, impl_target_datatype, impl_op, impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
@@ -96,7 +96,7 @@ int WRAP_Compare_and_swap(const void *origin_addr, const void *compare_addr, voi
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Compare_and_swap(origin_addr, compare_addr, result_addr, impl_datatype, target_rank, target_disp, impl_win);
+    int rc = IMPL_Compare_and_swap(origin_addr, compare_addr, result_addr, impl_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -105,7 +105,7 @@ int WRAP_Fetch_and_op(const void *origin_addr, void *result_addr, WRAP_Datatype 
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Op impl_op = CONVERT_MPI_Op(op);
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Fetch_and_op(origin_addr, result_addr, impl_datatype, target_rank, target_disp, impl_op, impl_win);
+    int rc = IMPL_Fetch_and_op(origin_addr, result_addr, impl_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, impl_op, impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -114,7 +114,7 @@ int WRAP_Get(void *origin_addr, int origin_count, WRAP_Datatype origin_datatype,
     MPI_Datatype impl_origin_datatype = CONVERT_MPI_Datatype(origin_datatype);
     MPI_Datatype impl_target_datatype = CONVERT_MPI_Datatype(target_datatype);
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Get(origin_addr, origin_count, impl_origin_datatype, target_rank, target_disp, target_count, impl_target_datatype, impl_win);
+    int rc = IMPL_Get(origin_addr, origin_count, impl_origin_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, impl_target_datatype, impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -125,7 +125,7 @@ int WRAP_Get_accumulate(const void *origin_addr, int origin_count, WRAP_Datatype
     MPI_Datatype impl_target_datatype = CONVERT_MPI_Datatype(target_datatype);
     MPI_Op impl_op = CONVERT_MPI_Op(op);
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Get_accumulate(origin_addr, origin_count, impl_origin_datatype, result_addr, result_count, impl_result_datatype, target_rank, target_disp, target_count, impl_target_datatype, impl_op, impl_win);
+    int rc = IMPL_Get_accumulate(origin_addr, origin_count, impl_origin_datatype, result_addr, result_count, impl_result_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, impl_target_datatype, impl_op, impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -137,7 +137,7 @@ int WRAP_Get_accumulate_c(const void *origin_addr, WRAP_Count origin_count, WRAP
     MPI_Datatype impl_target_datatype = CONVERT_MPI_Datatype(target_datatype);
     MPI_Op impl_op = CONVERT_MPI_Op(op);
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Get_accumulate_c(origin_addr, origin_count, impl_origin_datatype, result_addr, result_count, impl_result_datatype, target_rank, target_disp, target_count, impl_target_datatype, impl_op, impl_win);
+    int rc = IMPL_Get_accumulate_c(origin_addr, origin_count, impl_origin_datatype, result_addr, result_count, impl_result_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, impl_target_datatype, impl_op, impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
@@ -148,7 +148,7 @@ int WRAP_Get_c(void *origin_addr, WRAP_Count origin_count, WRAP_Datatype origin_
     MPI_Datatype impl_origin_datatype = CONVERT_MPI_Datatype(origin_datatype);
     MPI_Datatype impl_target_datatype = CONVERT_MPI_Datatype(target_datatype);
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Get_c(origin_addr, origin_count, impl_origin_datatype, target_rank, target_disp, target_count, impl_target_datatype, impl_win);
+    int rc = IMPL_Get_c(origin_addr, origin_count, impl_origin_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, impl_target_datatype, impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
@@ -158,7 +158,7 @@ int WRAP_Put(const void *origin_addr, int origin_count, WRAP_Datatype origin_dat
     MPI_Datatype impl_origin_datatype = CONVERT_MPI_Datatype(origin_datatype);
     MPI_Datatype impl_target_datatype = CONVERT_MPI_Datatype(target_datatype);
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Put(origin_addr, origin_count, impl_origin_datatype, target_rank, target_disp, target_count, impl_target_datatype, impl_win);
+    int rc = IMPL_Put(origin_addr, origin_count, impl_origin_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, impl_target_datatype, impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -168,7 +168,7 @@ int WRAP_Put_c(const void *origin_addr, WRAP_Count origin_count, WRAP_Datatype o
     MPI_Datatype impl_origin_datatype = CONVERT_MPI_Datatype(origin_datatype);
     MPI_Datatype impl_target_datatype = CONVERT_MPI_Datatype(target_datatype);
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Put_c(origin_addr, origin_count, impl_origin_datatype, target_rank, target_disp, target_count, impl_target_datatype, impl_win);
+    int rc = IMPL_Put_c(origin_addr, origin_count, impl_origin_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, impl_target_datatype, impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
@@ -180,7 +180,7 @@ int WRAP_Raccumulate(const void *origin_addr, int origin_count, WRAP_Datatype or
     MPI_Op impl_op = CONVERT_MPI_Op(op);
     MPI_Win impl_win = CONVERT_MPI_Win(win);
     MPI_Request impl_request;
-    int rc = IMPL_Raccumulate(origin_addr, origin_count, impl_origin_datatype, target_rank, target_disp, target_count, impl_target_datatype, impl_op, impl_win, &impl_request);
+    int rc = IMPL_Raccumulate(origin_addr, origin_count, impl_origin_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, impl_target_datatype, impl_op, impl_win, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -193,7 +193,7 @@ int WRAP_Raccumulate_c(const void *origin_addr, WRAP_Count origin_count, WRAP_Da
     MPI_Op impl_op = CONVERT_MPI_Op(op);
     MPI_Win impl_win = CONVERT_MPI_Win(win);
     MPI_Request impl_request;
-    int rc = IMPL_Raccumulate_c(origin_addr, origin_count, impl_origin_datatype, target_rank, target_disp, target_count, impl_target_datatype, impl_op, impl_win, &impl_request);
+    int rc = IMPL_Raccumulate_c(origin_addr, origin_count, impl_origin_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, impl_target_datatype, impl_op, impl_win, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -205,7 +205,7 @@ int WRAP_Rget(void *origin_addr, int origin_count, WRAP_Datatype origin_datatype
     MPI_Datatype impl_target_datatype = CONVERT_MPI_Datatype(target_datatype);
     MPI_Win impl_win = CONVERT_MPI_Win(win);
     MPI_Request impl_request;
-    int rc = IMPL_Rget(origin_addr, origin_count, impl_origin_datatype, target_rank, target_disp, target_count, impl_target_datatype, impl_win, &impl_request);
+    int rc = IMPL_Rget(origin_addr, origin_count, impl_origin_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, impl_target_datatype, impl_win, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -218,7 +218,7 @@ int WRAP_Rget_accumulate(const void *origin_addr, int origin_count, WRAP_Datatyp
     MPI_Op impl_op = CONVERT_MPI_Op(op);
     MPI_Win impl_win = CONVERT_MPI_Win(win);
     MPI_Request impl_request;
-    int rc = IMPL_Rget_accumulate(origin_addr, origin_count, impl_origin_datatype, result_addr, result_count, impl_result_datatype, target_rank, target_disp, target_count, impl_target_datatype, impl_op, impl_win, &impl_request);
+    int rc = IMPL_Rget_accumulate(origin_addr, origin_count, impl_origin_datatype, result_addr, result_count, impl_result_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, impl_target_datatype, impl_op, impl_win, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -232,7 +232,7 @@ int WRAP_Rget_accumulate_c(const void *origin_addr, WRAP_Count origin_count, WRA
     MPI_Op impl_op = CONVERT_MPI_Op(op);
     MPI_Win impl_win = CONVERT_MPI_Win(win);
     MPI_Request impl_request;
-    int rc = IMPL_Rget_accumulate_c(origin_addr, origin_count, impl_origin_datatype, result_addr, result_count, impl_result_datatype, target_rank, target_disp, target_count, impl_target_datatype, impl_op, impl_win, &impl_request);
+    int rc = IMPL_Rget_accumulate_c(origin_addr, origin_count, impl_origin_datatype, result_addr, result_count, impl_result_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, impl_target_datatype, impl_op, impl_win, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -245,7 +245,7 @@ int WRAP_Rget_c(void *origin_addr, WRAP_Count origin_count, WRAP_Datatype origin
     MPI_Datatype impl_target_datatype = CONVERT_MPI_Datatype(target_datatype);
     MPI_Win impl_win = CONVERT_MPI_Win(win);
     MPI_Request impl_request;
-    int rc = IMPL_Rget_c(origin_addr, origin_count, impl_origin_datatype, target_rank, target_disp, target_count, impl_target_datatype, impl_win, &impl_request);
+    int rc = IMPL_Rget_c(origin_addr, origin_count, impl_origin_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, impl_target_datatype, impl_win, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -257,7 +257,7 @@ int WRAP_Rput(const void *origin_addr, int origin_count, WRAP_Datatype origin_da
     MPI_Datatype impl_target_datatype = CONVERT_MPI_Datatype(target_datatype);
     MPI_Win impl_win = CONVERT_MPI_Win(win);
     MPI_Request impl_request;
-    int rc = IMPL_Rput(origin_addr, origin_count, impl_origin_datatype, target_rank, target_disp, target_count, impl_target_datatype, impl_win, &impl_request);
+    int rc = IMPL_Rput(origin_addr, origin_count, impl_origin_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, impl_target_datatype, impl_win, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -269,7 +269,7 @@ int WRAP_Rput_c(const void *origin_addr, WRAP_Count origin_count, WRAP_Datatype 
     MPI_Datatype impl_target_datatype = CONVERT_MPI_Datatype(target_datatype);
     MPI_Win impl_win = CONVERT_MPI_Win(win);
     MPI_Request impl_request;
-    int rc = IMPL_Rput_c(origin_addr, origin_count, impl_origin_datatype, target_rank, target_disp, target_count, impl_target_datatype, impl_win, &impl_request);
+    int rc = IMPL_Rput_c(origin_addr, origin_count, impl_origin_datatype, RANK_MUK_TO_IMPL(target_rank), target_disp, target_count, impl_target_datatype, impl_win, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -397,7 +397,7 @@ int WRAP_Win_fence(int assert, WRAP_Win win)
 int WRAP_Win_flush(int rank, WRAP_Win win)
 {
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Win_flush(rank, impl_win);
+    int rc = IMPL_Win_flush(RANK_MUK_TO_IMPL(rank), impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -411,7 +411,7 @@ int WRAP_Win_flush_all(WRAP_Win win)
 int WRAP_Win_flush_local(int rank, WRAP_Win win)
 {
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Win_flush_local(rank, impl_win);
+    int rc = IMPL_Win_flush_local(RANK_MUK_TO_IMPL(rank), impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -474,7 +474,7 @@ int WRAP_Win_lock(int lock_type, int rank, int assert, WRAP_Win win)
     } else if (lock_type == MUK_LOCK_SHARED) {
         impl_type = MPI_LOCK_SHARED;
     }
-    int rc = IMPL_Win_lock(impl_type, rank, RMA_MODE_MUK_TO_IMPL(assert), impl_win);
+    int rc = IMPL_Win_lock(impl_type, RANK_MUK_TO_IMPL(rank), RMA_MODE_MUK_TO_IMPL(assert), impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -526,7 +526,7 @@ int WRAP_Win_set_name(WRAP_Win win, const char *win_name)
 int WRAP_Win_shared_query(WRAP_Win win, int rank, WRAP_Aint *size, int *disp_unit, void *baseptr)
 {
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Win_shared_query(impl_win, rank, size, disp_unit, baseptr);
+    int rc = IMPL_Win_shared_query(impl_win, RANK_MUK_TO_IMPL(rank), size, disp_unit, baseptr);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -534,7 +534,7 @@ int WRAP_Win_shared_query(WRAP_Win win, int rank, WRAP_Aint *size, int *disp_uni
 int WRAP_Win_shared_query_c(WRAP_Win win, int rank, WRAP_Aint *size, WRAP_Aint *disp_unit, void *baseptr)
 {
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Win_shared_query_c(impl_win, rank, size, disp_unit, baseptr);
+    int rc = IMPL_Win_shared_query_c(impl_win, RANK_MUK_TO_IMPL(rank), size, disp_unit, baseptr);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
@@ -564,7 +564,7 @@ int WRAP_Win_test(WRAP_Win win, int *flag)
 int WRAP_Win_unlock(int rank, WRAP_Win win)
 {
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Win_unlock(rank, impl_win);
+    int rc = IMPL_Win_unlock(RANK_MUK_TO_IMPL(rank), impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
