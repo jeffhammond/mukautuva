@@ -7,6 +7,10 @@ static int ALLTOALLW_SETUP(bool in_place, const MPI_Comm comm, const WRAP_Dataty
     int rc;
     int sendnum, recvnum;
 
+    // FIXME neighborhood collectives - need to set sendnum and recvnum based on indegree and outdegree...
+    // int MPI_Topo_test(MPI_Comm comm, int *status)
+    // status = { MPI_GRAPH MPI_CART MPI_DIST_GRAPH MPI_UNDEFINED }
+
     int is_intercomm;
     rc = IMPL_Comm_test_inter(comm, &is_intercomm);
     if (is_intercomm) {
