@@ -74,6 +74,9 @@ int WRAP_Type_contiguous_c(WRAP_Count count, WRAP_Datatype oldtype, WRAP_Datatyp
 
 int WRAP_Type_create_darray(int size, int rank, int ndims, const int array_of_gsizes[], const int array_of_distribs[], const int array_of_dargs[], const int array_of_psizes[], int order, WRAP_Datatype oldtype, WRAP_Datatype *newtype)
 {
+    // FIXME
+    // CONVERT distribs
+    // CONVERT dargs
     int impl_order = MPI_UNDEFINED;
     if (order == MUK_ORDER_C) {
         impl_order = MPI_ORDER_C;
