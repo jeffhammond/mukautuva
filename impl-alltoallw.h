@@ -7,26 +7,39 @@ static int ALLTOALLW_SETUP(bool in_place, const MPI_Comm comm, const WRAP_Dataty
     int rc;
     int sendnum, recvnum;
 
-    // FIXME neighborhood collectives - need to set sendnum and recvnum based on indegree and outdegree...
-    // int MPI_Topo_test(MPI_Comm comm, int *status)
-    // status = { MPI_GRAPH MPI_CART MPI_DIST_GRAPH MPI_UNDEFINED }
+    // ignore this for now - we can always allocate too much memory for types in neigherbor_alltoallw
+#if 0
+    int topo;
+    rc = MPI_Topo_test(comm, &topo);
+    if (rc != MPI_SUCCESS) {
+        return rc;
+    }
+#endif
 
     int is_intercomm;
     rc = IMPL_Comm_test_inter(comm, &is_intercomm);
+    if (rc != MPI_SUCCESS) {
+        return rc;
+    }
+
     if (is_intercomm) {
         int remote_size;
         rc = IMPL_Comm_remote_size(comm,&remote_size);
         if (rc != MPI_SUCCESS) {
-            return MPI_ERR_INTERN;
+            return rc;
         }
         sendnum = remote_size;
         recvnum = remote_size;
     }
+#if 0
+    else if (topo == MPI_GRAPH || topo == MPI_CART || topo == MPI_DIST_GRAPH) {
+    }
+#endif
     else {
         int size;
         rc = IMPL_Comm_size(comm,&size);
         if (rc != MPI_SUCCESS) {
-            return MPI_ERR_INTERN;
+            return rc;
         }
         sendnum = size;
         recvnum = size;
@@ -35,7 +48,7 @@ static int ALLTOALLW_SETUP(bool in_place, const MPI_Comm comm, const WRAP_Dataty
 
     if (!in_place) {
         *impl_sendtypes = calloc(sendnum,sizeof(MPI_Datatype));
-        if (*impl_sendtypes == NULL) return MPI_ERR_INTERN;
+        if (*impl_sendtypes == NULL) return MPI_ERR_OTHER;
         for (int i=0; i<sendnum; i++) {
             (*impl_sendtypes)[i] = CONVERT_MPI_Datatype(sendtypes[i]);
 #if 0
@@ -48,7 +61,7 @@ static int ALLTOALLW_SETUP(bool in_place, const MPI_Comm comm, const WRAP_Dataty
         }
     }
     *impl_recvtypes = calloc(recvnum,sizeof(MPI_Datatype));
-    if (*impl_recvtypes == NULL) return MPI_ERR_INTERN;
+    if (*impl_recvtypes == NULL) return MPI_ERR_OTHER;
     for (int i=0; i<recvnum; i++) {
         (*impl_recvtypes)[i] = CONVERT_MPI_Datatype(recvtypes[i]);
 #if 0
