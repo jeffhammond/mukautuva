@@ -220,15 +220,12 @@ MAYBE_UNUSED
 static const int * WEIGHTS_MUK_TO_IMPL(const int * weights_muk)
 {
     if ((intptr_t)weights_muk == (intptr_t)MUK_UNWEIGHTED) {
-        printf("MPI_UNWEIGHTED=%p\n",weights_muk);
         return MPI_UNWEIGHTED;
     }
     else if ((intptr_t)weights_muk == (intptr_t)MUK_WEIGHTS_EMPTY) {
-        printf("MPI_WEIGHTS_EMPTY=%p\n",weights_muk);
         return MPI_WEIGHTS_EMPTY;
     }
     else {
-        printf("MPI weighted=%p\n",weights_muk);
         return weights_muk;
     }
 }
