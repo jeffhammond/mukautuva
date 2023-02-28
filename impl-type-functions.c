@@ -102,7 +102,7 @@ int WRAP_Type_create_darray(int size, int rank, int ndims, const int array_of_gs
         }
         int darg = array_of_dargs[d];
         if (darg == MUK_DISTRIBUTE_DFLT_DARG) {
-            impl_array_of_dargs[d] = MUK_DISTRIBUTE_DFLT_DARG;
+            impl_array_of_dargs[d] = MPI_DISTRIBUTE_DFLT_DARG;
         } else {
             impl_array_of_dargs[d] = darg;
         }
