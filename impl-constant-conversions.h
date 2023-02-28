@@ -106,7 +106,7 @@ static inline int RANK_IMPL_TO_MUK(int rank_impl)
     }
 #ifdef MPICH
     // https://github.com/pmodels/mpich/issues/6421
-    else if (rank_muk == -269488145) {
+    else if (rank_impl == -269488145) {
         return MPI_UNDEFINED;
     }
 #endif
