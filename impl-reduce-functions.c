@@ -300,7 +300,8 @@ int WRAP_Allreduce_init(const void *sendbuf, void *recvbuf, int count, WRAP_Data
         // do the reduction
         rc = IMPL_Allreduce_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, impl_info, &impl_request);
         // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        // FIXME leak everything because otherwise persistent reductions crash.
+        //cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -332,7 +333,8 @@ int WRAP_Allreduce_init_c(const void *sendbuf, void *recvbuf, WRAP_Count count, 
         // do the reduction
         rc = IMPL_Allreduce_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, impl_info,  &impl_request);
         // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        // FIXME leak everything because otherwise persistent reductions crash.
+        //cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -482,7 +484,8 @@ int WRAP_Reduce_init(const void *sendbuf, void *recvbuf, int count, WRAP_Datatyp
         // do the reduction
         rc = IMPL_Reduce_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
         // cleanup
-        cleanup_reduce_trampoline_cookie(cookie, &dup);
+        // FIXME leak everything because otherwise persistent reductions crash.
+        //cleanup_reduce_trampoline_cookie(cookie, &dup);
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -513,7 +516,8 @@ int WRAP_Reduce_init_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRA
         // do the reduction
         rc = IMPL_Reduce_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
         // cleanup
-        cleanup_reduce_trampoline_cookie(cookie, &dup);
+        // FIXME leak everything because otherwise persistent reductions crash.
+        //cleanup_reduce_trampoline_cookie(cookie, &dup);
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -662,7 +666,8 @@ int WRAP_Reduce_scatter_init(const void *sendbuf, void *recvbuf, const int recvc
         // do the reduction
         rc = IMPL_Reduce_scatter_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, dup, impl_op, impl_comm, impl_info, &impl_request);
         // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        // FIXME leak everything because otherwise persistent reductions crash.
+        //cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -694,7 +699,8 @@ int WRAP_Reduce_scatter_init_c(const void *sendbuf, void *recvbuf, const WRAP_Co
         // do the reduction
         rc = IMPL_Reduce_scatter_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, dup, impl_op, impl_comm, impl_info, &impl_request);
         // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        // FIXME leak everything because otherwise persistent reductions crash.
+        //cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -844,7 +850,8 @@ int WRAP_Reduce_scatter_block_init(const void *sendbuf, void *recvbuf, int recvc
         // do the reduction
         rc = IMPL_Reduce_scatter_block_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, dup, impl_op, impl_comm, impl_info, &impl_request);
         // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        // FIXME leak everything because otherwise persistent reductions crash.
+        //cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -876,7 +883,8 @@ int WRAP_Reduce_scatter_block_init_c(const void *sendbuf, void *recvbuf, WRAP_Co
         // do the reduction
         rc = IMPL_Reduce_scatter_block_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, dup, impl_op, impl_comm, impl_info, &impl_request);
         // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        // FIXME leak everything because otherwise persistent reductions crash.
+        //cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -1028,7 +1036,8 @@ int WRAP_Scan_init(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype 
         // do the reduction
         rc = IMPL_Scan_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, impl_info, &impl_request);
         // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        // FIXME leak everything because otherwise persistent reductions crash.
+        //cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -1060,7 +1069,8 @@ int WRAP_Scan_init_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_
         // do the reduction
         rc = IMPL_Scan_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, impl_info, &impl_request);
         // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        // FIXME leak everything because otherwise persistent reductions crash.
+        //cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -1212,7 +1222,8 @@ int WRAP_Exscan_init(const void *sendbuf, void *recvbuf, int count, WRAP_Datatyp
         // do the reduction
         rc = IMPL_Exscan_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, impl_info, &impl_request);
         // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        // FIXME leak everything because otherwise persistent reductions crash.
+        //cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -1244,7 +1255,8 @@ int WRAP_Exscan_init_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRA
         // do the reduction
         rc = IMPL_Exscan_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, impl_info, &impl_request);
         // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        // FIXME leak everything because otherwise persistent reductions crash.
+        //cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
