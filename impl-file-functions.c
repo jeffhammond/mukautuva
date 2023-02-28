@@ -616,6 +616,15 @@ int WRAP_File_read_shared_c(WRAP_File fh, void *buf, WRAP_Count count, WRAP_Data
 int WRAP_File_seek(WRAP_File fh, WRAP_Offset offset, int whence)
 {
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    if (whence == MUK_SEEK_SET) {
+        whence = MPI_SEEK_SET;
+    }
+    else if (whence == MUK_SEEK_CUR) {
+        whence = MPI_SEEK_CUR;
+    }
+    else if (whence == MUK_SEEK_END) {
+        whence = MPI_SEEK_END;
+    }
     int rc = IMPL_File_seek(impl_fh, offset, whence);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -623,6 +632,12 @@ int WRAP_File_seek(WRAP_File fh, WRAP_Offset offset, int whence)
 int WRAP_File_seek_shared(WRAP_File fh, WRAP_Offset offset, int whence)
 {
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    if (whence == MUK_SEEK_SET) {
+        whence = MPI_SEEK_SET;
+    }
+    else if (whence == MUK_SEEK_CUR) {
+        whence = MPI_SEEK_CUR;
+    }
     int rc = IMPL_File_seek_shared(impl_fh, offset, whence);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }

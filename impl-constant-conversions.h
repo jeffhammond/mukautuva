@@ -122,15 +122,42 @@ MAYBE_UNUSED
 static int IO_MODE_MUK_TO_IMPL(int mode_muk)
 {
     int mode_impl = 0;
-    if (mode_muk & MUK_MODE_APPEND)          { mode_impl |= MPI_MODE_APPEND; }
-    if (mode_muk & MUK_MODE_CREATE)          { mode_impl |= MPI_MODE_CREATE; }
-    if (mode_muk & MUK_MODE_DELETE_ON_CLOSE) { mode_impl |= MPI_MODE_DELETE_ON_CLOSE; }
-    if (mode_muk & MUK_MODE_EXCL)            { mode_impl |= MPI_MODE_EXCL; }
-    if (mode_muk & MUK_MODE_RDONLY)          { mode_impl |= MPI_MODE_RDONLY; }
-    if (mode_muk & MUK_MODE_RDWR)            { mode_impl |= MPI_MODE_RDWR; }
-    if (mode_muk & MUK_MODE_SEQUENTIAL)      { mode_impl |= MPI_MODE_SEQUENTIAL; }
-    if (mode_muk & MUK_MODE_UNIQUE_OPEN)     { mode_impl |= MPI_MODE_UNIQUE_OPEN; }
-    if (mode_muk & MUK_MODE_WRONLY)          { mode_impl |= MPI_MODE_WRONLY; }
+    if (mode_muk & MUK_MODE_APPEND) {
+        mode_impl |= MPI_MODE_APPEND;
+        //printf("mode_impl |= MPI_MODE_APPEND\n");
+    }
+    if (mode_muk & MUK_MODE_CREATE) {
+        mode_impl |= MPI_MODE_CREATE;
+        //printf("mode_impl |= MPI_MODE_CREATE\n");
+    }
+    if (mode_muk & MUK_MODE_DELETE_ON_CLOSE) {
+        mode_impl |= MPI_MODE_DELETE_ON_CLOSE;
+        //printf("mode_impl |= MPI_MODE_DELETE_ON_CLOSE\n");
+    }
+    if (mode_muk & MUK_MODE_EXCL) {
+        mode_impl |= MPI_MODE_EXCL;
+        //printf("mode_impl |= MPI_MODE_EXCL\n");
+    }
+    if (mode_muk & MUK_MODE_RDONLY) {
+        mode_impl |= MPI_MODE_RDONLY;
+        //printf("mode_impl |= MPI_MODE_RDONLY\n");
+    }
+    if (mode_muk & MUK_MODE_RDWR) {
+        mode_impl |= MPI_MODE_RDWR;
+        //printf("mode_impl |= MPI_MODE_RDWR\n");
+    }
+    if (mode_muk & MUK_MODE_SEQUENTIAL) {
+        mode_impl |= MPI_MODE_SEQUENTIAL;
+        //printf("mode_impl |= MPI_MODE_SEQUENTIAL\n");
+    }
+    if (mode_muk & MUK_MODE_UNIQUE_OPEN) {
+        mode_impl |= MPI_MODE_UNIQUE_OPEN;
+        //printf("mode_impl |= MPI_MODE_UNIQUE_OPEN\n");
+    }
+    if (mode_muk & MUK_MODE_WRONLY) {
+        mode_impl |= MPI_MODE_WRONLY;
+        //printf("mode_impl |= MPI_MODE_WRONLY\n");
+    }
     return mode_impl;
 }
 
