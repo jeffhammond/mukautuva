@@ -67,6 +67,7 @@ static inline int RANK_MUK_TO_IMPL(int rank_muk)
         return MPI_UNDEFINED;
     }
 #ifdef MPICH
+    // https://github.com/pmodels/mpich/issues/6421
     else if (rank_muk == -269488145) {
         return MPI_UNDEFINED;
     }
@@ -96,13 +97,19 @@ static inline int RANK_IMPL_TO_MUK(int rank_impl)
     else if (rank_impl == MPI_ANY_SOURCE) {
         return MUK_ANY_SOURCE;
     }
+    else if (rank_impl == MPI_PROC_NULL) {
+        return MUK_PROC_NULL;
+    }
     // This gets used by MPICH at least, as an initialization value.
     else if (rank_impl == MPI_UNDEFINED) {
         return MUK_UNDEFINED;
     }
-    else if (rank_impl == MPI_PROC_NULL) {
-        return MUK_PROC_NULL;
+#ifdef MPICH
+    // https://github.com/pmodels/mpich/issues/6421
+    else if (rank_muk == -269488145) {
+        return MPI_UNDEFINED;
     }
+#endif
 #if 0
     // this one only applies to intercomms
     else if (rank_impl == MPI_ROOT) {
@@ -212,8 +219,31 @@ static int KEY_MUK_TO_IMPL(int key_muk)
 MAYBE_UNUSED
 static const int * WEIGHTS_MUK_TO_IMPL(const int * weights_muk)
 {
-         if (weights_muk == MUK_UNWEIGHTED)    { return MPI_UNWEIGHTED; }
-    else if (weights_muk == MUK_WEIGHTS_EMPTY) { return MPI_WEIGHTS_EMPTY; }
-    else                                       { return weights_muk; }
+    if ((intptr_t)weights_muk == (intptr_t)MUK_UNWEIGHTED) {
+        printf("MPI_UNWEIGHTED=%p\n",weights_muk);
+        return MPI_UNWEIGHTED;
+    }
+    else if ((intptr_t)weights_muk == (intptr_t)MUK_WEIGHTS_EMPTY) {
+        printf("MPI_WEIGHTS_EMPTY=%p\n",weights_muk);
+        return MPI_WEIGHTS_EMPTY;
+    }
+    else {
+        printf("MPI weighted=%p\n",weights_muk);
+        return weights_muk;
+    }
+}
+
+MAYBE_UNUSED
+static const int * WEIGHTS_IMPL_TO_MUK(const int * weights_impl)
+{
+    if ((intptr_t)weights_impl == (intptr_t)MPI_UNWEIGHTED)    {
+        return MUK_UNWEIGHTED;
+    }
+    else if ((intptr_t)weights_impl == (intptr_t)MPI_WEIGHTS_EMPTY) {
+        return MUK_WEIGHTS_EMPTY;
+    }
+    else {
+        return weights_impl;
+    }
 }
 #endif
