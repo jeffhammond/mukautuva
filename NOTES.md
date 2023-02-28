@@ -65,6 +65,11 @@ Required on Linux with Open-MPI (see https://github.com/open-mpi/ompi/issues/770
 export HWLOC_COMPONENTS=-gl
 ```
 
+Required because of https://github.com/pmodels/mpich/issues/6423:
+```
+export MPIR_CVAR_IALLGATHER_INTRA_ALGORITHM=sched_ring
+```
+
 ```sh
 export LD_LIBRARY_PATH=${MUK_PATH}
 mkdir -p ${MUK_PATH}/bin
