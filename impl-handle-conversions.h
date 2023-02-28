@@ -40,7 +40,7 @@ static inline MPI_Comm CONVERT_MPI_Comm(WRAP_Comm comm)
 
 static inline WRAP_Comm OUTPUT_MPI_Comm(MPI_Comm comm)
 {
-    WRAP_Comm wrap;
+    WRAP_Comm wrap = {0};
     if (comm == MPI_COMM_NULL) {
         wrap.ip = (intptr_t)MUK_COMM_NULL;
     }
@@ -428,7 +428,7 @@ static inline MPI_Datatype CONVERT_MPI_Datatype(WRAP_Datatype datatype)
 
 static inline WRAP_Datatype OUTPUT_MPI_Datatype(MPI_Datatype datatype)
 {
-    WRAP_Datatype wrap;
+    WRAP_Datatype wrap = {0};
     if (datatype == MPI_DATATYPE_NULL) {
         wrap.ip = (intptr_t)MUK_DATATYPE_NULL;
     }
@@ -820,7 +820,7 @@ static inline MPI_Errhandler CONVERT_MPI_Errhandler(WRAP_Errhandler errhandler)
 
 static inline WRAP_Errhandler OUTPUT_MPI_Errhandler(MPI_Errhandler errhandler)
 {
-    WRAP_Errhandler wrap;
+    WRAP_Errhandler wrap = {0};
     if (errhandler == MPI_ERRHANDLER_NULL) {
         wrap.ip = (intptr_t)MUK_ERRHANDLER_NULL;
     }
@@ -868,7 +868,7 @@ static inline MPI_File CONVERT_MPI_File(WRAP_File file)
 
 static inline WRAP_File OUTPUT_MPI_File(MPI_File file)
 {
-    WRAP_File wrap;
+    WRAP_File wrap = {0};
     if (file == MPI_FILE_NULL) {
         wrap.ip = (intptr_t)MUK_FILE_NULL;
     }
@@ -908,7 +908,7 @@ static inline MPI_Group CONVERT_MPI_Group(WRAP_Group group)
 
 static inline WRAP_Group OUTPUT_MPI_Group(MPI_Group group)
 {
-    WRAP_Group wrap;
+    WRAP_Group wrap = {0};
     if (group == MPI_GROUP_NULL) {
         wrap.ip = (intptr_t)MUK_GROUP_NULL;
     }
@@ -950,7 +950,7 @@ static inline MPI_Info CONVERT_MPI_Info(WRAP_Info info)
 
 static inline WRAP_Info OUTPUT_MPI_Info(MPI_Info info)
 {
-    WRAP_Info wrap;
+    WRAP_Info wrap = {0};
     if (info == MPI_INFO_NULL) {
         wrap.ip = (intptr_t)MUK_INFO_NULL;
     }
@@ -992,7 +992,7 @@ static inline MPI_Message CONVERT_MPI_Message(WRAP_Message message)
 
 static inline WRAP_Message OUTPUT_MPI_Message(MPI_Message message)
 {
-    WRAP_Message wrap;
+    WRAP_Message wrap = {0};
     if (message == MPI_MESSAGE_NULL) {
         wrap.ip = (intptr_t)MUK_MESSAGE_NULL;
     }
@@ -1077,7 +1077,7 @@ static inline WRAP_Op OUTPUT_MPI_Op(MPI_Op op)
     // of built-ins will be required, but implement this
     // anyways just to be safe, because adding extra branches
     // in Op_create does not matter.
-    WRAP_Op wrap;
+    WRAP_Op wrap = {0};
     if (op == MPI_SUM) {
         wrap.ip = (intptr_t)MUK_SUM;
     }
@@ -1155,7 +1155,7 @@ static inline MPI_Request CONVERT_MPI_Request(WRAP_Request request)
 
 static inline WRAP_Request OUTPUT_MPI_Request(MPI_Request request)
 {
-    WRAP_Request wrap;
+    WRAP_Request wrap = {0};
     if (request == MPI_REQUEST_NULL) {
         wrap.ip = (intptr_t)MUK_REQUEST_NULL;
     }
@@ -1192,7 +1192,7 @@ static inline MPI_Session CONVERT_MPI_Session(WRAP_Session session)
 
 static inline WRAP_Session OUTPUT_MPI_Session(MPI_Session session)
 {
-    WRAP_Session wrap;
+    WRAP_Session wrap = {0};
     if (session == MPI_SESSION_NULL) {
         wrap.ip = (intptr_t)MUK_SESSION_NULL;
     }
@@ -1229,7 +1229,7 @@ static inline MPI_Win CONVERT_MPI_Win(WRAP_Win win)
 
 static inline WRAP_Win OUTPUT_MPI_Win(MPI_Win win)
 {
-    WRAP_Win wrap;
+    WRAP_Win wrap = {0};
     if (win == MPI_WIN_NULL) {
         wrap.ip = (intptr_t)MUK_WIN_NULL;
     }
