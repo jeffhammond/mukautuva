@@ -123,8 +123,8 @@ int WRAP_File_get_size(WRAP_File fh, WRAP_Offset *size)
 
 int WRAP_File_get_type_extent(WRAP_File fh, WRAP_Datatype datatype, WRAP_Aint *extent)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_File_get_type_extent(impl_fh, impl_datatype, extent);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -132,8 +132,8 @@ int WRAP_File_get_type_extent(WRAP_File fh, WRAP_Datatype datatype, WRAP_Aint *e
 #if MPI_VERSION >= 4
 int WRAP_File_get_type_extent_c(WRAP_File fh, WRAP_Datatype datatype, WRAP_Count *extent)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_File_get_type_extent_c(impl_fh, impl_datatype, extent);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -151,8 +151,8 @@ int WRAP_File_get_view(WRAP_File fh, WRAP_Offset *disp, WRAP_Datatype *etype, WR
 
 int WRAP_File_iread(WRAP_File fh, void *buf, int count, WRAP_Datatype datatype, WRAP_Request *request)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
     int rc = IMPL_File_iread(impl_fh, buf, count, impl_datatype, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
@@ -161,8 +161,8 @@ int WRAP_File_iread(WRAP_File fh, void *buf, int count, WRAP_Datatype datatype, 
 
 int WRAP_File_iread_all(WRAP_File fh, void *buf, int count, WRAP_Datatype datatype, WRAP_Request *request)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
     int rc = IMPL_File_iread_all(impl_fh, buf, count, impl_datatype, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
@@ -172,8 +172,8 @@ int WRAP_File_iread_all(WRAP_File fh, void *buf, int count, WRAP_Datatype dataty
 #if MPI_VERSION >= 4
 int WRAP_File_iread_all_c(WRAP_File fh, void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Request *request)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
     int rc = IMPL_File_iread_all_c(impl_fh, buf, count, impl_datatype, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
@@ -183,8 +183,8 @@ int WRAP_File_iread_all_c(WRAP_File fh, void *buf, WRAP_Count count, WRAP_Dataty
 
 int WRAP_File_iread_at(WRAP_File fh, WRAP_Offset offset, void *buf, int count, WRAP_Datatype datatype, WRAP_Request *request)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
     int rc = IMPL_File_iread_at(impl_fh, offset, buf, count, impl_datatype, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
@@ -193,8 +193,8 @@ int WRAP_File_iread_at(WRAP_File fh, WRAP_Offset offset, void *buf, int count, W
 
 int WRAP_File_iread_at_all(WRAP_File fh, WRAP_Offset offset, void *buf, int count, WRAP_Datatype datatype, WRAP_Request *request)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
     int rc = IMPL_File_iread_at_all(impl_fh, offset, buf, count, impl_datatype, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
@@ -204,8 +204,8 @@ int WRAP_File_iread_at_all(WRAP_File fh, WRAP_Offset offset, void *buf, int coun
 #if MPI_VERSION >= 4
 int WRAP_File_iread_at_all_c(WRAP_File fh, WRAP_Offset offset, void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Request *request)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
     int rc = IMPL_File_iread_at_all_c(impl_fh, offset, buf, count, impl_datatype, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
@@ -216,8 +216,8 @@ int WRAP_File_iread_at_all_c(WRAP_File fh, WRAP_Offset offset, void *buf, WRAP_C
 #if MPI_VERSION >= 4
 int WRAP_File_iread_at_c(WRAP_File fh, WRAP_Offset offset, void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Request *request)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
     int rc = IMPL_File_iread_at_c(impl_fh, offset, buf, count, impl_datatype, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
@@ -228,8 +228,8 @@ int WRAP_File_iread_at_c(WRAP_File fh, WRAP_Offset offset, void *buf, WRAP_Count
 #if MPI_VERSION >= 4
 int WRAP_File_iread_c(WRAP_File fh, void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Request *request)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
     int rc = IMPL_File_iread_c(impl_fh, buf, count, impl_datatype, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
@@ -239,8 +239,8 @@ int WRAP_File_iread_c(WRAP_File fh, void *buf, WRAP_Count count, WRAP_Datatype d
 
 int WRAP_File_iread_shared(WRAP_File fh, void *buf, int count, WRAP_Datatype datatype, WRAP_Request *request)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
     int rc = IMPL_File_iread_shared(impl_fh, buf, count, impl_datatype, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
@@ -250,8 +250,8 @@ int WRAP_File_iread_shared(WRAP_File fh, void *buf, int count, WRAP_Datatype dat
 #if MPI_VERSION >= 4
 int WRAP_File_iread_shared_c(WRAP_File fh, void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Request *request)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
     int rc = IMPL_File_iread_shared_c(impl_fh, buf, count, impl_datatype, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
@@ -261,8 +261,8 @@ int WRAP_File_iread_shared_c(WRAP_File fh, void *buf, WRAP_Count count, WRAP_Dat
 
 int WRAP_File_iwrite(WRAP_File fh, const void *buf, int count, WRAP_Datatype datatype, WRAP_Request *request)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
     int rc = IMPL_File_iwrite(impl_fh, buf, count, impl_datatype, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
@@ -271,8 +271,8 @@ int WRAP_File_iwrite(WRAP_File fh, const void *buf, int count, WRAP_Datatype dat
 
 int WRAP_File_iwrite_all(WRAP_File fh, const void *buf, int count, WRAP_Datatype datatype, WRAP_Request *request)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
     int rc = IMPL_File_iwrite_all(impl_fh, buf, count, impl_datatype, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
@@ -282,8 +282,8 @@ int WRAP_File_iwrite_all(WRAP_File fh, const void *buf, int count, WRAP_Datatype
 #if MPI_VERSION >= 4
 int WRAP_File_iwrite_all_c(WRAP_File fh, const void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Request *request)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
     int rc = IMPL_File_iwrite_all_c(impl_fh, buf, count, impl_datatype, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
@@ -293,8 +293,8 @@ int WRAP_File_iwrite_all_c(WRAP_File fh, const void *buf, WRAP_Count count, WRAP
 
 int WRAP_File_iwrite_at(WRAP_File fh, WRAP_Offset offset, const void *buf, int count, WRAP_Datatype datatype, WRAP_Request *request)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
     int rc = IMPL_File_iwrite_at(impl_fh, offset, buf, count, impl_datatype, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
@@ -303,8 +303,8 @@ int WRAP_File_iwrite_at(WRAP_File fh, WRAP_Offset offset, const void *buf, int c
 
 int WRAP_File_iwrite_at_all(WRAP_File fh, WRAP_Offset offset, const void *buf, int count, WRAP_Datatype datatype, WRAP_Request *request)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
     int rc = IMPL_File_iwrite_at_all(impl_fh, offset, buf, count, impl_datatype, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
@@ -314,8 +314,8 @@ int WRAP_File_iwrite_at_all(WRAP_File fh, WRAP_Offset offset, const void *buf, i
 #if MPI_VERSION >= 4
 int WRAP_File_iwrite_at_all_c(WRAP_File fh, WRAP_Offset offset, const void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Request *request)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
     int rc = IMPL_File_iwrite_at_all_c(impl_fh, offset, buf, count, impl_datatype, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
@@ -326,8 +326,8 @@ int WRAP_File_iwrite_at_all_c(WRAP_File fh, WRAP_Offset offset, const void *buf,
 #if MPI_VERSION >= 4
 int WRAP_File_iwrite_at_c(WRAP_File fh, WRAP_Offset offset, const void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Request *request)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
     int rc = IMPL_File_iwrite_at_c(impl_fh, offset, buf, count, impl_datatype, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
@@ -338,8 +338,8 @@ int WRAP_File_iwrite_at_c(WRAP_File fh, WRAP_Offset offset, const void *buf, WRA
 #if MPI_VERSION >= 4
 int WRAP_File_iwrite_c(WRAP_File fh, const void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Request *request)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
     int rc = IMPL_File_iwrite_c(impl_fh, buf, count, impl_datatype, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
@@ -349,8 +349,8 @@ int WRAP_File_iwrite_c(WRAP_File fh, const void *buf, WRAP_Count count, WRAP_Dat
 
 int WRAP_File_iwrite_shared(WRAP_File fh, const void *buf, int count, WRAP_Datatype datatype, WRAP_Request *request)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
     int rc = IMPL_File_iwrite_shared(impl_fh, buf, count, impl_datatype, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
@@ -360,8 +360,8 @@ int WRAP_File_iwrite_shared(WRAP_File fh, const void *buf, int count, WRAP_Datat
 #if MPI_VERSION >= 4
 int WRAP_File_iwrite_shared_c(WRAP_File fh, const void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Request *request)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Request impl_request;
     int rc = IMPL_File_iwrite_shared_c(impl_fh, buf, count, impl_datatype, &impl_request);
     *request = OUTPUT_MPI_Request(impl_request);
@@ -388,9 +388,9 @@ int WRAP_File_preallocate(WRAP_File fh, WRAP_Offset size)
 
 int WRAP_File_read(WRAP_File fh, void *buf, int count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_read(impl_fh, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -399,9 +399,9 @@ int WRAP_File_read(WRAP_File fh, void *buf, int count, WRAP_Datatype datatype, W
 
 int WRAP_File_read_all(WRAP_File fh, void *buf, int count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_read_all(impl_fh, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -410,8 +410,8 @@ int WRAP_File_read_all(WRAP_File fh, void *buf, int count, WRAP_Datatype datatyp
 
 int WRAP_File_read_all_begin(WRAP_File fh, void *buf, int count, WRAP_Datatype datatype)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_File_read_all_begin(impl_fh, buf, count, impl_datatype);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -419,8 +419,8 @@ int WRAP_File_read_all_begin(WRAP_File fh, void *buf, int count, WRAP_Datatype d
 #if MPI_VERSION >= 4
 int WRAP_File_read_all_begin_c(WRAP_File fh, void *buf, WRAP_Count count, WRAP_Datatype datatype)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_File_read_all_begin_c(impl_fh, buf, count, impl_datatype);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -428,9 +428,9 @@ int WRAP_File_read_all_begin_c(WRAP_File fh, void *buf, WRAP_Count count, WRAP_D
 
 int WRAP_File_read_all_c(WRAP_File fh, void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_read_all_c(impl_fh, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -439,8 +439,8 @@ int WRAP_File_read_all_c(WRAP_File fh, void *buf, WRAP_Count count, WRAP_Datatyp
 
 int WRAP_File_read_all_end(WRAP_File fh, void *buf, WRAP_Status *status)
 {
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_read_all_end(impl_fh, buf, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -449,9 +449,9 @@ int WRAP_File_read_all_end(WRAP_File fh, void *buf, WRAP_Status *status)
 
 int WRAP_File_read_at(WRAP_File fh, WRAP_Offset offset, void *buf, int count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_read_at(impl_fh, offset, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     if (!ignore) MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -460,9 +460,9 @@ int WRAP_File_read_at(WRAP_File fh, WRAP_Offset offset, void *buf, int count, WR
 
 int WRAP_File_read_at_all(WRAP_File fh, WRAP_Offset offset, void *buf, int count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_read_at_all(impl_fh, offset, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -472,8 +472,8 @@ int WRAP_File_read_at_all(WRAP_File fh, WRAP_Offset offset, void *buf, int count
 
 int WRAP_File_read_at_all_begin(WRAP_File fh, WRAP_Offset offset, void *buf, int count, WRAP_Datatype datatype)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_File_read_at_all_begin(impl_fh, offset, buf, count, impl_datatype);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -481,8 +481,8 @@ int WRAP_File_read_at_all_begin(WRAP_File fh, WRAP_Offset offset, void *buf, int
 #if MPI_VERSION >= 4
 int WRAP_File_read_at_all_begin_c(WRAP_File fh, WRAP_Offset offset, void *buf, WRAP_Count count, WRAP_Datatype datatype)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_File_read_at_all_begin_c(impl_fh, offset, buf, count, impl_datatype);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -490,9 +490,9 @@ int WRAP_File_read_at_all_begin_c(WRAP_File fh, WRAP_Offset offset, void *buf, W
 
 int WRAP_File_read_at_all_c(WRAP_File fh, WRAP_Offset offset, void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_read_at_all_c(impl_fh, offset, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -502,8 +502,8 @@ int WRAP_File_read_at_all_c(WRAP_File fh, WRAP_Offset offset, void *buf, WRAP_Co
 
 int WRAP_File_read_at_all_end(WRAP_File fh, void *buf, WRAP_Status *status)
 {
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_read_at_all_end(impl_fh, buf, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -513,9 +513,9 @@ int WRAP_File_read_at_all_end(WRAP_File fh, void *buf, WRAP_Status *status)
 
 int WRAP_File_read_at_c(WRAP_File fh, WRAP_Offset offset, void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_read_at_c(impl_fh, offset, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -524,9 +524,9 @@ int WRAP_File_read_at_c(WRAP_File fh, WRAP_Offset offset, void *buf, WRAP_Count 
 
 int WRAP_File_read_c(WRAP_File fh, void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_read_c(impl_fh, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -535,9 +535,9 @@ int WRAP_File_read_c(WRAP_File fh, void *buf, WRAP_Count count, WRAP_Datatype da
 
 int WRAP_File_read_ordered(WRAP_File fh, void *buf, int count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_read_ordered(impl_fh, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -546,8 +546,8 @@ int WRAP_File_read_ordered(WRAP_File fh, void *buf, int count, WRAP_Datatype dat
 
 int WRAP_File_read_ordered_begin(WRAP_File fh, void *buf, int count, WRAP_Datatype datatype)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_File_read_ordered_begin(impl_fh, buf, count, impl_datatype);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -555,8 +555,8 @@ int WRAP_File_read_ordered_begin(WRAP_File fh, void *buf, int count, WRAP_Dataty
 #if MPI_VERSION >= 4
 int WRAP_File_read_ordered_begin_c(WRAP_File fh, void *buf, WRAP_Count count, WRAP_Datatype datatype)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_File_read_ordered_begin_c(impl_fh, buf, count, impl_datatype);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -564,9 +564,9 @@ int WRAP_File_read_ordered_begin_c(WRAP_File fh, void *buf, WRAP_Count count, WR
 
 int WRAP_File_read_ordered_c(WRAP_File fh, void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_read_ordered_c(impl_fh, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -575,8 +575,8 @@ int WRAP_File_read_ordered_c(WRAP_File fh, void *buf, WRAP_Count count, WRAP_Dat
 
 int WRAP_File_read_ordered_end(WRAP_File fh, void *buf, WRAP_Status *status)
 {
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_read_ordered_end(impl_fh, buf, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -585,9 +585,9 @@ int WRAP_File_read_ordered_end(WRAP_File fh, void *buf, WRAP_Status *status)
 
 int WRAP_File_read_shared(WRAP_File fh, void *buf, int count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_read_shared(impl_fh, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -596,9 +596,9 @@ int WRAP_File_read_shared(WRAP_File fh, void *buf, int count, WRAP_Datatype data
 
 int WRAP_File_read_shared_c(WRAP_File fh, void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_read_shared_c(impl_fh, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -628,8 +628,8 @@ int WRAP_File_set_atomicity(WRAP_File fh, int flag)
 
 int WRAP_File_set_errhandler(WRAP_File file, WRAP_Errhandler errhandler)
 {
-    MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(errhandler);
     MPI_File impl_file = CONVERT_MPI_File(file);
+    MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(errhandler);
     int rc = IMPL_File_set_errhandler(impl_file, impl_errhandler);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -651,9 +651,9 @@ int WRAP_File_set_size(WRAP_File fh, WRAP_Offset size)
 
 int WRAP_File_set_view(WRAP_File fh, WRAP_Offset disp, WRAP_Datatype etype, WRAP_Datatype filetype, const char *datarep, WRAP_Info info)
 {
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
     MPI_Datatype impl_etype = CONVERT_MPI_Datatype(etype);
     MPI_Datatype impl_filetype = CONVERT_MPI_Datatype(filetype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
     int rc = IMPL_File_set_view(impl_fh, disp, impl_etype, impl_filetype, datarep, impl_info);
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -668,9 +668,9 @@ int WRAP_File_sync(WRAP_File fh)
 
 int WRAP_File_write(WRAP_File fh, const void *buf, int count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_write(impl_fh, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -679,9 +679,9 @@ int WRAP_File_write(WRAP_File fh, const void *buf, int count, WRAP_Datatype data
 
 int WRAP_File_write_all(WRAP_File fh, const void *buf, int count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_write_all(impl_fh, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -690,8 +690,8 @@ int WRAP_File_write_all(WRAP_File fh, const void *buf, int count, WRAP_Datatype 
 
 int WRAP_File_write_all_begin(WRAP_File fh, const void *buf, int count, WRAP_Datatype datatype)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_File_write_all_begin(impl_fh, buf, count, impl_datatype);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -699,8 +699,8 @@ int WRAP_File_write_all_begin(WRAP_File fh, const void *buf, int count, WRAP_Dat
 #if MPI_VERSION >= 4
 int WRAP_File_write_all_begin_c(WRAP_File fh, const void *buf, WRAP_Count count, WRAP_Datatype datatype)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_File_write_all_begin_c(impl_fh, buf, count, impl_datatype);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -708,9 +708,9 @@ int WRAP_File_write_all_begin_c(WRAP_File fh, const void *buf, WRAP_Count count,
 
 int WRAP_File_write_all_c(WRAP_File fh, const void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_write_all_c(impl_fh, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -719,8 +719,8 @@ int WRAP_File_write_all_c(WRAP_File fh, const void *buf, WRAP_Count count, WRAP_
 
 int WRAP_File_write_all_end(WRAP_File fh, const void *buf, WRAP_Status *status)
 {
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_write_all_end(impl_fh, buf, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -729,9 +729,9 @@ int WRAP_File_write_all_end(WRAP_File fh, const void *buf, WRAP_Status *status)
 
 int WRAP_File_write_at(WRAP_File fh, WRAP_Offset offset, const void *buf, int count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_write_at(impl_fh, offset, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -740,9 +740,9 @@ int WRAP_File_write_at(WRAP_File fh, WRAP_Offset offset, const void *buf, int co
 
 int WRAP_File_write_at_all(WRAP_File fh, WRAP_Offset offset, const void *buf, int count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_write_at_all(impl_fh, offset, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -751,8 +751,8 @@ int WRAP_File_write_at_all(WRAP_File fh, WRAP_Offset offset, const void *buf, in
 
 int WRAP_File_write_at_all_begin(WRAP_File fh, WRAP_Offset offset, const void *buf, int count, WRAP_Datatype datatype)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_File_write_at_all_begin(impl_fh, offset, buf, count, impl_datatype);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -760,8 +760,8 @@ int WRAP_File_write_at_all_begin(WRAP_File fh, WRAP_Offset offset, const void *b
 #if MPI_VERSION >= 4
 int WRAP_File_write_at_all_begin_c(WRAP_File fh, WRAP_Offset offset, const void *buf, WRAP_Count count, WRAP_Datatype datatype)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_File_write_at_all_begin_c(impl_fh, offset, buf, count, impl_datatype);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -769,9 +769,9 @@ int WRAP_File_write_at_all_begin_c(WRAP_File fh, WRAP_Offset offset, const void 
 
 int WRAP_File_write_at_all_c(WRAP_File fh, WRAP_Offset offset, const void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_write_at_all_c(impl_fh, offset, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -780,8 +780,8 @@ int WRAP_File_write_at_all_c(WRAP_File fh, WRAP_Offset offset, const void *buf, 
 
 int WRAP_File_write_at_all_end(WRAP_File fh, const void *buf, WRAP_Status *status)
 {
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_write_at_all_end(impl_fh, buf, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -790,9 +790,9 @@ int WRAP_File_write_at_all_end(WRAP_File fh, const void *buf, WRAP_Status *statu
 
 int WRAP_File_write_at_c(WRAP_File fh, WRAP_Offset offset, const void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_write_at_c(impl_fh, offset, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -801,9 +801,9 @@ int WRAP_File_write_at_c(WRAP_File fh, WRAP_Offset offset, const void *buf, WRAP
 
 int WRAP_File_write_c(WRAP_File fh, const void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_write_c(impl_fh, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -812,9 +812,9 @@ int WRAP_File_write_c(WRAP_File fh, const void *buf, WRAP_Count count, WRAP_Data
 
 int WRAP_File_write_ordered(WRAP_File fh, const void *buf, int count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_write_ordered(impl_fh, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -823,8 +823,8 @@ int WRAP_File_write_ordered(WRAP_File fh, const void *buf, int count, WRAP_Datat
 
 int WRAP_File_write_ordered_begin(WRAP_File fh, const void *buf, int count, WRAP_Datatype datatype)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_File_write_ordered_begin(impl_fh, buf, count, impl_datatype);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -832,8 +832,8 @@ int WRAP_File_write_ordered_begin(WRAP_File fh, const void *buf, int count, WRAP
 #if MPI_VERSION >= 4
 int WRAP_File_write_ordered_begin_c(WRAP_File fh, const void *buf, WRAP_Count count, WRAP_Datatype datatype)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_File_write_ordered_begin_c(impl_fh, buf, count, impl_datatype);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -841,9 +841,9 @@ int WRAP_File_write_ordered_begin_c(WRAP_File fh, const void *buf, WRAP_Count co
 
 int WRAP_File_write_ordered_c(WRAP_File fh, const void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_write_ordered_c(impl_fh, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -852,8 +852,8 @@ int WRAP_File_write_ordered_c(WRAP_File fh, const void *buf, WRAP_Count count, W
 
 int WRAP_File_write_ordered_end(WRAP_File fh, const void *buf, WRAP_Status *status)
 {
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_write_ordered_end(impl_fh, buf, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -862,9 +862,9 @@ int WRAP_File_write_ordered_end(WRAP_File fh, const void *buf, WRAP_Status *stat
 
 int WRAP_File_write_shared(WRAP_File fh, const void *buf, int count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_write_shared(impl_fh, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
@@ -873,9 +873,9 @@ int WRAP_File_write_shared(WRAP_File fh, const void *buf, int count, WRAP_Dataty
 
 int WRAP_File_write_shared_c(WRAP_File fh, const void *buf, WRAP_Count count, WRAP_Datatype datatype, WRAP_Status *status)
 {
-    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    MPI_File impl_fh = CONVERT_MPI_File(fh);
     const bool ignore = IS_STATUS_IGNORE(status);
+    MPI_File impl_fh = CONVERT_MPI_File(fh);
+    MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Status impl_status = {0};
     int rc = IMPL_File_write_shared_c(impl_fh, buf, count, impl_datatype, ignore ? MPI_STATUS_IGNORE : &impl_status);
     MPI_Status_to_WRAP_Status(&impl_status, status);
