@@ -14,14 +14,14 @@ if [ `uname -s` == Darwin ] ; then
 else
     export HWLOC_COMPONENTS=-gl
     #OPTS="--mca osc ucx"
-    OMPIRUN=/usr/bin/mpirun.openmpi
+    OMPIRUN="/usr/bin/mpirun.openmpi --tag-output"
     OMPILIB=/usr/lib/x86_64-linux-gnu/libmpi.so
     #OMPIRUN=/opt/ompi/gcc-debug/bin/mpirun
     #OMPILIB=/opt/ompi/gcc-debug/lib/libmpi.so
-    MPICHRUN=/usr/bin/mpirun.mpich
+    MPICHRUN="/usr/bin/mpirun.mpich -l"
     #MPICHLIB=/usr/lib/x86_64-linux-gnu/libmpich.so
     MPICHLIB=/opt/mpich/gcc/debug-ch4ucx/lib/libmpi.so
-    IMPIRUN=/opt/intel/oneapi/mpi/2021.8.0/bin/mpirun
+    IMPIRUN="/opt/intel/oneapi/mpi/2021.8.0/bin/mpirun -l"
     IMPILIB=/opt/intel/oneapi/mpi/2021.8.0/lib/debug/libmpi.so
     #IMPILIB=/opt/intel/oneapi/mpi/2021.8.0/lib/release/libmpi.so
     DBG=gdb
