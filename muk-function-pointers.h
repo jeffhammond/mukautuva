@@ -115,8 +115,8 @@ int (*MUK_Comm_split_type)(MPI_Comm comm, int split_type, int key, MPI_Info info
 int (*MUK_Comm_test_inter)(MPI_Comm comm, int *flag);
 int (*MUK_Compare_and_swap)(const void *origin_addr, const void *compare_addr, void *result_addr, MPI_Datatype datatype, int target_rank, MPI_Aint target_disp, MPI_Win win);
 int (*MUK_Dims_create)(int nnodes, int ndims, int dims[]);
-int (*MUK_Dist_graph_create)(MPI_Comm comm_old, int n, const int sources[], const int degrees[], const int destinations[], const int weights[], MPI_Info info, int reorder, MPI_Comm *comm_dist_graph);
-int (*MUK_Dist_graph_create_adjacent)(MPI_Comm comm_old, int indegree, const int sources[], const int sourceweights[], int outdegree, const int destinations[], const int destweights[], MPI_Info info, int reorder, MPI_Comm *comm_dist_graph);
+int (*MUK_Dist_graph_create)(MPI_Comm comm_old, int n, const int sources[], const int degrees[], const int destinations[], const int weights[], MPI_Info info, int reorder, MPI_Comm *comm_dist_graph, const int * mpich_unweighted, const int * mpich_weights_empty);
+int (*MUK_Dist_graph_create_adjacent)(MPI_Comm comm_old, int indegree, const int sources[], const int sourceweights[], int outdegree, const int destinations[], const int destweights[], MPI_Info info, int reorder, MPI_Comm *comm_dist_graph, const int * mpich_unweighted, const int * mpich_weights_empty);
 int (*MUK_Dist_graph_neighbors)(MPI_Comm comm, int maxindegree, int sources[], int sourceweights[], int maxoutdegree, int destinations[], int destweights[]);
 int (*MUK_Dist_graph_neighbors_count)(MPI_Comm comm, int *indegree, int *outdegree, int *weighted);
 int (*MUK_Errhandler_create)(MPI_Comm_errhandler_function *comm_errhandler_fn, MPI_Errhandler *errhandler);

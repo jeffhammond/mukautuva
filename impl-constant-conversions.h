@@ -217,13 +217,23 @@ static int KEY_MUK_TO_IMPL(int key_muk)
 }
 
 MAYBE_UNUSED
-static const int * WEIGHTS_MUK_TO_IMPL(const int * weights_muk)
+static const int * WEIGHTS_MUK_TO_IMPL(const int * weights_muk, const int * mpich_unweighted, const int * mpich_weights_empty)
 {
     if ((intptr_t)weights_muk == (intptr_t)MUK_UNWEIGHTED) {
+#if OPEN_MPI
         return MPI_UNWEIGHTED;
+        (void)mpich_unweighted;
+#else
+        return mpich_unweighted;
+#endif
     }
     else if ((intptr_t)weights_muk == (intptr_t)MUK_WEIGHTS_EMPTY) {
+#if OPEN_MPI
         return MPI_WEIGHTS_EMPTY;
+        (void)mpich_weights_empty;
+#else
+        return mpich_weights_empty;
+#endif
     }
     else {
         return weights_muk;

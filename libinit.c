@@ -35,6 +35,9 @@ int (*WRAP_CODE_IMPL_TO_MUK)(int error_c);
 void (*WRAP_Init_handle_key)(void);
 void (*WRAP_Finalize_handle_key)(void);
 
+int * MPICH_UNWEIGHTED    = NULL;
+int * MPICH_WEIGHTS_EMPTY = NULL;
+
 // alkaa = start
 static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
 {
@@ -142,6 +145,20 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     if (wrap_so_handle == NULL) {
         printf("dlopen of %s failed: %s\n", wrapname, dlerror() );
         abort();
+    }
+
+    if (whose_mpi != OMPI)
+    {
+        void ** pMPICH_UNWEIGHTED = MUK_DLSYM(h,"MPI_UNWEIGHTED");
+        MPICH_UNWEIGHTED = *pMPICH_UNWEIGHTED;
+        void ** pMPICH_WEIGHTS_EMPTY = MUK_DLSYM(h,"MPI_WEIGHTS_EMPTY");
+        MPICH_WEIGHTS_EMPTY = *pMPICH_WEIGHTS_EMPTY;
+#if 0
+        fflush(0);
+        printf("libinit: pMPICH_WEIGHTS_EMPTY=%p pMPICH_UNWEIGHTED=%p\n", pMPICH_WEIGHTS_EMPTY, pMPICH_UNWEIGHTED);
+        printf("libinit:  MPICH_WEIGHTS_EMPTY=%p  MPICH_UNWEIGHTED=%p\n", MPICH_WEIGHTS_EMPTY, MPICH_UNWEIGHTED);
+        fflush(0);
+#endif
     }
 
     // all the functions
@@ -1475,14 +1492,18 @@ int MPI_Dims_create(int nnodes, int ndims, int dims[])
     return MUK_Dims_create(nnodes, ndims, dims);
 }
 
+// MPI_Dist_graph_create and MPI_Dist_graph_create_adjacent are given the magic addresses they need,
+// because the values provided by the MPICH mpi.h will not work because the linker resolves the
+// symbols from MUK rather than the MPICH so.
+
 int MPI_Dist_graph_create(MPI_Comm comm_old, int n, const int sources[], const int degrees[], const int destinations[], const int weights[], MPI_Info info, int reorder, MPI_Comm *comm_dist_graph)
 {
-    return MUK_Dist_graph_create(comm_old, n, sources, degrees, destinations, weights, info, reorder, comm_dist_graph);
+    return MUK_Dist_graph_create(comm_old, n, sources, degrees, destinations, weights, info, reorder, comm_dist_graph, MPICH_UNWEIGHTED, MPICH_WEIGHTS_EMPTY);
 }
 
 int MPI_Dist_graph_create_adjacent(MPI_Comm comm_old, int indegree, const int sources[], const int sourceweights[], int outdegree, const int destinations[], const int destweights[], MPI_Info info, int reorder, MPI_Comm *comm_dist_graph)
 {
-    return MUK_Dist_graph_create_adjacent(comm_old, indegree, sources, sourceweights, outdegree, destinations, destweights, info, reorder, comm_dist_graph);
+    return MUK_Dist_graph_create_adjacent(comm_old, indegree, sources, sourceweights, outdegree, destinations, destweights, info, reorder, comm_dist_graph, MPICH_UNWEIGHTED, MPICH_WEIGHTS_EMPTY);
 }
 
 int MPI_Dist_graph_neighbors(MPI_Comm comm, int maxindegree, int sources[], int sourceweights[], int maxoutdegree, int destinations[], int destweights[])
