@@ -69,7 +69,11 @@ int WRAP_File_get_atomicity(WRAP_File fh, int *flag)
 int WRAP_File_get_byte_offset(WRAP_File fh, WRAP_Offset offset, WRAP_Offset *disp)
 {
     MPI_File impl_fh = CONVERT_MPI_File(fh);
-    int rc = IMPL_File_get_byte_offset(impl_fh, offset, disp);
+    MPI_Offset impl_disp;
+    int rc = IMPL_File_get_byte_offset(impl_fh, offset, &impl_disp);
+    if (impl_disp == MPI_DISPLACEMENT_CURRENT) {
+        *disp = MUK_DISPLACEMENT_CURRENT;
+    }
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -143,9 +147,13 @@ int WRAP_File_get_view(WRAP_File fh, WRAP_Offset *disp, WRAP_Datatype *etype, WR
 {
     MPI_File impl_fh = CONVERT_MPI_File(fh);
     MPI_Datatype impl_etype, impl_filetype;
-    int rc = IMPL_File_get_view(impl_fh, disp, &impl_etype, &impl_filetype, datarep);
+    MPI_Offset impl_disp;
+    int rc = IMPL_File_get_view(impl_fh, &impl_disp, &impl_etype, &impl_filetype, datarep);
     *etype = OUTPUT_MPI_Datatype(impl_etype);
     *filetype = OUTPUT_MPI_Datatype(impl_filetype);
+    if (impl_disp == MPI_DISPLACEMENT_CURRENT) {
+        *disp = MUK_DISPLACEMENT_CURRENT;
+    }
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -655,6 +663,9 @@ int WRAP_File_set_view(WRAP_File fh, WRAP_Offset disp, WRAP_Datatype etype, WRAP
     MPI_Datatype impl_etype = CONVERT_MPI_Datatype(etype);
     MPI_Datatype impl_filetype = CONVERT_MPI_Datatype(filetype);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
+    if (disp == MUK_DISPLACEMENT_CURRENT) {
+        disp = MPI_DISPLACEMENT_CURRENT;
+    }
     int rc = IMPL_File_set_view(impl_fh, disp, impl_etype, impl_filetype, datarep, impl_info);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
