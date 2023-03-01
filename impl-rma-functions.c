@@ -16,12 +16,43 @@
 
 #define MUK_EXTERN extern
 #include "impl-fpointers.h"
+#include "impl-linked-list.h"
 #include "impl-constant-conversions.h"
 #include "impl-handle-conversions.h"
 
 // WRAP->IMPL functions
 
 // errhandler stuff
+
+// "The first argument is the communicator in use.
+//  The second is the error code to be returned by the MPI routine that raised the error.
+//  If the routine would have returned MPI_ERR_IN_STATUS, it is the error code returned
+//  in the status for the request that caused the error handler to be invoked.
+//  The remaining arguments are “varargs” arguments whose number and meaning is
+//  implementation-dependent. An implementation should clearly document these arguments."
+
+// TODO document that MUK supports no additional arguments.
+
+extern int WIN_EH_HANDLE_KEY;
+
+void win_errhandler_trampoline(MPI_Win *win, int *error_code, ...)
+{
+    int rc;
+    int flag;
+    win_errhandler_trampoline_cookie_t * cookie = NULL;
+    rc = IMPL_Win_get_attr(*win, WIN_EH_HANDLE_KEY, &cookie, &flag);
+    if (rc != MPI_SUCCESS || !flag) {
+        printf("%s: IMPL_Win_get_attr failed: flag=%d rc=%d\n", __func__, flag, rc);
+        MPI_Abort(MPI_COMM_SELF,rc);
+    }
+
+    WRAP_Win_errhandler_function * fp   = NULL;
+    if (flag) {
+        fp  = cookie->fp;
+    }
+    WRAP_Win wrap_win = OUTPUT_MPI_Win(*win);
+    (*fp)(&wrap_win,error_code);
+}
 
 int WRAP_Win_create_errhandler(WRAP_Win_errhandler_function *win_errhandler_fn, WRAP_Errhandler *errhandler)
 {

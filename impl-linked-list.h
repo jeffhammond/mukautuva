@@ -12,7 +12,7 @@ extern int TYPE_HANDLE_KEY;
 
 typedef struct
 {
-    MPI_Datatype           dt;
+    MPI_Datatype dt;
     union {
         WRAP_User_function   * fp_i;
         WRAP_User_function_c * fp_c;
@@ -20,6 +20,25 @@ typedef struct
     bool large_c;
 }
 reduce_trampoline_cookie_t;
+
+typedef enum {
+    Comm,
+    File,
+    Session,
+    Win
+} eh_fp_kind;
+
+typedef struct
+{
+    union  {
+        WRAP_Comm_errhandler_function    * comm_fp;
+        WRAP_File_errhandler_function    * file_fp;
+        WRAP_Session_errhandler_function * sess_fp;
+        WRAP_Win_errhandler_function     * win_fp;
+    } fp;
+    eh_fp_kind kind;
+}
+errhandler_trampoline_cookie_t;
 
 typedef struct op_fptr_pair_s
 {
@@ -305,6 +324,72 @@ static void cleanup_ireduce_trampoline_cookie(reduce_trampoline_cookie_t * cooki
     if (rc) {
         printf("Type_free failed: %d\n",rc);
     }
+}
+
+// errhandler stuff
+
+MAYBE_UNUSED
+static void add_win_eh_pair_to_list(MPI_Errhandler eh, WRAP_Win_errhandler_function *win_eh_fn)
+{
+    // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
+    op_fptr_pair_t * pair = malloc(sizeof(op_fptr_pair_t));
+    pair->op = op;
+    if (is_large) {
+        assert(user_fn_i == NULL);
+        pair->fp.fp_c = user_fn_c;
+    } else {
+        assert(user_fn_c == NULL);
+        pair->fp.fp_i = user_fn_i;
+    }
+    pair->large_c = is_large;
+    pair->prev = NULL;
+    pair->next = NULL;
+
+    if (op_fptr_pair_list == NULL) {
+        op_fptr_pair_list = pair;
+    } else {
+        op_fptr_pair_t * parent = op_fptr_pair_list;
+        while (parent->next != NULL) {
+            parent = parent->next;
+        }
+        parent->next = pair;
+        pair->prev   = parent;
+    }
+}
+
+MAYBE_UNUSED
+static void remove_win_eh_pair_from_list(MPI_Errhandler eh)
+{
+    // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
+
+    // Step 1: look up op in the linked list
+    if (op_fptr_pair_list == NULL) {
+        printf("remove_op_pair_from_list: op_fptr_pair_list is NULL - this should be impossible.\n");
+    }
+    op_fptr_pair_t * current = op_fptr_pair_list;
+    while (current) {
+        if (current->op == op) {
+            break;
+        }
+        current = current->next;
+    }
+
+    // Step 2: remove current from the list
+    if (current->prev == NULL) {
+        assert(current == op_fptr_pair_list);
+        op_fptr_pair_list = current->next;
+        if (current->next != NULL) {
+            current->next->prev = NULL;
+        }
+    } else {
+        current->prev->next = current->next;
+        if (current->next != NULL) {
+            current->next->prev = current->prev;
+        }
+    }
+
+    // Step 3: free the memory
+    free(current);
 }
 
 #endif
