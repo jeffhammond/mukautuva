@@ -8,6 +8,9 @@ typedef ptrdiff_t MPI_Aint;
 typedef ptrdiff_t MPI_Count;
 typedef ptrdiff_t MPI_Offset;
 
+// deal with this later during VAPAA integration
+typedef int MPI_Fint;
+
 // status typedef
 typedef struct
 {
