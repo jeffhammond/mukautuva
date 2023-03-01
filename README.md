@@ -1,5 +1,23 @@
-# mukautuva
-Adapting to multiple MPI ABIs
+# Mukautuva
+
+Mukautuva means "adaptable" in Finnish.  The purpose of Mukautuva (MUK for short) is to allow one to compile 
+an MPI application once against the MUK ABI, which is a prototype of the MPI-5 ABI we are developing,
+and run using any MPI implementation.
+
+Currently, we support Open-MPI, MPICH and Intel MPI.  The latter two are already ABI-compatible, while
+MPICH and Open-MPI are quite different.  Internally, MUK supports MPICH and Open-MPI, so if you use an
+MPI ABI that is not based on either of these, some work may be required.  However, as long as an MPI
+implementation handle is compatible with an `int`, a `void*`, or an `intptr_t`, then the only work to
+support it is detection.
+
+To use MUK, you compile using the implementation-agnostic parts with the system C compiler.
+You must tell the build system which `mpicc` to use for MPICH and Open-MPI.
+At runtime, you must use the appropriate `mpirun` for your implementation, which is specified
+by `MPI_LIB=<path to libmpi.so>`.  MUK knows the defaults for some systems so you can use
+`mpirun` and not set `MPI_LIB` and it will probably work.
+
+You configure the build system by editing the top of `Makefile`.
+More complex build systems are a pointless distraction and will not be supported.
 
 # Current status
 
@@ -39,6 +57,10 @@ There are things that do not work because the underlying implementation does not
 
 # Design
 
-TODO
+
 
 # Acknowledgements
+
+Hui Zhou and Ken Raffineti of the MPICH team were extremely helpful when debugging a number of issues with Mukautuva.
+
+My team at NVIDIA allowed me to focus on this project for the month it took to create.
