@@ -26,14 +26,14 @@
 extern op_fptr_pair_t    * op_fptr_pair_list;
 extern req_cookie_pair_t * req_cookie_pair_list;
 
-void trampoline(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
+void reduce_trampoline(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
 {
     int rc;
     int flag;
     reduce_trampoline_cookie_t * cookie = NULL;
     rc = IMPL_Type_get_attr(*datatype, TYPE_HANDLE_KEY, &cookie, &flag);
     if (rc != MPI_SUCCESS || !flag) {
-        printf("trampoline: IMPL_Type_get_attr failed: flag=%d rc=%d\n", flag, rc);
+        printf("%s: IMPL_Type_get_attr failed: flag=%d rc=%d\n", __func__, flag, rc);
         MPI_Abort(MPI_COMM_SELF,rc);
     }
     MPI_Datatype         dt = MPI_DATATYPE_NULL;
@@ -46,14 +46,14 @@ void trampoline(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
     (*fp)(invec,inoutvec,len,&wrap_type);
 }
 
-void trampoline_c(void *invec, void *inoutvec, MPI_Count *len, MPI_Datatype * datatype)
+void reduce_trampoline_c(void *invec, void *inoutvec, MPI_Count *len, MPI_Datatype * datatype)
 {
     int rc;
     int flag;
     reduce_trampoline_cookie_t * cookie = NULL;
     rc = IMPL_Type_get_attr(*datatype, TYPE_HANDLE_KEY, &cookie, &flag);
     if (rc != MPI_SUCCESS || !flag) {
-        printf("trampoline_c: IMPL_Type_get_attr failed: flag=%d rc=%d\n", flag, rc);
+        printf("%s: IMPL_Type_get_attr failed: flag=%d rc=%d\n", __func__, flag, rc);
         MPI_Abort(MPI_COMM_SELF,rc);
     }
     MPI_Datatype           dt = MPI_DATATYPE_NULL;
@@ -78,7 +78,7 @@ int WRAP_Op_commutative(WRAP_Op op, int *commute)
 int WRAP_Op_create(WRAP_User_function *user_fn, int commute, WRAP_Op *op)
 {
     MPI_Op impl_op;
-    int rc = IMPL_Op_create(trampoline, commute, &impl_op);
+    int rc = IMPL_Op_create(reduce_trampoline, commute, &impl_op);
     *op = OUTPUT_MPI_Op(impl_op);
     add_op_pair_to_list(false, impl_op, user_fn, NULL);
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -88,7 +88,7 @@ int WRAP_Op_create(WRAP_User_function *user_fn, int commute, WRAP_Op *op)
 int WRAP_Op_create_c(WRAP_User_function_c *user_fn, int commute, WRAP_Op *op)
 {
     MPI_Op impl_op;
-    int rc = IMPL_Op_create_c(trampoline_c, commute, &impl_op);
+    int rc = IMPL_Op_create_c(reduce_trampoline_c, commute, &impl_op);
     *op = OUTPUT_MPI_Op(impl_op);
     add_op_pair_to_list(true, impl_op, NULL, user_fn);
     return RETURN_CODE_IMPL_TO_MUK(rc);
