@@ -37,19 +37,7 @@ extern int WIN_EH_HANDLE_KEY;
 
 void win_errhandler_trampoline(MPI_Win *win, int *error_code, ...)
 {
-    int rc;
-    int flag;
-    win_errhandler_trampoline_cookie_t * cookie = NULL;
-    rc = IMPL_Win_get_attr(*win, WIN_EH_HANDLE_KEY, &cookie, &flag);
-    if (rc != MPI_SUCCESS || !flag) {
-        printf("%s: IMPL_Win_get_attr failed: flag=%d rc=%d\n", __func__, flag, rc);
-        MPI_Abort(MPI_COMM_SELF,rc);
-    }
-
     WRAP_Win_errhandler_function * fp   = NULL;
-    if (flag) {
-        fp  = cookie->fp;
-    }
     WRAP_Win wrap_win = OUTPUT_MPI_Win(*win);
     (*fp)(&wrap_win,error_code);
 }

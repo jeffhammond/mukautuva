@@ -5,6 +5,7 @@ ifeq ($(shell uname),Darwin)
     CFLAGS=-ferror-limit=1 # Clang
     CFLAGS+=-Wno-c2x-extensions
     #CFLAGS+=-Wno-unused-function
+    CFLAGS+=-Wno-incompatible-function-pointer-types
 else
     OMPICC=/usr/bin/mpicc.openmpi
     MPICHCC=/usr/bin/mpicc.mpich
@@ -14,7 +15,7 @@ else
     #CFLAGS+=-Wno-unused-parameter -Wno-unused-variable -Wno-unused-function
 endif
 
-CFLAGS	+= -g3 -O0 -Wall -Wextra #-Werror # -Wpedantic
+CFLAGS	+= -g3 -O0 -Wall -Wextra -Werror # -Wpedantic
 CFLAGS	+= -fPIC
 SOFLAGS	= -shared
 

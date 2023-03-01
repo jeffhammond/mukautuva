@@ -21,6 +21,7 @@
 op_fptr_pair_t       * op_fptr_pair_list       = NULL;
 req_cookie_pair_t    * req_cookie_pair_list    = NULL;
 req_alltoallw_pair_t * req_alltoallw_pair_list = NULL;
+errhandler_tuple_t   * errhandler_tuple_list   = NULL;
 
 // WRAP->IMPL functions
 
