@@ -12,6 +12,9 @@ else
     CC=gcc
     CFLAGS=-fmax-errors=1 # GCC
     #CFLAGS+=-fsanitize=address
+    # these suppress true errors with callbacks
+    CFLAGS+=-Wno-incompatible-pointer-types
+    CFLAGS+=-Wno-cast-function-type
     #CFLAGS+=-Wno-unused-parameter -Wno-unused-variable -Wno-unused-function
 endif
 

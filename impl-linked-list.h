@@ -405,6 +405,8 @@ static void add_errhandler_callback(MPI_Errhandler errhandler,
         parent->next = tuple;
         tuple->prev  = parent;
     }
+    printf("%s: tuple=%p tuple->errhandler=%lx tuple->prev=%p tuple->next=%p\n",
+       __func__,tuple, (intptr_t)tuple->errhandler, tuple->prev, tuple->next);
 }
 
 MAYBE_UNUSED
@@ -461,6 +463,8 @@ static void bind_errhandler_to_object(MPI_Errhandler errhandler,
         assert(win == MPI_WIN_NULL);
     }
 #endif
+    printf("%s: current=%p current->errhandler=%lx current->prev=%p current->next=%p\n",
+      __func__, current, (intptr_t)current->errhandler, current->prev, current->next);
 }
 
 MAYBE_UNUSED
@@ -551,6 +555,8 @@ static void remove_errhandler(MPI_Errhandler errhandler)
         current = current->next;
     }
 
+#if 0
+    FIXME
     // Step 2: remove current from the list
     if (current->prev == NULL) {
         assert(current == errhandler_tuple_list);
@@ -564,6 +570,7 @@ static void remove_errhandler(MPI_Errhandler errhandler)
             current->next->prev = current->prev;
         }
     }
+#endif
 
     // Step 3: free the memory
     free(current);
