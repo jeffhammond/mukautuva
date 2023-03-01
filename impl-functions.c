@@ -488,6 +488,7 @@ int WRAP_Errhandler_free(WRAP_Errhandler *errhandler)
     MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(*errhandler);
     int rc = IMPL_Errhandler_free(&impl_errhandler);
     *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
+    remove_errhandler(impl_errhandler);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
