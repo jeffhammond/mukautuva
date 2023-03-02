@@ -25,6 +25,8 @@ int main(int argc, char *argv[])
     MPI_Comm_set_errhandler(MPI_COMM_WORLD, errh);
     printf("S errh=%lx\n",(intptr_t)errh);
 
+    MPI_Comm_call_errhandler(MPI_COMM_WORLD,99);
+
     MPI_Comm dup;
     MPI_Comm_dup(MPI_COMM_WORLD,&dup);
 
@@ -47,9 +49,10 @@ int main(int argc, char *argv[])
     MPI_Errhandler_free(&errh);
     printf("F errh=%lx\n",(intptr_t)errh);
 
+#if 0
     MPI_Errhandler_free(&errh);
     printf("F errh=%lx\n",(intptr_t)errh);
-
+#endif
     MPI_Finalize();
     return 0;
 }

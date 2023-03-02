@@ -83,6 +83,19 @@ typedef struct
 }
 comm_errh_trampoline_cookie_t;
 
+typedef struct
+{
+    WRAP_File_errhandler_function * file_fp;
+}
+file_errh_trampoline_cookie_t;
+
+typedef struct
+{
+    WRAP_Win_errhandler_function * win_fp;
+}
+win_errh_trampoline_cookie_t;
+
+#if 0
 typedef struct errh_fptr_pair_s
 {
     MPI_Errhandler errh;
@@ -110,6 +123,7 @@ typedef struct errh_fptr_pair_s
     struct errh_fptr_pair_s * prev;
 }
 errh_fptr_pair_t;
+#endif
 
 typedef struct comm_errh_fptr_pair_s
 {
@@ -762,12 +776,14 @@ static void add_comm_errh_pair_to_list(MPI_Errhandler errhandler, WRAP_Comm_errh
     comm_errh_fptr_pair_t * pair = calloc(1,sizeof(comm_errh_fptr_pair_t));
     pair->errhandler = errhandler;
     pair->comm_fp = comm_errhandler_fn;
+    printf("%s: errhandler=%lx comm_errhandler_fn=%p\n",__func__,(intptr_t)errhandler,comm_errhandler_fn);
 
     pair->prev = NULL;
     pair->next = NULL;
 
     if (comm_errh_fptr_pair_list == NULL) {
         comm_errh_fptr_pair_list = pair;
+        printf("%s: comm_errh_fptr_pair_list initialized to pair=%p\n",__func__,pair);
     } else {
         comm_errh_fptr_pair_t * parent = comm_errh_fptr_pair_list;
         while (parent->next != NULL) {
@@ -775,6 +791,7 @@ static void add_comm_errh_pair_to_list(MPI_Errhandler errhandler, WRAP_Comm_errh
         }
         parent->next = pair;
         pair->prev   = parent;
+        printf("%s: comm_errh_fptr_pair_list pushed with pair=%p\n",__func__,pair);
     }
 }
 
@@ -800,5 +817,49 @@ static bool lookup_comm_errh_pair(MPI_Errhandler errhandler, WRAP_Comm_errhandle
     return false;
 }
 
+MAYBE_UNUSED
+static void add_win_errh_pair_to_list(MPI_Errhandler errhandler, WRAP_Win_errhandler_function *win_errhandler_fn)
+{
+    // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
+    win_errh_fptr_pair_t * pair = calloc(1,sizeof(win_errh_fptr_pair_t));
+    pair->errhandler = errhandler;
+    pair->win_fp = win_errhandler_fn;
+
+    pair->prev = NULL;
+    pair->next = NULL;
+
+    if (win_errh_fptr_pair_list == NULL) {
+        win_errh_fptr_pair_list = pair;
+    } else {
+        win_errh_fptr_pair_t * parent = win_errh_fptr_pair_list;
+        while (parent->next != NULL) {
+            parent = parent->next;
+        }
+        parent->next = pair;
+        pair->prev   = parent;
+    }
+}
+
+MAYBE_UNUSED
+static bool lookup_win_errh_pair(MPI_Errhandler errhandler, WRAP_Win_errhandler_function ** win_errhandler_fn)
+{
+    *win_errhandler_fn = NULL;
+
+    win_errh_fptr_pair_t * current = win_errh_fptr_pair_list;
+    if (win_errh_fptr_pair_list == NULL) {
+        printf("win_errh_fptr_pair_list is NULL - this should be impossible.\n");
+        return false;
+    }
+
+    while (current) {
+        if (current->errhandler == errhandler) {
+            *win_errhandler_fn = current->win_fp;
+            return true;
+            //break;
+        }
+        current = current->next;
+    }
+    return false;
+}
 
 #endif

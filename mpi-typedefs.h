@@ -41,8 +41,9 @@ typedef int MPI_Datarep_extent_function(MPI_Datatype datatype, MPI_Aint *extent,
 typedef int MPI_Datarep_conversion_function(void *userbuf, MPI_Datatype datatype, int count, void *filebuf, MPI_Offset position, void *extra_state);
 typedef int MPI_Datarep_conversion_function_c(void *userbuf, MPI_Datatype datatype, MPI_Count count, void *filebuf, MPI_Offset position, void *extra_state);
 
-// these are deprecated
+// these are deprecated or deleted
 typedef int MPI_Copy_function(MPI_Comm oldcomm, int keyval, void *extra_state, void *attribute_val_in, void *attribute_val_out, int *flag);
 typedef int MPI_Delete_function(MPI_Comm comm, int keyval, void *attribute_val, void *extra_state);
+typedef void MPI_Handler_function(MPI_Comm *comm, int *error_code,...);
 
 #endif

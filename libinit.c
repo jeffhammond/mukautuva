@@ -1518,7 +1518,8 @@ int MPI_Dist_graph_neighbors_count(MPI_Comm comm, int *indegree, int *outdegree,
 
 int MPI_Errhandler_create(MPI_Comm_errhandler_function *comm_errhandler_fn, MPI_Errhandler *errhandler)
 {
-    return MUK_Errhandler_create(comm_errhandler_fn, errhandler);
+    //return MUK_Errhandler_create(comm_errhandler_fn, errhandler);
+    return MUK_Comm_create_errhandler(comm_errhandler_fn, errhandler);
 }
 
 int MPI_Errhandler_free(MPI_Errhandler *errhandler)

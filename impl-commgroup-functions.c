@@ -19,7 +19,7 @@
 #include "impl-linked-list.h"
 #include "impl-constant-conversions.h"
 #include "impl-handle-conversions.h"
-#include "impl-predefined-handle.h"
+//#include "impl-predefined-handle.h"
 
 // WRAP->IMPL functions
 
@@ -35,7 +35,7 @@ void comm_errhandler_trampoline(MPI_Comm *comm, int *error_code, ...)
     rc = IMPL_Comm_get_attr(*comm, COMM_EH_HANDLE_KEY, &cookie, &flag);
     if (rc != MPI_SUCCESS || !flag) {
         printf("%s: IMPL_Comm_get_attr failed: flag=%d rc=%d\n", __func__, flag, rc);
-        MPI_Abort(*comm,rc);
+        //MPI_Abort(*comm,rc);
     }
 
     WRAP_Comm_errhandler_function * fp = NULL;

@@ -17,10 +17,12 @@
 #include "impl-handle-conversions.h"
 #include "impl-alltoallw.h"
 
-op_fptr_pair_t       * op_fptr_pair_list       = NULL;
-req_cookie_pair_t    * req_cookie_pair_list    = NULL;
-req_alltoallw_pair_t * req_alltoallw_pair_list = NULL;
-errh_fptr_pair_t     * errh_fptr_pair_list     = NULL;
+op_fptr_pair_t        * op_fptr_pair_list        = NULL;
+req_cookie_pair_t     * req_cookie_pair_list     = NULL;
+req_alltoallw_pair_t  * req_alltoallw_pair_list  = NULL;
+comm_errh_fptr_pair_t * comm_errh_fptr_pair_list = NULL;
+file_errh_fptr_pair_t * file_errh_fptr_pair_list = NULL;
+win_errh_fptr_pair_t  * win_errh_fptr_pair_list  = NULL;
 
 // WRAP->IMPL functions
 

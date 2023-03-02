@@ -33,12 +33,24 @@
 
 // TODO document that MUK supports no additional arguments.
 
-extern int WIN_EH_HANDLE_KEY;
-
 void win_errhandler_trampoline(MPI_Win *win, int *error_code, ...)
 {
+    //lookup_errhandler_callback(Win, MPI_WIN_NULL, NULL, MPI_FILE_NULL, NULL, *win, &fp);
+
+    int rc;
+    int flag;
+    win_errh_trampoline_cookie_t * cookie = NULL;
+    rc = IMPL_Win_get_attr(*win, WIN_EH_HANDLE_KEY, &cookie, &flag);
+    if (rc != MPI_SUCCESS || !flag) {
+        printf("%s: IMPL_Win_get_attr failed: flag=%d rc=%d\n", __func__, flag, rc);
+        MPI_Abort(*win,rc);
+    }
+
     WRAP_Win_errhandler_function * fp   = NULL;
-    lookup_errhandler_callback(Win, MPI_COMM_NULL, NULL, MPI_FILE_NULL, NULL, *win, &fp);
+    if (flag) {
+        fp = cookie->win_fp;
+    }
+
     WRAP_Win wrap_win = OUTPUT_MPI_Win(*win);
     (*fp)(&wrap_win,error_code);
 }
@@ -49,16 +61,52 @@ int WRAP_Win_create_errhandler(WRAP_Win_errhandler_function *win_errhandler_fn, 
     //int rc = IMPL_Win_create_errhandler(win_errhandler_fn, &impl_errhandler);
     int rc = IMPL_Win_create_errhandler(win_errhandler_trampoline, &impl_errhandler);
     *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
-    add_errhandler_callback(impl_errhandler, Win, NULL, NULL, win_errhandler_fn);
+    add_win_errh_pair_to_list(impl_errhandler, &win_errhandler_fn);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Win_set_errhandler(WRAP_Win win, WRAP_Errhandler errhandler)
 {
+    int rc;
     MPI_Win impl_win = CONVERT_MPI_Win(win);
     MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(errhandler);
-    int rc = IMPL_Win_set_errhandler(impl_win, impl_errhandler);
-    bind_errhandler_to_object(Win, impl_errhandler, MPI_COMM_NULL, MPI_FILE_NULL, impl_win);
+    rc = IMPL_Win_set_errhandler(impl_win, impl_errhandler);
+    // first, free the state associated with the old one, if it exists
+    {
+        int flag;
+        win_errh_trampoline_cookie_t * cookie = NULL;
+        rc = IMPL_Win_get_attr(impl_win, WIN_EH_HANDLE_KEY, &cookie, &flag);
+        if (rc) {
+            printf("%s: Win_set_attr failed\n",__func__);
+            goto end;
+        }
+        else if (flag) {
+            if (cookie == NULL) {
+                printf("%s: impl_win=%lx errhandler cookie is %p\n",
+                       __func__, (intptr_t)impl_win, cookie);
+            }
+            free(cookie);
+        }
+    }
+    // second, attach the new state
+    {
+        WRAP_Win_errhandler_function * win_errhandler_fn;
+        if (lookup_win_errh_pair(impl_errhandler, &win_errhandler_fn)) {
+            win_errh_trampoline_cookie_t * cookie = calloc(1,sizeof(win_errh_trampoline_cookie_t));
+            cookie->win_fp = win_errhandler_fn;
+            rc = IMPL_Win_set_attr(impl_win, WIN_EH_HANDLE_KEY, cookie);
+            if (rc) {
+                printf("%s: Win_set_attr failed\n",__func__);
+                free(cookie);
+                goto end;
+            }
+        }
+        else {
+            printf("%s: lookup_win_err_pair failed to find a callback for errhandler=%lx\n",
+                   __func__, (intptr_t)impl_errhandler);
+        }
+    }
+    end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -478,7 +526,7 @@ int WRAP_Win_flush_local_all(WRAP_Win win)
 int WRAP_Win_free(WRAP_Win *win)
 {
     MPI_Win impl_win = CONVERT_MPI_Win(*win);
-    remove_errhandler_by_object(Win,MPI_COMM_NULL,MPI_FILE_NULL,impl_win);
+    //remove_errhandler_by_object(Win,MPI_COMM_NULL,MPI_FILE_NULL,impl_win);
     int rc = IMPL_Win_free(&impl_win);
     *win = OUTPUT_MPI_Win(impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);
