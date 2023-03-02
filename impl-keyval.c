@@ -8,11 +8,6 @@
 // for user-defined reductions
 int TYPE_HANDLE_KEY = MPI_KEYVAL_INVALID;
 
-// for errhandlers
-int TYPE_EH_HANDLE_KEY = MPI_KEYVAL_INVALID;
-int COMM_EH_HANDLE_KEY = MPI_KEYVAL_INVALID;
-int WIN_EH_HANDLE_KEY  = MPI_KEYVAL_INVALID;
-
 void WRAP_Init_handle_key(void)
 {
     int rc;
@@ -20,6 +15,7 @@ void WRAP_Init_handle_key(void)
     if (rc != MPI_SUCCESS) {
         printf("IMPL_Type_create_keyval(TYPE_HANDLE_KEY) failed: %d\n", rc);
     }
+#if 0
     rc = IMPL_Type_create_keyval(MPI_TYPE_NULL_COPY_FN, MPI_TYPE_NULL_DELETE_FN, &TYPE_EH_HANDLE_KEY, NULL);
     if (rc != MPI_SUCCESS) {
         printf("IMPL_Type_create_keyval(TYPE_EH_HANDLE_KEY) failed: %d\n", rc);
@@ -32,6 +28,7 @@ void WRAP_Init_handle_key(void)
     if (rc != MPI_SUCCESS) {
         printf("IMPL_Win_create_keyval(WIN_EH_HANDLE_KEY) failed: %d\n", rc);
     }
+#endif
 }
 
 void WRAP_Finalize_handle_key(void)
@@ -43,6 +40,7 @@ void WRAP_Finalize_handle_key(void)
             printf("IMPL_Type_free_keyval(TYPE_HANDLE_KEY) failed: %d\n", rc);
         }
     }
+#if 0
     if (TYPE_EH_HANDLE_KEY != MPI_KEYVAL_INVALID) {
         rc = IMPL_Type_free_keyval(&TYPE_EH_HANDLE_KEY);
         if (rc != MPI_SUCCESS) {
@@ -61,4 +59,5 @@ void WRAP_Finalize_handle_key(void)
             printf("IMPL_Win_free_keyval(WIN_EH_HANDLE_KEY) failed: %d\n", rc);
         }
     }
+#endif
 }

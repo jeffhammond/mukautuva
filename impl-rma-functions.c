@@ -53,21 +53,21 @@ int WRAP_Win_create_errhandler(WRAP_Win_errhandler_function *win_errhandler_fn, 
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
+int WRAP_Win_set_errhandler(WRAP_Win win, WRAP_Errhandler errhandler)
+{
+    MPI_Win impl_win = CONVERT_MPI_Win(win);
+    MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(errhandler);
+    int rc = IMPL_Win_set_errhandler(impl_win, impl_errhandler);
+    bind_errhandler_to_object(impl_errhandler, Win, MPI_COMM_NULL, MPI_FILE_NULL, impl_win);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
 int WRAP_Win_get_errhandler(WRAP_Win win, WRAP_Errhandler *errhandler)
 {
     MPI_Win impl_win = CONVERT_MPI_Win(win);
     MPI_Errhandler impl_errhandler;
     int rc = IMPL_Win_get_errhandler(impl_win, &impl_errhandler);
     *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Win_set_errhandler(WRAP_Win win, WRAP_Errhandler errhandler)
-{
-    MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(errhandler);
-    MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Win_set_errhandler(impl_win, impl_errhandler);
-    bind_errhandler_to_object(impl_errhandler, Win, MPI_COMM_NULL, MPI_FILE_NULL, impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -478,6 +478,7 @@ int WRAP_Win_flush_local_all(WRAP_Win win)
 int WRAP_Win_free(WRAP_Win *win)
 {
     MPI_Win impl_win = CONVERT_MPI_Win(*win);
+    remove_errhandler_by_object(Win,MPI_COMM_NULL,MPI_FILE_NULL,impl_win);
     int rc = IMPL_Win_free(&impl_win);
     *win = OUTPUT_MPI_Win(impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);

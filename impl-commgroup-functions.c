@@ -16,6 +16,7 @@
 
 #define MUK_EXTERN extern
 #include "impl-fpointers.h"
+#include "impl-linked-list.h"
 #include "impl-constant-conversions.h"
 #include "impl-handle-conversions.h"
 
@@ -267,6 +268,7 @@ int WRAP_Attr_put(WRAP_Comm comm, int keyval, void *attribute_val)
 int WRAP_Comm_disconnect(WRAP_Comm *comm)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(*comm);
+    remove_errhandler_by_object(Comm,impl_comm,MPI_FILE_NULL,MPI_WIN_NULL);
     int rc = IMPL_Comm_disconnect(&impl_comm);
     *comm = OUTPUT_MPI_Comm(impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -294,6 +296,7 @@ int WRAP_Comm_dup_with_info(WRAP_Comm comm, WRAP_Info info, WRAP_Comm *newcomm)
 int WRAP_Comm_free(WRAP_Comm *comm)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(*comm);
+    remove_errhandler_by_object(Comm,impl_comm,MPI_FILE_NULL,MPI_WIN_NULL);
     int rc = IMPL_Comm_free(&impl_comm);
     *comm = OUTPUT_MPI_Comm(impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);

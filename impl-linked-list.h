@@ -187,6 +187,7 @@ static void remove_op_pair_from_list(MPI_Op op)
     // Step 1: look up op in the linked list
     if (op_fptr_pair_list == NULL) {
         printf("remove_op_pair_from_list: op_fptr_pair_list is NULL - this should be impossible.\n");
+        abort();
     }
     op_fptr_pair_t * current = op_fptr_pair_list;
     while (current) {
@@ -392,6 +393,10 @@ static void add_errhandler_callback(MPI_Errhandler errhandler,
         assert(win_fp == NULL);
     }
 #endif
+    else {
+        printf("%s line %d: kind (%d) is invalid\n", __func__, __LINE__, kind);
+        abort();
+    }
     tuple->prev = NULL;
     tuple->next = NULL;
 
@@ -419,7 +424,9 @@ static void bind_errhandler_to_object(MPI_Errhandler errhandler,
     // Step 1: look up errhandler in the linked list
     if (errhandler_tuple_list == NULL) {
         printf("%s: errhandler_tuple_list is NULL - this should be impossible.\n",__func__);
+        abort();
     }
+
     errhandler_tuple_t * current = errhandler_tuple_list;
     while (current) {
         if (current->errhandler == errhandler) {
@@ -461,6 +468,10 @@ static void bind_errhandler_to_object(MPI_Errhandler errhandler,
         assert(win == MPI_WIN_NULL);
     }
 #endif
+    else {
+        printf("%s line %d: kind (%d) is invalid\n", __func__, __LINE__, kind);
+        abort();
+    }
 }
 
 MAYBE_UNUSED
@@ -473,6 +484,7 @@ static void lookup_errhandler_callback(MPI_Comm    comm,
                                        //MPI_Session session,
                                        //WRAP_Session_errhandler_function ** session_fp)
 {
+    // check that inputs make sense
     int nk = 0;
     nk += (comm != MPI_COMM_NULL);
     nk += (file != MPI_FILE_NULL);
@@ -480,17 +492,18 @@ static void lookup_errhandler_callback(MPI_Comm    comm,
     if (nk != 1) {
         printf("%s: exactly one non-null handle must be passed\n",__func__);
         printf("%s: comm=%lx file=%lx win=%lx\n", __func__, (intptr_t)comm, (intptr_t)file, (intptr_t)win);
+        abort();
     }
-
-    errhandler_kind_e kind = Invalid;
 
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
 
     // Step 1: look up object handle in the linked list
     if (errhandler_tuple_list == NULL) {
         printf("%s: errhandler_tuple_list is NULL - this should be impossible.\n",__func__);
+        abort();
     }
     errhandler_tuple_t * current = errhandler_tuple_list;
+    errhandler_kind_e kind = Invalid;
     while (current) {
         if ((current->handle.comm != MPI_COMM_NULL) && 
             (current->handle.comm == comm)) {
@@ -532,11 +545,19 @@ static void lookup_errhandler_callback(MPI_Comm    comm,
         *session_fp = current->fp.session_ip;
     }
 #endif
+    else {
+        printf("%s line %d: kind (%d) is invalid\n", __func__, __LINE__, kind);
+        abort();
+    }
 }
 
+#if 0
 MAYBE_UNUSED
 static void remove_errhandler(MPI_Errhandler errhandler)
 {
+    printf("%s: this function cannot be used.\n",__func__);
+    abort();
+
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
 
     // Step 1: look up errhandler in the linked list
@@ -548,6 +569,65 @@ static void remove_errhandler(MPI_Errhandler errhandler)
         if (current->errhandler == errhandler) {
             break;
         }
+        current = current->next;
+    }
+
+    // Step 2: remove current from the list
+    if (current->prev == NULL) {
+        assert(current == errhandler_tuple_list);
+        errhandler_tuple_list = current->next;
+        if (current->next != NULL) {
+            current->next->prev = NULL;
+        }
+    } else {
+        current->prev->next = current->next;
+        if (current->next != NULL) {
+            current->next->prev = current->prev;
+        }
+    }
+
+    // Step 3: free the memory
+    free(current);
+}
+#endif
+
+MAYBE_UNUSED
+static void remove_errhandler_by_object(errhandler_kind_e kind,
+                                        MPI_Comm    comm,
+                                        MPI_File    file,
+                                        MPI_Win     win)
+                                        //MPI_Session session)
+{
+    // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
+
+    // Step 1: look up object in the linked list
+    if (errhandler_tuple_list == NULL) {
+        printf("%s: errhandler_tuple_list is NULL - this should be impossible.\n",__func__);
+    }
+    errhandler_tuple_t * current = errhandler_tuple_list;
+    while (current) {
+        if ((current->handle.comm != MPI_COMM_NULL) && 
+            (current->handle.comm == comm)) {
+            assert(kind == Comm);
+            break;
+        }
+        else if ((current->handle.file != MPI_FILE_NULL) && 
+                 (current->handle.file == file)) {
+            assert(kind == File);
+            break;
+        }
+        else if ((current->handle.win != MPI_WIN_NULL) && 
+                 (current->handle.win == win)) {
+            assert(kind == Win);
+            break;
+        }
+#if 0
+        else if ((current->handle.session != MPI_SESSION_NULL) && 
+                 (current->handle.session == session) {
+            assert(kind == Session);
+            break;
+        }
+#endif
         current = current->next;
     }
 

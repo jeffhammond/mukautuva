@@ -17,8 +17,49 @@
 #define MUK_EXTERN extern
 #include "impl-fpointers.h"
 #include "impl-status.h"
+#include "impl-linked-list.h"
 #include "impl-constant-conversions.h"
 #include "impl-handle-conversions.h"
+
+// WRAP->IMPL functions
+
+// errhandler stuff
+
+void file_errhandler_trampoline(MPI_File *file, int *error_code, ...)
+{
+    WRAP_File_errhandler_function * fp   = NULL;
+    lookup_errhandler_callback(MPI_COMM_NULL, NULL, *file, &fp, MPI_WIN_NULL, NULL);
+    WRAP_File wrap_file = OUTPUT_MPI_File(*file);
+    (*fp)(&wrap_file,error_code);
+}
+
+int WRAP_File_create_errhandler(WRAP_File_errhandler_function *file_errhandler_fn, WRAP_Errhandler *errhandler)
+{
+    MPI_Errhandler impl_errhandler;
+    //int rc = IMPL_File_create_errhandler(file_errhandler_fn, &impl_errhandler);
+    int rc = IMPL_File_create_errhandler(file_errhandler_trampoline, &impl_errhandler);
+    *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
+    add_errhandler_callback(impl_errhandler, File, NULL, file_errhandler_fn, NULL);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_File_set_errhandler(WRAP_File file, WRAP_Errhandler errhandler)
+{
+    MPI_File impl_file = CONVERT_MPI_File(file);
+    MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(errhandler);
+    int rc = IMPL_File_set_errhandler(impl_file, impl_errhandler);
+    bind_errhandler_to_object(impl_errhandler, File, MPI_COMM_NULL, impl_file, MPI_WIN_NULL);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_File_get_errhandler(WRAP_File file, WRAP_Errhandler *errhandler)
+{
+    MPI_File impl_file = CONVERT_MPI_File(file);
+    MPI_Errhandler impl_errhandler;
+    int rc = IMPL_File_get_errhandler(impl_file, &impl_errhandler);
+    *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
 
 int WRAP_File_call_errhandler(WRAP_File fh, int errorcode)
 {
@@ -30,16 +71,9 @@ int WRAP_File_call_errhandler(WRAP_File fh, int errorcode)
 int WRAP_File_close(WRAP_File *fh)
 {
     MPI_File impl_fh = CONVERT_MPI_File(*fh);
+    remove_errhandler_by_object(File,MPI_COMM_NULL,impl_fh,MPI_WIN_NULL);
     int rc = IMPL_File_close(&impl_fh);
     *fh = OUTPUT_MPI_File(impl_fh);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_File_create_errhandler(WRAP_File_errhandler_function *file_errhandler_fn, WRAP_Errhandler *errhandler)
-{
-    MPI_Errhandler impl_errhandler;
-    int rc = IMPL_File_create_errhandler(file_errhandler_fn, &impl_errhandler);
-    *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -74,15 +108,6 @@ int WRAP_File_get_byte_offset(WRAP_File fh, WRAP_Offset offset, WRAP_Offset *dis
     if (impl_disp == MPI_DISPLACEMENT_CURRENT) {
         *disp = MUK_DISPLACEMENT_CURRENT;
     }
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_File_get_errhandler(WRAP_File file, WRAP_Errhandler *errhandler)
-{
-    MPI_File impl_file = CONVERT_MPI_File(file);
-    MPI_Errhandler impl_errhandler;
-    int rc = IMPL_File_get_errhandler(impl_file, &impl_errhandler);
-    *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -646,14 +671,6 @@ int WRAP_File_set_atomicity(WRAP_File fh, int flag)
 {
     MPI_File impl_fh = CONVERT_MPI_File(fh);
     int rc = IMPL_File_set_atomicity(impl_fh, flag);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_File_set_errhandler(WRAP_File file, WRAP_Errhandler errhandler)
-{
-    MPI_File impl_file = CONVERT_MPI_File(file);
-    MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(errhandler);
-    int rc = IMPL_File_set_errhandler(impl_file, impl_errhandler);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
