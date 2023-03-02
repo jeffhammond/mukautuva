@@ -280,18 +280,13 @@ int WRAP_Comm_get_attr(WRAP_Comm comm, int comm_keyval, void *attribute_val, int
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     int rc = IMPL_Comm_get_attr(impl_comm, KEY_MUK_TO_IMPL(comm_keyval), attribute_val, flag);
+    // MPI_TAG_UB and MPI_WTIME_IS_GLOBAL should not require conversion
     if (comm_keyval == MUK_HOST) {
         **(int**)attribute_val = RANK_IMPL_TO_MUK(**(int**)attribute_val);
     }
-#if 0
-    // FIXME for comm if necessary
-    // this is the only place this is needed, so we inline it
-    if (**(int**)attribute_val == MPI_WIN_SEPARATE) {
-        **(int**)attribute_val = MUK_WIN_SEPARATE;
-    } else if (**(int**)attribute_val == MPI_WIN_UNIFIED) {
-        **(int**)attribute_val = MUK_WIN_UNIFIED;
+    if (comm_keyval == MUK_IO) {
+        **(int**)attribute_val = RANK_IMPL_TO_MUK(**(int**)attribute_val);
     }
-#endif
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
