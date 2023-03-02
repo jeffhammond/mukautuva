@@ -243,25 +243,32 @@ int WRAP_Comm_create(WRAP_Comm comm, WRAP_Group group, WRAP_Comm *newcomm)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
-#if 0
 int WRAP_Comm_create_keyval(WRAP_Comm_copy_attr_function *comm_copy_attr_fn, WRAP_Comm_delete_attr_function *comm_delete_attr_fn, int *comm_keyval, void *extra_state)
 {
-    MPI_Comm_copy_attr_function * impl_comm_copy_attr_fn = (MPI_Comm_copy_attr_function*)comm_copy_attr_fn;
+    MPI_Comm_copy_attr_function * impl_comm_copy_attr_fn;
     if ((intptr_t)comm_copy_attr_fn == (intptr_t)MUK_COMM_NULL_COPY_FN) {
         impl_comm_copy_attr_fn = MPI_COMM_NULL_COPY_FN;
-    } else {
-        printf("%s : %d FIXME\n",__func__,__LINE__);
     }
-    MPI_Comm_delete_attr_function * impl_comm_delete_attr_fn = (MPI_Comm_delete_attr_function*)comm_delete_attr_fn;
+    else if ((intptr_t)comm_copy_attr_fn == (intptr_t)MUK_COMM_DUP_FN) {
+        impl_comm_copy_attr_fn = MPI_COMM_DUP_FN;
+    }
+    else {
+        //printf("%s : %d FIXME\n",__func__,__LINE__);
+        // FIXME with a trampoline
+        impl_comm_copy_attr_fn = MPI_COMM_DUP_FN;
+    }
+    MPI_Comm_delete_attr_function * impl_comm_delete_attr_fn;
     if ((intptr_t)comm_delete_attr_fn == (intptr_t)MUK_COMM_NULL_DELETE_FN) {
         impl_comm_delete_attr_fn = MPI_COMM_NULL_DELETE_FN;
-    } else {
-        printf("%s : %d FIXME\n",__func__,__LINE__);
+    }
+    else {
+        //printf("%s : %d FIXME\n",__func__,__LINE__);
+        // FIXME with a trampoline
+        impl_comm_delete_attr_fn = MPI_COMM_NULL_DELETE_FN;
     }
     int rc = IMPL_Comm_create_keyval(impl_comm_copy_attr_fn, impl_comm_delete_attr_fn, comm_keyval, extra_state);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
-#endif
 
 int WRAP_Comm_delete_attr(WRAP_Comm comm, int comm_keyval)
 {
