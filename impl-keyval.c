@@ -12,6 +12,7 @@ int TYPE_HANDLE_KEY = MPI_KEYVAL_INVALID;
 int COMM_EH_HANDLE_KEY = MPI_KEYVAL_INVALID;
 int WIN_EH_HANDLE_KEY = MPI_KEYVAL_INVALID;
 
+#if 0
 int comm_delete_cookie(MPI_Comm comm, int comm_keyval, void *attribute_val, void *extra_state)
 {
     if (comm_keyval == COMM_EH_HANDLE_KEY) {
@@ -47,6 +48,7 @@ int win_delete_cookie(MPI_Win win, int win_keyval, void *attribute_val, void *ex
     (void)extra_state;
     return MPI_SUCCESS;
 }
+#endif
 
 void WRAP_Init_handle_key(void)
 {
@@ -57,11 +59,13 @@ void WRAP_Init_handle_key(void)
     }
     // use the DUP copy function so that the attribute containing the errh callback fptr is copied
     // to the new communicator.  we need to remember to delete the cookie when the comm/win objects are freed.
-    rc = IMPL_Comm_create_keyval(MPI_COMM_DUP_FN, comm_delete_cookie, &COMM_EH_HANDLE_KEY, NULL);
+    //rc = IMPL_Comm_create_keyval(MPI_COMM_DUP_FN, comm_delete_cookie, &COMM_EH_HANDLE_KEY, NULL);
+    rc = IMPL_Comm_create_keyval(MPI_COMM_DUP_FN, MPI_COMM_NULL_DELETE_FN, &COMM_EH_HANDLE_KEY, NULL);
     if (rc != MPI_SUCCESS) {
         printf("IMPL_Comm_create_keyval(COMM_EH_HANDLE_KEY) failed: %d\n", rc);
     }
-    rc = IMPL_Win_create_keyval(MPI_WIN_DUP_FN, win_delete_cookie, &WIN_EH_HANDLE_KEY, NULL);
+    //rc = IMPL_Win_create_keyval(MPI_WIN_DUP_FN, win_delete_cookie, &WIN_EH_HANDLE_KEY, NULL);
+    rc = IMPL_Win_create_keyval(MPI_WIN_DUP_FN, MPI_WIN_NULL_DELETE_FN, &WIN_EH_HANDLE_KEY, NULL);
     if (rc != MPI_SUCCESS) {
         printf("IMPL_Win_create_keyval(WIN_EH_HANDLE_KEY) failed: %d\n", rc);
     }
