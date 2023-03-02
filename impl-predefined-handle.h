@@ -28,4 +28,16 @@ static bool IS_PREDEFINED_OP(MPI_Op op)
             op == MPI_NO_OP);
 }
 
+MAYBE_UNUSED
+static bool IS_PREDEFINED_ERRHANDLER(MPI_Errhandler errhandler)
+{
+    return ( (errhandler == MPI_ERRORS_ARE_FATAL) ||
+             (errhandler == MPI_ERRORS_RETURN) ||
+    #if MPI_VERSION >= 4
+             (errhandler == MPI_ERRORS_ABORT) ||
+    #endif
+             (errhandler == MPI_ERRHANDLER_NULL)
+           );
+}
+
 #endif
