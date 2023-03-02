@@ -98,6 +98,9 @@ int WRAP_Op_create_c(WRAP_User_function_c *user_fn, int commute, WRAP_Op *op)
 int WRAP_Op_free(WRAP_Op *op)
 {
     MPI_Op impl_op = CONVERT_MPI_Op(*op);
+    // technically, this is illegal, since users can do
+    // Op_create, Iallreduce(r), Op_free, Wait(r)
+    // but this use case is incredibly stupid and we will ignore it for now.
     remove_op_pair_from_list(impl_op);
     int rc = IMPL_Op_free(&impl_op);
     *op = OUTPUT_MPI_Op(impl_op);
