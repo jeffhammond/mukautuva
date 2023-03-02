@@ -22,6 +22,104 @@
 
 // WRAP->IMPL functions
 
+// errhandler stuff
+
+void comm_errhandler_trampoline(MPI_Comm *comm, int *error_code, ...)
+{
+    WRAP_Comm_errhandler_function * fp   = NULL;
+    lookup_errhandler_callback(Comm, *comm, &fp, MPI_FILE_NULL, NULL, MPI_WIN_NULL, NULL);
+    WRAP_Comm wrap_comm = OUTPUT_MPI_Comm(*comm);
+    (*fp)(&wrap_comm,error_code);
+}
+
+int WRAP_Comm_create_errhandler(WRAP_Comm_errhandler_function *comm_errhandler_fn, WRAP_Errhandler *errhandler)
+{
+    MPI_Errhandler impl_errhandler;
+    //int rc = IMPL_Comm_create_errhandler(comm_errhandler_fn, &impl_errhandler);
+    int rc = IMPL_Comm_create_errhandler(comm_errhandler_trampoline, &impl_errhandler);
+    *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
+    add_errhandler_callback(impl_errhandler, Comm, comm_errhandler_fn, NULL, NULL);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Comm_set_errhandler(WRAP_Comm comm, WRAP_Errhandler errhandler)
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(errhandler);
+    int rc = IMPL_Comm_set_errhandler(impl_comm, impl_errhandler);
+    bind_errhandler_to_object(Comm, impl_errhandler, impl_comm, MPI_FILE_NULL, MPI_WIN_NULL);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Comm_get_errhandler(WRAP_Comm comm, WRAP_Errhandler *errhandler)
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    MPI_Errhandler impl_errhandler;
+    int rc = IMPL_Comm_get_errhandler(impl_comm, &impl_errhandler);
+    *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Comm_call_errhandler(WRAP_Comm comm, int errorcode)
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    int rc = IMPL_Comm_call_errhandler(impl_comm, errorcode);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+// obsolete versions
+
+int WRAP_Errhandler_create(WRAP_Comm_errhandler_function *comm_errhandler_fn, WRAP_Errhandler *errhandler)
+{
+    MPI_Errhandler impl_errhandler;
+    //int rc = IMPL_Errhandler_create(comm_errhandler_fn, &impl_errhandler);
+    int rc = IMPL_Errhandler_create(comm_errhandler_trampoline, &impl_errhandler);
+    *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
+    add_errhandler_callback(impl_errhandler, Comm, comm_errhandler_fn, NULL, NULL);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Errhandler_set(WRAP_Comm comm, WRAP_Errhandler errhandler)
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(errhandler);
+    int rc = IMPL_Errhandler_set(impl_comm, impl_errhandler);
+    bind_errhandler_to_object(Comm, impl_errhandler, impl_comm, MPI_FILE_NULL, MPI_WIN_NULL);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Errhandler_get(WRAP_Comm comm, WRAP_Errhandler *errhandler)
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    MPI_Errhandler impl_errhandler;
+    int rc = IMPL_Errhandler_get(impl_comm, &impl_errhandler);
+    *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+// regular functionality
+
+int WRAP_Comm_create_from_group(WRAP_Group group, const char *stringtag, WRAP_Info info, WRAP_Errhandler errhandler, WRAP_Comm *newcomm)
+{
+    MPI_Group impl_group = CONVERT_MPI_Group(group);
+    MPI_Info impl_info = CONVERT_MPI_Info(info);
+    MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(errhandler);
+    MPI_Comm impl_newcomm;
+    int rc = IMPL_Comm_create_from_group(impl_group, stringtag, impl_info, impl_errhandler, &impl_newcomm);
+    *newcomm = OUTPUT_MPI_Comm(impl_newcomm);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Comm_create_group(WRAP_Comm comm, WRAP_Group group, int tag, WRAP_Comm *newcomm)
+{
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    MPI_Group impl_group = CONVERT_MPI_Group(group);
+    MPI_Comm impl_newcomm;
+    int rc = IMPL_Comm_create_group(impl_comm, impl_group, tag, &impl_newcomm);
+    *newcomm = OUTPUT_MPI_Comm(impl_newcomm);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
 int WRAP_Cart_coords(WRAP_Comm comm, int rank, int maxdims, int coords[])
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
@@ -95,13 +193,6 @@ int WRAP_Comm_accept(const char *port_name, WRAP_Info info, int root, WRAP_Comm 
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Comm_call_errhandler(WRAP_Comm comm, int errorcode)
-{
-    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    int rc = IMPL_Comm_call_errhandler(impl_comm, errorcode);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
 int WRAP_Comm_compare(WRAP_Comm comm1, WRAP_Comm comm2, int *result)
 {
     MPI_Comm impl_comm1 = CONVERT_MPI_Comm(comm1);
@@ -126,35 +217,6 @@ int WRAP_Comm_create(WRAP_Comm comm, WRAP_Group group, WRAP_Comm *newcomm)
     MPI_Group impl_group = CONVERT_MPI_Group(group);
     MPI_Comm impl_newcomm;
     int rc = IMPL_Comm_create(impl_comm, impl_group, &impl_newcomm);
-    *newcomm = OUTPUT_MPI_Comm(impl_newcomm);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Comm_create_errhandler(WRAP_Comm_errhandler_function *comm_errhandler_fn, WRAP_Errhandler *errhandler)
-{
-    MPI_Errhandler impl_errhandler;
-    int rc = IMPL_Comm_create_errhandler(comm_errhandler_fn, &impl_errhandler);
-    *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Comm_create_from_group(WRAP_Group group, const char *stringtag, WRAP_Info info, WRAP_Errhandler errhandler, WRAP_Comm *newcomm)
-{
-    MPI_Group impl_group = CONVERT_MPI_Group(group);
-    MPI_Info impl_info = CONVERT_MPI_Info(info);
-    MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(errhandler);
-    MPI_Comm impl_newcomm;
-    int rc = IMPL_Comm_create_from_group(impl_group, stringtag, impl_info, impl_errhandler, &impl_newcomm);
-    *newcomm = OUTPUT_MPI_Comm(impl_newcomm);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Comm_create_group(WRAP_Comm comm, WRAP_Group group, int tag, WRAP_Comm *newcomm)
-{
-    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    MPI_Group impl_group = CONVERT_MPI_Group(group);
-    MPI_Comm impl_newcomm;
-    int rc = IMPL_Comm_create_group(impl_comm, impl_group, tag, &impl_newcomm);
     *newcomm = OUTPUT_MPI_Comm(impl_newcomm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -302,15 +364,6 @@ int WRAP_Comm_free(WRAP_Comm *comm)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
-int WRAP_Comm_get_errhandler(WRAP_Comm comm, WRAP_Errhandler *errhandler)
-{
-    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    MPI_Errhandler impl_errhandler;
-    int rc = IMPL_Comm_get_errhandler(impl_comm, &impl_errhandler);
-    *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
 int WRAP_Comm_get_info(WRAP_Comm comm, WRAP_Info *info_used)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
@@ -395,14 +448,6 @@ int WRAP_Comm_remote_size(WRAP_Comm comm, int *size)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     int rc = IMPL_Comm_remote_size(impl_comm, size);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Comm_set_errhandler(WRAP_Comm comm, WRAP_Errhandler errhandler)
-{
-    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(errhandler);
-    int rc = IMPL_Comm_set_errhandler(impl_comm, impl_errhandler);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 

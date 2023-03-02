@@ -38,7 +38,7 @@ extern int WIN_EH_HANDLE_KEY;
 void win_errhandler_trampoline(MPI_Win *win, int *error_code, ...)
 {
     WRAP_Win_errhandler_function * fp   = NULL;
-    lookup_errhandler_callback(MPI_COMM_NULL, NULL, MPI_FILE_NULL, NULL, *win, &fp);
+    lookup_errhandler_callback(Win, MPI_COMM_NULL, NULL, MPI_FILE_NULL, NULL, *win, &fp);
     WRAP_Win wrap_win = OUTPUT_MPI_Win(*win);
     (*fp)(&wrap_win,error_code);
 }
@@ -58,7 +58,7 @@ int WRAP_Win_set_errhandler(WRAP_Win win, WRAP_Errhandler errhandler)
     MPI_Win impl_win = CONVERT_MPI_Win(win);
     MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(errhandler);
     int rc = IMPL_Win_set_errhandler(impl_win, impl_errhandler);
-    bind_errhandler_to_object(impl_errhandler, Win, MPI_COMM_NULL, MPI_FILE_NULL, impl_win);
+    bind_errhandler_to_object(Win, impl_errhandler, MPI_COMM_NULL, MPI_FILE_NULL, impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 

@@ -475,40 +475,12 @@ int WRAP_Buffer_detach_c(void *buffer_addr, WRAP_Count *size)
 }
 #endif
 
-int WRAP_Errhandler_create(WRAP_Comm_errhandler_function *comm_errhandler_fn, WRAP_Errhandler *errhandler)
-{
-    MPI_Errhandler impl_errhandler;
-    int rc = IMPL_Errhandler_create(comm_errhandler_fn, &impl_errhandler);
-    *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
 int WRAP_Errhandler_free(WRAP_Errhandler *errhandler)
 {
     MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(*errhandler);
-    // we cannot do this here because errhandlers are ref-counted and they can
-    // be used even after the handles are freed.  we will free the errhandler state
-    // when the associated objects are freed.
-    //remove_errhandler(impl_errhandler);
+    remove_errhandler(impl_errhandler);
     int rc = IMPL_Errhandler_free(&impl_errhandler);
     *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Errhandler_get(WRAP_Comm comm, WRAP_Errhandler *errhandler)
-{
-    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    MPI_Errhandler impl_errhandler;
-    int rc = IMPL_Errhandler_get(impl_comm, &impl_errhandler);
-    *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Errhandler_set(WRAP_Comm comm, WRAP_Errhandler errhandler)
-{
-    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(errhandler);
-    int rc = IMPL_Errhandler_set(impl_comm, impl_errhandler);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 

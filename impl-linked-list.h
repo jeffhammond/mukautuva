@@ -41,6 +41,23 @@ typedef enum {
 // we remove list items from the list during WRAP_Errhandler_free.
 typedef struct errhandler_tuple_s
 {
+    // we have to do this because errhandler ids are ref-counted and
+    // otherwise we have no idea when we are actually done with a tuple.
+    intptr_t refcount;
+
+    // all errhandlers live in the same pool because Errhandler_free
+    // frees all of them
+    errhandler_kind_e kind;
+
+    union {
+        MPI_Comm    comm;
+        MPI_File    file;
+        MPI_Win     win;
+#if 0
+        MPI_Session session;
+#endif
+    } handle;
+
     MPI_Errhandler                        errhandler;
     union {
         WRAP_Comm_errhandler_function    * comm_fp;
@@ -50,15 +67,6 @@ typedef struct errhandler_tuple_s
         WRAP_Session_errhandler_function * session_fp;
 #endif
     } fp;
-    union {
-        MPI_Comm    comm;
-        MPI_File    file;
-        MPI_Win     win;
-#if 0
-        MPI_Session session;
-#endif
-    } handle;
-    errhandler_kind_e kind;
 
     struct errhandler_tuple_s * next;
     struct errhandler_tuple_s * prev;
@@ -365,6 +373,8 @@ static void add_errhandler_callback(MPI_Errhandler errhandler,
 {
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
     errhandler_tuple_t * tuple = calloc(1,sizeof(errhandler_tuple_t));
+    tuple->refcount = 1;
+    printf("%s: tuple=%p refcount=%lx\n",__func__,tuple,tuple->refcount);
     tuple->errhandler = errhandler;
     tuple->kind = kind;
     if (kind == Comm) {
@@ -413,8 +423,8 @@ static void add_errhandler_callback(MPI_Errhandler errhandler,
 }
 
 MAYBE_UNUSED
-static void bind_errhandler_to_object(MPI_Errhandler errhandler,
-                                      errhandler_kind_e kind,
+static void bind_errhandler_to_object(errhandler_kind_e kind,
+                                      MPI_Errhandler errhandler,
                                       MPI_Comm    comm,
                                       MPI_File    file,
                                       MPI_Win     win)
@@ -433,6 +443,10 @@ static void bind_errhandler_to_object(MPI_Errhandler errhandler,
             break;
         }
         current = current->next;
+    }
+
+    if (current == NULL) {
+        printf("%s: current is NULL.\n",__func__);
     }
 
     // Step 2: verify the input is consistent
@@ -472,10 +486,14 @@ static void bind_errhandler_to_object(MPI_Errhandler errhandler,
         printf("%s line %d: kind (%d) is invalid\n", __func__, __LINE__, kind);
         abort();
     }
+
+    current->refcount += 1;
+    printf("%s: current=%p refcount=%lx\n",__func__,current,current->refcount);
 }
 
 MAYBE_UNUSED
-static void lookup_errhandler_callback(MPI_Comm    comm,
+static void lookup_errhandler_callback(errhandler_kind_e kind,
+                                       MPI_Comm    comm,
                                        WRAP_Comm_errhandler_function    ** comm_fp,
                                        MPI_File    file,
                                        WRAP_File_errhandler_function    ** file_fp,
@@ -484,17 +502,6 @@ static void lookup_errhandler_callback(MPI_Comm    comm,
                                        //MPI_Session session,
                                        //WRAP_Session_errhandler_function ** session_fp)
 {
-    // check that inputs make sense
-    int nk = 0;
-    nk += (comm != MPI_COMM_NULL);
-    nk += (file != MPI_FILE_NULL);
-    nk += (win  != MPI_WIN_NULL);
-    if (nk != 1) {
-        printf("%s: exactly one non-null handle must be passed\n",__func__);
-        printf("%s: comm=%lx file=%lx win=%lx\n", __func__, (intptr_t)comm, (intptr_t)file, (intptr_t)win);
-        abort();
-    }
-
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
 
     // Step 1: look up object handle in the linked list
@@ -503,31 +510,34 @@ static void lookup_errhandler_callback(MPI_Comm    comm,
         abort();
     }
     errhandler_tuple_t * current = errhandler_tuple_list;
-    errhandler_kind_e kind = Invalid;
     while (current) {
         if ((current->handle.comm != MPI_COMM_NULL) && 
             (current->handle.comm == comm)) {
-            kind = Comm;        
+            assert(kind == Comm);
             break;
         }
         else if ((current->handle.file != MPI_FILE_NULL) && 
                  (current->handle.file == file)) {
-            kind = File;
+            assert(kind == File);
             break;
         }
         else if ((current->handle.win != MPI_WIN_NULL) && 
                  (current->handle.win == win)) {
-            kind = Win;
+            assert(kind == Win);
             break;
         }
 #if 0
         else if ((current->handle.session != MPI_SESSION_NULL) && 
                  (current->handle.session == session) {
-            kind = Session;
+            assert(kind == Session);
             break;
         }
 #endif
         current = current->next;
+    }
+
+    if (current == NULL) {
+        printf("%s: current is NULL.\n",__func__);
     }
 
     // Step 2: set the appropriate function pointer based on the kind
@@ -551,13 +561,9 @@ static void lookup_errhandler_callback(MPI_Comm    comm,
     }
 }
 
-#if 0
 MAYBE_UNUSED
 static void remove_errhandler(MPI_Errhandler errhandler)
 {
-    printf("%s: this function cannot be used.\n",__func__);
-    abort();
-
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
 
     // Step 1: look up errhandler in the linked list
@@ -572,24 +578,33 @@ static void remove_errhandler(MPI_Errhandler errhandler)
         current = current->next;
     }
 
-    // Step 2: remove current from the list
-    if (current->prev == NULL) {
-        assert(current == errhandler_tuple_list);
-        errhandler_tuple_list = current->next;
-        if (current->next != NULL) {
-            current->next->prev = NULL;
-        }
-    } else {
-        current->prev->next = current->next;
-        if (current->next != NULL) {
-            current->next->prev = current->prev;
-        }
+    if (current == NULL) {
+        printf("%s: current is NULL.\n",__func__);
     }
 
-    // Step 3: free the memory
-    free(current);
+    current->refcount -= 1;
+    printf("%s: current=%p refcount=%lx\n",__func__,current,current->refcount);
+
+    if (current->refcount == 0)
+    {
+        // Step 2: remove current from the list
+        if (current->prev == NULL) {
+            assert(current == errhandler_tuple_list);
+            errhandler_tuple_list = current->next;
+            if (current->next != NULL) {
+                current->next->prev = NULL;
+            }
+        } else {
+            current->prev->next = current->next;
+            if (current->next != NULL) {
+                current->next->prev = current->prev;
+            }
+        }
+
+        // Step 3: free the memory
+        free(current);
+    }
 }
-#endif
 
 MAYBE_UNUSED
 static void remove_errhandler_by_object(errhandler_kind_e kind,
@@ -631,22 +646,32 @@ static void remove_errhandler_by_object(errhandler_kind_e kind,
         current = current->next;
     }
 
-    // Step 2: remove current from the list
-    if (current->prev == NULL) {
-        assert(current == errhandler_tuple_list);
-        errhandler_tuple_list = current->next;
-        if (current->next != NULL) {
-            current->next->prev = NULL;
-        }
-    } else {
-        current->prev->next = current->next;
-        if (current->next != NULL) {
-            current->next->prev = current->prev;
-        }
+    if (current == NULL) {
+        printf("%s: current is NULL.\n",__func__);
     }
 
-    // Step 3: free the memory
-    free(current);
+    current->refcount -= 1;
+    printf("%s: current=%p refcount=%lx\n",__func__,current,current->refcount);
+
+    if (current->refcount == 0)
+    {
+        // Step 2: remove current from the list
+        if (current->prev == NULL) {
+            assert(current == errhandler_tuple_list);
+            errhandler_tuple_list = current->next;
+            if (current->next != NULL) {
+                current->next->prev = NULL;
+            }
+        } else {
+            current->prev->next = current->next;
+            if (current->next != NULL) {
+                current->next->prev = current->prev;
+            }
+        }
+
+        // Step 3: free the memory
+        free(current);
+    }
 }
 
 #endif
