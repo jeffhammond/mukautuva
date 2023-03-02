@@ -8,10 +8,19 @@
 #include "mpi.h"
 #endif
 
-void callback(MPI_Comm * comm, int *err, ...)
+void callback(MPI_Comm * comm, int *err)
 {
+#if 0
+    printf("HI\n");
+    fflush(0);
     printf("callback *comm=%lx *err=%d\n",(intptr_t)*comm,*err);
+    fflush(0);
+    printf("BYE\n");
+    fflush(0);
     return;
+#endif
+    (void)comm;
+    (void)err;
 }
 
 int main(int argc, char *argv[])
