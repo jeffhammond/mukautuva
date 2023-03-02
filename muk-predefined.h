@@ -458,16 +458,16 @@ typedef int MUK_Copy_function(MUK_Comm oldcomm, int keyval, void *extra_state, v
 typedef int MUK_Delete_function(MUK_Comm comm, int keyval, void *attribute_val, void *extra_state);
 
 #define MUK_NULL_COPY_FN        ((MUK_Copy_function*)NULL)
-#define MUK_DUP_FN              ((MUK_Copy_function*)NULL)
+#define MUK_DUP_FN              ((MUK_Copy_function*)0x1)
 #define MUK_NULL_DELETE_FN      ((MUK_Delete_function*)NULL)
 #define MUK_COMM_NULL_COPY_FN   ((MUK_Comm_copy_attr_function*)NULL)
-#define MUK_COMM_DUP_FN         ((MUK_Comm_copy_attr_function*)NULL)
+#define MUK_COMM_DUP_FN         ((MUK_Comm_copy_attr_function*)0x1)
 #define MUK_COMM_NULL_DELETE_FN ((MUK_Comm_delete_attr_function*)NULL)
 #define MUK_TYPE_NULL_COPY_FN   ((MUK_Type_copy_attr_function*)NULL)
-#define MUK_TYPE_NULL_COPY_FN   ((MUK_Type_copy_attr_function*)NULL)
+#define MUK_TYPE_DUP_FN         ((MUK_Type_copy_attr_function*)0x1)
 #define MUK_TYPE_NULL_DELETE_FN ((MUK_Type_delete_attr_function*)NULL)
 #define MUK_WIN_NULL_COPY_FN    ((MUK_Win_copy_attr_function*)NULL)
-#define MUK_WIN_NULL_COPY_FN    ((MUK_Win_copy_attr_function*)NULL)
+#define MUK_WIN_DUP_FN          ((MUK_Win_copy_attr_function*)0x1)
 #define MUK_WIN_NULL_DELETE_FN  ((MUK_Win_delete_attr_function*)NULL)
 
 #endif
