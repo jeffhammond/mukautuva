@@ -40,8 +40,6 @@ void win_errhandler_trampoline(MPI_Win *win, int *error_code, ...)
     WRAP_Win_errhandler_function * fp   = NULL;
     lookup_errhandler_callback(MPI_COMM_NULL, NULL, MPI_FILE_NULL, NULL, *win, &fp);
     WRAP_Win wrap_win = OUTPUT_MPI_Win(*win);
-    printf("%s: calling fp=%p impl_win=%lx wrap_win=%lx\n",__func__,fp,(intptr_t)*win,wrap_win.ip);
-    fflush(0);
     (*fp)(&wrap_win,error_code);
 }
 
@@ -52,8 +50,6 @@ int WRAP_Win_create_errhandler(WRAP_Win_errhandler_function *win_errhandler_fn, 
     int rc = IMPL_Win_create_errhandler(win_errhandler_trampoline, &impl_errhandler);
     *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
     add_errhandler_callback(impl_errhandler, Win, NULL, NULL, win_errhandler_fn);
-    printf("%s: add_errhandler_callback(impl_errhandler=%lx, win_errhandler_fn=%p\n",
-            __func__, (intptr_t)impl_errhandler, win_errhandler_fn);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -72,15 +68,12 @@ int WRAP_Win_set_errhandler(WRAP_Win win, WRAP_Errhandler errhandler)
     MPI_Win impl_win = CONVERT_MPI_Win(win);
     int rc = IMPL_Win_set_errhandler(impl_win, impl_errhandler);
     bind_errhandler_to_object(impl_errhandler, Win, MPI_COMM_NULL, MPI_FILE_NULL, impl_win);
-    printf("%s: bind_errhandler_to_object(impl_errhandler=%lx, impl_win=%lx wrap_win=%lx)\n",
-            __func__, (intptr_t)impl_errhandler, (intptr_t)impl_win, win.ip);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Win_call_errhandler(WRAP_Win win, int errorcode)
 {
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    printf("%s: impl_win=%lx wrap_win=%lx\n",__func__,(intptr_t)impl_win, win.ip);
     int rc = IMPL_Win_call_errhandler(impl_win, errorcode);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
