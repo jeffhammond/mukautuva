@@ -19,6 +19,7 @@
 #include "impl-linked-list.h"
 #include "impl-constant-conversions.h"
 #include "impl-handle-conversions.h"
+#include "impl-predefined-handle.h"
 
 // WRAP->IMPL functions
 
@@ -35,22 +36,12 @@
 
 void win_errhandler_trampoline(MPI_Win *win, int *error_code, ...)
 {
-    //lookup_errhandler_callback(Win, MPI_WIN_NULL, NULL, MPI_FILE_NULL, NULL, *win, &fp);
-
-    int rc;
     int flag;
-    win_errh_trampoline_cookie_t * cookie = NULL;
-    rc = IMPL_Win_get_attr(*win, WIN_EH_HANDLE_KEY, &cookie, &flag);
+    WRAP_Win_errhandler_function * fp   = NULL;
+    int rc = IMPL_Win_get_attr(*win, WIN_EH_HANDLE_KEY, &fp, &flag);
     if (rc != MPI_SUCCESS || !flag) {
         printf("%s: IMPL_Win_get_attr failed: flag=%d rc=%d\n", __func__, flag, rc);
-        MPI_Abort(MPI_COMM_SELF,rc);
     }
-
-    WRAP_Win_errhandler_function * fp   = NULL;
-    if (flag) {
-        fp = cookie->win_fp;
-    }
-
     WRAP_Win wrap_win = OUTPUT_MPI_Win(*win);
     (*fp)(&wrap_win,error_code);
 }
@@ -71,33 +62,13 @@ int WRAP_Win_set_errhandler(WRAP_Win win, WRAP_Errhandler errhandler)
     MPI_Win impl_win = CONVERT_MPI_Win(win);
     MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(errhandler);
     rc = IMPL_Win_set_errhandler(impl_win, impl_errhandler);
-    // first, free the state associated with the old one, if it exists
-    {
-        int flag;
-        win_errh_trampoline_cookie_t * cookie = NULL;
-        rc = IMPL_Win_get_attr(impl_win, WIN_EH_HANDLE_KEY, &cookie, &flag);
-        if (rc) {
-            printf("%s: Win_set_attr failed\n",__func__);
-            goto end;
-        }
-        else if (flag) {
-            if (cookie == NULL) {
-                printf("%s: impl_win=%lx errhandler cookie is %p\n",
-                       __func__, (intptr_t)impl_win, cookie);
-            }
-            free(cookie);
-        }
-    }
-    // second, attach the new state
+    if (!IS_PREDEFINED_ERRHANDLER(impl_errhandler))
     {
         WRAP_Win_errhandler_function * win_errhandler_fn;
         if (lookup_win_errh_pair(impl_errhandler, &win_errhandler_fn)) {
-            win_errh_trampoline_cookie_t * cookie = calloc(1,sizeof(win_errh_trampoline_cookie_t));
-            cookie->win_fp = win_errhandler_fn;
-            rc = IMPL_Win_set_attr(impl_win, WIN_EH_HANDLE_KEY, cookie);
+            rc = IMPL_Win_set_attr(impl_win, WIN_EH_HANDLE_KEY, win_errhandler_fn);
             if (rc) {
                 printf("%s: Win_set_attr failed\n",__func__);
-                free(cookie);
                 goto end;
             }
         }

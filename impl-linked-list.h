@@ -376,14 +376,14 @@ static void add_comm_errh_pair_to_list(MPI_Errhandler errhandler, WRAP_Comm_errh
     comm_errh_fptr_pair_t * pair = calloc(1,sizeof(comm_errh_fptr_pair_t));
     pair->errhandler = errhandler;
     pair->comm_fp = comm_errhandler_fn;
-    printf("%s: errhandler=%lx comm_errhandler_fn=%p\n",__func__,(intptr_t)errhandler,comm_errhandler_fn);
+    //printf("%s: errhandler=%lx comm_errhandler_fn=%p\n",__func__,(intptr_t)errhandler,comm_errhandler_fn);
 
     pair->prev = NULL;
     pair->next = NULL;
 
     if (comm_errh_fptr_pair_list == NULL) {
         comm_errh_fptr_pair_list = pair;
-        printf("%s: comm_errh_fptr_pair_list initialized to pair=%p\n",__func__,pair);
+        //printf("%s: comm_errh_fptr_pair_list initialized to pair=%p\n",__func__,pair);
     } else {
         comm_errh_fptr_pair_t * parent = comm_errh_fptr_pair_list;
         while (parent->next != NULL) {
@@ -391,7 +391,7 @@ static void add_comm_errh_pair_to_list(MPI_Errhandler errhandler, WRAP_Comm_errh
         }
         parent->next = pair;
         pair->prev   = parent;
-        printf("%s: comm_errh_fptr_pair_list pushed with pair=%p\n",__func__,pair);
+        //printf("%s: comm_errh_fptr_pair_list pushed with pair=%p\n",__func__,pair);
     }
 }
 

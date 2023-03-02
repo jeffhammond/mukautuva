@@ -19,7 +19,7 @@
 #include "impl-linked-list.h"
 #include "impl-constant-conversions.h"
 #include "impl-handle-conversions.h"
-//#include "impl-predefined-handle.h"
+#include "impl-predefined-handle.h"
 
 // WRAP->IMPL functions
 
@@ -27,26 +27,13 @@
 
 void comm_errhandler_trampoline(MPI_Comm *comm, int *errorcode, ...)
 {
-    //printf("%s: *comm=%lx *errorcode=%d\n",__func__,(intptr_t)*comm, *errorcode);
-
     int rc;
     int flag;
-    //comm_errh_trampoline_cookie_t * cookie = NULL;
-    //rc = IMPL_Comm_get_attr(*comm, COMM_EH_HANDLE_KEY, &cookie, &flag);
     WRAP_Comm_errhandler_function * fp = NULL;
     rc = IMPL_Comm_get_attr(*comm, COMM_EH_HANDLE_KEY, &fp, &flag);
     if (rc != MPI_SUCCESS || !flag) {
         printf("%s: IMPL_Comm_get_attr failed: flag=%d rc=%d\n", __func__, flag, rc);
-        fflush(0);
-        MPI_Abort(*comm,rc);
     }
-
-    //WRAP_Comm_errhandler_function * fp = NULL;
-    //if (flag) {
-    //    fp = cookie->comm_fp;
-    //}
-    //printf("%s: fp=%p\n",__func__,fp);
-
     WRAP_Comm wrap_comm = OUTPUT_MPI_Comm(*comm);
     (*fp)(&wrap_comm,errorcode);
 }
@@ -58,12 +45,6 @@ int WRAP_Comm_create_errhandler(WRAP_Comm_errhandler_function *comm_errhandler_f
     int rc = IMPL_Comm_create_errhandler(comm_errhandler_trampoline, &impl_errhandler);
     *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
     add_comm_errh_pair_to_list(impl_errhandler, comm_errhandler_fn);
-#if 0
-    WRAP_Comm_errhandler_function * fp = comm_errhandler_fn;
-    WRAP_Comm wrap_comm = OUTPUT_MPI_Comm(MPI_COMM_WORLD);
-    int errorcode = 77;
-    (*fp)(&wrap_comm,&errorcode);
-#endif
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -73,17 +54,13 @@ int WRAP_Comm_set_errhandler(WRAP_Comm comm, WRAP_Errhandler errhandler)
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(errhandler);
     rc = IMPL_Comm_set_errhandler(impl_comm, impl_errhandler);
-    // attach the new state - the old state will be deleted as if by comm_delete_attr_fn
+    if (!IS_PREDEFINED_ERRHANDLER(impl_errhandler))
     {
         WRAP_Comm_errhandler_function * comm_errhandler_fn;
         if (lookup_comm_errh_pair(impl_errhandler, &comm_errhandler_fn)) {
-            //comm_errh_trampoline_cookie_t * cookie = calloc(1,sizeof(comm_errh_trampoline_cookie_t));
-            //cookie->comm_fp = comm_errhandler_fn;
-            //rc = IMPL_Comm_set_attr(impl_comm, COMM_EH_HANDLE_KEY, cookie);
             rc = IMPL_Comm_set_attr(impl_comm, COMM_EH_HANDLE_KEY, comm_errhandler_fn);
             if (rc) {
                 printf("%s: Comm_set_attr failed\n",__func__);
-                //free(cookie);
                 goto end;
             }
         }
