@@ -27,8 +27,22 @@
 
 void comm_errhandler_trampoline(MPI_Comm *comm, int *error_code, ...)
 {
-    WRAP_Comm_errhandler_function * fp   = NULL;
-    lookup_errhandler_callback(Comm, *comm, &fp, MPI_FILE_NULL, NULL, MPI_WIN_NULL, NULL);
+    //lookup_errhandler_callback(Comm, *comm, &fp, MPI_FILE_NULL, NULL, MPI_WIN_NULL, NULL);
+
+    int rc;
+    int flag;
+    comm_errh_trampoline_cookie_t * cookie = NULL;
+    rc = IMPL_Comm_get_attr(*comm, COMM_EH_HANDLE_KEY, &cookie, &flag);
+    if (rc != MPI_SUCCESS || !flag) {
+        printf("%s: IMPL_Comm_get_attr failed: flag=%d rc=%d\n", __func__, flag, rc);
+        MPI_Abort(*comm,rc);
+    }
+
+    WRAP_Comm_errhandler_function * fp = NULL;
+    if (flag) {
+        fp = cookie->comm_fp;
+    }
+
     WRAP_Comm wrap_comm = OUTPUT_MPI_Comm(*comm);
     (*fp)(&wrap_comm,error_code);
 }
@@ -39,7 +53,7 @@ int WRAP_Comm_create_errhandler(WRAP_Comm_errhandler_function *comm_errhandler_f
     //int rc = IMPL_Comm_create_errhandler(comm_errhandler_fn, &impl_errhandler);
     int rc = IMPL_Comm_create_errhandler(comm_errhandler_trampoline, &impl_errhandler);
     *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
-    add_errhandler_callback(impl_errhandler, Comm, comm_errhandler_fn, NULL, NULL);
+    add_comm_errh_pair_to_list(impl_errhandler, &comm_errhandler_fn);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -48,11 +62,43 @@ int WRAP_Comm_set_errhandler(WRAP_Comm comm, WRAP_Errhandler errhandler)
     int rc;
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(errhandler);
-    remove_errhandler_by_object(Comm, impl_comm, MPI_FILE_NULL, MPI_WIN_NULL);
     rc = IMPL_Comm_set_errhandler(impl_comm, impl_errhandler);
-    if (!IS_PREDEFINED_ERRHANDLER(impl_errhandler)) {
-        bind_errhandler_to_object(Comm, impl_errhandler, impl_comm, MPI_FILE_NULL, MPI_WIN_NULL);
+    // first, free the state associated with the old one, if it exists
+    {
+        int flag;
+        comm_errh_trampoline_cookie_t * cookie = NULL;
+        rc = IMPL_Comm_get_attr(impl_comm, COMM_EH_HANDLE_KEY, &cookie, &flag);
+        if (rc) {
+            printf("%s: Comm_set_attr failed\n",__func__);
+            goto end;
+        }
+        else if (flag) {
+            if (cookie == NULL) {
+                printf("%s: impl_comm=%lx errhandler cookie is %p\n",
+                       __func__, (intptr_t)impl_comm, cookie);
+            }
+            free(cookie);
+        }
     }
+    // second, attach the new state
+    {
+        WRAP_Comm_errhandler_function * comm_errhandler_fn;
+        if (lookup_comm_errh_pair(impl_errhandler, &comm_errhandler_fn)) {
+            comm_errh_trampoline_cookie_t * cookie = calloc(1,sizeof(comm_errh_trampoline_cookie_t));
+            cookie->comm_fp = comm_errhandler_fn;
+            rc = IMPL_Comm_set_attr(impl_comm, COMM_EH_HANDLE_KEY, cookie);
+            if (rc) {
+                printf("%s: Comm_set_attr failed\n",__func__);
+                free(cookie);
+                goto end;
+            }
+        }
+        else {
+            printf("%s: lookup_comm_err_pair failed to find a callback for errhandler=%lx\n",
+                   __func__, (intptr_t)impl_errhandler);
+        }
+    }
+    end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -72,6 +118,7 @@ int WRAP_Comm_call_errhandler(WRAP_Comm comm, int errorcode)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
+#if 0
 // obsolete versions
 
 int WRAP_Errhandler_create(WRAP_Comm_errhandler_function *comm_errhandler_fn, WRAP_Errhandler *errhandler)
@@ -80,7 +127,6 @@ int WRAP_Errhandler_create(WRAP_Comm_errhandler_function *comm_errhandler_fn, WR
     //int rc = IMPL_Errhandler_create(comm_errhandler_fn, &impl_errhandler);
     int rc = IMPL_Errhandler_create(comm_errhandler_trampoline, &impl_errhandler);
     *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
-    add_errhandler_callback(impl_errhandler, Comm, comm_errhandler_fn, NULL, NULL);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -89,7 +135,6 @@ int WRAP_Errhandler_set(WRAP_Comm comm, WRAP_Errhandler errhandler)
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(errhandler);
     int rc = IMPL_Errhandler_set(impl_comm, impl_errhandler);
-    bind_errhandler_to_object(Comm, impl_errhandler, impl_comm, MPI_FILE_NULL, MPI_WIN_NULL);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -101,6 +146,7 @@ int WRAP_Errhandler_get(WRAP_Comm comm, WRAP_Errhandler *errhandler)
     *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
+#endif
 
 // regular functionality
 
@@ -336,7 +382,6 @@ int WRAP_Comm_free(WRAP_Comm *comm)
 {
     int rc;
     MPI_Comm impl_comm = CONVERT_MPI_Comm(*comm);
-    remove_errhandler_by_object(Comm, impl_comm, MPI_FILE_NULL, MPI_WIN_NULL);
     rc = IMPL_Comm_free(&impl_comm);
     *comm = OUTPUT_MPI_Comm(impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -346,7 +391,6 @@ int WRAP_Comm_disconnect(WRAP_Comm *comm)
 {
     int rc;
     MPI_Comm impl_comm = CONVERT_MPI_Comm(*comm);
-    remove_errhandler_by_object(Comm, impl_comm, MPI_FILE_NULL, MPI_WIN_NULL);
     rc = IMPL_Comm_disconnect(&impl_comm);
     *comm = OUTPUT_MPI_Comm(impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -358,10 +402,6 @@ int WRAP_Comm_dup(WRAP_Comm comm, WRAP_Comm *newcomm)
     MPI_Comm impl_newcomm;
     int rc = IMPL_Comm_dup(impl_comm, &impl_newcomm);
     *newcomm = OUTPUT_MPI_Comm(impl_newcomm);
-    if (rc) goto end;
-    // FIXME dupe errh
-    //bind_errhandler_to_object(Comm, impl_errhandler, impl_newcomm, MPI_FILE_NULL, MPI_WIN_NULL);
-    end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 

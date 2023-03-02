@@ -20,7 +20,7 @@
 op_fptr_pair_t       * op_fptr_pair_list       = NULL;
 req_cookie_pair_t    * req_cookie_pair_list    = NULL;
 req_alltoallw_pair_t * req_alltoallw_pair_list = NULL;
-errhandler_tuple_t   * errhandler_tuple_list   = NULL;
+errh_fptr_pair_t     * errh_fptr_pair_list     = NULL;
 
 // WRAP->IMPL functions
 
@@ -477,7 +477,7 @@ int WRAP_Buffer_detach_c(void *buffer_addr, WRAP_Count *size)
 int WRAP_Errhandler_free(WRAP_Errhandler *errhandler)
 {
     MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(*errhandler);
-    remove_errhandler(impl_errhandler);
+    //remove_errhandler(impl_errhandler);
     int rc = IMPL_Errhandler_free(&impl_errhandler);
     *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
     return RETURN_CODE_IMPL_TO_MUK(rc);

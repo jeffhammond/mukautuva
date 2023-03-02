@@ -9,6 +9,8 @@
 
 // impl-keyval.c
 extern int TYPE_HANDLE_KEY;
+extern int COMM_EH_HANDLE_KEY;
+extern int WIN_EH_HANDLE_KEY;
 
 typedef struct
 {
@@ -31,6 +33,7 @@ typedef enum {
 #endif
 } errhandler_kind_e;
 
+#if 0
 // first, we bind the callback function pointer to the errhandler id
 // in the WRAP_{Comm,File,Session,Win}_create_errhandler.
 // second, we bind the errhandler id to an object handle
@@ -72,15 +75,86 @@ typedef struct errhandler_tuple_s
     struct errhandler_tuple_s * prev;
 }
 errhandler_tuple_t;
+#endif
+
+typedef struct
+{
+    WRAP_Comm_errhandler_function * comm_fp;
+}
+comm_errh_trampoline_cookie_t;
+
+typedef struct errh_fptr_pair_s
+{
+    MPI_Errhandler errh;
+
+    // we have to do this because errhandlers can be used after the handles are freed.
+    // we only have to do this for File and Session because we can use Comm and Win
+    // attributes to store the errh fptr instead.
+    intptr_t refcount;
+
+    // all errhandlers live in the same pool because Errhandler_free
+    // frees all of them
+    errhandler_kind_e kind;
+
+    union {
+        WRAP_Comm_errhandler_function    * comm_fp;
+        WRAP_File_errhandler_function    * file_fp;
+        WRAP_Win_errhandler_function     * win_fp;
+#if 0
+        WRAP_Session_errhandler_function * session_fp;
+#endif
+    } fp;
+
+    // for the linked list
+    struct errh_fptr_pair_s * next;
+    struct errh_fptr_pair_s * prev;
+}
+errh_fptr_pair_t;
+
+typedef struct comm_errh_fptr_pair_s
+{
+    MPI_Errhandler errhandler;
+    WRAP_Comm_errhandler_function * comm_fp;
+
+    // for the linked list
+    struct comm_errh_fptr_pair_s * next;
+    struct comm_errh_fptr_pair_s * prev;
+}
+comm_errh_fptr_pair_t;
+
+typedef struct file_errh_fptr_pair_s
+{
+    MPI_Errhandler errhandler;
+    WRAP_File_errhandler_function * file_fp;
+
+    // for the linked list
+    struct file_errh_fptr_pair_s * next;
+    struct file_errh_fptr_pair_s * prev;
+}
+file_errh_fptr_pair_t;
+
+typedef struct win_errh_fptr_pair_s
+{
+    MPI_Errhandler errhandler;
+    WRAP_Win_errhandler_function * win_fp;
+
+    // for the linked list
+    struct win_errh_fptr_pair_s * next;
+    struct win_errh_fptr_pair_s * prev;
+}
+win_errh_fptr_pair_t;
 
 typedef struct op_fptr_pair_s
 {
     MPI_Op               op;
+
+    // we need this because Op_free works on both types of Ops.
+    bool large_c;
+
     union {
         WRAP_User_function   * fp_i;
         WRAP_User_function_c * fp_c;
     } fp;
-    bool large_c;
 
     // for the linked list
     struct op_fptr_pair_s * next;
@@ -123,10 +197,12 @@ typedef struct req_alltoallw_pair_s
 req_alltoallw_pair_t;
 
 // impl-functions.c
-extern op_fptr_pair_t       * op_fptr_pair_list;
-extern req_cookie_pair_t    * req_cookie_pair_list;
-extern req_alltoallw_pair_t * req_alltoallw_pair_list;
-extern errhandler_tuple_t   * errhandler_tuple_list;
+extern op_fptr_pair_t        * op_fptr_pair_list;
+extern req_cookie_pair_t     * req_cookie_pair_list;
+extern req_alltoallw_pair_t  * req_alltoallw_pair_list;
+extern comm_errh_fptr_pair_t * comm_errh_fptr_pair_list;
+extern file_errh_fptr_pair_t * file_errh_fptr_pair_list;
+extern win_errh_fptr_pair_t  * win_errh_fptr_pair_list;
 
 MAYBE_UNUSED
 static bool lookup_op_pair(const MPI_Op op, WRAP_User_function ** fn_i, WRAP_User_function_c ** fn_c , bool * is_large)
@@ -363,6 +439,7 @@ static inline void remove_cookie_pair_from_list(const MPI_Request request)
 
 // errhandler stuff
 
+#if 0
 MAYBE_UNUSED
 static void add_errhandler_callback(MPI_Errhandler errhandler,
                                     errhandler_kind_e kind,
@@ -676,5 +753,52 @@ static void remove_errhandler_by_object(errhandler_kind_e kind,
         free(current);
     }
 }
+#endif
+
+MAYBE_UNUSED
+static void add_comm_errh_pair_to_list(MPI_Errhandler errhandler, WRAP_Comm_errhandler_function *comm_errhandler_fn)
+{
+    // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
+    comm_errh_fptr_pair_t * pair = calloc(1,sizeof(comm_errh_fptr_pair_t));
+    pair->errhandler = errhandler;
+    pair->comm_fp = comm_errhandler_fn;
+
+    pair->prev = NULL;
+    pair->next = NULL;
+
+    if (comm_errh_fptr_pair_list == NULL) {
+        comm_errh_fptr_pair_list = pair;
+    } else {
+        comm_errh_fptr_pair_t * parent = comm_errh_fptr_pair_list;
+        while (parent->next != NULL) {
+            parent = parent->next;
+        }
+        parent->next = pair;
+        pair->prev   = parent;
+    }
+}
+
+MAYBE_UNUSED
+static bool lookup_comm_errh_pair(MPI_Errhandler errhandler, WRAP_Comm_errhandler_function ** comm_errhandler_fn)
+{
+    *comm_errhandler_fn = NULL;
+
+    comm_errh_fptr_pair_t * current = comm_errh_fptr_pair_list;
+    if (comm_errh_fptr_pair_list == NULL) {
+        printf("comm_errh_fptr_pair_list is NULL - this should be impossible.\n");
+        return false;
+    }
+
+    while (current) {
+        if (current->errhandler == errhandler) {
+            *comm_errhandler_fn = current->comm_fp;
+            return true;
+            //break;
+        }
+        current = current->next;
+    }
+    return false;
+}
+
 
 #endif
