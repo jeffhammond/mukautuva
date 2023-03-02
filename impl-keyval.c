@@ -64,13 +64,13 @@ void WRAP_Init_handle_key(void)
     if (rc != MPI_SUCCESS) {
         printf("IMPL_Comm_create_keyval(COMM_EH_HANDLE_KEY) failed: %d\n", rc);
     }
-    printf("%s: COMM_EH_HANDLE_KEY=%x\n", __func__, COMM_EH_HANDLE_KEY);
+    //printf("%s: COMM_EH_HANDLE_KEY=%x\n", __func__, COMM_EH_HANDLE_KEY);
     //rc = IMPL_Win_create_keyval(MPI_WIN_DUP_FN, win_delete_cookie, &WIN_EH_HANDLE_KEY, NULL);
     rc = IMPL_Win_create_keyval(MPI_WIN_DUP_FN, MPI_WIN_NULL_DELETE_FN, &WIN_EH_HANDLE_KEY, NULL);
     if (rc != MPI_SUCCESS) {
         printf("IMPL_Win_create_keyval(WIN_EH_HANDLE_KEY) failed: %d\n", rc);
     }
-    printf("%s: WIN_EH_HANDLE_KEY=%x\n", __func__, WIN_EH_HANDLE_KEY);
+    //printf("%s: WIN_EH_HANDLE_KEY=%x\n", __func__, WIN_EH_HANDLE_KEY);
 }
 
 void WRAP_Finalize_handle_key(void)
