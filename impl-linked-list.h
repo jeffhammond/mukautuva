@@ -267,26 +267,6 @@ static reduce_trampoline_cookie_t * bake_reduce_trampoline_cookie(MPI_Op op, MPI
 }
 
 MAYBE_UNUSED
-static void cleanup_reduce_trampoline_cookie(reduce_trampoline_cookie_t * cookie, MPI_Datatype * dup)
-{
-    free(cookie);
-    int rc = IMPL_Type_free(dup);
-    if (rc) {
-        printf("Type_free failed: %d\n",rc);
-    }
-}
-
-MAYBE_UNUSED
-static void cleanup_ireduce_trampoline_cookie(reduce_trampoline_cookie_t * cookie, const MPI_Request request, MPI_Datatype * dup)
-{
-    add_cookie_pair_to_list(request, cookie);
-    int rc = IMPL_Type_free(dup);
-    if (rc) {
-        printf("Type_free failed: %d\n",rc);
-    }
-}
-
-MAYBE_UNUSED
 static void add_cookie_pair_to_list(const MPI_Request request, reduce_trampoline_cookie_t * cookie)
 {
     // this is not thread-safe.  fix or abort if MPI_THREAD_MULTIPLE.
@@ -305,6 +285,26 @@ static void add_cookie_pair_to_list(const MPI_Request request, reduce_trampoline
         }
         parent->next = pair;
         pair->prev   = parent;
+    }
+}
+
+MAYBE_UNUSED
+static void cleanup_reduce_trampoline_cookie(reduce_trampoline_cookie_t * cookie, MPI_Datatype * dup)
+{
+    free(cookie);
+    int rc = IMPL_Type_free(dup);
+    if (rc) {
+        printf("Type_free failed: %d\n",rc);
+    }
+}
+
+MAYBE_UNUSED
+static void cleanup_ireduce_trampoline_cookie(reduce_trampoline_cookie_t * cookie, const MPI_Request request, MPI_Datatype * dup)
+{
+    add_cookie_pair_to_list(request, cookie);
+    int rc = IMPL_Type_free(dup);
+    if (rc) {
+        printf("Type_free failed: %d\n",rc);
     }
 }
 
