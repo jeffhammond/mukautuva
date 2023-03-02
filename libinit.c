@@ -3172,12 +3172,14 @@ int MPI_Issend_c(const void *buf, MPI_Count count, MPI_Datatype datatype, int de
 
 int MPI_Keyval_create(MPI_Copy_function *copy_fn, MPI_Delete_function *delete_fn, int *keyval, void *extra_state)
 {
-    return MUK_Keyval_create(copy_fn, delete_fn, keyval, extra_state);
+    //return MUK_Keyval_create(copy_fn, delete_fn, keyval, extra_state);
+    return MUK_Comm_create_keyval(copy_fn, delete_fn, keyval, extra_state);
 }
 
 int MPI_Keyval_free(int *keyval)
 {
-    return MUK_Keyval_free(keyval);
+    //return MUK_Keyval_free(keyval);
+    return MUK_Comm_free_keyval(keyval);
 }
 
 int MPI_Lookup_name(const char *service_name, MPI_Info info, char *port_name)
