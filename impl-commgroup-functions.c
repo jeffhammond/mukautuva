@@ -27,7 +27,7 @@
 
 void comm_errhandler_trampoline(MPI_Comm *comm, int *errorcode, ...)
 {
-    printf("%s: *comm=%lx *errorcode=%d\n",__func__,(intptr_t)*comm, *errorcode);
+    //printf("%s: *comm=%lx *errorcode=%d\n",__func__,(intptr_t)*comm, *errorcode);
 
     int rc;
     int flag;
@@ -43,12 +43,10 @@ void comm_errhandler_trampoline(MPI_Comm *comm, int *errorcode, ...)
     if (flag) {
         fp = cookie->comm_fp;
     }
-    printf("%s: fp=%p\n",__func__,fp);
+    //printf("%s: fp=%p\n",__func__,fp);
 
     WRAP_Comm wrap_comm = OUTPUT_MPI_Comm(*comm);
     (*fp)(&wrap_comm,errorcode);
-    printf("ZZZ\n");
-    fflush(0);
 }
 
 int WRAP_Comm_create_errhandler(WRAP_Comm_errhandler_function *comm_errhandler_fn, WRAP_Errhandler *errhandler)
@@ -73,24 +71,7 @@ int WRAP_Comm_set_errhandler(WRAP_Comm comm, WRAP_Errhandler errhandler)
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(errhandler);
     rc = IMPL_Comm_set_errhandler(impl_comm, impl_errhandler);
-    // first, free the state associated with the old one, if it exists
-    {
-        int flag;
-        comm_errh_trampoline_cookie_t * cookie = NULL;
-        rc = IMPL_Comm_get_attr(impl_comm, COMM_EH_HANDLE_KEY, &cookie, &flag);
-        if (rc) {
-            printf("%s: Comm_set_attr failed\n",__func__);
-            goto end;
-        }
-        else if (flag) {
-            if (cookie == NULL) {
-                printf("%s: impl_comm=%lx errhandler cookie is %p\n",
-                       __func__, (intptr_t)impl_comm, cookie);
-            }
-            free(cookie);
-        }
-    }
-    // second, attach the new state
+    // attach the new state - the old state will be deleted as if by comm_delete_attr_fn
     {
         WRAP_Comm_errhandler_function * comm_errhandler_fn;
         if (lookup_comm_errh_pair(impl_errhandler, &comm_errhandler_fn)) {
