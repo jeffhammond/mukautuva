@@ -1525,18 +1525,19 @@ int MPI_Errhandler_create(MPI_Comm_errhandler_function *comm_errhandler_fn, MPI_
 int MPI_Errhandler_free(MPI_Errhandler *errhandler)
 {
     int rc = MUK_Errhandler_free(errhandler);
-    //MUK_ERRHANDLER_NULLIFY(errhandler);
     return rc;
 }
 
 int MPI_Errhandler_get(MPI_Comm comm, MPI_Errhandler *errhandler)
 {
-    return MUK_Errhandler_get(comm, errhandler);
+    //return MUK_Errhandler_get(comm, errhandler);
+    return MUK_Comm_get_errhandler(comm, errhandler);
 }
 
 int MPI_Errhandler_set(MPI_Comm comm, MPI_Errhandler errhandler)
 {
-    return MUK_Errhandler_set(comm, errhandler);
+    //return MUK_Errhandler_set(comm, errhandler);
+    return MUK_Comm_set_errhandler(comm, errhandler);
 }
 
 int MPI_Error_class(int errorcode, int *errorclass)
