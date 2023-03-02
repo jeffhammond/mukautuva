@@ -8,7 +8,7 @@
 #include "mpi.h"
 #endif
 
-void callback(MPI_Comm * comm, int *err)
+void callback(MPI_Comm * comm, int *err, ...)
 {
 #if 0
     printf("HI\n");

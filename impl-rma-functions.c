@@ -43,7 +43,7 @@ void win_errhandler_trampoline(MPI_Win *win, int *error_code, ...)
     rc = IMPL_Win_get_attr(*win, WIN_EH_HANDLE_KEY, &cookie, &flag);
     if (rc != MPI_SUCCESS || !flag) {
         printf("%s: IMPL_Win_get_attr failed: flag=%d rc=%d\n", __func__, flag, rc);
-        MPI_Abort(*win,rc);
+        MPI_Abort(MPI_COMM_SELF,rc);
     }
 
     WRAP_Win_errhandler_function * fp   = NULL;
@@ -61,7 +61,7 @@ int WRAP_Win_create_errhandler(WRAP_Win_errhandler_function *win_errhandler_fn, 
     //int rc = IMPL_Win_create_errhandler(win_errhandler_fn, &impl_errhandler);
     int rc = IMPL_Win_create_errhandler(win_errhandler_trampoline, &impl_errhandler);
     *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
-    add_win_errh_pair_to_list(impl_errhandler, &win_errhandler_fn);
+    add_win_errh_pair_to_list(impl_errhandler, win_errhandler_fn);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -128,6 +128,7 @@ int WRAP_Win_call_errhandler(WRAP_Win win, int errorcode)
 
 // attribute stuff
 
+#if 0
 int WRAP_Win_create_keyval(WRAP_Win_copy_attr_function *win_copy_attr_fn, WRAP_Win_delete_attr_function *win_delete_attr_fn, int *win_keyval, void *extra_state)
 {
     MPI_Win_copy_attr_function * impl_win_copy_attr_fn = (MPI_Win_copy_attr_function*)win_copy_attr_fn;
@@ -145,6 +146,7 @@ int WRAP_Win_create_keyval(WRAP_Win_copy_attr_function *win_copy_attr_fn, WRAP_W
     int rc = IMPL_Win_create_keyval(impl_win_copy_attr_fn, impl_win_delete_attr_fn, win_keyval, extra_state);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
+#endif
 
 int WRAP_Win_free_keyval(int *win_keyval)
 {

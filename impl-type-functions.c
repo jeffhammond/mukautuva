@@ -20,6 +20,7 @@
 #include "impl-constant-conversions.h"
 #include "impl-handle-conversions.h"
 
+#if 0
 int WRAP_Type_create_keyval(WRAP_Type_copy_attr_function *type_copy_attr_fn, WRAP_Type_delete_attr_function *type_delete_attr_fn, int *type_keyval, void *extra_state)
 {
     MPI_Type_copy_attr_function * impl_type_copy_attr_fn = (MPI_Type_copy_attr_function*)type_copy_attr_fn;
@@ -37,6 +38,7 @@ int WRAP_Type_create_keyval(WRAP_Type_copy_attr_function *type_copy_attr_fn, WRA
     int rc = IMPL_Type_create_keyval(impl_type_copy_attr_fn, impl_type_delete_attr_fn, type_keyval, extra_state);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
+#endif
 
 int WRAP_Type_free_keyval(int *type_keyval)
 {

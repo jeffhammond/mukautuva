@@ -25,7 +25,7 @@
 
 // errhandler stuff
 
-void comm_errhandler_trampoline(MPI_Comm *comm, int *errorcode)
+void comm_errhandler_trampoline(MPI_Comm *comm, int *errorcode, ...)
 {
     printf("%s: *comm=%lx *errorcode=%d\n",__func__,(intptr_t)*comm, *errorcode);
 
@@ -57,7 +57,7 @@ int WRAP_Comm_create_errhandler(WRAP_Comm_errhandler_function *comm_errhandler_f
     //int rc = IMPL_Comm_create_errhandler(comm_errhandler_fn, &impl_errhandler);
     int rc = IMPL_Comm_create_errhandler(comm_errhandler_trampoline, &impl_errhandler);
     *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
-    add_comm_errh_pair_to_list(impl_errhandler, &comm_errhandler_fn);
+    add_comm_errh_pair_to_list(impl_errhandler, comm_errhandler_fn);
 #if 0
     WRAP_Comm_errhandler_function * fp = comm_errhandler_fn;
     WRAP_Comm wrap_comm = OUTPUT_MPI_Comm(MPI_COMM_WORLD);
@@ -282,6 +282,7 @@ int WRAP_Comm_create(WRAP_Comm comm, WRAP_Group group, WRAP_Comm *newcomm)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
+#if 0
 int WRAP_Comm_create_keyval(WRAP_Comm_copy_attr_function *comm_copy_attr_fn, WRAP_Comm_delete_attr_function *comm_delete_attr_fn, int *comm_keyval, void *extra_state)
 {
     MPI_Comm_copy_attr_function * impl_comm_copy_attr_fn = (MPI_Comm_copy_attr_function*)comm_copy_attr_fn;
@@ -299,6 +300,7 @@ int WRAP_Comm_create_keyval(WRAP_Comm_copy_attr_function *comm_copy_attr_fn, WRA
     int rc = IMPL_Comm_create_keyval(impl_comm_copy_attr_fn, impl_comm_delete_attr_fn, comm_keyval, extra_state);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
+#endif
 
 int WRAP_Comm_delete_attr(WRAP_Comm comm, int comm_keyval)
 {
@@ -339,6 +341,7 @@ int WRAP_Comm_set_attr(WRAP_Comm comm, int comm_keyval, void *attribute_val)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
+#if 0
 // deleted versions of the above
 int WRAP_Keyval_create(WRAP_Copy_function *copy_fn, WRAP_Delete_function *delete_fn, int *keyval, void *extra_state)
 {
@@ -357,6 +360,7 @@ int WRAP_Keyval_create(WRAP_Copy_function *copy_fn, WRAP_Delete_function *delete
     int rc = IMPL_Keyval_create(impl_copy_fn, impl_delete_fn, keyval, extra_state);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
+#endif
 
 int WRAP_Keyval_free(int *keyval)
 {

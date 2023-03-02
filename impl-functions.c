@@ -603,6 +603,7 @@ int WRAP_Get_address(const void *location, WRAP_Aint *address)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
+#if 0
 int WRAP_Grequest_complete(WRAP_Request request)
 {
     MPI_Request impl_request = CONVERT_MPI_Request(request);
@@ -617,6 +618,7 @@ int WRAP_Grequest_start(WRAP_Grequest_query_function *query_fn, WRAP_Grequest_fr
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
+#endif
 
 int WRAP_Iallgather(const void *sendbuf, int sendcount, WRAP_Datatype sendtype, void *recvbuf, int recvcount, WRAP_Datatype recvtype, WRAP_Comm comm, WRAP_Request *request)
 {
