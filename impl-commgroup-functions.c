@@ -19,6 +19,7 @@
 #include "impl-linked-list.h"
 #include "impl-constant-conversions.h"
 #include "impl-handle-conversions.h"
+#include "impl-predefined-handle.h"
 
 // WRAP->IMPL functions
 
@@ -44,10 +45,14 @@ int WRAP_Comm_create_errhandler(WRAP_Comm_errhandler_function *comm_errhandler_f
 
 int WRAP_Comm_set_errhandler(WRAP_Comm comm, WRAP_Errhandler errhandler)
 {
+    int rc;
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(errhandler);
-    int rc = IMPL_Comm_set_errhandler(impl_comm, impl_errhandler);
-    bind_errhandler_to_object(Comm, impl_errhandler, impl_comm, MPI_FILE_NULL, MPI_WIN_NULL);
+    remove_errhandler_by_object(Comm, impl_comm, MPI_FILE_NULL, MPI_WIN_NULL);
+    rc = IMPL_Comm_set_errhandler(impl_comm, impl_errhandler);
+    if (!IS_PREDEFINED_ERRHANDLER(impl_errhandler)) {
+        bind_errhandler_to_object(Comm, impl_errhandler, impl_comm, MPI_FILE_NULL, MPI_WIN_NULL);
+    }
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -327,11 +332,22 @@ int WRAP_Attr_put(WRAP_Comm comm, int keyval, void *attribute_val)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
+int WRAP_Comm_free(WRAP_Comm *comm)
+{
+    int rc;
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(*comm);
+    remove_errhandler_by_object(Comm, impl_comm, MPI_FILE_NULL, MPI_WIN_NULL);
+    rc = IMPL_Comm_free(&impl_comm);
+    *comm = OUTPUT_MPI_Comm(impl_comm);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
 int WRAP_Comm_disconnect(WRAP_Comm *comm)
 {
+    int rc;
     MPI_Comm impl_comm = CONVERT_MPI_Comm(*comm);
-    remove_errhandler_by_object(Comm,impl_comm,MPI_FILE_NULL,MPI_WIN_NULL);
-    int rc = IMPL_Comm_disconnect(&impl_comm);
+    remove_errhandler_by_object(Comm, impl_comm, MPI_FILE_NULL, MPI_WIN_NULL);
+    rc = IMPL_Comm_disconnect(&impl_comm);
     *comm = OUTPUT_MPI_Comm(impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -342,6 +358,10 @@ int WRAP_Comm_dup(WRAP_Comm comm, WRAP_Comm *newcomm)
     MPI_Comm impl_newcomm;
     int rc = IMPL_Comm_dup(impl_comm, &impl_newcomm);
     *newcomm = OUTPUT_MPI_Comm(impl_newcomm);
+    if (rc) goto end;
+    // FIXME dupe errh
+    //bind_errhandler_to_object(Comm, impl_errhandler, impl_newcomm, MPI_FILE_NULL, MPI_WIN_NULL);
+    end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -352,15 +372,6 @@ int WRAP_Comm_dup_with_info(WRAP_Comm comm, WRAP_Info info, WRAP_Comm *newcomm)
     MPI_Comm impl_newcomm;
     int rc = IMPL_Comm_dup_with_info(impl_comm, impl_info, &impl_newcomm);
     *newcomm = OUTPUT_MPI_Comm(impl_newcomm);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Comm_free(WRAP_Comm *comm)
-{
-    MPI_Comm impl_comm = CONVERT_MPI_Comm(*comm);
-    remove_errhandler_by_object(Comm,impl_comm,MPI_FILE_NULL,MPI_WIN_NULL);
-    int rc = IMPL_Comm_free(&impl_comm);
-    *comm = OUTPUT_MPI_Comm(impl_comm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 

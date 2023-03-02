@@ -447,6 +447,7 @@ static void bind_errhandler_to_object(errhandler_kind_e kind,
 
     if (current == NULL) {
         printf("%s: current is NULL.\n",__func__);
+        return;
     }
 
     // Step 2: verify the input is consistent
@@ -538,6 +539,7 @@ static void lookup_errhandler_callback(errhandler_kind_e kind,
 
     if (current == NULL) {
         printf("%s: current is NULL.\n",__func__);
+        abort();
     }
 
     // Step 2: set the appropriate function pointer based on the kind
@@ -648,6 +650,7 @@ static void remove_errhandler_by_object(errhandler_kind_e kind,
 
     if (current == NULL) {
         printf("%s: current is NULL.\n",__func__);
+        return;
     }
 
     current->refcount -= 1;
