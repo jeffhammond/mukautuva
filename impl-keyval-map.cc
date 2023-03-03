@@ -35,7 +35,7 @@ extern "C" {
 // we will use int as the boolean return code to avoid theoretical incompatibilities
 // between C and C++ bool
 
-int add_comm_keyval_callbacks(int keyval, 
+int add_comm_keyval_callbacks(int keyval,
                               WRAP_Comm_copy_attr_function   * comm_copy_attr_fn,
                               WRAP_Comm_delete_attr_function * comm_delete_attr_fn,
                               void * extra_state) // this argument may not be necessary
@@ -52,7 +52,7 @@ int add_comm_keyval_callbacks(int keyval,
     return int{rc};
 }
 
-int find_comm_keyval_callbacks(int keyval, 
+int find_comm_keyval_callbacks(int keyval,
                                WRAP_Comm_copy_attr_function   ** comm_copy_attr_fn,
                                WRAP_Comm_delete_attr_function ** comm_delete_attr_fn,
                                void ** extra_state) // this argument may not be necessary
@@ -86,7 +86,7 @@ int remove_comm_keyval_callbacks(int keyval)
     return keyval_comm_attr_cb_map.erase(keyval);
 }
 
-int add_type_keyval_callbacks(int keyval, 
+int add_type_keyval_callbacks(int keyval,
                               WRAP_Type_copy_attr_function   * type_copy_attr_fn,
                               WRAP_Type_delete_attr_function * type_delete_attr_fn,
                               void * extra_state) // this argument may not be necessary
@@ -103,7 +103,7 @@ int add_type_keyval_callbacks(int keyval,
     return int{rc};
 }
 
-int find_type_keyval_callbacks(int keyval, 
+int find_type_keyval_callbacks(int keyval,
                                WRAP_Type_copy_attr_function   ** type_copy_attr_fn,
                                WRAP_Type_delete_attr_function ** type_delete_attr_fn,
                                void ** extra_state) // this argument may not be necessary
@@ -135,6 +135,57 @@ int remove_type_keyval_callbacks(int keyval)
 {
     // returns the number of elements removed, so 0=failure and 1=success
     return keyval_type_attr_cb_map.erase(keyval);
+}
+
+int add_win_keyval_callbacks(int keyval,
+                              WRAP_Win_copy_attr_function   * win_copy_attr_fn,
+                              WRAP_Win_delete_attr_function * win_delete_attr_fn,
+                              void * extra_state) // this argument may not be necessary
+{
+#if DEBUG
+    printf("%s: insert_or_assign(keyval=%d, win_copy_attr_fn=%p, win_delete_attr_fn=%p)\n",
+            __func__, keyval, win_copy_attr_fn, win_delete_attr_fn);
+#endif
+    // insert_or_assign (C++17) inserts an element or assigns to the current element if the key already exists
+    auto [it,rc] = keyval_win_attr_cb_map.insert_or_assign(keyval,
+                                                            std::make_tuple(win_copy_attr_fn,
+                                                                            win_delete_attr_fn,
+                                                                            extra_state));
+    return int{rc};
+}
+
+int find_win_keyval_callbacks(int keyval,
+                               WRAP_Win_copy_attr_function   ** win_copy_attr_fn,
+                               WRAP_Win_delete_attr_function ** win_delete_attr_fn,
+                               void ** extra_state) // this argument may not be necessary
+{
+    try {
+        auto [copy_fn,delete_fn,state] = keyval_win_attr_cb_map.at(keyval);
+#if DEBUG
+        printf("%s: lookup(keyval=%d) -> [win_copy_attr_fn=%p, win_delete_attr_fn=%p]\n",
+                __func__, keyval, copy_fn, delete_fn);
+#endif
+        if (win_copy_attr_fn != NULL) {
+            *win_copy_attr_fn = copy_fn;
+        }
+        if (win_delete_attr_fn != NULL) {
+            *win_delete_attr_fn = delete_fn;
+        }
+        if (extra_state != NULL) {
+            *extra_state = state;
+        }
+        return 1;
+    }
+    catch (...) {
+        printf("%s: lookup(keyval=%d) failed\n", __func__, keyval);
+        return 0;
+    }
+}
+
+int remove_win_keyval_callbacks(int keyval)
+{
+    // returns the number of elements removed, so 0=failure and 1=success
+    return keyval_win_attr_cb_map.erase(keyval);
 }
 
 } // extern "C"

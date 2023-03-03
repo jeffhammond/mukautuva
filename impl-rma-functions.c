@@ -20,8 +20,68 @@
 #include "impl-constant-conversions.h"
 #include "impl-handle-conversions.h"
 #include "impl-predefined-handle.h"
+#include "impl-keyval-map.h"
 
-// WRAP->IMPL functions
+// used by WRAP_Win_create_keyval
+
+int win_copy_attr_trampoline(MPI_Win impl_win, int win_keyval, void *extra_state, void *attribute_val_in, void *attribute_val_out, int *flag)
+{
+    WRAP_Win_copy_attr_function * win_copy_attr_fn;
+    int rc = find_win_keyval_callbacks(win_keyval, &win_copy_attr_fn, NULL, NULL);
+    if (rc==0) {
+        printf("%s: find_win_keyval_callbacks failed for win_keyval=%d\n",__func__,win_keyval);
+        return MPI_ERR_INTERN;
+    }
+    if ((intptr_t)win_copy_attr_fn == (intptr_t)MPI_WIN_NULL_COPY_FN) {
+#ifdef DEBUG
+        printf("%s: find_win_keyval_callbacks found MPI_WIN_NULL_COPY_FN for win_keyval=%d\n",__func__,win_keyval);
+#endif
+        *flag = 0;
+        return MPI_SUCCESS;
+    }
+    else if ((intptr_t)win_copy_attr_fn == (intptr_t)MPI_WIN_DUP_FN) {
+#ifdef DEBUG
+        printf("%s: find_win_keyval_callbacks found MPI_WIN_DUP_FN for win_keyval=%d\n",__func__,win_keyval);
+#endif
+        *(void**)attribute_val_out = attribute_val_in;
+        *flag = 1;
+        return MPI_SUCCESS;
+    }
+    else {
+#ifdef DEBUG
+        printf("%s: find_win_keyval_callbacks found win_copy_attr_fn=%p for win_keyval=%d\n",
+                __func__,win_copy_attr_fn,win_keyval);
+#endif
+        WRAP_Win wrap_win = OUTPUT_MPI_Win(impl_win);
+        rc = (*win_copy_attr_fn)(wrap_win, win_keyval, extra_state, attribute_val_in, attribute_val_out, flag);
+        return RETURN_CODE_MUK_TO_IMPL(rc);
+    }
+}
+
+int win_delete_attr_trampoline(MPI_Win impl_win, int win_keyval, void *attribute_val, void *extra_state)
+{
+    WRAP_Win_delete_attr_function * win_delete_attr_fn;
+    int rc = find_win_keyval_callbacks(win_keyval, NULL, &win_delete_attr_fn, NULL);
+    if (rc==0) {
+        printf("%s: find_win_keyval_callbacks failed for win_keyval=%d\n",__func__,win_keyval);
+        return MPI_ERR_INTERN;
+    }
+    if ((intptr_t)win_delete_attr_fn == (intptr_t)MPI_WIN_NULL_DELETE_FN) {
+#ifdef DEBUG
+        printf("%s: find_win_keyval_callbacks found MPI_WIN_NULL_DELETE_FN for win_keyval=%d\n",__func__,win_keyval);
+#endif
+        return MPI_SUCCESS;
+    }
+    else {
+#ifdef DEBUG
+        printf("%s: find_win_keyval_callbacks found win_copy_attr_fn=%p for win_keyval=%d\n",
+                __func__,win_copy_attr_fn,win_keyval);
+#endif
+        WRAP_Win wrap_win = OUTPUT_MPI_Win(impl_win);
+        rc = (*win_delete_attr_fn)(wrap_win, win_keyval, attribute_val, extra_state);
+        return RETURN_CODE_MUK_TO_IMPL(rc);
+    }
+}
 
 // errhandler stuff
 
@@ -101,25 +161,33 @@ int WRAP_Win_call_errhandler(WRAP_Win win, int errorcode)
 
 int WRAP_Win_create_keyval(WRAP_Win_copy_attr_function *win_copy_attr_fn, WRAP_Win_delete_attr_function *win_delete_attr_fn, int *win_keyval, void *extra_state)
 {
+    bool needs_trampoline = false;
     MPI_Win_copy_attr_function * impl_win_copy_attr_fn;
     if ((intptr_t)win_copy_attr_fn == (intptr_t)MUK_WIN_NULL_COPY_FN) {
         impl_win_copy_attr_fn = MPI_WIN_NULL_COPY_FN;
     }
-    else {
-        //printf("%s : %d FIXME\n",__func__,__LINE__);
-        // FIXME with a trampoline
+    else if ((intptr_t)win_copy_attr_fn == (intptr_t)MUK_WIN_DUP_FN) {
         impl_win_copy_attr_fn = MPI_WIN_DUP_FN;
+    }
+    else {
+        needs_trampoline = true;
+        impl_win_copy_attr_fn = win_copy_attr_trampoline;
     }
     MPI_Win_delete_attr_function * impl_win_delete_attr_fn;
     if ((intptr_t)win_delete_attr_fn == (intptr_t)MUK_WIN_NULL_DELETE_FN) {
         impl_win_delete_attr_fn = MPI_WIN_NULL_DELETE_FN;
     }
     else {
-        //printf("%s : %d FIXME\n",__func__,__LINE__);
-        // FIXME with a trampoline
-        impl_win_delete_attr_fn = MPI_WIN_NULL_DELETE_FN;
+        needs_trampoline = true;
+        impl_win_delete_attr_fn = win_delete_attr_trampoline;
     }
     int rc = IMPL_Win_create_keyval(impl_win_copy_attr_fn, impl_win_delete_attr_fn, win_keyval, extra_state);
+    if (rc) goto end;
+    if (needs_trampoline) {
+        int rc = add_win_keyval_callbacks(*win_keyval, win_copy_attr_fn, win_delete_attr_fn, extra_state);
+        if (rc==0) rc = MPI_ERR_INTERN;
+    }
+    end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -158,6 +226,10 @@ int WRAP_Win_delete_attr(WRAP_Win win, int win_keyval)
 {
     MPI_Win impl_win = CONVERT_MPI_Win(win);
     int rc = IMPL_Win_delete_attr(impl_win, win_keyval);
+    if (rc) goto end;
+    rc = remove_win_keyval_callbacks(win_keyval);
+    if (rc==0) rc = MPI_ERR_INTERN;
+    end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 

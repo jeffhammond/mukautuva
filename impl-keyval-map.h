@@ -1,3 +1,6 @@
+#ifndef IMPL_KEYVAL_MAP_H
+#define IMPL_KEYVAL_MAP_H
+
 // C declarations of the map stuff written in C++ in impl-keyval-map.cc
 
 // this header is only used to determine the MPI ABI we are compiling against,
@@ -33,3 +36,17 @@ int find_type_keyval_callbacks(int keyval,
                                void ** extra_state);
 
 int remove_type_keyval_callbacks(int keyval);
+
+int add_win_keyval_callbacks(int keyval,
+                             WRAP_Win_copy_attr_function   * win_copy_attr_fn,
+                             WRAP_Win_delete_attr_function * win_delete_attr_fn,
+                             void * extra_state);
+
+int find_win_keyval_callbacks(int keyval,
+                              WRAP_Win_copy_attr_function   ** win_copy_attr_fn,
+                              WRAP_Win_delete_attr_function ** win_delete_attr_fn,
+                              void ** extra_state);
+
+int remove_win_keyval_callbacks(int keyval);
+
+#endif // IMPL_KEYVAL_MAP_H

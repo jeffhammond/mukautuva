@@ -405,6 +405,10 @@ int WRAP_Type_delete_attr(WRAP_Datatype datatype, int type_keyval)
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     int rc = IMPL_Type_delete_attr(impl_datatype, type_keyval);
+    if (rc) goto end;
+    rc = remove_type_keyval_callbacks(type_keyval);
+    if (rc==0) rc = MPI_ERR_INTERN;
+    end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
