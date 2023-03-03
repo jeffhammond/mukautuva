@@ -1,6 +1,8 @@
 ifeq ($(shell uname),Darwin)
     OMPICC=/opt/homebrew/Cellar/open-mpi/4.1.4_2/bin/mpicc
+    OMPICXX=/opt/homebrew/Cellar/open-mpi/4.1.4_2/bin/mpicx
     MPICHCC=/opt/homebrew/Cellar/mpich/4.1/bin/mpicc
+    MPICHCXX=/opt/homebrew/Cellar/mpich/4.1/bin/mpicxx
     CC=clang
     CFLAGS=-ferror-limit=1 # Clang
     CFLAGS+=-Wno-c2x-extensions
@@ -8,7 +10,9 @@ ifeq ($(shell uname),Darwin)
     CFLAGS+=-Wno-incompatible-function-pointer-types
 else
     OMPICC=/usr/bin/mpicc.openmpi
+    OMPICXX=/usr/bin/mpicxx.openmpi
     MPICHCC=/usr/bin/mpicc.mpich
+    MPICHCXX=/usr/bin/mpicxx.mpich
     CC=gcc
     CFLAGS=-fmax-errors=1 # GCC
     #CFLAGS+=-fsanitize=address
@@ -20,7 +24,8 @@ endif
 
 CFLAGS	+= -g3 -O0 -Wall -Wextra -Werror # -Wpedantic
 CFLAGS	+= -fPIC
-SOFLAGS	= -shared
+CXXFLAGS = -x c++
+SOFLAGS	= -shared -lstdc++
 
 AR	= ar
 ARFLAGS	= -r
@@ -58,8 +63,8 @@ IMPL_FUNCTION_C :=  impl-functions.c impl-load-functions.c impl-keyval.c \
 		    impl-type-functions.c
 
 IMPL_FUNCTION_O := $(patsubst %.c,%.o,$(IMPL_FUNCTION_C))
-MPICH_FUNCTION_O := $(subst impl,mpich,$(IMPL_FUNCTION_O))
-OMPI_FUNCTION_O := $(subst impl,ompi,$(IMPL_FUNCTION_O))
+MPICH_FUNCTION_O := $(subst impl,mpich,$(IMPL_FUNCTION_O)) mpich-keyval-map.o
+OMPI_FUNCTION_O := $(subst impl,ompi,$(IMPL_FUNCTION_O)) ompi-keyval-map.o
 
 # this just tests if mpi.h can be compiled without errors
 header.o: header.c $(MPI_H)
@@ -69,7 +74,7 @@ libmuk.a: libinit.o
 	$(AR) $(ARFLAGS) $@ $^
 
 libmuk.so: libinit.o mpich-wrap.so ompi-wrap.so
-	$(CC) $(SOFLAGS) $^ -o $@
+	$(CC) $^ $(SOFLAGS) -o $@
 
 libinit.o: libinit.c muk.h muk-dl.h $(MPI_H)
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -78,10 +83,10 @@ libinit.i: libinit.c muk.h muk-dl.h $(MPI_H)
 	$(CC) $(CFLAGS) -E $< -o $@
 
 mpich-wrap.so: $(MPICH_FUNCTION_O)
-	$(MPICHCC) $(SOFLAGS) $^ -o $@
+	$(MPICHCXX) $(SOFLAGS) $^ -o $@
 
 ompi-wrap.so: $(OMPI_FUNCTION_O)
-	$(OMPICC) $(SOFLAGS) $^ -o $@
+	$(OMPICXX) $(SOFLAGS) $^ -o $@
 
 mpich-predefined.o: impl-predefined.c muk-predefined.h
 	$(MPICHCC) $(CFLAGS) -c $< -o $@
@@ -154,6 +159,12 @@ mpich-keyval.o: impl-keyval.c $(IMPL_H)
 
 ompi-keyval.o: impl-keyval.c $(IMPL_H)
 	$(OMPICC) $(CFLAGS) -c $< -o $@
+
+mpich-keyval-map.o: impl-keyval-map.cc $(IMPL_H)
+	$(MPICHCC) $(CXXFLAGS) $(CFLAGS) -c $< -o $@
+
+ompi-keyval-map.o: impl-keyval-map.cc $(IMPL_H)
+	$(OMPICC) $(CXXFLAGS) $(CFLAGS) -c $< -o $@
 
 check: $(RUNTESTS)
 	./test.sh ./testcoll.x
