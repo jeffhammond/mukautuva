@@ -763,10 +763,14 @@ int MPI_Finalize(void)
     if (WRAP_Finalize_handle_key != NULL) {
         WRAP_Finalize_handle_key();
     }
+    int rc = MUK_Finalize();
+
+    // the maps must be cleared _after_ Finalize because some callbacks
+    // will be called automatically during Finalize.
     if (WRAP_Clear_maps != NULL) {
         WRAP_Clear_maps();
     }
-    int rc = MUK_Finalize();
+
     // WRAP_CODE_IMPL_TO_MUK calls Error_class so we cannot call it after Finalize
     return rc; //WRAP_CODE_IMPL_TO_MUK(rc);
 }
