@@ -16,11 +16,12 @@
 
 #define MUK_EXTERN extern
 #include "impl-fpointers.h"
-#include "impl-linked-list.h"
 #include "impl-constant-conversions.h"
 #include "impl-handle-conversions.h"
 #include "impl-predefined-handle.h"
 #include "impl-keyval-map.h"
+
+extern int WIN_EH_HANDLE_KEY;
 
 // used by WRAP_Win_create_keyval
 
@@ -112,7 +113,7 @@ int WRAP_Win_create_errhandler(WRAP_Win_errhandler_function *win_errhandler_fn, 
     //int rc = IMPL_Win_create_errhandler(win_errhandler_fn, &impl_errhandler);
     int rc = IMPL_Win_create_errhandler(win_errhandler_trampoline, &impl_errhandler);
     *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
-    add_win_errh_pair_to_list(impl_errhandler, win_errhandler_fn);
+    add_win_errhandler_callback(impl_errhandler, win_errhandler_fn);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -125,7 +126,7 @@ int WRAP_Win_set_errhandler(WRAP_Win win, WRAP_Errhandler errhandler)
     if (!IS_PREDEFINED_ERRHANDLER(impl_errhandler))
     {
         WRAP_Win_errhandler_function * win_errhandler_fn;
-        if (lookup_win_errh_pair(impl_errhandler, &win_errhandler_fn)) {
+        if (find_win_errhandler_callback(impl_errhandler, &win_errhandler_fn)) {
             rc = IMPL_Win_set_attr(impl_win, WIN_EH_HANDLE_KEY, win_errhandler_fn);
             if (rc) {
                 printf("%s: Win_set_attr failed\n",__func__);
@@ -227,8 +228,6 @@ int WRAP_Win_delete_attr(WRAP_Win win, int win_keyval)
     MPI_Win impl_win = CONVERT_MPI_Win(win);
     int rc = IMPL_Win_delete_attr(impl_win, win_keyval);
     if (rc) goto end;
-    rc = remove_win_keyval_callbacks(win_keyval);
-    if (rc==0) rc = MPI_ERR_INTERN;
     end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -575,7 +574,6 @@ int WRAP_Win_flush_local_all(WRAP_Win win)
 int WRAP_Win_free(WRAP_Win *win)
 {
     MPI_Win impl_win = CONVERT_MPI_Win(*win);
-    //remove_errhandler_by_object(Win,MPI_COMM_NULL,MPI_FILE_NULL,impl_win);
     int rc = IMPL_Win_free(&impl_win);
     *win = OUTPUT_MPI_Win(impl_win);
     return RETURN_CODE_IMPL_TO_MUK(rc);

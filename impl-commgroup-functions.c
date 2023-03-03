@@ -16,11 +16,12 @@
 
 #define MUK_EXTERN extern
 #include "impl-fpointers.h"
-#include "impl-linked-list.h"
 #include "impl-constant-conversions.h"
 #include "impl-handle-conversions.h"
 #include "impl-predefined-handle.h"
 #include "impl-keyval-map.h"
+
+extern int COMM_EH_HANDLE_KEY;
 
 // WRAP->IMPL functions
 
@@ -106,7 +107,7 @@ int WRAP_Comm_create_errhandler(WRAP_Comm_errhandler_function *comm_errhandler_f
     //int rc = IMPL_Comm_create_errhandler(comm_errhandler_fn, &impl_errhandler);
     int rc = IMPL_Comm_create_errhandler(comm_errhandler_trampoline, &impl_errhandler);
     *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
-    add_comm_errh_pair_to_list(impl_errhandler, comm_errhandler_fn);
+    add_comm_errhandler_callback(impl_errhandler, comm_errhandler_fn);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -119,7 +120,7 @@ int WRAP_Comm_set_errhandler(WRAP_Comm comm, WRAP_Errhandler errhandler)
     if (!IS_PREDEFINED_ERRHANDLER(impl_errhandler))
     {
         WRAP_Comm_errhandler_function * comm_errhandler_fn;
-        if (lookup_comm_errh_pair(impl_errhandler, &comm_errhandler_fn)) {
+        if (find_comm_errhandler_callback(impl_errhandler, &comm_errhandler_fn)) {
             rc = IMPL_Comm_set_attr(impl_comm, COMM_EH_HANDLE_KEY, comm_errhandler_fn);
             if (rc) {
                 printf("%s: Comm_set_attr failed\n",__func__);

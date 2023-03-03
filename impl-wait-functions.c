@@ -17,7 +17,7 @@
 #define MUK_EXTERN extern
 #include "impl-fpointers.h"
 #include "impl-status.h"
-#include "impl-linked-list.h"
+//#include "impl-linked-list.h"
 #include "impl-constant-conversions.h"
 #include "impl-handle-conversions.h"
 
@@ -196,7 +196,7 @@ int WRAP_Test(WRAP_Request *request, int *flag, WRAP_Status *status)
         if (!ignore) {
             MPI_Status_to_WRAP_Status(&impl_status, status);
         }
-        remove_cookie_pair_from_list(CONVERT_MPI_Request(*request));
+        //remove_cookie_pair_from_list(CONVERT_MPI_Request(*request));
         *request = OUTPUT_MPI_Request(impl_request);
     }
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -234,7 +234,7 @@ int WRAP_Testall(int count, WRAP_Request array_of_requests[], int *flag, WRAP_St
                 MPI_Status_to_WRAP_Status(&impl_statuses[i], &array_of_statuses[i]);
             }
             if (impl_requests[i] == MPI_REQUEST_NULL) {
-                remove_cookie_pair_from_list(CONVERT_MPI_Request(array_of_requests[i]));
+                //remove_cookie_pair_from_list(CONVERT_MPI_Request(array_of_requests[i]));
             }
             array_of_requests[i] = OUTPUT_MPI_Request(impl_requests[i]);
         }
@@ -266,7 +266,7 @@ int WRAP_Testany(int count, WRAP_Request array_of_requests[], int *indx, int *fl
                 MPI_Status_to_WRAP_Status(&impl_status, status);
             }
             if (impl_requests[*indx] == MPI_REQUEST_NULL) {
-                remove_cookie_pair_from_list(CONVERT_MPI_Request(array_of_requests[*indx]));
+                //remove_cookie_pair_from_list(CONVERT_MPI_Request(array_of_requests[*indx]));
             }
             array_of_requests[*indx] = OUTPUT_MPI_Request(impl_requests[*indx]);
         }
@@ -302,7 +302,7 @@ int WRAP_Testsome(int incount, WRAP_Request array_of_requests[], int *outcount, 
                 MPI_Status_to_WRAP_Status(&impl_statuses[j], &array_of_statuses[j]);
             }
             if (impl_requests[j] == MPI_REQUEST_NULL) {
-                remove_cookie_pair_from_list(CONVERT_MPI_Request(array_of_requests[j]));
+                //remove_cookie_pair_from_list(CONVERT_MPI_Request(array_of_requests[j]));
             }
             array_of_requests[j] = OUTPUT_MPI_Request(impl_requests[j]);
         }
@@ -323,7 +323,7 @@ int WRAP_Wait(WRAP_Request *request, WRAP_Status *status)
     if (!ignore) {
         MPI_Status_to_WRAP_Status(&impl_status, status);
     }
-    remove_cookie_pair_from_list(CONVERT_MPI_Request(*request));
+    //remove_cookie_pair_from_list(CONVERT_MPI_Request(*request));
     *request = OUTPUT_MPI_Request(impl_request);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -355,7 +355,7 @@ int WRAP_Waitall(int count, WRAP_Request array_of_requests[], WRAP_Status *array
             MPI_Status_to_WRAP_Status(&impl_statuses[i], &array_of_statuses[i]);
         }
         if (impl_requests[i] == MPI_REQUEST_NULL) {
-            remove_cookie_pair_from_list(CONVERT_MPI_Request(array_of_requests[i]));
+            //remove_cookie_pair_from_list(CONVERT_MPI_Request(array_of_requests[i]));
         }
         array_of_requests[i] = OUTPUT_MPI_Request(impl_requests[i]);
     }
@@ -387,7 +387,7 @@ int WRAP_Waitany(int count, WRAP_Request array_of_requests[], int *indx, WRAP_St
             MPI_Status_to_WRAP_Status(&impl_status, status);
         }
         if (impl_requests[*indx] == MPI_REQUEST_NULL) {
-            remove_cookie_pair_from_list(CONVERT_MPI_Request(array_of_requests[*indx]));
+            //remove_cookie_pair_from_list(CONVERT_MPI_Request(array_of_requests[*indx]));
         }
         array_of_requests[*indx] = OUTPUT_MPI_Request(impl_requests[*indx]);
     }
@@ -422,7 +422,7 @@ int WRAP_Waitsome(int incount, WRAP_Request array_of_requests[], int *outcount, 
                 MPI_Status_to_WRAP_Status(&impl_statuses[j], &array_of_statuses[j]);
             }
             if (impl_requests[j] == MPI_REQUEST_NULL) {
-                remove_cookie_pair_from_list(CONVERT_MPI_Request(array_of_requests[j]));
+                //remove_cookie_pair_from_list(CONVERT_MPI_Request(array_of_requests[j]));
             }
             array_of_requests[j] = OUTPUT_MPI_Request(impl_requests[j]);
         }

@@ -7,6 +7,7 @@
 
 // crazy stuff to support user-defined reductions
 
+#if 0
 // impl-keyval.c
 extern int TYPE_HANDLE_KEY;
 extern int COMM_EH_HANDLE_KEY;
@@ -91,7 +92,9 @@ typedef struct op_fptr_pair_s
     struct op_fptr_pair_s * prev;
 }
 op_fptr_pair_t;
+#endif
 
+#if 0
 // This is to implement the crude garbage collector for cookies
 // created by nonblocking reductions with user-defined ops,
 // which cannot be freed until the user function is called
@@ -106,6 +109,7 @@ typedef struct req_cookie_pair_s
     struct req_cookie_pair_s * prev;
 }
 req_cookie_pair_t;
+#endif
 
 // This is to implement the crude garbage collector for cookies
 // created by nonblocking alltoallw,
@@ -126,14 +130,17 @@ typedef struct req_alltoallw_pair_s
 }
 req_alltoallw_pair_t;
 
+extern req_alltoallw_pair_t  * req_alltoallw_pair_list;
+#if 0
 // impl-functions.c
 extern op_fptr_pair_t        * op_fptr_pair_list;
 extern req_cookie_pair_t     * req_cookie_pair_list;
-extern req_alltoallw_pair_t  * req_alltoallw_pair_list;
 extern comm_errh_fptr_pair_t * comm_errh_fptr_pair_list;
 extern file_errh_fptr_pair_t * file_errh_fptr_pair_list;
 extern win_errh_fptr_pair_t  * win_errh_fptr_pair_list;
+#endif
 
+#if 0
 MAYBE_UNUSED
 static bool lookup_op_pair(const MPI_Op op, WRAP_User_function ** fn_i, WRAP_User_function_c ** fn_c , bool * is_large)
 {
@@ -366,9 +373,11 @@ static inline void remove_cookie_pair_from_list(const MPI_Request request)
     // Step 3: free the memory
     free(current);
 }
+#endif
 
 // errhandler stuff
 
+#if 0
 MAYBE_UNUSED
 static void add_comm_errh_pair_to_list(MPI_Errhandler errhandler, WRAP_Comm_errhandler_function *comm_errhandler_fn)
 {
@@ -461,5 +470,6 @@ static bool lookup_win_errh_pair(MPI_Errhandler errhandler, WRAP_Win_errhandler_
     }
     return false;
 }
+#endif
 
 #endif
