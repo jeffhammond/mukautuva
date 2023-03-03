@@ -27,7 +27,7 @@
 int type_copy_attr_trampoline(MPI_Datatype impl_type, int type_keyval, void *extra_state, void *attribute_val_in, void *attribute_val_out, int *flag)
 {
     WRAP_Type_copy_attr_function * type_copy_attr_fn;
-    int rc = find_type_keyval_callbacks(type_keyval, &type_copy_attr_fn, NULL, NULL);
+    int rc = find_type_keyval_callbacks(type_keyval, &type_copy_attr_fn, NULL);
     if (rc==0) {
         printf("%s: find_type_keyval_callbacks failed for type_keyval=%d\n",__func__,type_keyval);
         return MPI_ERR_INTERN;
@@ -61,7 +61,7 @@ int type_copy_attr_trampoline(MPI_Datatype impl_type, int type_keyval, void *ext
 int type_delete_attr_trampoline(MPI_Datatype impl_type, int type_keyval, void *attribute_val, void *extra_state)
 {
     WRAP_Type_delete_attr_function * type_delete_attr_fn;
-    int rc = find_type_keyval_callbacks(type_keyval, NULL, &type_delete_attr_fn, NULL);
+    int rc = find_type_keyval_callbacks(type_keyval, NULL, &type_delete_attr_fn);
     if (rc==0) {
         printf("%s: find_type_keyval_callbacks failed for type_keyval=%d\n",__func__,type_keyval);
         return MPI_ERR_INTERN;
@@ -108,7 +108,7 @@ int WRAP_Type_create_keyval(WRAP_Type_copy_attr_function *type_copy_attr_fn, WRA
     int rc = IMPL_Type_create_keyval(impl_type_copy_attr_fn, impl_type_delete_attr_fn, type_keyval, extra_state);
     if (rc) goto end;
     if (needs_trampoline) {
-        int rc = add_type_keyval_callbacks(*type_keyval, type_copy_attr_fn, type_delete_attr_fn, extra_state);
+        int rc = add_type_keyval_callbacks(*type_keyval, type_copy_attr_fn, type_delete_attr_fn);
         if (rc==0) rc = MPI_ERR_INTERN;
     }
     end:

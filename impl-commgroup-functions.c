@@ -44,7 +44,7 @@ void comm_errhandler_trampoline(MPI_Comm *comm, int *errorcode, ...)
 int copy_attr_trampoline(MPI_Comm impl_comm, int comm_keyval, void *extra_state, void *attribute_val_in, void *attribute_val_out, int *flag)
 {
     WRAP_Comm_copy_attr_function * comm_copy_attr_fn;
-    int rc = find_comm_keyval_callbacks(comm_keyval, &comm_copy_attr_fn, NULL, NULL);
+    int rc = find_comm_keyval_callbacks(comm_keyval, &comm_copy_attr_fn, NULL);
     if (rc==0) {
         printf("%s: find_comm_keyval_callbacks failed for comm_keyval=%d\n",__func__,comm_keyval);
         return MPI_ERR_INTERN;
@@ -78,7 +78,7 @@ int copy_attr_trampoline(MPI_Comm impl_comm, int comm_keyval, void *extra_state,
 int delete_attr_trampoline(MPI_Comm impl_comm, int comm_keyval, void *attribute_val, void *extra_state)
 {
     WRAP_Comm_delete_attr_function * comm_delete_attr_fn;
-    int rc = find_comm_keyval_callbacks(comm_keyval, NULL, &comm_delete_attr_fn, NULL);
+    int rc = find_comm_keyval_callbacks(comm_keyval, NULL, &comm_delete_attr_fn);
     if (rc==0) {
         printf("%s: find_comm_keyval_callbacks failed for comm_keyval=%d\n",__func__,comm_keyval);
         return MPI_ERR_INTERN;
@@ -331,7 +331,7 @@ int WRAP_Comm_create_keyval(WRAP_Comm_copy_attr_function *comm_copy_attr_fn, WRA
     int rc = IMPL_Comm_create_keyval(impl_comm_copy_attr_fn, impl_comm_delete_attr_fn, comm_keyval, extra_state);
     if (rc) goto end;
     if (needs_trampoline) {
-        int rc = add_comm_keyval_callbacks(*comm_keyval, comm_copy_attr_fn, comm_delete_attr_fn, extra_state);
+        int rc = add_comm_keyval_callbacks(*comm_keyval, comm_copy_attr_fn, comm_delete_attr_fn);
         if (rc==0) rc = MPI_ERR_INTERN;
     }
     end:

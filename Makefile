@@ -160,10 +160,13 @@ mpich-keyval.o: impl-keyval.c $(IMPL_H)
 ompi-keyval.o: impl-keyval.c $(IMPL_H)
 	$(OMPICC) $(CFLAGS) -c $< -o $@
 
-mpich-keyval-map.o: impl-keyval-map.cc $(IMPL_H)
+mpich-keyval-map.o: impl-keyval-map.cc $(IMPL_H) \
+                    impl-keyval-map-commattr.h impl-keyval-map-typeattr.h impl-keyval-map-winattr.h
 	$(MPICHCC) $(CXXFLAGS) $(CFLAGS) -c $< -o $@
 
-ompi-keyval-map.o: impl-keyval-map.cc $(IMPL_H)
+ompi-keyval-map.o: impl-keyval-map.cc $(IMPL_H) \
+                   impl-keyval-map-commattr.h impl-keyval-map-typeattr.h impl-keyval-map-winattr.h
+	$(MPICHCC) $(CXXFLAGS) $(CFLAGS) -c $< -o $@
 	$(OMPICC) $(CXXFLAGS) $(CFLAGS) -c $< -o $@
 
 check: $(RUNTESTS)

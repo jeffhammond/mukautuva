@@ -27,7 +27,7 @@
 int win_copy_attr_trampoline(MPI_Win impl_win, int win_keyval, void *extra_state, void *attribute_val_in, void *attribute_val_out, int *flag)
 {
     WRAP_Win_copy_attr_function * win_copy_attr_fn;
-    int rc = find_win_keyval_callbacks(win_keyval, &win_copy_attr_fn, NULL, NULL);
+    int rc = find_win_keyval_callbacks(win_keyval, &win_copy_attr_fn, NULL);
     if (rc==0) {
         printf("%s: find_win_keyval_callbacks failed for win_keyval=%d\n",__func__,win_keyval);
         return MPI_ERR_INTERN;
@@ -61,7 +61,7 @@ int win_copy_attr_trampoline(MPI_Win impl_win, int win_keyval, void *extra_state
 int win_delete_attr_trampoline(MPI_Win impl_win, int win_keyval, void *attribute_val, void *extra_state)
 {
     WRAP_Win_delete_attr_function * win_delete_attr_fn;
-    int rc = find_win_keyval_callbacks(win_keyval, NULL, &win_delete_attr_fn, NULL);
+    int rc = find_win_keyval_callbacks(win_keyval, NULL, &win_delete_attr_fn);
     if (rc==0) {
         printf("%s: find_win_keyval_callbacks failed for win_keyval=%d\n",__func__,win_keyval);
         return MPI_ERR_INTERN;
@@ -184,7 +184,7 @@ int WRAP_Win_create_keyval(WRAP_Win_copy_attr_function *win_copy_attr_fn, WRAP_W
     int rc = IMPL_Win_create_keyval(impl_win_copy_attr_fn, impl_win_delete_attr_fn, win_keyval, extra_state);
     if (rc) goto end;
     if (needs_trampoline) {
-        int rc = add_win_keyval_callbacks(*win_keyval, win_copy_attr_fn, win_delete_attr_fn, extra_state);
+        int rc = add_win_keyval_callbacks(*win_keyval, win_copy_attr_fn, win_delete_attr_fn);
         if (rc==0) rc = MPI_ERR_INTERN;
     }
     end:

@@ -35,7 +35,6 @@ typedef int MPI_Copy_function(MPI_Comm oldcomm, int keyval, void *extra_state, v
 typedef int MPI_Delete_function(MPI_Comm comm, int keyval, void *attribute_val, void *extra_state);
 typedef void MPI_Handler_function(MPI_Comm *comm, int *error_code,...);
 
-
 // win attr
 typedef int MPI_Win_copy_attr_function(MPI_Win oldwin, int win_keyval, void *extra_state, void *attribute_val_in, void *attribute_val_out, int *flag);
 typedef int MPI_Win_delete_attr_function(MPI_Win win, int win_keyval, void *attribute_val, void *extra_state);
