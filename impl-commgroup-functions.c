@@ -20,10 +20,11 @@
 #include "impl-constant-conversions.h"
 #include "impl-handle-conversions.h"
 #include "impl-predefined-handle.h"
+#include "impl-keyval-map.h"
 
 // WRAP->IMPL functions
 
-// errhandler stuff
+// used by WRAP_Comm_create_errhandler
 
 void comm_errhandler_trampoline(MPI_Comm *comm, int *errorcode, ...)
 {
@@ -36,6 +37,67 @@ void comm_errhandler_trampoline(MPI_Comm *comm, int *errorcode, ...)
     }
     WRAP_Comm wrap_comm = OUTPUT_MPI_Comm(*comm);
     (*fp)(&wrap_comm,errorcode);
+}
+
+// used by WRAP_Comm_create_keyval
+
+int copy_attr_trampoline(MPI_Comm impl_comm, int comm_keyval, void *extra_state, void *attribute_val_in, void *attribute_val_out, int *flag)
+{
+    WRAP_Comm_copy_attr_function * comm_copy_attr_fn;
+    int rc = find_comm_keyval_callbacks(comm_keyval, &comm_copy_attr_fn, NULL, NULL);
+    if (rc==0) {
+        printf("%s: find_comm_keyval_callbacks failed for comm_keyval=%d\n",__func__,comm_keyval);
+        return MPI_ERR_INTERN;
+    }
+    if ((intptr_t)comm_copy_attr_fn == (intptr_t)MPI_COMM_NULL_COPY_FN) {
+#ifdef DEBUG
+        printf("%s: find_comm_keyval_callbacks found MPI_COMM_NULL_COPY_FN for comm_keyval=%d\n",__func__,comm_keyval);
+#endif
+        *flag = 0;
+        return MPI_SUCCESS;
+    }
+    else if ((intptr_t)comm_copy_attr_fn == (intptr_t)MPI_COMM_DUP_FN) {
+#ifdef DEBUG
+        printf("%s: find_comm_keyval_callbacks found MPI_COMM_DUP_FN for comm_keyval=%d\n",__func__,comm_keyval);
+#endif
+        *(void**)attribute_val_out = attribute_val_in;
+        *flag = 1;
+        return MPI_SUCCESS;
+    }
+    else {
+#ifdef DEBUG
+        printf("%s: find_comm_keyval_callbacks found comm_copy_attr_fn=%p for comm_keyval=%d\n",
+                __func__,comm_copy_attr_fn,comm_keyval);
+#endif
+        WRAP_Comm wrap_comm = OUTPUT_MPI_Comm(impl_comm);
+        rc = (*comm_copy_attr_fn)(wrap_comm, comm_keyval, extra_state, attribute_val_in, attribute_val_out, flag);
+        return RETURN_CODE_MUK_TO_IMPL(rc);
+    }
+}
+
+int delete_attr_trampoline(MPI_Comm impl_comm, int comm_keyval, void *attribute_val, void *extra_state)
+{
+    WRAP_Comm_delete_attr_function * comm_delete_attr_fn;
+    int rc = find_comm_keyval_callbacks(comm_keyval, NULL, &comm_delete_attr_fn, NULL);
+    if (rc==0) {
+        printf("%s: find_comm_keyval_callbacks failed for comm_keyval=%d\n",__func__,comm_keyval);
+        return MPI_ERR_INTERN;
+    }
+    if ((intptr_t)comm_delete_attr_fn == (intptr_t)MPI_COMM_NULL_DELETE_FN) {
+#ifdef DEBUG
+        printf("%s: find_comm_keyval_callbacks found MPI_COMM_NULL_DELETE_FN for comm_keyval=%d\n",__func__,comm_keyval);
+#endif
+        return MPI_SUCCESS;
+    }
+    else {
+#ifdef DEBUG
+        printf("%s: find_comm_keyval_callbacks found comm_copy_attr_fn=%p for comm_keyval=%d\n",
+                __func__,comm_copy_attr_fn,comm_keyval);
+#endif
+        WRAP_Comm wrap_comm = OUTPUT_MPI_Comm(impl_comm);
+        rc = (*comm_delete_attr_fn)(wrap_comm, comm_keyval, attribute_val, extra_state);
+        return RETURN_CODE_MUK_TO_IMPL(rc);
+    }
 }
 
 int WRAP_Comm_create_errhandler(WRAP_Comm_errhandler_function *comm_errhandler_fn, WRAP_Errhandler *errhandler)
@@ -91,6 +153,7 @@ int WRAP_Comm_call_errhandler(WRAP_Comm comm, int errorcode)
 
 #if 0
 // obsolete versions
+// we just map the outer MPI symbols to the new API in libinit.c so we can ignore these.
 
 int WRAP_Errhandler_create(WRAP_Comm_errhandler_function *comm_errhandler_fn, WRAP_Errhandler *errhandler)
 {
@@ -245,6 +308,7 @@ int WRAP_Comm_create(WRAP_Comm comm, WRAP_Group group, WRAP_Comm *newcomm)
 
 int WRAP_Comm_create_keyval(WRAP_Comm_copy_attr_function *comm_copy_attr_fn, WRAP_Comm_delete_attr_function *comm_delete_attr_fn, int *comm_keyval, void *extra_state)
 {
+    bool needs_trampoline = false;
     MPI_Comm_copy_attr_function * impl_comm_copy_attr_fn;
     if ((intptr_t)comm_copy_attr_fn == (intptr_t)MUK_COMM_NULL_COPY_FN) {
         impl_comm_copy_attr_fn = MPI_COMM_NULL_COPY_FN;
@@ -253,20 +317,24 @@ int WRAP_Comm_create_keyval(WRAP_Comm_copy_attr_function *comm_copy_attr_fn, WRA
         impl_comm_copy_attr_fn = MPI_COMM_DUP_FN;
     }
     else {
-        //printf("%s : %d FIXME\n",__func__,__LINE__);
-        // FIXME with a trampoline
-        impl_comm_copy_attr_fn = MPI_COMM_DUP_FN;
+        needs_trampoline = true;
+        impl_comm_copy_attr_fn = copy_attr_trampoline;
     }
     MPI_Comm_delete_attr_function * impl_comm_delete_attr_fn;
     if ((intptr_t)comm_delete_attr_fn == (intptr_t)MUK_COMM_NULL_DELETE_FN) {
         impl_comm_delete_attr_fn = MPI_COMM_NULL_DELETE_FN;
     }
     else {
-        //printf("%s : %d FIXME\n",__func__,__LINE__);
-        // FIXME with a trampoline
-        impl_comm_delete_attr_fn = MPI_COMM_NULL_DELETE_FN;
+        needs_trampoline = true;
+        impl_comm_delete_attr_fn = delete_attr_trampoline;
     }
     int rc = IMPL_Comm_create_keyval(impl_comm_copy_attr_fn, impl_comm_delete_attr_fn, comm_keyval, extra_state);
+    if (rc) goto end;
+    if (needs_trampoline) {
+        int rc = add_comm_keyval_callbacks(*comm_keyval, comm_copy_attr_fn, comm_delete_attr_fn, extra_state);
+        if (rc==0) rc = MPI_ERR_INTERN;
+    }
+    end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -274,6 +342,10 @@ int WRAP_Comm_delete_attr(WRAP_Comm comm, int comm_keyval)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     int rc = IMPL_Comm_delete_attr(impl_comm, comm_keyval);
+    if (rc) goto end;
+    rc = remove_comm_keyval_callbacks(comm_keyval);
+    if (rc==0) rc = MPI_ERR_INTERN;
+    end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 

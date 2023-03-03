@@ -53,7 +53,7 @@ MPI_H = mpi.h mpi-constants.h mpi-handle-typedefs.h mpi-typedefs.h mpi-predefine
 IMPL_H =    impl-alltoallw.h impl-constant-conversions.h \
 	    impl-fpointers.h impl-handle-conversions.h \
 	    impl-linked-list.h impl-predefined-handle.h \
-	    impl-scalar-types.h impl-status.h
+	    impl-scalar-types.h impl-status.h impl-keyval-map.h
 
 IMPL_FUNCTION_C :=  impl-functions.c impl-load-functions.c impl-keyval.c \
 		    impl-constant-conversions.c impl-predefined.c \
