@@ -19,9 +19,73 @@
 #include "impl-status.h"
 #include "impl-constant-conversions.h"
 #include "impl-handle-conversions.h"
+//#include "impl-predefined-handle.h"
+#include "impl-keyval-map.h"
+
+// used by WRAP_Type_create_keyval
+
+int type_copy_attr_trampoline(MPI_Datatype impl_type, int type_keyval, void *extra_state, void *attribute_val_in, void *attribute_val_out, int *flag)
+{
+    WRAP_Type_copy_attr_function * type_copy_attr_fn;
+    int rc = find_type_keyval_callbacks(type_keyval, &type_copy_attr_fn, NULL, NULL);
+    if (rc==0) {
+        printf("%s: find_type_keyval_callbacks failed for type_keyval=%d\n",__func__,type_keyval);
+        return MPI_ERR_INTERN;
+    }
+    if ((intptr_t)type_copy_attr_fn == (intptr_t)MPI_TYPE_NULL_COPY_FN) {
+#ifdef DEBUG
+        printf("%s: find_type_keyval_callbacks found MPI_TYPE_NULL_COPY_FN for type_keyval=%d\n",__func__,type_keyval);
+#endif
+        *flag = 0;
+        return MPI_SUCCESS;
+    }
+    else if ((intptr_t)type_copy_attr_fn == (intptr_t)MPI_TYPE_DUP_FN) {
+#ifdef DEBUG
+        printf("%s: find_type_keyval_callbacks found MPI_TYPE_DUP_FN for type_keyval=%d\n",__func__,type_keyval);
+#endif
+        *(void**)attribute_val_out = attribute_val_in;
+        *flag = 1;
+        return MPI_SUCCESS;
+    }
+    else {
+#ifdef DEBUG
+        printf("%s: find_type_keyval_callbacks found type_copy_attr_fn=%p for type_keyval=%d\n",
+                __func__,type_copy_attr_fn,type_keyval);
+#endif
+        WRAP_Datatype wrap_type = OUTPUT_MPI_Datatype(impl_type);
+        rc = (*type_copy_attr_fn)(wrap_type, type_keyval, extra_state, attribute_val_in, attribute_val_out, flag);
+        return RETURN_CODE_MUK_TO_IMPL(rc);
+    }
+}
+
+int type_delete_attr_trampoline(MPI_Datatype impl_type, int type_keyval, void *attribute_val, void *extra_state)
+{
+    WRAP_Type_delete_attr_function * type_delete_attr_fn;
+    int rc = find_type_keyval_callbacks(type_keyval, NULL, &type_delete_attr_fn, NULL);
+    if (rc==0) {
+        printf("%s: find_type_keyval_callbacks failed for type_keyval=%d\n",__func__,type_keyval);
+        return MPI_ERR_INTERN;
+    }
+    if ((intptr_t)type_delete_attr_fn == (intptr_t)MPI_TYPE_NULL_DELETE_FN) {
+#ifdef DEBUG
+        printf("%s: find_type_keyval_callbacks found MPI_TYPE_NULL_DELETE_FN for type_keyval=%d\n",__func__,type_keyval);
+#endif
+        return MPI_SUCCESS;
+    }
+    else {
+#ifdef DEBUG
+        printf("%s: find_type_keyval_callbacks found type_copy_attr_fn=%p for type_keyval=%d\n",
+                __func__,type_copy_attr_fn,type_keyval);
+#endif
+        WRAP_Datatype wrap_type = OUTPUT_MPI_Datatype(impl_type);
+        rc = (*type_delete_attr_fn)(wrap_type, type_keyval, attribute_val, extra_state);
+        return RETURN_CODE_MUK_TO_IMPL(rc);
+    }
+}
 
 int WRAP_Type_create_keyval(WRAP_Type_copy_attr_function *type_copy_attr_fn, WRAP_Type_delete_attr_function *type_delete_attr_fn, int *type_keyval, void *extra_state)
 {
+    bool needs_trampoline = false;
     MPI_Type_copy_attr_function * impl_type_copy_attr_fn;
     if ((intptr_t)type_copy_attr_fn == (intptr_t)MUK_TYPE_NULL_COPY_FN) {
         impl_type_copy_attr_fn = MPI_TYPE_NULL_COPY_FN;
@@ -30,18 +94,24 @@ int WRAP_Type_create_keyval(WRAP_Type_copy_attr_function *type_copy_attr_fn, WRA
         impl_type_copy_attr_fn = MPI_TYPE_DUP_FN;
     }
     else {
-        //printf("%s : %d FIXME\n",__func__,__LINE__);
-        impl_type_copy_attr_fn = MPI_TYPE_NULL_COPY_FN;
+        needs_trampoline = true;
+        impl_type_copy_attr_fn = type_copy_attr_trampoline;
     }
     MPI_Type_delete_attr_function * impl_type_delete_attr_fn;
     if ((intptr_t)type_delete_attr_fn == (intptr_t)MUK_TYPE_NULL_DELETE_FN) {
         impl_type_delete_attr_fn = MPI_TYPE_NULL_DELETE_FN;
     }
     else {
-        //printf("%s : %d FIXME\n",__func__,__LINE__);
-        impl_type_delete_attr_fn = MPI_TYPE_NULL_DELETE_FN;
+        needs_trampoline = true;
+        impl_type_delete_attr_fn = type_delete_attr_trampoline;
     }
     int rc = IMPL_Type_create_keyval(impl_type_copy_attr_fn, impl_type_delete_attr_fn, type_keyval, extra_state);
+    if (rc) goto end;
+    if (needs_trampoline) {
+        int rc = add_type_keyval_callbacks(*type_keyval, type_copy_attr_fn, type_delete_attr_fn, extra_state);
+        if (rc==0) rc = MPI_ERR_INTERN;
+    }
+    end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
