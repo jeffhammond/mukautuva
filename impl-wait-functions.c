@@ -95,7 +95,7 @@ int WRAP_Request_free(WRAP_Request *request)
                 free(recvtypes);
                 recvtypes = NULL;
             }
-            remove_persistent_request_alltoallw_buffers(impl_request_copy);
+            remove_persistent_request_alltoallw_buffers(impl_request);
         }
     }
     rc = IMPL_Request_free(&impl_request);
