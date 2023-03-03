@@ -19,6 +19,7 @@
 #include "impl-status.h"
 #include "impl-constant-conversions.h"
 #include "impl-handle-conversions.h"
+#include "impl-keyval-map.h"
 
 int WRAP_Cancel(WRAP_Request *request)
 {
@@ -78,12 +79,52 @@ int WRAP_Get_elements_x(const WRAP_Status *status, WRAP_Datatype datatype, WRAP_
 
 int WRAP_Request_free(WRAP_Request *request)
 {
+    int rc;
     MPI_Request impl_request = CONVERT_MPI_Request(*request);
-    int rc = IMPL_Request_free(&impl_request);
+    // look up the request before it is freed, because that will change it to MPI_REQUEST_NULL
+    {
+        MPI_Datatype * sendtypes = NULL;
+        MPI_Datatype * recvtypes = NULL;
+        int found = find_persistent_request_alltoallw_buffers(impl_request, &sendtypes, &recvtypes);
+        if (found) {
+            // we need to copy this because it is the key in our map,
+            // but Test may change it to MPI_REQUEST_NULL
+            MPI_Request impl_request_copy = impl_request;
+            int flag;
+            rc = IMPL_Test(&impl_request, &flag, MPI_STATUS_IGNORE);
+            if (rc) goto end;
+            // if the persistent alltoall request is complete, we can safely free the temp arrays.
+            if (flag) {
+                if (sendtypes != NULL) {
+                    free(sendtypes);
+                    sendtypes = NULL;
+                }
+                if (recvtypes != NULL) {
+                    free(recvtypes);
+                    recvtypes = NULL;
+                }
+            }
+            // if the persistent alltoall request is not complete, we say mean things to the user
+            // and tell them what their punishment is.
+            else {
+                // user is freeing an active request associated with a persistent collective,
+                // which they are allowed to do (but discouraged from doing) by §3.7.
+                // this semantic is impossible to support (https://github.com/mpi-forum/mpi-issues/issues/688)
+                // so we have no choice but to leak memory, since we can no longer track the state
+                // associated with persistent alltoallw temporary datatype arrays.
+                printf("%s: You are doing a very bad thing by freeing an active persistent request.\n"
+                       "The punishment is a memory leak associated with the temporary arrays of\n"
+                       "datatypes we allocated for MPI_Alltoallw_init(_c).\n", __func__);
+            }
+            remove_persistent_request_alltoallw_buffers(impl_request_copy);
+        }
+    }
+    rc = IMPL_Request_free(&impl_request);
+    if (rc) goto end;
     // It is erroneous to call MPI_REQUEST_FREE or MPI_CANCEL for a request
     // associated with a nonblocking collective operation.
-    //remove_cookie_pair_from_list(CONVERT_MPI_Request(*request));
     *request = OUTPUT_MPI_Request(impl_request);
+    end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 

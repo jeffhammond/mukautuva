@@ -15,6 +15,7 @@
 #include "impl-constant-conversions.h"
 #include "impl-handle-conversions.h"
 #include "impl-alltoallw.h"
+#include "impl-keyval-map.h"
 
 // WRAP->IMPL functions
 
@@ -317,11 +318,13 @@ int WRAP_Alltoallw_init(const void *sendbuf, const int sendcounts[], const int s
     MPI_Datatype * impl_sendtypes = NULL;
     MPI_Datatype * impl_recvtypes = NULL;
     int rc = ALLTOALLW_SETUP(in_place, impl_comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
+    if (rc) goto end;
     MPI_Request impl_request;
     rc = IMPL_Alltoallw_init(in_place ? MPI_IN_PLACE : sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, impl_comm, impl_info, &impl_request);
+    if (rc) goto end;
     *request = OUTPUT_MPI_Request(impl_request);
-    if (sendtypes != NULL) free(impl_sendtypes);
-    free(impl_recvtypes);
+    add_persistent_request_alltoallw_buffers(impl_request, impl_sendtypes, impl_recvtypes);
+    end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -333,11 +336,13 @@ int WRAP_Alltoallw_init_c(const void *sendbuf, const WRAP_Count sendcounts[], co
     MPI_Datatype * impl_sendtypes = NULL;
     MPI_Datatype * impl_recvtypes = NULL;
     int rc = ALLTOALLW_SETUP(in_place, impl_comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
+    if (rc) goto end;
     MPI_Request impl_request;
     rc = IMPL_Alltoallw_init_c(in_place ? MPI_IN_PLACE : sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, impl_comm, impl_info, &impl_request);
+    if (rc) goto end;
     *request = OUTPUT_MPI_Request(impl_request);
-    if (sendtypes != NULL) free(impl_sendtypes);
-    free(impl_recvtypes);
+    add_persistent_request_alltoallw_buffers(impl_request, impl_sendtypes, impl_recvtypes);
+    end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -1608,15 +1613,13 @@ int WRAP_Neighbor_alltoallw_init(const void *sendbuf, const int sendcounts[], co
     MPI_Datatype * impl_sendtypes = NULL;
     MPI_Datatype * impl_recvtypes = NULL;
     int rc = ALLTOALLW_SETUP(in_place, impl_comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
-    if (rc != MPI_SUCCESS) {
-        return RETURN_CODE_IMPL_TO_MUK(rc);
-    }
+    if (rc) goto end;
     MPI_Request impl_request;
     rc = IMPL_Neighbor_alltoallw_init(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, impl_comm, impl_info, &impl_request);
+    if (rc) goto end;
     *request = OUTPUT_MPI_Request(impl_request);
-    // THIS IS ILLEGAL - FIX IT
-    //if (sendtypes != NULL) free(impl_sendtypes);
-    //free(impl_recvtypes);
+    add_persistent_request_alltoallw_buffers(impl_request, impl_sendtypes, impl_recvtypes);
+    end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -1628,15 +1631,13 @@ int WRAP_Neighbor_alltoallw_init_c(const void *sendbuf, const WRAP_Count sendcou
     MPI_Datatype * impl_sendtypes = NULL;
     MPI_Datatype * impl_recvtypes = NULL;
     int rc = ALLTOALLW_SETUP(in_place, impl_comm, sendtypes, recvtypes, &impl_sendtypes, &impl_recvtypes);
-    if (rc != MPI_SUCCESS) {
-        return RETURN_CODE_IMPL_TO_MUK(rc);
-    }
+    if (rc) goto end;
     MPI_Request impl_request;
     rc = IMPL_Neighbor_alltoallw_init_c(sendbuf, sendcounts, sdispls, impl_sendtypes, recvbuf, recvcounts, rdispls, impl_recvtypes, impl_comm, impl_info, &impl_request);
+    if (rc) goto end;
     *request = OUTPUT_MPI_Request(impl_request);
-    // THIS IS ILLEGAL - FIX IT
-    //if (sendtypes != NULL) free(impl_sendtypes);
-    //free(impl_recvtypes);
+    add_persistent_request_alltoallw_buffers(impl_request, impl_sendtypes, impl_recvtypes);
+    end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
