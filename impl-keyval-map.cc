@@ -78,6 +78,9 @@ extern "C" {
 #include "impl-keyval-map-typeattr.h" // keyval_type_attr_cb_map
 #include "impl-keyval-map-winattr.h"  // keyval_win_attr_cb_map
 #include "impl-keyval-map-opuserfn.h" // op_user_function_map
+#include "impl-keyval-map-commerrh.h" // errhandler_comm_cb_map
+#include "impl-keyval-map-fileerrh.h" // errhandler_file_cb_map
+#include "impl-keyval-map-winerrh.h"  // errhandler_win_cb_map
 
 void WRAP_Clear_maps(void)
 {

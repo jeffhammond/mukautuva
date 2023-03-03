@@ -55,6 +55,14 @@ IMPL_H =    impl-alltoallw.h impl-constant-conversions.h \
 	    impl-linked-list.h impl-predefined-handle.h \
 	    impl-scalar-types.h impl-status.h impl-keyval-map.h
 
+IMPL_CXX_H =	impl-keyval-map-commattr.h \
+		impl-keyval-map-typeattr.h \
+		impl-keyval-map-winattr.h  \
+		impl-keyval-map-commerrh.h \
+		impl-keyval-map-fileerrh.h \
+		impl-keyval-map-winerrh.h  \
+		impl-keyval-map-opuserfn.h
+
 IMPL_FUNCTION_C :=  impl-functions.c impl-load-functions.c impl-keyval.c \
 		    impl-constant-conversions.c impl-predefined.c \
 		    impl-commgroup-functions.c impl-rma-functions.c \
@@ -160,15 +168,10 @@ mpich-keyval.o: impl-keyval.c $(IMPL_H)
 ompi-keyval.o: impl-keyval.c $(IMPL_H)
 	$(OMPICC) $(CFLAGS) -c $< -o $@
 
-mpich-keyval-map.o: impl-keyval-map.cc $(IMPL_H) \
-                    impl-keyval-map-commattr.h impl-keyval-map-typeattr.h impl-keyval-map-winattr.h \
-                    impl-keyval-map-opuserfn.h
+mpich-keyval-map.o: impl-keyval-map.cc $(IMPL_H) $(IMPL_CXX_H)
 	$(MPICHCC) $(CXXFLAGS) $(CFLAGS) -c $< -o $@
 
-ompi-keyval-map.o: impl-keyval-map.cc $(IMPL_H) \
-                   impl-keyval-map-commattr.h impl-keyval-map-typeattr.h impl-keyval-map-winattr.h \
-                   impl-keyval-map-opuserfn.h
-	$(MPICHCC) $(CXXFLAGS) $(CFLAGS) -c $< -o $@
+ompi-keyval-map.o: impl-keyval-map.cc $(IMPL_H) $(IMPL_CXX_H)
 	$(OMPICC) $(CXXFLAGS) $(CFLAGS) -c $< -o $@
 
 check: $(RUNTESTS)
