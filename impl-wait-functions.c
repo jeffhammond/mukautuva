@@ -87,34 +87,13 @@ int WRAP_Request_free(WRAP_Request *request)
         MPI_Datatype * recvtypes = NULL;
         int found = find_persistent_request_alltoallw_buffers(impl_request, &sendtypes, &recvtypes);
         if (found) {
-            // we need to copy this because it is the key in our map,
-            // but Test may change it to MPI_REQUEST_NULL
-            MPI_Request impl_request_copy = impl_request;
-            int flag;
-            rc = IMPL_Test(&impl_request, &flag, MPI_STATUS_IGNORE);
-            if (rc) goto end;
-            // if the persistent alltoall request is complete, we can safely free the temp arrays.
-            if (flag) {
-                if (sendtypes != NULL) {
-                    free(sendtypes);
-                    sendtypes = NULL;
-                }
-                if (recvtypes != NULL) {
-                    free(recvtypes);
-                    recvtypes = NULL;
-                }
+            if (sendtypes != NULL) {
+                free(sendtypes);
+                sendtypes = NULL;
             }
-            // if the persistent alltoall request is not complete, we say mean things to the user
-            // and tell them what their punishment is.
-            else {
-                // user is freeing an active request associated with a persistent collective,
-                // which they are allowed to do (but discouraged from doing) by §3.7.
-                // this semantic is impossible to support (https://github.com/mpi-forum/mpi-issues/issues/688)
-                // so we have no choice but to leak memory, since we can no longer track the state
-                // associated with persistent alltoallw temporary datatype arrays.
-                printf("%s: You are doing a very bad thing by freeing an active persistent request.\n"
-                       "The punishment is a memory leak associated with the temporary arrays of\n"
-                       "datatypes we allocated for MPI_Alltoallw_init(_c).\n", __func__);
+            if (recvtypes != NULL) {
+                free(recvtypes);
+                recvtypes = NULL;
             }
             remove_persistent_request_alltoallw_buffers(impl_request_copy);
         }
