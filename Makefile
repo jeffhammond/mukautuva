@@ -1,6 +1,6 @@
 ifeq ($(shell uname),Darwin)
     OMPICC=/opt/homebrew/Cellar/open-mpi/4.1.4_2/bin/mpicc
-    OMPICXX=/opt/homebrew/Cellar/open-mpi/4.1.4_2/bin/mpicx
+    OMPICXX=/opt/homebrew/Cellar/open-mpi/4.1.4_2/bin/mpicxx
     MPICHCC=/opt/homebrew/Cellar/mpich/4.1/bin/mpicc
     MPICHCXX=/opt/homebrew/Cellar/mpich/4.1/bin/mpicxx
     CC=clang
@@ -24,7 +24,7 @@ endif
 
 CFLAGS	+= -g3 -O0 -Wall -Wextra -Werror # -Wpedantic
 CFLAGS	+= -fPIC
-CXXFLAGS = -x c++
+CXXFLAGS = -x c++ -std=c++17
 SOFLAGS	= -shared -lstdc++
 
 AR	= ar
