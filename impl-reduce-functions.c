@@ -18,52 +18,69 @@
 #define MUK_EXTERN extern
 #include "impl-fpointers.h"
 #include "impl-predefined-handle.h"
-#include "impl-linked-list.h"
 #include "impl-constant-conversions.h"
 #include "impl-handle-conversions.h"
-
-// impl-functions.c
-//extern op_fptr_pair_t    * op_fptr_pair_list;
-//extern req_cookie_pair_t * req_cookie_pair_list;
+#include "impl-keyval-map.h"
+extern int TYPE_HANDLE_KEY;
 
 void reduce_trampoline(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
 {
     int rc;
+    // because this is _only_ called with a dupe of the original type,
+    // we can remove that from the cookie and get it this way instead
+    MPI_Datatype parent_datatype;
+    {
+        int ni, na, nd, combiner;
+        rc = IMPL_Type_get_envelope(*datatype, &ni, &na, &nd, &combiner);
+        if (rc || (ni != 0) || (na != 0) || (nd != 1) || (combiner != MPI_COMBINER_DUP)) {
+            printf("%s: IMPL_Type_get_envelope failed to do the right thing"
+                   "rc=%d ni=%d na=%d nd=%d combiner=%d\n", __func__, rc, ni, na, nd, combiner);
+        }
+        rc = IMPL_Type_get_contents(*datatype, ni, na, nd, NULL, NULL, &parent_datatype);
+#if 0
+        printf("%s: *datatype=%lx parent_datatype=%lx\n", __func__, (intptr_t)*datatype, (intptr_t)parent_datatype);
+#endif
+    }
     int flag;
-    reduce_trampoline_cookie_t * cookie = NULL;
-    rc = IMPL_Type_get_attr(*datatype, TYPE_HANDLE_KEY, &cookie, &flag);
+    WRAP_User_function* user_fn;
+    rc = IMPL_Type_get_attr(*datatype, TYPE_HANDLE_KEY, &user_fn, &flag);
     if (rc != MPI_SUCCESS || !flag) {
         printf("%s: IMPL_Type_get_attr failed: flag=%d rc=%d\n", __func__, flag, rc);
         MPI_Abort(MPI_COMM_SELF,rc);
     }
-    MPI_Datatype         dt = MPI_DATATYPE_NULL;
-    WRAP_User_function * fp = NULL;
-    if (flag) {
-        dt = cookie->dt;
-        fp = cookie->fp.fp_i;
-    }
-    WRAP_Datatype wrap_type = OUTPUT_MPI_Datatype(dt);
-    (*fp)(invec,inoutvec,len,&wrap_type);
+    WRAP_Datatype wrap_type = OUTPUT_MPI_Datatype(parent_datatype);
+    (*user_fn)(invec,inoutvec,len,&wrap_type);
 }
 
 void reduce_trampoline_c(void *invec, void *inoutvec, MPI_Count *len, MPI_Datatype * datatype)
 {
     int rc;
+    // because this is _only_ called with a dupe of the original type,
+    // we can remove that from the cookie and get it this way instead
+    MPI_Datatype parent_datatype;
+    {
+        MPI_Count ni, na, nd, nc;
+        int combiner;
+        rc = IMPL_Type_get_envelope_c(*datatype, &ni, &na, &nc, &nd, &combiner);
+        if (rc || (ni != 0) || (na != 0) || (nc != 0) || (nd != 1) || (combiner != MPI_COMBINER_DUP)) {
+            printf("%s: IMPL_Type_get_envelope_c failed to do the right thing"
+                   "rc=%d ni=%lld na=%lld nc=%lld nd=%lld combiner=%d\n", __func__,
+                    rc, (long long)ni, (long long)na, (long long)nc, (long long)nd, combiner);
+        }
+        rc = IMPL_Type_get_contents_c(*datatype, ni, na, nc, nd, NULL, NULL, NULL, &parent_datatype);
+#if 0
+        printf("%s: *datatype=%lx parent_datatype=%lx\n", __func__, (intptr_t)*datatype, (intptr_t)parent_datatype);
+#endif
+    }
     int flag;
-    reduce_trampoline_cookie_t * cookie = NULL;
-    rc = IMPL_Type_get_attr(*datatype, TYPE_HANDLE_KEY, &cookie, &flag);
+    WRAP_User_function_c* user_fn;
+    rc = IMPL_Type_get_attr(*datatype, TYPE_HANDLE_KEY, &user_fn, &flag);
     if (rc != MPI_SUCCESS || !flag) {
         printf("%s: IMPL_Type_get_attr failed: flag=%d rc=%d\n", __func__, flag, rc);
         MPI_Abort(MPI_COMM_SELF,rc);
     }
-    MPI_Datatype           dt = MPI_DATATYPE_NULL;
-    WRAP_User_function_c * fp = NULL;
-    if (flag) {
-        dt = cookie->dt;
-        fp = cookie->fp.fp_c;
-    }
-    WRAP_Datatype wrap_type = OUTPUT_MPI_Datatype(dt);
-    (*fp)(invec,inoutvec,len,&wrap_type);
+    WRAP_Datatype wrap_type = OUTPUT_MPI_Datatype(parent_datatype);
+    (*user_fn)(invec,inoutvec,len,&wrap_type);
 }
 
 // WRAP->IMPL functions
@@ -79,8 +96,11 @@ int WRAP_Op_create(WRAP_User_function *user_fn, int commute, WRAP_Op *op)
 {
     MPI_Op impl_op;
     int rc = IMPL_Op_create(reduce_trampoline, commute, &impl_op);
+    if (rc) goto end;
     *op = OUTPUT_MPI_Op(impl_op);
-    add_op_pair_to_list(false, impl_op, user_fn, NULL);
+    add_comm_op_callback(impl_op, user_fn, NULL);
+    //if (rc==0) { rc = MPI_ERR_INTERN; }
+    end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -89,8 +109,11 @@ int WRAP_Op_create_c(WRAP_User_function_c *user_fn, int commute, WRAP_Op *op)
 {
     MPI_Op impl_op;
     int rc = IMPL_Op_create_c(reduce_trampoline_c, commute, &impl_op);
+    if (rc) goto end;
     *op = OUTPUT_MPI_Op(impl_op);
-    add_op_pair_to_list(true, impl_op, NULL, user_fn);
+    add_comm_op_callback(impl_op, NULL, user_fn);
+    //if (rc==0) { rc = MPI_ERR_INTERN; }
+    end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
@@ -98,7 +121,6 @@ int WRAP_Op_create_c(WRAP_User_function_c *user_fn, int commute, WRAP_Op *op)
 int WRAP_Op_free(WRAP_Op *op)
 {
     MPI_Op impl_op = CONVERT_MPI_Op(*op);
-    remove_op_pair_from_list(impl_op);
     int rc = IMPL_Op_free(&impl_op);
     *op = OUTPUT_MPI_Op(impl_op);
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -114,18 +136,22 @@ int WRAP_Reduce_local(const void *inbuf, void *inoutbuf, int count, WRAP_Datatyp
         rc = IMPL_Reduce_local(in_place ? MPI_IN_PLACE : inbuf, inoutbuf, count, impl_datatype, impl_op);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function* user_fn;
+        rc = find_comm_op_callback(impl_op, &user_fn, NULL);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Reduce_local(in_place ? MPI_IN_PLACE : inbuf, inoutbuf, count, dup, impl_op);
-        // cleanup
-        cleanup_reduce_trampoline_cookie(cookie, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -141,18 +167,22 @@ int WRAP_Reduce_local_c(const void *inbuf, void *inoutbuf, WRAP_Count count, WRA
         rc = IMPL_Reduce_local_c(in_place ? MPI_IN_PLACE : inbuf, inoutbuf, count, impl_datatype, impl_op);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function_c* user_fn;
+        rc = find_comm_op_callback(impl_op, NULL, &user_fn);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Reduce_local_c(in_place ? MPI_IN_PLACE : inbuf, inoutbuf, count, dup, impl_op);
-        // cleanup
-        cleanup_reduce_trampoline_cookie(cookie, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -169,18 +199,22 @@ int WRAP_Allreduce(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype 
         rc = IMPL_Allreduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function* user_fn;
+        rc = find_comm_op_callback(impl_op, &user_fn, NULL);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Allreduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm);
-        // cleanup
-        cleanup_reduce_trampoline_cookie(cookie, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -197,18 +231,22 @@ int WRAP_Allreduce_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_
         rc = IMPL_Allreduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function_c* user_fn;
+        rc = find_comm_op_callback(impl_op, NULL, &user_fn);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Allreduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm);
-        // cleanup
-        cleanup_reduce_trampoline_cookie(cookie, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -226,18 +264,22 @@ int WRAP_Iallreduce(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype
         rc = IMPL_Iallreduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function* user_fn;
+        rc = find_comm_op_callback(impl_op, &user_fn, NULL);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Iallreduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, &impl_request);
-        // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -257,18 +299,22 @@ int WRAP_Iallreduce_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP
         rc = IMPL_Iallreduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function_c* user_fn;
+        rc = find_comm_op_callback(impl_op, NULL, &user_fn);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Iallreduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, &impl_request);
-        // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -289,19 +335,22 @@ int WRAP_Allreduce_init(const void *sendbuf, void *recvbuf, int count, WRAP_Data
         rc = IMPL_Allreduce_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, impl_info, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function* user_fn;
+        rc = find_comm_op_callback(impl_op, &user_fn, NULL);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Allreduce_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, impl_info, &impl_request);
-        // cleanup
-        // FIXME leak everything because otherwise persistent reductions crash.
-        //cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -322,19 +371,22 @@ int WRAP_Allreduce_init_c(const void *sendbuf, void *recvbuf, WRAP_Count count, 
         rc = IMPL_Allreduce_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, impl_info, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function_c* user_fn;
+        rc = find_comm_op_callback(impl_op, NULL, &user_fn);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Allreduce_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, impl_info,  &impl_request);
-        // cleanup
-        // FIXME leak everything because otherwise persistent reductions crash.
-        //cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -353,18 +405,22 @@ int WRAP_Reduce(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype dat
         rc = IMPL_Reduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, RANK_MUK_TO_IMPL(root), impl_comm);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function* user_fn;
+        rc = find_comm_op_callback(impl_op, &user_fn, NULL);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Reduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm);
-        // cleanup
-        cleanup_reduce_trampoline_cookie(cookie, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -381,18 +437,22 @@ int WRAP_Reduce_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Dat
         rc = IMPL_Reduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, RANK_MUK_TO_IMPL(root), impl_comm);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function_c* user_fn;
+        rc = find_comm_op_callback(impl_op, NULL, &user_fn);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Reduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm);
-        // cleanup
-        cleanup_reduce_trampoline_cookie(cookie, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -410,18 +470,22 @@ int WRAP_Ireduce(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype da
         rc = IMPL_Ireduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function* user_fn;
+        rc = find_comm_op_callback(impl_op, &user_fn, NULL);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Ireduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
-        // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -441,18 +505,22 @@ int WRAP_Ireduce_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Da
         rc = IMPL_Ireduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function_c* user_fn;
+        rc = find_comm_op_callback(impl_op, NULL, &user_fn);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Ireduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
-        // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -473,19 +541,22 @@ int WRAP_Reduce_init(const void *sendbuf, void *recvbuf, int count, WRAP_Datatyp
         rc = IMPL_Reduce_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function* user_fn;
+        rc = find_comm_op_callback(impl_op, &user_fn, NULL);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Reduce_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
-        // cleanup
-        // FIXME leak everything because otherwise persistent reductions crash.
-        //cleanup_reduce_trampoline_cookie(cookie, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -505,19 +576,22 @@ int WRAP_Reduce_init_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRA
         rc = IMPL_Reduce_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function_c* user_fn;
+        rc = find_comm_op_callback(impl_op, NULL, &user_fn);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Reduce_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
-        // cleanup
-        // FIXME leak everything because otherwise persistent reductions crash.
-        //cleanup_reduce_trampoline_cookie(cookie, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -535,18 +609,22 @@ int WRAP_Reduce_scatter(const void *sendbuf, void *recvbuf, const int recvcounts
         rc = IMPL_Reduce_scatter(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, impl_datatype, impl_op, impl_comm);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function* user_fn;
+        rc = find_comm_op_callback(impl_op, &user_fn, NULL);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Reduce_scatter(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, dup, impl_op, impl_comm);
-        // cleanup
-        cleanup_reduce_trampoline_cookie(cookie, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -563,18 +641,22 @@ int WRAP_Reduce_scatter_c(const void *sendbuf, void *recvbuf, const WRAP_Count r
         rc = IMPL_Reduce_scatter_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, impl_datatype, impl_op, impl_comm);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function_c* user_fn;
+        rc = find_comm_op_callback(impl_op, NULL, &user_fn);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Reduce_scatter_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, dup, impl_op, impl_comm);
-        // cleanup
-        cleanup_reduce_trampoline_cookie(cookie, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -592,18 +674,22 @@ int WRAP_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int recvcount
         rc = IMPL_Ireduce_scatter(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, impl_datatype, impl_op, impl_comm, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function* user_fn;
+        rc = find_comm_op_callback(impl_op, &user_fn, NULL);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Ireduce_scatter(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, dup, impl_op, impl_comm, &impl_request);
-        // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -623,18 +709,22 @@ int WRAP_Ireduce_scatter_c(const void *sendbuf, void *recvbuf, const WRAP_Count 
         rc = IMPL_Ireduce_scatter_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, impl_datatype, impl_op, impl_comm, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function_c* user_fn;
+        rc = find_comm_op_callback(impl_op, NULL, &user_fn);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Ireduce_scatter_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, dup, impl_op, impl_comm, &impl_request);
-        // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -655,19 +745,22 @@ int WRAP_Reduce_scatter_init(const void *sendbuf, void *recvbuf, const int recvc
         rc = IMPL_Reduce_scatter_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, impl_datatype, impl_op, impl_comm, impl_info, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function* user_fn;
+        rc = find_comm_op_callback(impl_op, &user_fn, NULL);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Reduce_scatter_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, dup, impl_op, impl_comm, impl_info, &impl_request);
-        // cleanup
-        // FIXME leak everything because otherwise persistent reductions crash.
-        //cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -688,19 +781,22 @@ int WRAP_Reduce_scatter_init_c(const void *sendbuf, void *recvbuf, const WRAP_Co
         rc = IMPL_Reduce_scatter_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, impl_datatype, impl_op, impl_comm, impl_info, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function_c* user_fn;
+        rc = find_comm_op_callback(impl_op, NULL, &user_fn);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Reduce_scatter_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, dup, impl_op, impl_comm, impl_info, &impl_request);
-        // cleanup
-        // FIXME leak everything because otherwise persistent reductions crash.
-        //cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -719,18 +815,22 @@ int WRAP_Reduce_scatter_block(const void *sendbuf, void *recvbuf, int recvcount,
         rc = IMPL_Reduce_scatter_block(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, impl_datatype, impl_op, impl_comm);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function* user_fn;
+        rc = find_comm_op_callback(impl_op, &user_fn, NULL);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Reduce_scatter_block(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, dup, impl_op, impl_comm);
-        // cleanup
-        cleanup_reduce_trampoline_cookie(cookie, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -747,18 +847,22 @@ int WRAP_Reduce_scatter_block_c(const void *sendbuf, void *recvbuf, WRAP_Count r
         rc = IMPL_Reduce_scatter_block_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, impl_datatype, impl_op, impl_comm);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function_c* user_fn;
+        rc = find_comm_op_callback(impl_op, NULL, &user_fn);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Reduce_scatter_block_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, dup, impl_op, impl_comm);
-        // cleanup
-        cleanup_reduce_trampoline_cookie(cookie, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -776,18 +880,22 @@ int WRAP_Ireduce_scatter_block(const void *sendbuf, void *recvbuf, int recvcount
         rc = IMPL_Ireduce_scatter_block(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, impl_datatype, impl_op, impl_comm, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function* user_fn;
+        rc = find_comm_op_callback(impl_op, &user_fn, NULL);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Ireduce_scatter_block(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, dup, impl_op, impl_comm, &impl_request);
-        // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -807,18 +915,22 @@ int WRAP_Ireduce_scatter_block_c(const void *sendbuf, void *recvbuf, WRAP_Count 
         rc = IMPL_Ireduce_scatter_block_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, impl_datatype, impl_op, impl_comm, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function_c* user_fn;
+        rc = find_comm_op_callback(impl_op, NULL, &user_fn);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Ireduce_scatter_block_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, dup, impl_op, impl_comm, &impl_request);
-        // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -839,19 +951,22 @@ int WRAP_Reduce_scatter_block_init(const void *sendbuf, void *recvbuf, int recvc
         rc = IMPL_Reduce_scatter_block_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, impl_datatype, impl_op, impl_comm, impl_info, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function* user_fn;
+        rc = find_comm_op_callback(impl_op, &user_fn, NULL);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Reduce_scatter_block_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, dup, impl_op, impl_comm, impl_info, &impl_request);
-        // cleanup
-        // FIXME leak everything because otherwise persistent reductions crash.
-        //cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -872,19 +987,22 @@ int WRAP_Reduce_scatter_block_init_c(const void *sendbuf, void *recvbuf, WRAP_Co
         rc = IMPL_Reduce_scatter_block_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, impl_datatype, impl_op, impl_comm, impl_info, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function_c* user_fn;
+        rc = find_comm_op_callback(impl_op, NULL, &user_fn);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Reduce_scatter_block_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, dup, impl_op, impl_comm, impl_info, &impl_request);
-        // cleanup
-        // FIXME leak everything because otherwise persistent reductions crash.
-        //cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -903,18 +1021,22 @@ int WRAP_Scan(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype datat
         rc = IMPL_Scan(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function* user_fn;
+        rc = find_comm_op_callback(impl_op, &user_fn, NULL);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Scan(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm);
-        // cleanup
-        cleanup_reduce_trampoline_cookie(cookie, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -932,18 +1054,22 @@ int WRAP_Scan_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Datat
         rc = IMPL_Scan_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function_c* user_fn;
+        rc = find_comm_op_callback(impl_op, NULL, &user_fn);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Scan_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm);
-        // cleanup
-        cleanup_reduce_trampoline_cookie(cookie, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -962,18 +1088,22 @@ int WRAP_Iscan(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype data
         rc = IMPL_Iscan(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function* user_fn;
+        rc = find_comm_op_callback(impl_op, &user_fn, NULL);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Iscan(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, &impl_request);
-        // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -993,18 +1123,22 @@ int WRAP_Iscan_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Data
         rc = IMPL_Iscan_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function_c* user_fn;
+        rc = find_comm_op_callback(impl_op, NULL, &user_fn);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Iscan_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, &impl_request);
-        // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -1025,19 +1159,22 @@ int WRAP_Scan_init(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype 
         rc = IMPL_Scan_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, impl_info, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function* user_fn;
+        rc = find_comm_op_callback(impl_op, &user_fn, NULL);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Scan_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, impl_info, &impl_request);
-        // cleanup
-        // FIXME leak everything because otherwise persistent reductions crash.
-        //cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -1058,19 +1195,22 @@ int WRAP_Scan_init_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_
         rc = IMPL_Scan_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, impl_info, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function_c* user_fn;
+        rc = find_comm_op_callback(impl_op, NULL, &user_fn);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Scan_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, impl_info, &impl_request);
-        // cleanup
-        // FIXME leak everything because otherwise persistent reductions crash.
-        //cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -1089,18 +1229,22 @@ int WRAP_Exscan(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype dat
         rc = IMPL_Exscan(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function* user_fn;
+        rc = find_comm_op_callback(impl_op, &user_fn, NULL);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Exscan(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm);
-        // cleanup
-        cleanup_reduce_trampoline_cookie(cookie, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -1118,18 +1262,22 @@ int WRAP_Exscan_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Dat
         rc = IMPL_Exscan_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function_c* user_fn;
+        rc = find_comm_op_callback(impl_op, NULL, &user_fn);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Exscan_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm);
-        // cleanup
-        cleanup_reduce_trampoline_cookie(cookie, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -1148,18 +1296,22 @@ int WRAP_Iexscan(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype da
         rc = IMPL_Iexscan(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function* user_fn;
+        rc = find_comm_op_callback(impl_op, &user_fn, NULL);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Iexscan(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, &impl_request);
-        // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -1179,18 +1331,22 @@ int WRAP_Iexscan_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Da
         rc = IMPL_Iexscan_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function_c* user_fn;
+        rc = find_comm_op_callback(impl_op, NULL, &user_fn);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Iexscan_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, &impl_request);
-        // cleanup
-        cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -1211,19 +1367,22 @@ int WRAP_Exscan_init(const void *sendbuf, void *recvbuf, int count, WRAP_Datatyp
         rc = IMPL_Exscan_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, impl_info, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function* user_fn;
+        rc = find_comm_op_callback(impl_op, &user_fn, NULL);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Exscan_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, impl_info, &impl_request);
-        // cleanup
-        // FIXME leak everything because otherwise persistent reductions crash.
-        //cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);
@@ -1244,19 +1403,22 @@ int WRAP_Exscan_init_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRA
         rc = IMPL_Exscan_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, impl_datatype, impl_op, impl_comm, impl_info, &impl_request);
     }
     else {
-        // bake the cookie
         MPI_Datatype dup;
-        reduce_trampoline_cookie_t * cookie = bake_reduce_trampoline_cookie(impl_op, impl_datatype, &dup);
-        if (cookie == NULL) {
-            printf("%s: cookied failed to bake.\n",__func__);
-            rc = MPI_ERR_INTERN;
-            goto end;
-        }
-        // do the reduction
+        rc = IMPL_Type_dup(impl_datatype,&dup);
+        if (rc) goto end;
+
+        WRAP_User_function_c* user_fn;
+        rc = find_comm_op_callback(impl_op, NULL, &user_fn);
+        if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
+
+        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        if (rc) goto end;
+
         rc = IMPL_Exscan_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, impl_info, &impl_request);
-        // cleanup
-        // FIXME leak everything because otherwise persistent reductions crash.
-        //cleanup_ireduce_trampoline_cookie(cookie, impl_request, &dup);
+        if (rc) goto end;
+
+        rc = IMPL_Type_free(&dup);
+        if (rc) goto end;
     }
     end:
     *request = OUTPUT_MPI_Request(impl_request);

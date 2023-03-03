@@ -8,7 +8,13 @@ int add_comm_op_callback(MPI_Op op,
 #endif
     // insert_or_assign (C++17) inserts an element or assigns to the current element if the key already exists
     auto [it,rc] = op_user_function_map.insert_or_assign(op, std::make_pair(user_fn, user_fn_c));
-    return int{rc};
+#if DEBUG
+    printf("%s: insert_or_assign(op=%lx, user_fn=%p, user_fn_c=%p) returned %d\n",
+            __func__, (intptr_t)op, user_fn, user_fn_c, rc);
+#endif
+    return 1; // SUCCESS int{rc};
+    (void)it;
+    (void)rc;
 }
 
 int find_comm_op_callback(MPI_Op op,
