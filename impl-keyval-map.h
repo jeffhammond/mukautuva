@@ -11,7 +11,21 @@
 #include "wrap-handle-typedefs.h"
 
 // return values are 0=failure 1=success but are int not bool because C and C++ bool
-// are not guarenteed to be the same.
+// are not guaranteed to be the same.
+
+// OP USERFN
+
+int add_comm_op_callback(MPI_Op op,
+                         WRAP_User_function   * user_fn,
+                         WRAP_User_function_c * user_fn_c);
+
+int find_comm_op_callback(MPI_Op op,
+                          WRAP_User_function   ** user_fn,
+                          WRAP_User_function_c ** user_fn_c);
+
+int remove_comm_op_callback(MPI_Op op);
+
+// COMM KEYVAL
 
 int add_comm_keyval_callbacks(int keyval,
                               WRAP_Comm_copy_attr_function   * comm_copy_attr_fn,
@@ -23,6 +37,8 @@ int find_comm_keyval_callbacks(int keyval,
 
 int remove_comm_keyval_callbacks(int keyval);
 
+// TYPE KEYVAL
+
 int add_type_keyval_callbacks(int keyval,
                               WRAP_Type_copy_attr_function   * type_copy_attr_fn,
                               WRAP_Type_delete_attr_function * type_delete_attr_fn);
@@ -32,6 +48,8 @@ int find_type_keyval_callbacks(int keyval,
                                WRAP_Type_delete_attr_function ** type_delete_attr_fn);
 
 int remove_type_keyval_callbacks(int keyval);
+
+// WIN KEYVAL
 
 int add_win_keyval_callbacks(int keyval,
                              WRAP_Win_copy_attr_function   * win_copy_attr_fn,

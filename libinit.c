@@ -34,6 +34,7 @@ int (*WRAP_Load_functions)(void * restrict h, int major, int minor);
 int (*WRAP_CODE_IMPL_TO_MUK)(int error_c);
 void (*WRAP_Init_handle_key)(void);
 void (*WRAP_Finalize_handle_key)(void);
+void (*WRAP_Clear_maps)(void);
 
 int * MPICH_UNWEIGHTED    = NULL;
 int * MPICH_WEIGHTS_EMPTY = NULL;
@@ -724,6 +725,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
 
     WRAP_Init_handle_key = MUK_DLSYM(wrap_so_handle,"WRAP_Init_handle_key");
     WRAP_Finalize_handle_key = MUK_DLSYM(wrap_so_handle,"WRAP_Finalize_handle_key");
+    WRAP_Clear_maps = MUK_DLSYM(wrap_so_handle,"WRAP_Clear_maps");
     WRAP_Init_handle_key();
 
     return rc;
@@ -760,6 +762,9 @@ int MPI_Finalize(void)
 {
     if (WRAP_Finalize_handle_key != NULL) {
         WRAP_Finalize_handle_key();
+    }
+    if (WRAP_Clear_maps != NULL) {
+        WRAP_Clear_maps();
     }
     int rc = MUK_Finalize();
     // WRAP_CODE_IMPL_TO_MUK calls Error_class so we cannot call it after Finalize
