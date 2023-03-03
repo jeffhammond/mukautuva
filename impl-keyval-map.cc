@@ -81,6 +81,7 @@ extern "C" {
 #include "impl-keyval-map-commerrh.h" // errhandler_comm_cb_map
 #include "impl-keyval-map-fileerrh.h" // errhandler_file_cb_map
 #include "impl-keyval-map-winerrh.h"  // errhandler_win_cb_map
+#include "impl-keyval-map-preqa2aw.h" // request_persistent_ialltoallw_map
 
 void WRAP_Clear_maps(void)
 {

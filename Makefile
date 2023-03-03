@@ -61,7 +61,8 @@ IMPL_CXX_H =	impl-keyval-map-commattr.h \
 		impl-keyval-map-commerrh.h \
 		impl-keyval-map-fileerrh.h \
 		impl-keyval-map-winerrh.h  \
-		impl-keyval-map-opuserfn.h
+		impl-keyval-map-opuserfn.h \
+		impl-keyval-map-preqa2aw.h
 
 IMPL_FUNCTION_C :=  impl-functions.c impl-load-functions.c impl-keyval.c \
 		    impl-constant-conversions.c impl-predefined.c \
