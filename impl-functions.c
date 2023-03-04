@@ -476,6 +476,7 @@ int WRAP_Buffer_detach_c(void *buffer_addr, WRAP_Count *size)
 int WRAP_Errhandler_free(WRAP_Errhandler *errhandler)
 {
     MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(*errhandler);
+    // we never remove errhandlers from the map. see impl-keyval-map.cc for explanation.
     //remove_errhandler(impl_errhandler);
     int rc = IMPL_Errhandler_free(&impl_errhandler);
     *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);

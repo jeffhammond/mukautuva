@@ -60,6 +60,7 @@ IMPL_CXX_H =	impl-keyval-map-commattr.h \
 		impl-keyval-map-winattr.h  \
 		impl-keyval-map-commerrh.h \
 		impl-keyval-map-fileerrh.h \
+		impl-keyval-map-fileerrh2.h \
 		impl-keyval-map-winerrh.h  \
 		impl-keyval-map-opuserfn.h \
 		impl-keyval-map-preqa2aw.h

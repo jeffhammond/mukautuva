@@ -67,17 +67,23 @@ int add_comm_errhandler_callback(MPI_Errhandler errhandler, WRAP_Comm_errhandler
 int find_comm_errhandler_callback(MPI_Errhandler errhandler, WRAP_Comm_errhandler_function ** user_fn);
 int remove_comm_errhandler_callback(MPI_Errhandler errhandler);
 
+// WIN ERRH
+
+int add_win_errhandler_callback(MPI_Errhandler errhandler, WRAP_Win_errhandler_function * user_fn);
+int find_win_errhandler_callback(MPI_Errhandler errhandler, WRAP_Win_errhandler_function ** user_fn);
+int remove_win_errhandler_callback(MPI_Errhandler errhandler);
+
 // FILE ERRH
 
 int add_file_errhandler_callback(MPI_Errhandler errhandler, WRAP_File_errhandler_function * user_fn);
 int find_file_errhandler_callback(MPI_Errhandler errhandler, WRAP_File_errhandler_function ** user_fn);
 int remove_file_errhandler_callback(MPI_Errhandler errhandler);
 
-// WIN ERRH
+// FILE ERRH 2
 
-int add_win_errhandler_callback(MPI_Errhandler errhandler, WRAP_Win_errhandler_function * user_fn);
-int find_win_errhandler_callback(MPI_Errhandler errhandler, WRAP_Win_errhandler_function ** user_fn);
-int remove_win_errhandler_callback(MPI_Errhandler errhandler);
+int add_file_errhandler_callback_2(MPI_File file, WRAP_File_errhandler_function * user_fn);
+int find_file_errhandler_callback_2(MPI_File file, WRAP_File_errhandler_function ** user_fn);
+int remove_file_errhandler_callback_2(MPI_File file);
 
 // ALLTOALLW - NONBLOCKING
 

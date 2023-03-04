@@ -10,7 +10,9 @@ int add_type_keyval_callbacks(int keyval,
     auto [it,rc] = keyval_type_attr_cb_map.insert_or_assign(keyval,
                                                             std::make_pair(type_copy_attr_fn,
                                                                            type_delete_attr_fn));
-    return int{rc};
+    return 1; // SUCCESS int{rc};
+    (void)it;
+    (void)rc;
 }
 
 int find_type_keyval_callbacks(int keyval,

@@ -39,20 +39,29 @@ extern "C" {
 // to please memory tools like valgrind, we will purge everything using clear()
 // during finalization.
 
+// for user-defined reductions
+std::map<MPI_Op, std::pair<WRAP_User_function*, WRAP_User_function_c*>> op_user_function_map{};
+
 // for attributes
 std::map<int, std::pair<WRAP_Comm_copy_attr_function*,WRAP_Comm_delete_attr_function*>> keyval_comm_attr_cb_map{};
 std::map<int, std::pair<WRAP_Type_copy_attr_function*,WRAP_Type_delete_attr_function*>> keyval_type_attr_cb_map{};
 std::map<int, std::pair<WRAP_Win_copy_attr_function* ,WRAP_Win_delete_attr_function*>>  keyval_win_attr_cb_map{};
 
-// for user-defined reductions - implemented but unused
-std::map<MPI_Op, std::pair<WRAP_User_function*, WRAP_User_function_c*>> op_user_function_map{};
-
-// for errhandlers - TODO
+// for errhandlers
 std::map<MPI_Errhandler, WRAP_Comm_errhandler_function*> errhandler_comm_cb_map{};
-std::map<MPI_Errhandler, WRAP_File_errhandler_function*> errhandler_file_cb_map{};
 std::map<MPI_Errhandler, WRAP_Win_errhandler_function*>  errhandler_win_cb_map{};
 
-// for nonblocking alltoallw - TODO
+// because we do not have file attributes, we need a second map based on the
+// file handle itself, to do the lookup.
+// File_create_errhandler adds to the first.
+// File_set_errhandler looks in the first and adds to the second.
+// file_errhandler_trampoline looks in the second.
+// File_close removes from the second.
+// nothing removes from the first (see above).
+std::map<MPI_Errhandler, WRAP_File_errhandler_function*> errhandler_file_cb_map{};
+std::map<MPI_File, WRAP_File_errhandler_function*>       file_errhandler_cb_map{};
+
+// for nonblocking alltoallw
 //
 // persistent ialltoallw must be concluded with MPI_Request_free so we should have a dedicated
 // list for these, to ensure that we only pay the lookup cost in MPI_Request_free.
@@ -67,22 +76,22 @@ std::map<MPI_Errhandler, WRAP_Win_errhandler_function*>  errhandler_win_cb_map{}
 //
 std::map<MPI_Request, std::pair<MPI_Datatype*, MPI_Datatype*>> request_nonblocking_alltoallw_map{};
 std::map<MPI_Request, std::pair<MPI_Datatype*, MPI_Datatype*>> request_persistent_alltoallw_map{};
-//std::map<MPI_Request, std::pair<MPI_Datatype*, MPI_Datatype*>> comm_neighborhood_ialltoallw_multimap{};
 
 extern "C" {
 
-// we use int as the boolean return code to avoid theoretical incompatibilities
-// between C and C++ bool
+// in all these APIS, we use int as the boolean return code
+// to avoid theoretical incompatibilities between C and C++ bool
 
-#include "impl-keyval-map-commattr.h" // keyval_comm_attr_cb_map
-#include "impl-keyval-map-typeattr.h" // keyval_type_attr_cb_map
-#include "impl-keyval-map-winattr.h"  // keyval_win_attr_cb_map
-#include "impl-keyval-map-opuserfn.h" // op_user_function_map
-#include "impl-keyval-map-commerrh.h" // errhandler_comm_cb_map
-#include "impl-keyval-map-fileerrh.h" // errhandler_file_cb_map
-#include "impl-keyval-map-winerrh.h"  // errhandler_win_cb_map
-#include "impl-keyval-map-ireqa2aw.h" // request_nonblocking_alltoallw_map
-#include "impl-keyval-map-preqa2aw.h" // request_persistent_alltoallw_map
+#include "impl-keyval-map-commattr.h"  // keyval_comm_attr_cb_map
+#include "impl-keyval-map-typeattr.h"  // keyval_type_attr_cb_map
+#include "impl-keyval-map-winattr.h"   // keyval_win_attr_cb_map
+#include "impl-keyval-map-opuserfn.h"  // op_user_function_map
+#include "impl-keyval-map-commerrh.h"  // errhandler_comm_cb_map
+#include "impl-keyval-map-winerrh.h"   // errhandler_win_cb_map
+#include "impl-keyval-map-fileerrh.h"  // errhandler_file_cb_map
+#include "impl-keyval-map-fileerrh2.h" // file_errhandler_cb_map
+#include "impl-keyval-map-ireqa2aw.h"  // request_nonblocking_alltoallw_map
+#include "impl-keyval-map-preqa2aw.h"  // request_persistent_alltoallw_map
 
 int cleanup_mapped_request(MPI_Request request)
 {
@@ -136,16 +145,23 @@ int cleanup_mapped_request(MPI_Request request)
 
 void WRAP_Clear_maps(void)
 {
+    // user reduce ops
+    op_user_function_map.clear();
+
+    // attr
     keyval_comm_attr_cb_map.clear();
     keyval_type_attr_cb_map.clear();
     keyval_win_attr_cb_map.clear();
-    op_user_function_map.clear();
+
+    // errhandlers
     errhandler_comm_cb_map.clear();
-    errhandler_file_cb_map.clear();
     errhandler_win_cb_map.clear();
+    errhandler_file_cb_map.clear();
+    file_errhandler_cb_map.clear();
+
+    // alltoallw
     request_nonblocking_alltoallw_map.clear();
     request_persistent_alltoallw_map.clear();
-    //comm_neighborhood_ialltoallw_multimap.clear();
 }
 
 } // extern "C"
