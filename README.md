@@ -165,8 +165,7 @@ I don't know what to tell you.)
 
 ## Errhandler callbacks
 
-We initially did somethign similar to the above, before we discovered
-that it is legal - and practiced by the MPICH test suite - to free
+It is legal - and practiced by the MPICH test suite - to free
 an errhandler and still use it.
 We solved this by using the function pointer as the attribute directly.
 Obviously, the function pointer itself cannot go out of scope,
@@ -226,12 +225,7 @@ This section will be implemented later once we work on that.
 
 ## Generalized requests
 
-Not implemented.  The callback involves `MPI_Status` and I may not
-be able to solve this.
-
-We may need to require a non-standard (MPIX) version of
-https://github.com/mpi-forum/mpi-issues/issues/645
-to support this.
+TODO - issue has details on the design candidate.
 
 # Acknowledgements
 
