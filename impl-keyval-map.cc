@@ -81,13 +81,57 @@ extern "C" {
 #include "impl-keyval-map-commerrh.h" // errhandler_comm_cb_map
 #include "impl-keyval-map-fileerrh.h" // errhandler_file_cb_map
 #include "impl-keyval-map-winerrh.h"  // errhandler_win_cb_map
-#include "impl-keyval-map-preqa2aw.h" // request_persistent_ialltoallw_map
-#include "impl-keyval-map-ireqa2aw.h" // request_nonblocking_ialltoallw_map
+#include "impl-keyval-map-ireqa2aw.h" // request_nonblocking_alltoallw_map
+#include "impl-keyval-map-preqa2aw.h" // request_persistent_alltoallw_map
 
 int cleanup_mapped_request(MPI_Request request)
 {
+    // look for nonblocking alltoallw first
+    if (!request_nonblocking_alltoallw_map.empty())
+    {
+        MPI_Datatype * sendtypes = NULL;
+        MPI_Datatype * recvtypes = NULL;
+        int found = find_nonblocking_request_alltoallw_buffers(request, &sendtypes, &recvtypes);
+        if (found) {
+            if (sendtypes != NULL) {
+                free(sendtypes);
+                sendtypes = NULL;
+            }
+            if (recvtypes != NULL) {
+                free(recvtypes);
+                recvtypes = NULL;
+            }
+            int rc = remove_nonblocking_request_alltoallw_buffers(request);
+            if (!rc) {
+                printf("%s: found request=%lx but could not remove it\n",__func__,(intptr_t)request);
+            }
+            return 1;
+        }
+    }
 
-
+    // look for persistent alltoallw next
+    if (!request_persistent_alltoallw_map.empty())
+    {
+        MPI_Datatype * sendtypes = NULL;
+        MPI_Datatype * recvtypes = NULL;
+        int found = find_persistent_request_alltoallw_buffers(request, &sendtypes, &recvtypes);
+        if (found) {
+            if (sendtypes != NULL) {
+                free(sendtypes);
+                sendtypes = NULL;
+            }
+            if (recvtypes != NULL) {
+                free(recvtypes);
+                recvtypes = NULL;
+            }
+            int rc =remove_persistent_request_alltoallw_buffers(request);
+            if (!rc) {
+                printf("%s: found request=%lx but could not remove it\n",__func__,(intptr_t)request);
+            }
+            return 1;
+        }
+    }
+    return 0;
 }
 
 void WRAP_Clear_maps(void)
