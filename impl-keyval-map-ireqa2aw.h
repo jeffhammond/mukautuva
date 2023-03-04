@@ -34,7 +34,9 @@ int find_nonblocking_request_alltoallw_buffers(MPI_Request request, MPI_Datatype
         return 1;
     }
     catch (...) {
+#if DEBUG
         printf("%s: lookup(request=%lx) failed\n", __func__, (intptr_t)request);
+#endif
         return 0;
     }
 }
