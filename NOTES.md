@@ -77,11 +77,21 @@ mkdir -p ${MUK_PATH}/bin
 ln -sf `which gcc` ${MUK_PATH}/bin/mpicc
 ```
 
+# MacOS
+```sh
+ln -s ${MUK_PATH}/bin/mpicc -> /usr/bin/clang
+ln -s ${MUK_PATH}/bin/mpicxx -> /usr/bin/clang++
+ln -s${MUK_PATH}/bin/mpifort -> /opt/homebrew/bin/gfortran
+```
+
 ```
 wget https://www.mpich.org/static/downloads/4.1/mpich-testsuite-4.1.tar.gz
 tar -xaf mpich-testsuite-4.1.tar.gz
 cd mpich-testsuite-4.1/
+# Linux
 ./configure CC=gcc CXX=g++ FC=false CPPFLAGS="-I${MUK_PATH}" LDFLAGS="-L${MUK_PATH}" LIBS="-lmuk" --enable-strictmpi --with-mpi=${MUK_PATH}
+# MacOS
+./configure  CPPFLAGS="-I${MUK_PATH}" LDFLAGS="-L${MUK_PATH}" LIBS="-lmuk" --enable-strictmpi --with-mpi=${MUK_PATH} --disable-cxx CC=clang CXX=clang++
 ```
 
 Useful for running multiple tests manually:
