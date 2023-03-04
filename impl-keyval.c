@@ -12,44 +12,6 @@ int TYPE_ATTR_FOR_USER_OP_FN = MPI_KEYVAL_INVALID;
 int COMM_EH_HANDLE_KEY = MPI_KEYVAL_INVALID;
 int WIN_EH_HANDLE_KEY = MPI_KEYVAL_INVALID;
 
-#if 0
-int comm_delete_cookie(MPI_Comm comm, int comm_keyval, void *attribute_val, void *extra_state)
-{
-    if (comm_keyval == COMM_EH_HANDLE_KEY) {
-        if (attribute_val == NULL) {
-            printf("%s: attribute_val=%p comm=%lx comm_keyval=%d\n",
-                   __func__, attribute_val, (intptr_t)comm, comm_keyval);
-        }
-        else {
-            free(attribute_val);
-        }
-    } else {
-        printf("%s: I have no idea how this happened. comm=%lx comm_keyval=%d COMM_EH_HANDLE_KEY=%d\n",
-               __func__, (intptr_t)comm, comm_keyval, COMM_EH_HANDLE_KEY);
-    }
-    (void)extra_state;
-    return MPI_SUCCESS;
-}
-
-int win_delete_cookie(MPI_Win win, int win_keyval, void *attribute_val, void *extra_state)
-{
-    if (win_keyval == WIN_EH_HANDLE_KEY) {
-        if (attribute_val == NULL) {
-            printf("%s: attribute_val=%p win=%lx win_keyval=%d\n",
-                   __func__, attribute_val, (intptr_t)win, win_keyval);
-        }
-        else {
-            free(attribute_val);
-        }
-    } else {
-        printf("%s: I have no idea how this happened. win=%lx win_keyval=%d WIN_EH_HANDLE_KEY=%d\n",
-               __func__, (intptr_t)win, win_keyval, WIN_EH_HANDLE_KEY);
-    }
-    (void)extra_state;
-    return MPI_SUCCESS;
-}
-#endif
-
 void WRAP_Init_handle_key(void)
 {
     int rc;
