@@ -274,7 +274,7 @@ int WRAP_Comm_accept(const char *port_name, WRAP_Info info, int root, WRAP_Comm 
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
     MPI_Comm impl_newcomm;
-    int rc = IMPL_Comm_accept(port_name, impl_info, root, impl_comm, &impl_newcomm);
+    int rc = IMPL_Comm_accept(port_name, impl_info, RANK_MUK_TO_IMPL(root), impl_comm, &impl_newcomm);
     *newcomm = OUTPUT_MPI_Comm(impl_newcomm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -292,7 +292,7 @@ int WRAP_Comm_connect(const char *port_name, WRAP_Info info, int root, WRAP_Comm
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
     MPI_Comm impl_newcomm;
-    int rc = IMPL_Comm_connect(port_name, impl_info, root, impl_comm, &impl_newcomm);
+    int rc = IMPL_Comm_connect(port_name, impl_info, RANK_MUK_TO_IMPL(root), impl_comm, &impl_newcomm);
     *newcomm = OUTPUT_MPI_Comm(impl_newcomm);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
@@ -935,3 +935,54 @@ int WRAP_Close_port(const char *port_name)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
+// these are only used below so we leave them here
+
+static inline bool IS_ARGV_NULL(char * argv[])
+{
+    return ((intptr_t)argv == (intptr_t)MUK_ARGV_NULL);
+}
+
+static inline bool IS_ARGVS_NULL(char ** array_of_argv[])
+{
+    return ((intptr_t)array_of_argv == (intptr_t)MUK_ARGVS_NULL);
+}
+
+static inline bool IS_ERRCODES_IGNORE(int * array_of_errcodes)
+{
+    return ((intptr_t)array_of_errcodes == (intptr_t)MUK_ERRCODES_IGNORE);
+}
+
+int WRAP_Comm_spawn(const char *command, char *argv[], int maxprocs, WRAP_Info info, int root, WRAP_Comm comm, WRAP_Comm *intercomm, int * array_of_errcodes)
+{
+    bool ignore_argv = IS_ARGV_NULL(argv);
+    bool ignore_errc = IS_ERRCODES_IGNORE(array_of_errcodes);
+    int rc;
+    MPI_Info impl_info = CONVERT_MPI_Info(info);
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    MPI_Comm impl_intercomm;
+    rc = IMPL_Comm_spawn(command, ignore_argv ? MPI_ARGV_NULL : argv, maxprocs, impl_info, RANK_MUK_TO_IMPL(root), impl_comm, &impl_intercomm, ignore_errc ? MPI_ERRCODES_IGNORE : array_of_errcodes);
+    *intercomm = OUTPUT_MPI_Comm(impl_intercomm);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Comm_spawn_multiple(int count, char *array_of_commands[], char **array_of_argv[], const int array_of_maxprocs[], const WRAP_Info array_of_info[], int root, WRAP_Comm comm, WRAP_Comm *intercomm, int * array_of_errcodes)
+{
+    bool ignore_argv = IS_ARGVS_NULL(array_of_argv);
+    bool ignore_errc = IS_ERRCODES_IGNORE(array_of_errcodes);
+    int rc;
+    MPI_Info * impl_array_of_info = calloc(count, sizeof(MPI_Info));
+    if (impl_array_of_info == NULL) {
+        rc = MPI_ERR_INTERN;
+        goto end;
+    }
+    for (int i=0; i<count; i++) {
+         impl_array_of_info[i] = CONVERT_MPI_Info(array_of_info[i]);
+    }
+    MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
+    MPI_Comm impl_intercomm;
+    rc = IMPL_Comm_spawn_multiple(count, array_of_commands, ignore_argv ? MPI_ARGVS_NULL : array_of_argv, array_of_maxprocs, impl_array_of_info, RANK_MUK_TO_IMPL(root), impl_comm, &impl_intercomm, ignore_errc ? MPI_ERRCODES_IGNORE : array_of_errcodes);
+    *intercomm = OUTPUT_MPI_Comm(impl_intercomm);
+    free(impl_array_of_info);
+    end:
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
