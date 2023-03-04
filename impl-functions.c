@@ -601,23 +601,6 @@ int WRAP_Get_address(const void *location, WRAP_Aint *address)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
-#if 0
-int WRAP_Grequest_complete(WRAP_Request request)
-{
-    MPI_Request impl_request = CONVERT_MPI_Request(request);
-    int rc = IMPL_Grequest_complete(impl_request);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-
-int WRAP_Grequest_start(WRAP_Grequest_query_function *query_fn, WRAP_Grequest_free_function *free_fn, WRAP_Grequest_cancel_function *cancel_fn, void *extra_state, WRAP_Request *request)
-{
-    MPI_Request impl_request = CONVERT_MPI_Request(*request);
-    int rc = IMPL_Grequest_start(query_fn, free_fn, cancel_fn, extra_state, &impl_request);
-    *request = OUTPUT_MPI_Request(impl_request);
-    return RETURN_CODE_IMPL_TO_MUK(rc);
-}
-#endif
-
 int WRAP_Iallgather(const void *sendbuf, int sendcount, WRAP_Datatype sendtype, void *recvbuf, int recvcount, WRAP_Datatype recvtype, WRAP_Comm comm, WRAP_Request *request)
 {
     const bool in_place = IS_IN_PLACE(sendbuf);

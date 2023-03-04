@@ -70,7 +70,7 @@ IMPL_FUNCTION_C :=  impl-functions.c impl-load-functions.c impl-keyval.c \
 		    impl-commgroup-functions.c impl-rma-functions.c \
 		    impl-wait-functions.c impl-session-functions.c \
 		    impl-file-functions.c impl-reduce-functions.c \
-		    impl-type-functions.c
+		    impl-type-functions.c impl-grequest-functions.c
 
 IMPL_FUNCTION_O := $(patsubst %.c,%.o,$(IMPL_FUNCTION_C))
 MPICH_FUNCTION_O := $(subst impl,mpich,$(IMPL_FUNCTION_O)) mpich-keyval-map.o
@@ -126,6 +126,12 @@ mpich-rma-functions.o: impl-rma-functions.c $(IMPL_H)
 	$(MPICHCC) $(CFLAGS) -c $< -o $@
 
 ompi-rma-functions.o: impl-rma-functions.c $(IMPL_H)
+	$(OMPICC) $(CFLAGS) -c $< -o $@
+
+mpich-grequest-functions.o: impl-grequest-functions.c $(IMPL_H)
+	$(MPICHCC) $(CFLAGS) -c $< -o $@
+
+ompi-grequest-functions.o: impl-grequest-functions.c $(IMPL_H)
 	$(OMPICC) $(CFLAGS) -c $< -o $@
 
 mpich-type-functions.o: impl-type-functions.c $(IMPL_H)
