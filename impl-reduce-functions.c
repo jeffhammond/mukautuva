@@ -21,7 +21,7 @@
 #include "impl-constant-conversions.h"
 #include "impl-handle-conversions.h"
 #include "impl-keyval-map.h"
-extern int TYPE_HANDLE_KEY;
+extern int TYPE_ATTR_FOR_USER_OP_FN;
 
 void reduce_trampoline(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
 {
@@ -43,7 +43,7 @@ void reduce_trampoline(void *invec, void *inoutvec, int *len, MPI_Datatype * dat
     }
     int flag;
     WRAP_User_function* user_fn;
-    rc = IMPL_Type_get_attr(*datatype, TYPE_HANDLE_KEY, &user_fn, &flag);
+    rc = IMPL_Type_get_attr(*datatype, TYPE_ATTR_FOR_USER_OP_FN, &user_fn, &flag);
     if (rc != MPI_SUCCESS || !flag) {
         printf("%s: IMPL_Type_get_attr failed: flag=%d rc=%d\n", __func__, flag, rc);
         MPI_Abort(MPI_COMM_SELF,rc);
@@ -74,7 +74,7 @@ void reduce_trampoline_c(void *invec, void *inoutvec, MPI_Count *len, MPI_Dataty
     }
     int flag;
     WRAP_User_function_c* user_fn;
-    rc = IMPL_Type_get_attr(*datatype, TYPE_HANDLE_KEY, &user_fn, &flag);
+    rc = IMPL_Type_get_attr(*datatype, TYPE_ATTR_FOR_USER_OP_FN, &user_fn, &flag);
     if (rc != MPI_SUCCESS || !flag) {
         printf("%s: IMPL_Type_get_attr failed: flag=%d rc=%d\n", __func__, flag, rc);
         MPI_Abort(MPI_COMM_SELF,rc);
@@ -144,7 +144,7 @@ int WRAP_Reduce_local(const void *inbuf, void *inoutbuf, int count, WRAP_Datatyp
         rc = find_comm_op_callback(impl_op, &user_fn, NULL);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Reduce_local(in_place ? MPI_IN_PLACE : inbuf, inoutbuf, count, dup, impl_op);
@@ -175,7 +175,7 @@ int WRAP_Reduce_local_c(const void *inbuf, void *inoutbuf, WRAP_Count count, WRA
         rc = find_comm_op_callback(impl_op, NULL, &user_fn);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Reduce_local_c(in_place ? MPI_IN_PLACE : inbuf, inoutbuf, count, dup, impl_op);
@@ -207,7 +207,7 @@ int WRAP_Allreduce(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype 
         rc = find_comm_op_callback(impl_op, &user_fn, NULL);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Allreduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm);
@@ -239,7 +239,7 @@ int WRAP_Allreduce_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_
         rc = find_comm_op_callback(impl_op, NULL, &user_fn);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Allreduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm);
@@ -272,7 +272,7 @@ int WRAP_Iallreduce(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype
         rc = find_comm_op_callback(impl_op, &user_fn, NULL);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Iallreduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, &impl_request);
@@ -307,7 +307,7 @@ int WRAP_Iallreduce_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP
         rc = find_comm_op_callback(impl_op, NULL, &user_fn);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Iallreduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, &impl_request);
@@ -343,7 +343,7 @@ int WRAP_Allreduce_init(const void *sendbuf, void *recvbuf, int count, WRAP_Data
         rc = find_comm_op_callback(impl_op, &user_fn, NULL);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Allreduce_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, impl_info, &impl_request);
@@ -379,7 +379,7 @@ int WRAP_Allreduce_init_c(const void *sendbuf, void *recvbuf, WRAP_Count count, 
         rc = find_comm_op_callback(impl_op, NULL, &user_fn);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Allreduce_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, impl_info,  &impl_request);
@@ -413,7 +413,7 @@ int WRAP_Reduce(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype dat
         rc = find_comm_op_callback(impl_op, &user_fn, NULL);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Reduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm);
@@ -445,7 +445,7 @@ int WRAP_Reduce_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Dat
         rc = find_comm_op_callback(impl_op, NULL, &user_fn);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Reduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm);
@@ -478,7 +478,7 @@ int WRAP_Ireduce(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype da
         rc = find_comm_op_callback(impl_op, &user_fn, NULL);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Ireduce(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
@@ -513,7 +513,7 @@ int WRAP_Ireduce_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Da
         rc = find_comm_op_callback(impl_op, NULL, &user_fn);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Ireduce_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, &impl_request);
@@ -549,7 +549,7 @@ int WRAP_Reduce_init(const void *sendbuf, void *recvbuf, int count, WRAP_Datatyp
         rc = find_comm_op_callback(impl_op, &user_fn, NULL);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Reduce_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
@@ -584,7 +584,7 @@ int WRAP_Reduce_init_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRA
         rc = find_comm_op_callback(impl_op, NULL, &user_fn);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Reduce_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, RANK_MUK_TO_IMPL(root), impl_comm, impl_info, &impl_request);
@@ -617,7 +617,7 @@ int WRAP_Reduce_scatter(const void *sendbuf, void *recvbuf, const int recvcounts
         rc = find_comm_op_callback(impl_op, &user_fn, NULL);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Reduce_scatter(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, dup, impl_op, impl_comm);
@@ -649,7 +649,7 @@ int WRAP_Reduce_scatter_c(const void *sendbuf, void *recvbuf, const WRAP_Count r
         rc = find_comm_op_callback(impl_op, NULL, &user_fn);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Reduce_scatter_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, dup, impl_op, impl_comm);
@@ -682,7 +682,7 @@ int WRAP_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int recvcount
         rc = find_comm_op_callback(impl_op, &user_fn, NULL);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Ireduce_scatter(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, dup, impl_op, impl_comm, &impl_request);
@@ -717,7 +717,7 @@ int WRAP_Ireduce_scatter_c(const void *sendbuf, void *recvbuf, const WRAP_Count 
         rc = find_comm_op_callback(impl_op, NULL, &user_fn);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Ireduce_scatter_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, dup, impl_op, impl_comm, &impl_request);
@@ -753,7 +753,7 @@ int WRAP_Reduce_scatter_init(const void *sendbuf, void *recvbuf, const int recvc
         rc = find_comm_op_callback(impl_op, &user_fn, NULL);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Reduce_scatter_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, dup, impl_op, impl_comm, impl_info, &impl_request);
@@ -789,7 +789,7 @@ int WRAP_Reduce_scatter_init_c(const void *sendbuf, void *recvbuf, const WRAP_Co
         rc = find_comm_op_callback(impl_op, NULL, &user_fn);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Reduce_scatter_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcounts, dup, impl_op, impl_comm, impl_info, &impl_request);
@@ -823,7 +823,7 @@ int WRAP_Reduce_scatter_block(const void *sendbuf, void *recvbuf, int recvcount,
         rc = find_comm_op_callback(impl_op, &user_fn, NULL);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Reduce_scatter_block(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, dup, impl_op, impl_comm);
@@ -855,7 +855,7 @@ int WRAP_Reduce_scatter_block_c(const void *sendbuf, void *recvbuf, WRAP_Count r
         rc = find_comm_op_callback(impl_op, NULL, &user_fn);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Reduce_scatter_block_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, dup, impl_op, impl_comm);
@@ -888,7 +888,7 @@ int WRAP_Ireduce_scatter_block(const void *sendbuf, void *recvbuf, int recvcount
         rc = find_comm_op_callback(impl_op, &user_fn, NULL);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Ireduce_scatter_block(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, dup, impl_op, impl_comm, &impl_request);
@@ -923,7 +923,7 @@ int WRAP_Ireduce_scatter_block_c(const void *sendbuf, void *recvbuf, WRAP_Count 
         rc = find_comm_op_callback(impl_op, NULL, &user_fn);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Ireduce_scatter_block_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, dup, impl_op, impl_comm, &impl_request);
@@ -959,7 +959,7 @@ int WRAP_Reduce_scatter_block_init(const void *sendbuf, void *recvbuf, int recvc
         rc = find_comm_op_callback(impl_op, &user_fn, NULL);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Reduce_scatter_block_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, dup, impl_op, impl_comm, impl_info, &impl_request);
@@ -995,7 +995,7 @@ int WRAP_Reduce_scatter_block_init_c(const void *sendbuf, void *recvbuf, WRAP_Co
         rc = find_comm_op_callback(impl_op, NULL, &user_fn);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Reduce_scatter_block_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, recvcount, dup, impl_op, impl_comm, impl_info, &impl_request);
@@ -1029,7 +1029,7 @@ int WRAP_Scan(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype datat
         rc = find_comm_op_callback(impl_op, &user_fn, NULL);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Scan(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm);
@@ -1062,7 +1062,7 @@ int WRAP_Scan_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Datat
         rc = find_comm_op_callback(impl_op, NULL, &user_fn);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Scan_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm);
@@ -1096,7 +1096,7 @@ int WRAP_Iscan(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype data
         rc = find_comm_op_callback(impl_op, &user_fn, NULL);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Iscan(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, &impl_request);
@@ -1131,7 +1131,7 @@ int WRAP_Iscan_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Data
         rc = find_comm_op_callback(impl_op, NULL, &user_fn);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Iscan_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, &impl_request);
@@ -1167,7 +1167,7 @@ int WRAP_Scan_init(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype 
         rc = find_comm_op_callback(impl_op, &user_fn, NULL);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Scan_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, impl_info, &impl_request);
@@ -1203,7 +1203,7 @@ int WRAP_Scan_init_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_
         rc = find_comm_op_callback(impl_op, NULL, &user_fn);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Scan_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, impl_info, &impl_request);
@@ -1237,7 +1237,7 @@ int WRAP_Exscan(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype dat
         rc = find_comm_op_callback(impl_op, &user_fn, NULL);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Exscan(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm);
@@ -1270,7 +1270,7 @@ int WRAP_Exscan_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Dat
         rc = find_comm_op_callback(impl_op, NULL, &user_fn);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Exscan_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm);
@@ -1304,7 +1304,7 @@ int WRAP_Iexscan(const void *sendbuf, void *recvbuf, int count, WRAP_Datatype da
         rc = find_comm_op_callback(impl_op, &user_fn, NULL);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Iexscan(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, &impl_request);
@@ -1339,7 +1339,7 @@ int WRAP_Iexscan_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRAP_Da
         rc = find_comm_op_callback(impl_op, NULL, &user_fn);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Iexscan_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, &impl_request);
@@ -1375,7 +1375,7 @@ int WRAP_Exscan_init(const void *sendbuf, void *recvbuf, int count, WRAP_Datatyp
         rc = find_comm_op_callback(impl_op, &user_fn, NULL);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Exscan_init(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, impl_info, &impl_request);
@@ -1411,7 +1411,7 @@ int WRAP_Exscan_init_c(const void *sendbuf, void *recvbuf, WRAP_Count count, WRA
         rc = find_comm_op_callback(impl_op, NULL, &user_fn);
         if (rc==0) { rc = MPI_ERR_INTERN; goto end; }
 
-        rc = IMPL_Type_set_attr(dup, TYPE_HANDLE_KEY, user_fn);
+        rc = IMPL_Type_set_attr(dup, TYPE_ATTR_FOR_USER_OP_FN, user_fn);
         if (rc) goto end;
 
         rc = IMPL_Exscan_init_c(in_place ? MPI_IN_PLACE : sendbuf, recvbuf, count, dup, impl_op, impl_comm, impl_info, &impl_request);
