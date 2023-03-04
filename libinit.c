@@ -254,6 +254,8 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MUK_Comm_set_errhandler = MUK_DLSYM(wrap_so_handle, "WRAP_Comm_set_errhandler");
     MUK_Comm_set_info = MUK_DLSYM(wrap_so_handle, "WRAP_Comm_set_info");
     MUK_Comm_set_name = MUK_DLSYM(wrap_so_handle, "WRAP_Comm_set_name");
+    MUK_Comm_spawn = MUK_DLSYM(wrap_so_handle, "WRAP_Comm_spawn");
+    MUK_Comm_spawn_multiple = MUK_DLSYM(wrap_so_handle, "WRAP_Comm_spawn_multiple");
     MUK_Comm_split = MUK_DLSYM(wrap_so_handle, "WRAP_Comm_split");
     MUK_Comm_split_type = MUK_DLSYM(wrap_so_handle, "WRAP_Comm_split_type");
     MUK_Comm_test_inter = MUK_DLSYM(wrap_so_handle, "WRAP_Comm_test_inter");
@@ -1250,9 +1252,7 @@ int MPI_Cart_coords(MPI_Comm comm, int rank, int maxdims, int coords[])
 
 int MPI_Cart_create(MPI_Comm comm_old, int ndims, const int dims[], const int periods[], int reorder, MPI_Comm *comm_cart)
 {
-    int rc = MUK_Cart_create(comm_old, ndims, dims, periods, reorder, comm_cart);
-    //MUK_COMM_NULLIFY(comm_cart);
-    return rc;
+    return MUK_Cart_create(comm_old, ndims, dims, periods, reorder, comm_cart);
 }
 
 int MPI_Cart_get(MPI_Comm comm, int maxdims, int dims[], int periods[], int coords[])
@@ -1277,9 +1277,7 @@ int MPI_Cart_shift(MPI_Comm comm, int direction, int disp, int *rank_source, int
 
 int MPI_Cart_sub(MPI_Comm comm, const int remain_dims[], MPI_Comm *newcomm)
 {
-    int rc = MUK_Cart_sub(comm, remain_dims, newcomm);
-    //MUK_COMM_NULLIFY(newcomm);
-    return rc;
+    return MUK_Cart_sub(comm, remain_dims, newcomm);
 }
 
 int MPI_Cartdim_get(MPI_Comm comm, int *ndims)
@@ -1294,9 +1292,7 @@ int MPI_Close_port(const char *port_name)
 
 int MPI_Comm_accept(const char *port_name, MPI_Info info, int root, MPI_Comm comm, MPI_Comm *newcomm)
 {
-    int rc = MUK_Comm_accept(port_name, info, root, comm, newcomm);
-    //MUK_COMM_NULLIFY(newcomm);
-    return rc;
+    return MUK_Comm_accept(port_name, info, root, comm, newcomm);
 }
 
 int MPI_Comm_call_errhandler(MPI_Comm comm, int errorcode)
@@ -1311,16 +1307,12 @@ int MPI_Comm_compare(MPI_Comm comm1, MPI_Comm comm2, int *result)
 
 int MPI_Comm_connect(const char *port_name, MPI_Info info, int root, MPI_Comm comm, MPI_Comm *newcomm)
 {
-    int rc = MUK_Comm_connect(port_name, info, root, comm, newcomm);
-    //MUK_COMM_NULLIFY(newcomm);
-    return rc;
+    return MUK_Comm_connect(port_name, info, root, comm, newcomm);
 }
 
 int MPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm *newcomm)
 {
-    int rc = MUK_Comm_create(comm, group, newcomm);
-    //MUK_COMM_NULLIFY(newcomm);
-    return rc;
+    return MUK_Comm_create(comm, group, newcomm);
 }
 
 int MPI_Comm_create_errhandler(MPI_Comm_errhandler_function *comm_errhandler_fn, MPI_Errhandler *errhandler)
@@ -1330,16 +1322,12 @@ int MPI_Comm_create_errhandler(MPI_Comm_errhandler_function *comm_errhandler_fn,
 
 int MPI_Comm_create_from_group(MPI_Group group, const char *stringtag, MPI_Info info, MPI_Errhandler errhandler, MPI_Comm *newcomm)
 {
-    int rc = MUK_Comm_create_from_group(group, stringtag, info, errhandler, newcomm);
-    //MUK_COMM_NULLIFY(newcomm);
-    return rc;
+    return MUK_Comm_create_from_group(group, stringtag, info, errhandler, newcomm);
 }
 
 int MPI_Comm_create_group(MPI_Comm comm, MPI_Group group, int tag, MPI_Comm *newcomm)
 {
-    int rc = MUK_Comm_create_group(comm, group, tag, newcomm);
-    //MUK_COMM_NULLIFY(newcomm);
-    return rc;
+    return MUK_Comm_create_group(comm, group, tag, newcomm);
 }
 
 int MPI_Comm_create_keyval(MPI_Comm_copy_attr_function *comm_copy_attr_fn, MPI_Comm_delete_attr_function *comm_delete_attr_fn, int *comm_keyval, void *extra_state)
@@ -1354,30 +1342,22 @@ int MPI_Comm_delete_attr(MPI_Comm comm, int comm_keyval)
 
 int MPI_Comm_disconnect(MPI_Comm *comm)
 {
-    int rc = MUK_Comm_disconnect(comm);
-    //MUK_COMM_NULLIFY(comm);
-    return rc;
+    return MUK_Comm_disconnect(comm);
 }
 
 int MPI_Comm_dup(MPI_Comm comm, MPI_Comm *newcomm)
 {
-    int rc = MUK_Comm_dup(comm, newcomm);
-    //MUK_COMM_NULLIFY(newcomm);
-    return rc;
+    return MUK_Comm_dup(comm, newcomm);
 }
 
 int MPI_Comm_dup_with_info(MPI_Comm comm, MPI_Info info, MPI_Comm *newcomm)
 {
-    int rc = MUK_Comm_dup_with_info(comm, info, newcomm);
-    //MUK_COMM_NULLIFY(newcomm);
-    return rc;
+    return MUK_Comm_dup_with_info(comm, info, newcomm);
 }
 
 int MPI_Comm_free(MPI_Comm *comm)
 {
-    int rc = MUK_Comm_free(comm);
-    //MUK_COMM_NULLIFY(comm);
-    return rc;
+    return MUK_Comm_free(comm);
 }
 
 int MPI_Comm_free_keyval(int *comm_keyval)
@@ -1407,44 +1387,32 @@ int MPI_Comm_get_name(MPI_Comm comm, char *comm_name, int *resultlen)
 
 int MPI_Comm_get_parent(MPI_Comm *parent)
 {
-    int rc = MUK_Comm_get_parent(parent);
-    //MUK_COMM_NULLIFY(parent);
-    return rc;
+    return MUK_Comm_get_parent(parent);
 }
 
 int MPI_Comm_group(MPI_Comm comm, MPI_Group *group)
 {
-    int rc = MUK_Comm_group(comm, group);
-    //MUK_GROUP_NULLIFY(group);
-    return rc;
+    return MUK_Comm_group(comm, group);
 }
 
 int MPI_Comm_idup(MPI_Comm comm, MPI_Comm *newcomm, MPI_Request *request)
 {
-    int rc = MUK_Comm_idup(comm, newcomm, request);
-    //MUK_COMM_NULLIFY(newcomm);
-    return rc;
+    return MUK_Comm_idup(comm, newcomm, request);
 }
 
 int MPI_Comm_idup_with_info(MPI_Comm comm, MPI_Info info, MPI_Comm *newcomm, MPI_Request *request)
 {
-    int rc = MUK_Comm_idup_with_info(comm, info, newcomm, request);
-    //MUK_COMM_NULLIFY(newcomm);
-    return rc;
+    return MUK_Comm_idup_with_info(comm, info, newcomm, request);
 }
 
 int MPI_Comm_join(int fd, MPI_Comm *intercomm)
 {
-    int rc = MUK_Comm_join(fd, intercomm);
-    //MUK_COMM_NULLIFY(intercomm);
-    return rc;
+    return MUK_Comm_join(fd, intercomm);
 }
 
 int MPI_Comm_remote_group(MPI_Comm comm, MPI_Group *group)
 {
-    int rc = MUK_Comm_remote_group(comm, group);
-    //MUK_GROUP_NULLIFY(group);
-    return rc;
+    return MUK_Comm_remote_group(comm, group);
 }
 
 int MPI_Comm_remote_size(MPI_Comm comm, int *size)
@@ -1474,16 +1442,12 @@ int MPI_Comm_set_name(MPI_Comm comm, const char *comm_name)
 
 int MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *newcomm)
 {
-    int rc = MUK_Comm_split(comm, color, key, newcomm);
-    //MUK_COMM_NULLIFY(newcomm);
-    return rc;
+    return MUK_Comm_split(comm, color, key, newcomm);
 }
 
 int MPI_Comm_split_type(MPI_Comm comm, int split_type, int key, MPI_Info info, MPI_Comm *newcomm)
 {
-    int rc = MUK_Comm_split_type(comm, split_type, key, info, newcomm);
-    //MUK_COMM_NULLIFY(newcomm);
-    return rc;
+    return MUK_Comm_split_type(comm, split_type, key, info, newcomm);
 }
 
 int MPI_Comm_test_inter(MPI_Comm comm, int *flag)
@@ -1533,8 +1497,7 @@ int MPI_Errhandler_create(MPI_Comm_errhandler_function *comm_errhandler_fn, MPI_
 
 int MPI_Errhandler_free(MPI_Errhandler *errhandler)
 {
-    int rc = MUK_Errhandler_free(errhandler);
-    return rc;
+    return MUK_Errhandler_free(errhandler);
 }
 
 int MPI_Errhandler_get(MPI_Comm comm, MPI_Errhandler *errhandler)
@@ -1607,9 +1570,7 @@ int MPI_File_call_errhandler(MPI_File fh, int errorcode)
 
 int MPI_File_close(MPI_File *fh)
 {
-    int rc = MUK_File_close(fh);
-    //MUK_FILE_NULLIFY(fh);
-    return rc;
+    return MUK_File_close(fh);
 }
 
 int MPI_File_create_errhandler(MPI_File_errhandler_function *file_errhandler_fn, MPI_Errhandler *errhandler)
@@ -2490,9 +2451,7 @@ int MPI_Group_excl(MPI_Group group, int n, const int ranks[], MPI_Group *newgrou
 
 int MPI_Group_free(MPI_Group *group)
 {
-    int rc = MUK_Group_free(group);
-    //MUK_GROUP_NULLIFY(group);
-    return rc;
+    return MUK_Group_free(group);
 }
 
 int MPI_Group_from_session_pset(MPI_Session session, const char *pset_name, MPI_Group *newgroup)
@@ -2750,16 +2709,12 @@ int MPI_Improbe(int source, int tag, MPI_Comm comm, int *flag, MPI_Message *mess
 
 int MPI_Imrecv(void *buf, int count, MPI_Datatype datatype, MPI_Message *message, MPI_Request *request)
 {
-    int rc = MUK_Imrecv(buf, count, datatype, message, request);
-    //MUK_MESSAGE_NULLIFY(message);
-    return rc;
+    return MUK_Imrecv(buf, count, datatype, message, request);
 }
 
 int MPI_Imrecv_c(void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Message *message, MPI_Request *request)
 {
-    int rc = MUK_Imrecv_c(buf, count, datatype, message, request);
-    //MUK_MESSAGE_NULLIFY(message);
-    return rc;
+    return MUK_Imrecv_c(buf, count, datatype, message, request);
 }
 
 int MPI_Ineighbor_allgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request)
@@ -2886,9 +2841,7 @@ int MPI_Info_free(MPI_Info *info)
     if (MUK_Info_free == NULL) {
         return MPI_ERR_INTERN;
     }
-    int rc = MUK_Info_free(info);
-    //MUK_INFO_NULLIFY(info);
-    return rc;
+    return MUK_Info_free(info);
 }
 
 int MPI_Info_get(MPI_Info info, const char *key, int valuelen, char *value, int *flag)
@@ -3203,16 +3156,12 @@ int MPI_Mprobe(int source, int tag, MPI_Comm comm, MPI_Message *message, MPI_Sta
 
 int MPI_Mrecv(void *buf, int count, MPI_Datatype datatype, MPI_Message *message, MPI_Status *status)
 {
-    int rc = MUK_Mrecv(buf, count, datatype, message, status);
-    //MUK_MESSAGE_NULLIFY(message);
-    return rc;
+    return MUK_Mrecv(buf, count, datatype, message, status);
 }
 
 int MPI_Mrecv_c(void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Message *message, MPI_Status *status)
 {
-    int rc = MUK_Mrecv_c(buf, count, datatype, message, status);
-    //MUK_MESSAGE_NULLIFY(message);
-    return rc;
+    return MUK_Mrecv_c(buf, count, datatype, message, status);
 }
 
 int MPI_Neighbor_allgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
@@ -3420,9 +3369,7 @@ int MPI_Op_create_c(MPI_User_function_c *user_fn, int commute, MPI_Op *op)
 
 int MPI_Op_free(MPI_Op *op)
 {
-    int rc = MUK_Op_free(op);
-    //MUK_OP_NULLIFY(op);
-    return rc;
+    return MUK_Op_free(op);
 }
 
 int MPI_Open_port(MPI_Info info, char *port_name)
@@ -3765,9 +3712,7 @@ int MPI_Register_datarep_c(const char *datarep, MPI_Datarep_conversion_function_
 
 int MPI_Request_free(MPI_Request *request)
 {
-    int rc = MUK_Request_free(request);
-    //MUK_REQUEST_NULLIFY(request);
-    return rc;
+    return MUK_Request_free(request);
 }
 
 int MPI_Request_get_status(MPI_Request request, int *flag, MPI_Status *status)
@@ -4057,9 +4002,7 @@ int MPI_Session_create_errhandler(MPI_Session_errhandler_function *session_errha
 
 int MPI_Session_finalize(MPI_Session *session)
 {
-    int rc = MUK_Session_finalize(session);
-    //MUK_SESSION_NULLIFY(session);
-    return rc;
+    return MUK_Session_finalize(session);
 }
 
 int MPI_Session_get_errhandler(MPI_Session session, MPI_Errhandler *errhandler)
@@ -4190,9 +4133,7 @@ int MPI_Status_set_elements_x(MPI_Status *status, MPI_Datatype datatype, MPI_Cou
 
 int MPI_Test(MPI_Request *request, int *flag, MPI_Status *status)
 {
-    int rc = MUK_Test(request, flag, status);
-    //MUK_REQUEST_NULLIFY(request);
-    return rc;
+    return MUK_Test(request, flag, status);
 }
 
 int MPI_Test_cancelled(const MPI_Status *status, int *flag)
@@ -4202,29 +4143,17 @@ int MPI_Test_cancelled(const MPI_Status *status, int *flag)
 
 int MPI_Testall(int count, MPI_Request array_of_requests[], int *flag, MPI_Status array_of_statuses[])
 {
-    int rc = MUK_Testall(count, array_of_requests, flag, array_of_statuses);
-    for (int i=0; i<count; i++) {
-        //MUK_REQUEST_NULLIFY(&array_of_requests[i]);
-    }
-    return rc;
+    return MUK_Testall(count, array_of_requests, flag, array_of_statuses);
 }
 
 int MPI_Testany(int count, MPI_Request array_of_requests[], int *indx, int *flag, MPI_Status *status)
 {
-    int rc = MUK_Testany(count, array_of_requests, indx, flag, status);
-    for (int i=0; i<count; i++) {
-        //MUK_REQUEST_NULLIFY(&array_of_requests[i]);
-    }
-    return rc;
+    return MUK_Testany(count, array_of_requests, indx, flag, status);
 }
 
 int MPI_Testsome(int incount, MPI_Request array_of_requests[], int *outcount, int array_of_indices[], MPI_Status array_of_statuses[])
 {
-    int rc = MUK_Testsome(incount, array_of_requests, outcount, array_of_indices, array_of_statuses);
-    for (int i=0; i<incount; i++) {
-        //MUK_REQUEST_NULLIFY(&array_of_requests[i]);
-    }
-    return rc;
+    return MUK_Testsome(incount, array_of_requests, outcount, array_of_indices, array_of_statuses);
 }
 
 int MPI_Topo_test(MPI_Comm comm, int *status)
@@ -4436,9 +4365,7 @@ int MPI_Type_extent(MPI_Datatype datatype, MPI_Aint *extent)
 
 int MPI_Type_free(MPI_Datatype *datatype)
 {
-    int rc = MUK_Type_free(datatype);
-    //MUK_DATATYPE_NULLIFY(datatype);
-    return rc;
+    return MUK_Type_free(datatype);
 }
 
 int MPI_Type_free_keyval(int *type_keyval)
@@ -4453,13 +4380,7 @@ int MPI_Type_get_attr(MPI_Datatype datatype, int type_keyval, void *attribute_va
 
 int MPI_Type_get_contents(MPI_Datatype datatype, int max_integers, int max_addresses, int max_datatypes, int array_of_integers[], MPI_Aint array_of_addresses[], MPI_Datatype array_of_datatypes[])
 {
-    int rc = MUK_Type_get_contents(datatype, max_integers, max_addresses, max_datatypes, array_of_integers, array_of_addresses, array_of_datatypes);
-#if 0
-    for (int i=0; i<max_datatypes; i++) {
-        MUK_DATATYPE_CONVERT(&array_of_datatypes[i]);
-    }
-#endif
-    return rc;
+    return MUK_Type_get_contents(datatype, max_integers, max_addresses, max_datatypes, array_of_integers, array_of_addresses, array_of_datatypes);
 }
 
 int MPI_Type_get_contents_c(MPI_Datatype datatype, MPI_Count max_integers, MPI_Count max_addresses, MPI_Count max_large_counts, MPI_Count max_datatypes, int array_of_integers[], MPI_Aint array_of_addresses[], MPI_Count array_of_large_counts[], MPI_Datatype array_of_datatypes[])
@@ -4686,36 +4607,22 @@ int MPI_Unpublish_name(const char *service_name, MPI_Info info, const char *port
 
 int MPI_Wait(MPI_Request *request, MPI_Status *status)
 {
-    int rc = MUK_Wait(request, status);
-    //MUK_REQUEST_NULLIFY(request);
-    return rc;
+    return MUK_Wait(request, status);
 }
 
 int MPI_Waitall(int count, MPI_Request array_of_requests[], MPI_Status array_of_statuses[])
 {
-    int rc = MUK_Waitall(count, array_of_requests, array_of_statuses);
-    for (int i=0; i<count; i++) {
-        //MUK_REQUEST_NULLIFY(&array_of_requests[i]);
-    }
-    return rc;
+    return MUK_Waitall(count, array_of_requests, array_of_statuses);
 }
 
 int MPI_Waitany(int count, MPI_Request array_of_requests[], int *indx, MPI_Status *status)
 {
-    int rc = MUK_Waitany(count, array_of_requests, indx, status);
-    for (int i=0; i<count; i++) {
-        //MUK_REQUEST_NULLIFY(&array_of_requests[i]);
-    }
-    return rc;
+    return MUK_Waitany(count, array_of_requests, indx, status);
 }
 
 int MPI_Waitsome(int incount, MPI_Request array_of_requests[], int *outcount, int array_of_indices[], MPI_Status array_of_statuses[])
 {
-    int rc = MUK_Waitsome(incount, array_of_requests, outcount, array_of_indices, array_of_statuses);
-    for (int i=0; i<incount; i++) {
-        //MUK_REQUEST_NULLIFY(&array_of_requests[i]);
-    }
-    return rc;
+    return MUK_Waitsome(incount, array_of_requests, outcount, array_of_indices, array_of_statuses);
 }
 
 int MPI_Win_allocate(MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, void *baseptr, MPI_Win *win)
@@ -4839,9 +4746,7 @@ int MPI_Win_flush_local_all(MPI_Win win)
 
 int MPI_Win_free(MPI_Win *win)
 {
-    int rc = MUK_Win_free(win);
-    //MUK_WIN_NULLIFY(win);
-    return rc;
+    return MUK_Win_free(win);
 }
 
 int MPI_Win_free_keyval(int *win_keyval)
