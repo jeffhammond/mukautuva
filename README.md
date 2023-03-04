@@ -32,7 +32,7 @@ The following are known to work:
 - Most of the MPICH test suite, with exceptions noted below.
 
 Specifically, the following MPICH test groups are passing:
-- Attributes: see below.
+- Attributes: all OK.
 - Basic: all OK.
 - Collectives: all except `p_scan` (see below).
 - Comm: all OK.
@@ -41,27 +41,15 @@ Specifically, the following MPICH test groups are passing:
 - Initialization: see below.
 - IO: all OK.
 - P2P: 61/66 passing. Failures related to `MPI_Fint`, `PMPI_Message_f2c`, generalized requests - all of which are known issues - and https://github.com/jeffhammond/mukautuva/issues/19, which needs to be debugged.
-- RMA: all except keyval- and errhandler-related.
+- RMA: all OK.
 - Topology: all OK.
 
 ## Known Issues
 
-- Features involving custom callbacks are not yet implemented completely or perfectly.  User-defined reductions are implemented but have a small issue with unreasonable use cases.  Attributes should be implemented correctly.
-- Mukautuva leaks state in in persistent reductions (e.g. `MPI_Scan_init`) with user-defined ops.  This is fixable but low priority.
 - Spawn is not supported.  Simple cases would work, but the shared-library lookup situation is more complicated with Spawn on multiple nodes.
-- Most of the things that are supposed to work before MPI_Init don’t, because I need to reorganize all the dlsym init stuff to make that work.
+- Most of the things that are supposed to work before MPI_Init don’t, because I need to reorganize all the `dlsym` stuff to make that work.
 - Sessions are not supported because they are a more complicated version of the "before init" problem.
 - Fortran interoperability features (handle conversion) are ignore.  These will be implemented in conjunction with [VAPAA](https://github.com/jeffhammond/vapaa) at some point.
-
-Currently, the following use case will fail:
-```c
-MPI_Op_create(..,&op);
-MPI_Iallreduce(..,op,..,&req);
-MPI_Op_free(&op);
-MPI_Wait(&req,MPI_STATUS_IGNORE);
-```
-We consider this a bad use case, although the same pattern exists in the MPICH test suite for communicator errhandlers.
-We will eventually support everything correctly.
 
 There are things that do not work because the underlying implementation does not support them yet.  For example, MPICH has a bug with `MPI_BOTTOM` throwing an error when it shouldn't, and Open-MPI does not support much of MPI-4 right now.
 
@@ -144,8 +132,7 @@ different strategies.
 
 ## Reduction callbacks
 
-In `MPI_Op_create`, we create a map (it is currently a C linked-list
-but will be replaced by a C++ `std::map` later) between the
+In `MPI_Op_create`, we create a map (a C++ `std::map`) between the
 `MPI_User_function(_c)` and the `MPI_Op` handle.
 When the `MPI_Op` is used inside of e.g. `MPI_Allreduce`,
 we lookup the function pointer via the `MPI_Op` and attach
@@ -158,7 +145,8 @@ call two different reductions with the same datatype before
 the callback is done.
 Inside of the callback, we get the datatype attribute
 that contains the function pointer of the original callback,
-and we invoke it with the translated datatype.
+and we invoke it with the translated datatype, then free
+it if it was the copy of derived datatype.
 
 The biggest problem here is that MPI implementations are expected
 to ref-count everything, so it is legal to call `Op_create`,
@@ -168,7 +156,11 @@ is in-flight.
 Our first few designs were bad.  We used a heap object for the attribute,
 which is freed during `Op_free`.  We can fix this and just
 attach the function pointer directly to the datatype
-so no heap allocation is necessary.
+so no heap allocation is necessary.  However, we store the mapping
+between the `MPI_Op` and `MPI_User_function(_c)` forever, which
+has trivial space and time overheads in all but the most pathological
+use cases. (If you call `MPI_Op_create` millions of times in your program,
+I don't know what to tell you.)
 
 ## Errhandler callbacks
 
@@ -178,6 +170,11 @@ an errhandler and still use it.
 We solved this by using the function pointer as the attribute directly.
 Obviously, the function pointer itself cannot go out of scope,
 so this eliminates the use-after-free issue above.
+
+Unfortunately, `MPI_File` objects don't support attributes, so
+we need a second mapping between those handles and the errhandler
+callbacks, but the overheads of anything related to file errhandlers
+is irrelevant compared to actual file I/O.
 
 ## Attribute callbacks
 
@@ -225,6 +222,15 @@ call).
 
 Persistent reductions may not be implemented correctly right now.
 This section will be implemented later once we work on that.
+
+## Generalized requests
+
+Not implemented.  The callback involves `MPI_Status` and I may not
+be able to solve this.
+
+We may need to require a non-standard (MPIX) version of
+https://github.com/mpi-forum/mpi-issues/issues/645
+to support this.
 
 # Acknowledgements
 
