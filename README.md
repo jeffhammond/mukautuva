@@ -40,16 +40,17 @@ Specifically, the following MPICH test groups are passing:
 - Group: all OK.
 - Initialization: see below.
 - IO: all OK.
-- P2P: 61/66 passing. Failures related to Fortran handles and generalized requests, which are unimplemented.
+- P2P: 61/66 passing. Failures related to Fortran handles and generalized requests.
 - RMA: all OK.
 - Topology: all OK.
 
 ## Known Issues
 
+- Generakized requests need to be implemented. See the issue for details.
 - Spawn is not supported.  Simple cases would work, but the shared-library lookup situation is more complicated with Spawn on multiple nodes.
 - Most of the things that are supposed to work before MPI_Init don’t, because I need to reorganize all the `dlsym` stuff to make that work.
 - Sessions are not supported because they are a more complicated version of the "before init" problem.
-- Fortran interoperability features (handle conversion) are ignore.  These will be implemented in conjunction with [VAPAA](https://github.com/jeffhammond/vapaa) at some point.
+- Fortran interoperability features (handle conversion) are ignored.  These will be implemented in conjunction with [VAPAA](https://github.com/jeffhammond/vapaa) at some point.
 
 There are things that do not work because the underlying implementation does not support them yet.  For example, MPICH has a bug with `MPI_BOTTOM` throwing an error when it shouldn't, and Open-MPI does not support much of MPI-4 right now.
 
