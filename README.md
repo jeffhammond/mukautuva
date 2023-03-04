@@ -34,13 +34,13 @@ The following are known to work:
 Specifically, the following MPICH test groups are passing:
 - Attributes: all OK.
 - Basic: all OK.
-- Collectives: all except `p_scan` (see below).
+- Collectives: all OK.
 - Comm: all OK.
 - Datatypes: all OK.
 - Group: all OK.
 - Initialization: see below.
 - IO: all OK.
-- P2P: 61/66 passing. Failures related to `MPI_Fint`, `PMPI_Message_f2c`, generalized requests - all of which are known issues - and https://github.com/jeffhammond/mukautuva/issues/19, which needs to be debugged.
+- P2P: 61/66 passing. Failures related to Fortran handles and generalized requests, which are unimplemented.
 - RMA: all OK.
 - Topology: all OK.
 
