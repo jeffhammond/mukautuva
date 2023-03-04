@@ -7,7 +7,9 @@
 #include "muk-predefined.h"
 
 // declaration for impl-functions.c symbol
+// impl-fpointers.h could be used instead but we need only two
 extern int (*IMPL_Error_class)(int errorcode, int *errorclass);
+extern int (*IMPL_Error_string)(int errorcode, char *string, int *resultlen);
 
 int ERROR_CODE_IMPL_TO_MUK(int error_c)
 {
@@ -23,7 +25,7 @@ int ERROR_CODE_IMPL_TO_MUK(int error_c)
 #if DEBUG
     int len;
     char name[MPI_MAX_ERROR_STRING] = {0};
-    MPI_Error_string(error_c, name, &len);
+    IMPL_Error_string(error_c, name, &len);
     printf("Real error code returned from the C library: %d=%x, name=%s\n",
             error_c, error_c, name);
 #endif
