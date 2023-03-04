@@ -220,12 +220,12 @@ call).
 
 ## Persistent collectives
 
-Persistent reductions may not be implemented correctly right now.
-This section will be implemented later once we work on that.
+Persistent reductions are working correctly.
 
 ## Generalized requests
 
-TODO - issue has details on the design candidate.
+Because generalized requests use `extra_state`, we can stick everything to support
+the trampoline in there.
 
 # Acknowledgements
 
