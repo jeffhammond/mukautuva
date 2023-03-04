@@ -8,9 +8,11 @@ MUK_EXTERN int (*IMPL_Comm_size)(MPI_Comm comm, int *size);
 MUK_EXTERN int (*IMPL_Abort)(MPI_Comm comm, int errorcode);
 MUK_EXTERN int (*IMPL_Accumulate)(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank, MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win);
 MUK_EXTERN int (*IMPL_Accumulate_c)(const void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype, int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win);
+#if 0
 MUK_EXTERN int (*IMPL_Add_error_class)(int *errorclass);
 MUK_EXTERN int (*IMPL_Add_error_code)(int errorclass, int *errorcode);
 MUK_EXTERN int (*IMPL_Add_error_string)(int errorcode, const char *string);
+#endif
 MUK_EXTERN int (*IMPL_Address)(void *location, MPI_Aint *address);
 MUK_EXTERN MPI_Aint (*IMPL_Aint_add)(MPI_Aint base, MPI_Aint disp);
 MUK_EXTERN MPI_Aint (*IMPL_Aint_diff)(MPI_Aint addr1, MPI_Aint addr2);

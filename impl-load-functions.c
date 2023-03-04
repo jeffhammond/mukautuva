@@ -26,9 +26,11 @@ int WRAP_Load_functions(void * restrict h, int major, int minor)
     IMPL_Abort = MUK_DLSYM(h, NIMI(Abort));
     IMPL_Accumulate = MUK_DLSYM(h, NIMI(Accumulate));
     IMPL_Accumulate_c = MUK_DLSYM(h, NIMI(Accumulate_c));
+#if 0
     IMPL_Add_error_class = MUK_DLSYM(h, NIMI(Add_error_class));
     IMPL_Add_error_code = MUK_DLSYM(h, NIMI(Add_error_code));
     IMPL_Add_error_string = MUK_DLSYM(h, NIMI(Add_error_string));
+#endif
     IMPL_Address = MUK_DLSYM(h, NIMI(Address));
     IMPL_Aint_add = MUK_DLSYM(h, NIMI(Aint_add));
     IMPL_Aint_diff = MUK_DLSYM(h, NIMI(Aint_diff));
@@ -131,6 +133,7 @@ int WRAP_Load_functions(void * restrict h, int major, int minor)
     IMPL_Errhandler_free = MUK_DLSYM(h, NIMI(Errhandler_free));
     IMPL_Errhandler_get = MUK_DLSYM(h, NIMI(Errhandler_get));
     IMPL_Errhandler_set = MUK_DLSYM(h, NIMI(Errhandler_set));
+    // these are loaded directly into MUK *and* here because both need them
     IMPL_Error_class = MUK_DLSYM(h, NIMI(Error_class));
     IMPL_Error_string = MUK_DLSYM(h, NIMI(Error_string));
     IMPL_Exscan = MUK_DLSYM(h, NIMI(Exscan));

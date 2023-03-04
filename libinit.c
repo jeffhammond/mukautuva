@@ -138,6 +138,12 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MUK_Wtime = MUK_DLSYM(h,"MPI_Wtime");
     MUK_Wtick = MUK_DLSYM(h,"MPI_Wtick");
 
+    MUK_Add_error_class = MUK_DLSYM(h, "MPI_Add_error_class");
+    MUK_Add_error_code = MUK_DLSYM(h, "MPI_Add_error_code");
+    MUK_Add_error_string = MUK_DLSYM(h, "MPI_Add_error_string");
+    MUK_Error_class = MUK_DLSYM(h, "MPI_Error_class");
+    MUK_Error_string = MUK_DLSYM(h, "MPI_Error_string");
+
     int major, minor;
     MUK_Get_version = MUK_DLSYM(h,"MPI_Get_version");
     rc = MUK_Get_version(&major, &minor);
@@ -168,9 +174,6 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MUK_Comm_size = MUK_DLSYM(wrap_so_handle,"WRAP_Comm_size");
     MUK_Accumulate = MUK_DLSYM(wrap_so_handle, "WRAP_Accumulate");
     MUK_Accumulate_c = MUK_DLSYM(wrap_so_handle, "WRAP_Accumulate_c");
-    MUK_Add_error_class = MUK_DLSYM(wrap_so_handle, "WRAP_Add_error_class");
-    MUK_Add_error_code = MUK_DLSYM(wrap_so_handle, "WRAP_Add_error_code");
-    MUK_Add_error_string = MUK_DLSYM(wrap_so_handle, "WRAP_Add_error_string");
     MUK_Address = MUK_DLSYM(wrap_so_handle, "WRAP_Address");
     MUK_Allgather = MUK_DLSYM(wrap_so_handle, "WRAP_Allgather");
     MUK_Allgather_c = MUK_DLSYM(wrap_so_handle, "WRAP_Allgather_c");
@@ -269,8 +272,6 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     MUK_Errhandler_free = MUK_DLSYM(wrap_so_handle, "WRAP_Errhandler_free");
     MUK_Errhandler_get = MUK_DLSYM(wrap_so_handle, "WRAP_Errhandler_get");
     MUK_Errhandler_set = MUK_DLSYM(wrap_so_handle, "WRAP_Errhandler_set");
-    MUK_Error_class = MUK_DLSYM(wrap_so_handle, "WRAP_Error_class");
-    MUK_Error_string = MUK_DLSYM(wrap_so_handle, "WRAP_Error_string");
     MUK_Exscan = MUK_DLSYM(wrap_so_handle, "WRAP_Exscan");
     MUK_Exscan_c = MUK_DLSYM(wrap_so_handle, "WRAP_Exscan_c");
     MUK_Exscan_init = MUK_DLSYM(wrap_so_handle, "WRAP_Exscan_init");

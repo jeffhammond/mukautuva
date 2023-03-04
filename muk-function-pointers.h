@@ -16,6 +16,9 @@ int (*MUK_Init_thread)(int *argc, char ***argv, int required, int *provided);
 int (*MUK_Is_thread_main)(int *flag);
 int (*MUK_Query_thread)(int *provided);
 
+int (*MUK_Error_class)(int errorcode, int *errorclass);
+int (*MUK_Error_string)(int errorcode, char *string, int *resultlen);
+
 int (*MUK_Comm_rank)(MPI_Comm comm, int *rank);
 int (*MUK_Comm_size)(MPI_Comm comm, int *size);
 int (*MUK_Abort)(MPI_Comm comm, int errorcode);
@@ -125,8 +128,6 @@ int (*MUK_Errhandler_create)(MPI_Comm_errhandler_function *comm_errhandler_fn, M
 int (*MUK_Errhandler_free)(MPI_Errhandler *errhandler);
 int (*MUK_Errhandler_get)(MPI_Comm comm, MPI_Errhandler *errhandler);
 int (*MUK_Errhandler_set)(MPI_Comm comm, MPI_Errhandler errhandler);
-int (*MUK_Error_class)(int errorcode, int *errorclass);
-int (*MUK_Error_string)(int errorcode, char *string, int *resultlen);
 int (*MUK_Exscan)(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
 int (*MUK_Exscan_c)(const void *sendbuf, void *recvbuf, MPI_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
 int (*MUK_Exscan_init)(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Info info, MPI_Request *request);

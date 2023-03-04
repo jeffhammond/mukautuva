@@ -26,6 +26,7 @@ int WRAP_Abort(WRAP_Comm comm, int errorcode)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
+#if 0
 int WRAP_Add_error_class(int *errorclass)
 {
     int rc = IMPL_Add_error_class(errorclass);
@@ -43,6 +44,7 @@ int WRAP_Add_error_string(int errorcode, const char *string)
     int rc = IMPL_Add_error_string(errorcode, string);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
+#endif
 
 int WRAP_Address(void *location, WRAP_Aint *address)
 {
@@ -483,6 +485,7 @@ int WRAP_Errhandler_free(WRAP_Errhandler *errhandler)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
+#if 0
 int WRAP_Error_class(int errorcode, int *errorclass)
 {
     int rc = IMPL_Error_class(errorcode, errorclass);
@@ -494,6 +497,7 @@ int WRAP_Error_string(int errorcode, char *string, int *resultlen)
     int rc = IMPL_Error_string(errorcode, string, resultlen);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
+#endif
 
 int WRAP_Gather(const void *sendbuf, int sendcount, WRAP_Datatype sendtype, void *recvbuf, int recvcount, WRAP_Datatype recvtype, int root, WRAP_Comm comm)
 {

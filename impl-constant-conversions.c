@@ -1,3 +1,5 @@
+#define DEBUG 1
+
 #if DEBUG
 #include <stdio.h>
 #endif
@@ -22,7 +24,7 @@ int ERROR_CODE_IMPL_TO_MUK(int error_c)
 
     // If, for some reason, you need to known the actual error returned from
     // the MPI library, and not just the class, enable the following code.
-#if DEBUG
+#if 0
     int len;
     char name[MPI_MAX_ERROR_STRING] = {0};
     IMPL_Error_string(error_c, name, &len);
@@ -119,12 +121,12 @@ int ERROR_CODE_IMPL_TO_MUK(int error_c)
     else if (error == MPI_T_ERR_PVAR_NO_ATOMIC      ) { return MUK_T_ERR_PVAR_NO_ATOMIC; }
     else if (error == MPI_ERR_LASTCODE              ) { return MUK_ERR_LASTCODE; }
     else {
-#if DEBUG
+#if 1
         int len;
         char name[MPI_MAX_ERROR_STRING] = {0};
-        rc = MPI_Error_string(error, name, &len);
+        IMPL_Error_string(error, name, &len);
         printf("Unknown error class returned from the C library: code=%d=%x, class=%d=%x, name=%s\n",
-                     error_c, error_c, error, error, name);
+                error_c, error_c, error, error, name);
 #endif
         return MUK_ERR_UNKNOWN;
     }
