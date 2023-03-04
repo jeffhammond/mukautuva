@@ -40,4 +40,14 @@ static bool IS_PREDEFINED_ERRHANDLER(MPI_Errhandler errhandler)
            );
 }
 
+MAYBE_UNUSED
+static bool IS_DERIVED_DATATYPE(MPI_Datatype type)
+{
+    int ni, na, nd, combiner;
+    int rc = IMPL_Type_get_envelope(type, &ni, &na, &nd, &combiner);
+    return ((combiner != MPI_COMBINER_NAMED)    && (combiner != MPI_COMBINER_F90_INTEGER) &&
+            (combiner != MPI_COMBINER_F90_REAL) && (combiner != MPI_COMBINER_F90_COMPLEX));
+    (void)rc;
+}
+
 #endif

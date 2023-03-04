@@ -50,8 +50,10 @@ void reduce_trampoline(void *invec, void *inoutvec, int *len, MPI_Datatype * dat
     }
     WRAP_Datatype wrap_type = OUTPUT_MPI_Datatype(parent_datatype);
     (*user_fn)(invec,inoutvec,len,&wrap_type);
-    // parent_datatype is derived datatype returned by Type_get_contents and must be freed
-    rc = IMPL_Type_free(&parent_datatype);
+    // if parent_datatype is derived datatype returned by Type_get_contents, it must be freed
+    if (IS_DERIVED_DATATYPE(parent_datatype)) {
+        rc = IMPL_Type_free(&parent_datatype);
+    }
 }
 
 void reduce_trampoline_c(void *invec, void *inoutvec, MPI_Count *len, MPI_Datatype * datatype)
@@ -83,8 +85,10 @@ void reduce_trampoline_c(void *invec, void *inoutvec, MPI_Count *len, MPI_Dataty
     }
     WRAP_Datatype wrap_type = OUTPUT_MPI_Datatype(parent_datatype);
     (*user_fn)(invec,inoutvec,len,&wrap_type);
-    // parent_datatype is derived datatype returned by Type_get_contents and must be freed
-    rc = IMPL_Type_free(&parent_datatype);
+    // if parent_datatype is derived datatype returned by Type_get_contents, it must be freed
+    if (IS_DERIVED_DATATYPE(parent_datatype)) {
+        rc = IMPL_Type_free(&parent_datatype);
+    }
 }
 
 // WRAP->IMPL functions
