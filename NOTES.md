@@ -24,6 +24,7 @@ cd osu*
 
 Run tests:
 ```
+cd c/mpi
 # Linux
 for t in `find . -type f -executable -print` ; do LD_LIBRARY_PATH=${MUK_PATH} mpirun -n 2 ./$t ; done
 # Mac
