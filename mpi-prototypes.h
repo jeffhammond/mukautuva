@@ -332,6 +332,8 @@ int MPI_Comm_connect(const char *port_name, MPI_Info info, int root, MPI_Comm co
 int MPI_Comm_disconnect(MPI_Comm *comm);
 int MPI_Comm_get_parent(MPI_Comm *parent);
 int MPI_Comm_join(int fd, MPI_Comm *intercomm);
+int MPI_Comm_spawn(const char *command, char *argv[], int maxprocs, MPI_Info info, int root, MPI_Comm comm, MPI_Comm *intercomm, int array_of_errcodes[]);
+int MPI_Comm_spawn_multiple(int count, char *array_of_commands[], char **array_of_argv[], const int array_of_maxprocs[], const MPI_Info array_of_info[], int root, MPI_Comm comm, MPI_Comm *intercomm, int array_of_errcodes[]);
 int MPI_Lookup_name(const char *service_name, MPI_Info info, char *port_name);
 int MPI_Open_port(MPI_Info info, char *port_name);
 int MPI_Publish_name(const char *service_name, MPI_Info info, const char *port_name);

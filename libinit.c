@@ -4976,27 +4976,10 @@ MPI_Aint MPI_Aint_diff(MPI_Aint addr1, MPI_Aint addr2)
 
 int MPI_Comm_spawn(const char *command, char *argv[], int maxprocs, MPI_Info info, int root, MPI_Comm comm, MPI_Comm *intercomm, int array_of_errcodes[])
 {
-    printf("MPI_Comm_spawn is not implemented.\n");
-    return MUK_Abort(comm, 1);
-    (void)command;
-    (void)argv;
-    (void)maxprocs;
-    (void)info;
-    (void)root;
-    (void)intercomm;
-    (void)array_of_errcodes;
+    return MUK_Comm_spawn(command, argv, maxprocs, info, root, comm, intercomm, array_of_errcodes);
 }
 
 int MPI_Comm_spawn_multiple(int count, char *array_of_commands[], char **array_of_argv[], const int array_of_maxprocs[], const MPI_Info array_of_info[], int root, MPI_Comm comm, MPI_Comm *intercomm, int array_of_errcodes[])
 {
-    printf("MPI_Comm_spawn_multiple is not implemented.\n");
-    return MUK_Abort(comm, 2);
-    (void)count;
-    (void)array_of_commands;
-    (void)array_of_argv;
-    (void)array_of_maxprocs;
-    (void)array_of_info;
-    (void)root;
-    (void)intercomm;
-    (void)array_of_errcodes;
+    return MUK_Comm_spawn_multiple(count, array_of_commands, array_of_argv, array_of_maxprocs, array_of_info, root, comm, intercomm, array_of_errcodes);
 }

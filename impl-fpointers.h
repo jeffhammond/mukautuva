@@ -98,6 +98,8 @@ MUK_EXTERN int (*IMPL_Comm_set_info)(MPI_Comm comm, MPI_Info info);
 MUK_EXTERN int (*IMPL_Comm_set_name)(MPI_Comm comm, const char *comm_name);
 MUK_EXTERN int (*IMPL_Comm_split)(MPI_Comm comm, int color, int key, MPI_Comm *newcomm);
 MUK_EXTERN int (*IMPL_Comm_split_type)(MPI_Comm comm, int split_type, int key, MPI_Info info, MPI_Comm *newcomm);
+MUK_EXTERN int (*IMPL_Comm_spawn)(const char *command, char *argv[], int maxprocs, MPI_Info info, int root, MPI_Comm comm, MPI_Comm *intercomm, int array_of_errcodes[]);
+MUK_EXTERN int (*IMPL_Comm_spawn_multiple)(int count, char *array_of_commands[], char **array_of_argv[], const int array_of_maxprocs[], const MPI_Info array_of_info[], int root, MPI_Comm comm, MPI_Comm *intercomm, int array_of_errcodes[]);
 MUK_EXTERN int (*IMPL_Comm_test_inter)(MPI_Comm comm, int *flag);
 MUK_EXTERN int (*IMPL_Compare_and_swap)(const void *origin_addr, const void *compare_addr, void *result_addr, MPI_Datatype datatype, int target_rank, MPI_Aint target_disp, MPI_Win win);
 MUK_EXTERN int (*IMPL_Dims_create)(int nnodes, int ndims, int dims[]);

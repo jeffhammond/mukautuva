@@ -116,6 +116,8 @@ int WRAP_Load_functions(void * restrict h, int major, int minor)
     IMPL_Comm_set_info = MUK_DLSYM(h, NIMI(Comm_set_info));
     IMPL_Comm_set_name = MUK_DLSYM(h, NIMI(Comm_set_name));
     IMPL_Comm_size = MUK_DLSYM(h, NIMI(Comm_size));
+    IMPL_Comm_spawn = MUK_DLSYM(h, NIMI(Comm_spawn));
+    IMPL_Comm_spawn_multiple = MUK_DLSYM(h, NIMI(Comm_spawn_multiple));
     IMPL_Comm_split = MUK_DLSYM(h, NIMI(Comm_split));
     IMPL_Comm_split_type = MUK_DLSYM(h, NIMI(Comm_split_type));
     IMPL_Comm_test_inter = MUK_DLSYM(h, NIMI(Comm_test_inter));
