@@ -82,6 +82,24 @@ int WRAP_Request_free(WRAP_Request *request)
     int rc;
     MPI_Request impl_request = CONVERT_MPI_Request(*request);
     // look up the request before it is freed, because that will change it to MPI_REQUEST_NULL
+    // look for nonblocking alltoallw first
+    {
+        MPI_Datatype * sendtypes = NULL;
+        MPI_Datatype * recvtypes = NULL;
+        int found = find_nonblocking_request_alltoallw_buffers(impl_request, &sendtypes, &recvtypes);
+        if (found) {
+            if (sendtypes != NULL) {
+                free(sendtypes);
+                sendtypes = NULL;
+            }
+            if (recvtypes != NULL) {
+                free(recvtypes);
+                recvtypes = NULL;
+            }
+            remove_nonblocking_request_alltoallw_buffers(impl_request);
+        }
+    }
+    // look for persistent alltoallw next
     {
         MPI_Datatype * sendtypes = NULL;
         MPI_Datatype * recvtypes = NULL;

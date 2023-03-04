@@ -79,10 +79,20 @@ int add_win_errhandler_callback(MPI_Errhandler errhandler, WRAP_Win_errhandler_f
 int find_win_errhandler_callback(MPI_Errhandler errhandler, WRAP_Win_errhandler_function ** user_fn);
 int remove_win_errhandler_callback(MPI_Errhandler errhandler);
 
+// ALLTOALLW - NONBLOCKING
+
+int add_nonblocking_request_alltoallw_buffers(MPI_Request request, MPI_Datatype * sendtypes, MPI_Datatype * recvtypes);
+int find_nonblocking_request_alltoallw_buffers(MPI_Request request, MPI_Datatype ** sendtypes, MPI_Datatype ** recvtypes);
+int remove_nonblocking_request_alltoallw_buffers(MPI_Request request);
+
 // ALLTOALLW - PERSISTENT
 
 int add_persistent_request_alltoallw_buffers(MPI_Request request, MPI_Datatype * sendtypes, MPI_Datatype * recvtypes);
 int find_persistent_request_alltoallw_buffers(MPI_Request request, MPI_Datatype ** sendtypes, MPI_Datatype ** recvtypes);
 int remove_persistent_request_alltoallw_buffers(MPI_Request request);
+
+// AGGREGATE REQUEST CLEANUP
+
+int cleanup_mapped_request(MPI_Request request);
 
 #endif // IMPL_KEYVAL_MAP_H

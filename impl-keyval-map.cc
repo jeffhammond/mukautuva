@@ -65,9 +65,9 @@ std::map<MPI_Errhandler, WRAP_Win_errhandler_function*>  errhandler_win_cb_map{}
 // in a timely fashion (it will probably be a predefined one) and we have to use the request
 // as the key, which means putting the lookup on the critical path of request completion.
 //
-std::map<MPI_Request, std::pair<MPI_Datatype*, MPI_Datatype*>> request_persistent_ialltoallw_map{};
-std::map<MPI_Request, std::pair<MPI_Datatype*, MPI_Datatype*>> comm_neighborhood_ialltoallw_multimap{};
-std::map<MPI_Request, std::pair<MPI_Datatype*, MPI_Datatype*>> request_ialltoallw_map{};
+std::map<MPI_Request, std::pair<MPI_Datatype*, MPI_Datatype*>> request_nonblocking_alltoallw_map{};
+std::map<MPI_Request, std::pair<MPI_Datatype*, MPI_Datatype*>> request_persistent_alltoallw_map{};
+//std::map<MPI_Request, std::pair<MPI_Datatype*, MPI_Datatype*>> comm_neighborhood_ialltoallw_multimap{};
 
 extern "C" {
 
@@ -82,6 +82,13 @@ extern "C" {
 #include "impl-keyval-map-fileerrh.h" // errhandler_file_cb_map
 #include "impl-keyval-map-winerrh.h"  // errhandler_win_cb_map
 #include "impl-keyval-map-preqa2aw.h" // request_persistent_ialltoallw_map
+#include "impl-keyval-map-ireqa2aw.h" // request_nonblocking_ialltoallw_map
+
+int cleanup_mapped_request(MPI_Request request)
+{
+
+
+}
 
 void WRAP_Clear_maps(void)
 {
@@ -92,9 +99,9 @@ void WRAP_Clear_maps(void)
     errhandler_comm_cb_map.clear();
     errhandler_file_cb_map.clear();
     errhandler_win_cb_map.clear();
-    request_persistent_ialltoallw_map.clear();
-    comm_neighborhood_ialltoallw_multimap.clear();
-    request_ialltoallw_map.clear();
+    request_nonblocking_alltoallw_map.clear();
+    request_persistent_alltoallw_map.clear();
+    //comm_neighborhood_ialltoallw_multimap.clear();
 }
 
 } // extern "C"
