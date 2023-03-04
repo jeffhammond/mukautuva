@@ -19,6 +19,8 @@
 #include "impl-status.h"
 #include "impl-constant-conversions.h"
 #include "impl-handle-conversions.h"
+#include "impl-keyval-map.h"
+#include "impl-predefined-handle.h"
 
 // WRAP->IMPL functions
 
@@ -26,8 +28,12 @@
 
 void file_errhandler_trampoline(MPI_File *file, int *error_code, ...)
 {
-    WRAP_File_errhandler_function * fp   = NULL;
-    //lookup_errhandler_callback(File, MPI_COMM_NULL, NULL, *file, &fp, MPI_WIN_NULL, NULL);
+    WRAP_File_errhandler_function * fp = NULL;
+    int found = find_file_errhandler_callback_2(*file, &fp);
+    if (!found) {
+        printf("%s: find_file_errhandler_callback_2 did not find anything for file=%lx\n",
+                __func__, (intptr_t)*file);
+    }
     WRAP_File wrap_file = OUTPUT_MPI_File(*file);
     (*fp)(&wrap_file,error_code);
 }
@@ -37,9 +43,10 @@ int WRAP_File_create_errhandler(WRAP_File_errhandler_function *file_errhandler_f
     MPI_Errhandler impl_errhandler;
     //int rc = IMPL_File_create_errhandler(file_errhandler_fn, &impl_errhandler);
     int rc = IMPL_File_create_errhandler(file_errhandler_trampoline, &impl_errhandler);
+    if (rc) goto end;
     *errhandler = OUTPUT_MPI_Errhandler(impl_errhandler);
-    //add_errhandler_callback(impl_errhandler, File, NULL, file_errhandler_fn, NULL);
-    (void)file_errhandler_fn;
+    add_file_errhandler_callback(impl_errhandler, file_errhandler_fn);
+    end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -48,7 +55,18 @@ int WRAP_File_set_errhandler(WRAP_File file, WRAP_Errhandler errhandler)
     MPI_File impl_file = CONVERT_MPI_File(file);
     MPI_Errhandler impl_errhandler = CONVERT_MPI_Errhandler(errhandler);
     int rc = IMPL_File_set_errhandler(impl_file, impl_errhandler);
-    //bind_errhandler_to_object(File, impl_errhandler, MPI_COMM_NULL, impl_file, MPI_WIN_NULL);
+    if (!IS_PREDEFINED_ERRHANDLER(impl_errhandler))
+    {
+        WRAP_File_errhandler_function * file_errhandler_fn = NULL;
+        int found = find_file_errhandler_callback(impl_errhandler, &file_errhandler_fn);
+        if (found) {
+            add_file_errhandler_callback_2(impl_file, file_errhandler_fn);
+        }
+        else {
+            printf("%s: find_file_errhandler_callback did not find anything for errhandler=%lx\n",
+                    __func__, (intptr_t)impl_errhandler);
+        }
+    }
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -71,7 +89,7 @@ int WRAP_File_call_errhandler(WRAP_File fh, int errorcode)
 int WRAP_File_close(WRAP_File *fh)
 {
     MPI_File impl_fh = CONVERT_MPI_File(*fh);
-    //remove_errhandler_by_object(File,MPI_COMM_NULL,impl_fh,MPI_WIN_NULL);
+    remove_file_errhandler_callback_2(impl_fh);
     int rc = IMPL_File_close(&impl_fh);
     *fh = OUTPUT_MPI_File(impl_fh);
     return RETURN_CODE_IMPL_TO_MUK(rc);
