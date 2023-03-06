@@ -1,6 +1,6 @@
 ifeq ($(shell uname),Darwin)
-    OMPICC=/opt/homebrew/Cellar/open-mpi/4.1.4_2/bin/mpicc
-    OMPICXX=/opt/homebrew/Cellar/open-mpi/4.1.4_2/bin/mpicxx
+    OMPICC=/opt/homebrew/Cellar/open-mpi/4.1.5/bin/mpicc
+    OMPICXX=/opt/homebrew/Cellar/open-mpi/4.1.5/bin/mpicxx
     MPICHCC=/opt/homebrew/Cellar/mpich/4.1/bin/mpicc
     MPICHCXX=/opt/homebrew/Cellar/mpich/4.1/bin/mpicxx
     CC=clang

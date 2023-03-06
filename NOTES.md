@@ -79,9 +79,13 @@ ln -sf `which gcc` ${MUK_PATH}/bin/mpicc
 
 # MacOS
 ```sh
-ln -s ${MUK_PATH}/bin/mpicc -> /usr/bin/clang
-ln -s ${MUK_PATH}/bin/mpicxx -> /usr/bin/clang++
-ln -s${MUK_PATH}/bin/mpifort -> /opt/homebrew/bin/gfortran
+ln -s ${MUK_PATH}/bin/mpicc /usr/bin/clang
+ln -s ${MUK_PATH}/bin/mpicxx /usr/bin/clang++
+ln -s ${MUK_PATH}/bin/mpifort /opt/homebrew/bin/gfortran
+# in mpich-testsuite...
+ln -s ../ompi-wrap.so .
+ln -s ../mpich-wrap.so .
+ln -s ../libmuk.so libmuk.so
 ```
 
 ```
