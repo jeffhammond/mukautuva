@@ -81,6 +81,9 @@ int WRAP_Request_free(WRAP_Request *request)
 {
     int rc;
     MPI_Request impl_request = CONVERT_MPI_Request(*request);
+#if 1
+    cleanup_mapped_request(impl_request);
+#else
     // look up the request before it is freed, because that will change it to MPI_REQUEST_NULL
     // look for nonblocking alltoallw first
     {
@@ -122,6 +125,7 @@ int WRAP_Request_free(WRAP_Request *request)
             }
         }
     }
+#endif
     rc = IMPL_Request_free(&impl_request);
     if (rc) goto end;
     // It is erroneous to call MPI_REQUEST_FREE or MPI_CANCEL for a request
