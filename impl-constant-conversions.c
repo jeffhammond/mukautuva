@@ -10,6 +10,7 @@
 
 // declaration for impl-functions.c symbol
 // impl-fpointers.h could be used instead but we need only two
+extern int (*IMPL_Comm_rank)(MPI_Comm comm, int * rank);
 extern int (*IMPL_Error_class)(int errorcode, int *errorclass);
 extern int (*IMPL_Error_string)(int errorcode, char *string, int *resultlen);
 
@@ -25,11 +26,19 @@ int ERROR_CODE_IMPL_TO_MUK(int error_c)
     // If, for some reason, you need to known the actual error returned from
     // the MPI library, and not just the class, enable the following code.
 #if 0
+    int me;
+    IMPL_Comm_rank(MPI_COMM_WORLD,&me);
     int len;
     char name[MPI_MAX_ERROR_STRING] = {0};
+#if 0
+    IMPL_Error_string(error, name, &len);
+    printf("%d: Real error code returned from the C library: %d=%x, name=%s\n",
+            me, error, error, name);
+#else
     IMPL_Error_string(error_c, name, &len);
-    printf("Real error code returned from the C library: %d=%x, name=%s\n",
-            error_c, error_c, name);
+    printf("%d: Real error code returned from the C library: %d=%x, name=%s\n",
+            me, error_c, error_c, name);
+#endif
 #endif
 
          if (error == MPI_SUCCESS                   ) { return MUK_SUCCESS; }
@@ -122,11 +131,14 @@ int ERROR_CODE_IMPL_TO_MUK(int error_c)
     else if (error == MPI_ERR_LASTCODE              ) { return MUK_ERR_LASTCODE; }
     else {
 #if 1
+        int me;
+        IMPL_Comm_rank(MPI_COMM_WORLD,&me);
         int len;
         char name[MPI_MAX_ERROR_STRING] = {0};
-        IMPL_Error_string(error, name, &len);
-        printf("Unknown error class returned from the C library: code=%d=%x, class=%d=%x, name=%s\n",
-                error_c, error_c, error, error, name);
+        // using error_c here causes MPICH to include more information in the error string
+        IMPL_Error_string(error_c, name, &len);
+        printf("%d: Unknown error returned from the C library: code=%d=%x, class=%d=%x, name=%s\n",
+                me, error_c, error_c, error, error, name);
 #endif
         return MUK_ERR_UNKNOWN;
     }
