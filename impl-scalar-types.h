@@ -12,6 +12,9 @@ typedef long int WRAP_Aint;
 // Mac
 typedef long long int WRAP_Count;
 typedef long long int WRAP_Offset;
+#elif defined(I_MPI_VERSION)
+typedef long long int WRAP_Count;
+typedef long long int WRAP_Offset;
 #else
 // Linux
 typedef long int WRAP_Count;
