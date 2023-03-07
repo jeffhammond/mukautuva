@@ -2,6 +2,7 @@ int add_comm_keyval_callbacks(int keyval,
                               WRAP_Comm_copy_attr_function   * comm_copy_attr_fn,
                               WRAP_Comm_delete_attr_function * comm_delete_attr_fn)
 {
+    const std::lock_guard<std::mutex> lock(keyval_comm_attr_cb_mutex);
 #if DEBUG
     printf("%s: insert_or_assign(keyval=%d, comm_copy_attr_fn=%p, comm_delete_attr_fn=%p)\n",
             __func__, keyval, comm_copy_attr_fn, comm_delete_attr_fn);
@@ -19,6 +20,7 @@ int find_comm_keyval_callbacks(int keyval,
                                WRAP_Comm_copy_attr_function   ** comm_copy_attr_fn,
                                WRAP_Comm_delete_attr_function ** comm_delete_attr_fn)
 {
+    const std::lock_guard<std::mutex> lock(keyval_comm_attr_cb_mutex);
     try {
         auto [copy_fn,delete_fn] = keyval_comm_attr_cb_map.at(keyval);
 #if DEBUG
@@ -41,6 +43,7 @@ int find_comm_keyval_callbacks(int keyval,
 
 int remove_comm_keyval_callbacks(int keyval)
 {
+    const std::lock_guard<std::mutex> lock(keyval_comm_attr_cb_mutex);
     // returns the number of elements removed, so 0=failure and 1=success
     return keyval_comm_attr_cb_map.erase(keyval);
 }

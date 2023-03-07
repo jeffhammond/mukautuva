@@ -1,5 +1,6 @@
 int add_persistent_request_alltoallw_buffers(MPI_Request request, MPI_Datatype * sendtypes, MPI_Datatype * recvtypes)
 {
+    const std::lock_guard<std::mutex> lock(request_persistent_alltoallw_mutex);
 #if DEBUG
     printf("%s: insert_or_assign(request=%lx, sendtypes=%p, recvtypes=%p)\n",
             __func__, (intptr_t)request, sendtypes, recvtypes);
@@ -17,7 +18,8 @@ int add_persistent_request_alltoallw_buffers(MPI_Request request, MPI_Datatype *
 
 int find_persistent_request_alltoallw_buffers(MPI_Request request, MPI_Datatype ** sendtypes, MPI_Datatype ** recvtypes)
 {
-    if (request_persistent_alltoallw_map.empty()) return 0;;
+    const std::lock_guard<std::mutex> lock(request_persistent_alltoallw_mutex);
+    if (request_persistent_alltoallw_map.empty()) return 0;
 
     try {
         auto [stypes,rtypes] = request_persistent_alltoallw_map.at(request);
@@ -43,6 +45,7 @@ int find_persistent_request_alltoallw_buffers(MPI_Request request, MPI_Datatype 
 
 int remove_persistent_request_alltoallw_buffers(MPI_Request request)
 {
+    const std::lock_guard<std::mutex> lock(request_persistent_alltoallw_mutex);
     // returns the number of elements removed, so 0=failure and 1=success
     return request_persistent_alltoallw_map.erase(request);
 }

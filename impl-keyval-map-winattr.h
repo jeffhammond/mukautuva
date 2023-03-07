@@ -2,6 +2,7 @@ int add_win_keyval_callbacks(int keyval,
                               WRAP_Win_copy_attr_function   * win_copy_attr_fn,
                               WRAP_Win_delete_attr_function * win_delete_attr_fn)
 {
+    const std::lock_guard<std::mutex> lock(keyval_win_attr_cb_mutex);
 #if DEBUG
     printf("%s: insert_or_assign(keyval=%d, win_copy_attr_fn=%p, win_delete_attr_fn=%p)\n",
             __func__, keyval, win_copy_attr_fn, win_delete_attr_fn);
@@ -19,6 +20,7 @@ int find_win_keyval_callbacks(int keyval,
                                WRAP_Win_copy_attr_function   ** win_copy_attr_fn,
                                WRAP_Win_delete_attr_function ** win_delete_attr_fn)
 {
+    const std::lock_guard<std::mutex> lock(keyval_win_attr_cb_mutex);
     try {
         auto [copy_fn,delete_fn] = keyval_win_attr_cb_map.at(keyval);
 #if DEBUG
@@ -41,6 +43,7 @@ int find_win_keyval_callbacks(int keyval,
 
 int remove_win_keyval_callbacks(int keyval)
 {
+    const std::lock_guard<std::mutex> lock(keyval_win_attr_cb_mutex);
     // returns the number of elements removed, so 0=failure and 1=success
     return keyval_win_attr_cb_map.erase(keyval);
 }

@@ -1,5 +1,6 @@
 int add_win_errhandler_callback(MPI_Errhandler errhandler, WRAP_Win_errhandler_function * user_fn)
 {
+    const std::lock_guard<std::mutex> lock(errhandler_win_cb_mutex);
 #if DEBUG
     printf("%s: insert_or_assign(errhandler=%lx, user_fn=%p)\n",
             __func__, (intptr_t)errhandler, user_fn);
@@ -13,6 +14,7 @@ int add_win_errhandler_callback(MPI_Errhandler errhandler, WRAP_Win_errhandler_f
 
 int find_win_errhandler_callback(MPI_Errhandler errhandler, WRAP_Win_errhandler_function ** user_fn)
 {
+    const std::lock_guard<std::mutex> lock(errhandler_win_cb_mutex);
     try {
         auto fn = errhandler_win_cb_map.at(errhandler);
 #if DEBUG
@@ -32,6 +34,7 @@ int find_win_errhandler_callback(MPI_Errhandler errhandler, WRAP_Win_errhandler_
 
 int remove_win_errhandler_callback(MPI_Errhandler errhandler)
 {
+    const std::lock_guard<std::mutex> lock(errhandler_win_cb_mutex);
     // returns the number of elements removed, so 0=failure and 1=success
     return errhandler_win_cb_map.erase(errhandler);
 }

@@ -12,6 +12,7 @@
 #include <string>
 #include <utility>
 #include <map>
+#include <mutex>
 
 extern "C" {
 
@@ -76,6 +77,17 @@ std::map<MPI_File, WRAP_File_errhandler_function*>       file_errhandler_cb_map{
 //
 std::map<MPI_Request, std::pair<MPI_Datatype*, MPI_Datatype*>> request_nonblocking_alltoallw_map{};
 std::map<MPI_Request, std::pair<MPI_Datatype*, MPI_Datatype*>> request_persistent_alltoallw_map{};
+
+std::mutex keyval_comm_attr_cb_mutex;
+std::mutex keyval_type_attr_cb_mutex;
+std::mutex keyval_win_attr_cb_mutex;
+std::mutex op_user_function_mutex;
+std::mutex errhandler_comm_cb_mutex;
+std::mutex errhandler_win_cb_mutex;
+std::mutex errhandler_file_cb_mutex;
+std::mutex file_errhandler_cb_mutex;
+std::mutex request_nonblocking_alltoallw_mutex;
+std::mutex request_persistent_alltoallw_mutex;
 
 extern "C" {
 

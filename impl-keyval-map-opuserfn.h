@@ -2,6 +2,7 @@ int add_comm_op_callback(MPI_Op op,
                          WRAP_User_function   * user_fn,
                          WRAP_User_function_c * user_fn_c)
 {
+    const std::lock_guard<std::mutex> lock(op_user_function_mutex);
 #if DEBUG
     printf("%s: insert_or_assign(op=%lx, user_fn=%p, user_fn_c=%p)\n",
             __func__, (intptr_t)op, user_fn, user_fn_c);
@@ -21,6 +22,7 @@ int find_comm_op_callback(MPI_Op op,
                           WRAP_User_function   ** user_fn,
                           WRAP_User_function_c ** user_fn_c)
 {
+    const std::lock_guard<std::mutex> lock(op_user_function_mutex);
     try {
         auto [fn,fn_c] = op_user_function_map.at(op);
 #if DEBUG
@@ -43,6 +45,7 @@ int find_comm_op_callback(MPI_Op op,
 
 int remove_comm_op_callback(MPI_Op op)
 {
+    const std::lock_guard<std::mutex> lock(op_user_function_mutex);
     // returns the number of elements removed, so 0=failure and 1=success
     return op_user_function_map.erase(op);
 }
