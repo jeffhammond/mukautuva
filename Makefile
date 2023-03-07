@@ -9,20 +9,28 @@ ifeq ($(shell uname),Darwin)
     #CFLAGS+=-Wno-unused-function
     CFLAGS+=-Wno-incompatible-function-pointer-types
 else
-    OMPICC=/usr/bin/mpicc.openmpi
-    OMPICXX=/usr/bin/mpicxx.openmpi
-    MPICHCC=/usr/bin/mpicc.mpich
-    MPICHCXX=/usr/bin/mpicxx.mpich
-    CC=gcc
-    CFLAGS=-fmax-errors=1 # GCC
-    #CFLAGS+=-fsanitize=address
-    # these suppress true errors with callbacks
-    #CFLAGS+=-Wno-incompatible-pointer-types
-    #CFLAGS+=-Wno-cast-function-type
-    #CFLAGS+=-Wno-unused-parameter -Wno-unused-variable -Wno-unused-function
+    ifeq ($(shell hostname),gorby)
+	OMPICC=/usr/bin/mpicc.openmpi
+	OMPICXX=/usr/bin/mpicxx.openmpi
+	MPICHCC=/usr/bin/mpicc.mpich
+	MPICHCXX=/usr/bin/mpicxx.mpich
+	CC=gcc
+    else
+	OMPICC=/usr/bin/mpicc.openmpi
+	OMPICXX=/usr/bin/mpicxx.openmpi
+	MPICHCC=/usr/bin/mpicc.mpich
+	MPICHCXX=/usr/bin/mpicxx.mpich
+	CC=gcc
+	CFLAGS=-fmax-errors=1 # GCC
+	#CFLAGS+=-fsanitize=address
+	# these suppress true errors with callbacks
+	#CFLAGS+=-Wno-incompatible-pointer-types
+	#CFLAGS+=-Wno-cast-function-type
+	#CFLAGS+=-Wno-unused-parameter -Wno-unused-variable -Wno-unused-function
+    endif
 endif
 
-CFLAGS	+= -g3 -O0 -Wall -Wextra -Werror # -Wpedantic
+CFLAGS	+= -g -O2 -Wall -Wextra #-Werror # -Wpedantic
 CFLAGS	+= -fPIC
 CXXFLAGS = -x c++ -std=c++17
 SOFLAGS	= -shared -lstdc++
@@ -46,7 +54,7 @@ testmalloc.x: testmalloc.c
 libs: libmuk.a libmuk.so
 
 %.x: %.c libmuk.so mpi.h
-	$(CC) $(CFLAGS) $< -L. -lmuk -o $@
+	$(CC) $(CFLAGS) $< -L. -lmuk -ldl -o $@
 
 MPI_H = mpi.h mpi-constants.h mpi-handle-typedefs.h mpi-typedefs.h mpi-predefined.h mpi-prototypes.h muk-predefined.h
 
