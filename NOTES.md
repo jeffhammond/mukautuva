@@ -7,6 +7,11 @@ export LD_LIBRARY_PATH=${MUK_PATH}
 export DYLD_LIBRARY_PATH=${MUK_PATH}
 ```
 
+# Intel MPI
+```
+. /opt/intel/oneapi/setvars.sh --force
+```
+
 # My Tests
 
 ```
@@ -44,13 +49,7 @@ git clone https://github.com/pmodels/armci-mpi.git
 
 Configure like this, e.g.:
 ```
-./configure CC=gcc CFLAGS=-g3 --enable-g CPPFLAGS=-I${MUK_PATH} LDFLAGS="-L${MUK_PATH} -Wl,-rpath=${MUK_PATH}" LIBS=-lmuk
-```
-
-Currently, Mukautuva plus Open-MPI crash in `MPI_Group_translate_ranks` so we disable rank translation caching.
-```
-export ARMCI_CACHE_RANK_TRANSLATION=0
-LD_LIBRARY_PATH=.. make check
+./configure CC=gcc CFLAGS=-g3 --enable-g CPPFLAGS=-I${MUK_PATH} LDFLAGS="-L${MUK_PATH} -Wl,-rpath=${MUK_PATH}" LIBS="-lmuk -ldl"
 ```
 
 Debug a single test failure like this:
