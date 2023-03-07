@@ -117,7 +117,7 @@ static inline int RANK_IMPL_TO_MUK(int rank_impl)
     }
 #endif
     else {
-#if 1
+#if DEBUG
         printf("RANK_IMPL_TO_MUK rank=%d=%x\n", rank_impl, rank_impl);
 #endif
         return rank_impl;
