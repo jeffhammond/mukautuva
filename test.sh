@@ -5,8 +5,8 @@ set -x
 if [ `uname -s` == Darwin ] ; then
     OMPIRUN=/opt/homebrew/Cellar/open-mpi/4.1.5/bin/mpirun
     OMPILIB=/opt/homebrew/Cellar/open-mpi/4.1.5/lib/libmpi.dylib
-    MPICHRUN=/opt/homebrew/Cellar/mpich/4.1/bin/mpirun
-    MPICHLIB=/opt/homebrew/Cellar/mpich/4.1/lib/libmpi.dylib
+    MPICHRUN=/opt/homebrew/Cellar/mpich/4.1.1/bin/mpirun
+    MPICHLIB=/opt/homebrew/Cellar/mpich/4.1.1/lib/libmpi.dylib
     IMPIRUN=true
     IMPILIB=
     DBG=lldb
