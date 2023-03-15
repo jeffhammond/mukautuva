@@ -7,7 +7,7 @@ ifeq ($(shell uname),Darwin)
     CFLAGS=-ferror-limit=1 # Clang
     CFLAGS+=-Wno-c2x-extensions
     #CFLAGS+=-Wno-unused-function
-    CFLAGS+=-Wno-incompatible-function-pointer-types
+    #CFLAGS+=-Wno-incompatible-function-pointer-types
 else
     ifeq ($(shell hostname),gorby)
 	OMPICC=/usr/bin/mpicc.openmpi
