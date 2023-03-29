@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #ifndef __cplusplus
 #error Sorry, but you have to use a C++ compiler.
 #endif
