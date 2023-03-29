@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #define DEBUG 1
 
 #if DEBUG

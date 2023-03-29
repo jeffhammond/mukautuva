@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 int add_win_errhandler_callback(MPI_Errhandler errhandler, WRAP_Win_errhandler_function * user_fn)
 {
     const std::lock_guard<std::mutex> lock(errhandler_win_cb_mutex);

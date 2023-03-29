@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #ifndef IMPL_KEYVAL_MAP_H
 #define IMPL_KEYVAL_MAP_H
 

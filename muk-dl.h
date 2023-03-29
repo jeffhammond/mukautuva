@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #ifndef MUK_DL_H
 #define MUK_DL_H
 

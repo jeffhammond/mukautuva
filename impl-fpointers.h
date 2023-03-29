@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #ifndef IMPL_FUNCTION_POINTERS_H
 #define IMPL_FUNCTION_POINTERS_H
 

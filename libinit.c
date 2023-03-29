@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include <errno.h>  // strtol
 #include <limits.h> // INT_MAX
 

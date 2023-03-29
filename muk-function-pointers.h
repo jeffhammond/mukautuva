@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 double (*MUK_Wtime)(void);
 double (*MUK_Wtick)(void);
 

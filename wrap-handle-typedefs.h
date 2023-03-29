@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #ifndef WRAP_HANDLE_TYPEDEFS_H
 #define WRAP_HANDLE_TYPEDEFS_H
 

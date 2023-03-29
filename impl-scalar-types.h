@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #ifndef IMPL_SCALAR_TYPES_H
 #define IMPL_SCALAR_TYPES_H
 

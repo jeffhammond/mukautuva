@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 int add_persistent_request_alltoallw_buffers(MPI_Request request, MPI_Datatype * sendtypes, MPI_Datatype * recvtypes)
 {
     const std::lock_guard<std::mutex> lock(request_persistent_alltoallw_mutex);

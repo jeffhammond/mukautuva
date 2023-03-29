@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #ifndef IMPL_PREDEFINED_OP_H
 #define IMPL_PREDEFINED_OP_H
 

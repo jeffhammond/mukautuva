@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 int add_win_keyval_callbacks(int keyval,
                               WRAP_Win_copy_attr_function   * win_copy_attr_fn,
                               WRAP_Win_delete_attr_function * win_delete_attr_fn)

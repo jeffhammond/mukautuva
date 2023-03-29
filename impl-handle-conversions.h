@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #ifndef MUK_IMPL_HANDLE_CONVERSIONS_H
 #define MUK_IMPL_HANDLE_CONVERSIONS_H
 

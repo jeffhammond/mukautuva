@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #ifndef IMPL_STATUS_H
 #define IMPL_STATUS_H
 

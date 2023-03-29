@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #ifndef IMPL_ALLTOALLW_H
 #define IMPL_ALLTOALLW_H
 

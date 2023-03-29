@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #ifndef MUK_MPI_PREDEFINED_H
 #define MUK_MPI_PREDEFINED_H
 

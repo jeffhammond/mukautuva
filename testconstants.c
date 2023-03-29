@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #ifdef NOWRAP
 #include <mpi.h>
 #else

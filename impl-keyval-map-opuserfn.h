@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 int add_comm_op_callback(MPI_Op op,
                          WRAP_User_function   * user_fn,
                          WRAP_User_function_c * user_fn_c)
