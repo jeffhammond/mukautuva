@@ -111,6 +111,8 @@ Internally, they are a `union` of `{ int, void*, intptr_t }`.
 We use the appropriate field for the MPICH and Open-MPI ABI, respectively,
 and `intptr_t` to `printf` handles in diagnostic messages (one must ignore
 the `0xFFFF..` junk bits to recognize MPICH handles).
+We should implement a proper abstraction for printing handles but since
+these should only be read by developers, it is not a high priority.
 
 ## Translation of callbacks
 
@@ -177,12 +179,8 @@ is irrelevant compared to actual file I/O.
 
 ## Attribute callbacks
 
-Both of the above use a C linked-list implementation taken from
-[ARMCI-MPI](https://github.com/pmodels/armci-mpi/).
-However, writing yet another linked-list for attribute callbacks
-was going to be tedious, so we decided instead to use the C++
-`std::map` container, which provides exactly what we need, at the
-small cost of requiring awareness of C++ in the project.
+We use the C++ `std::map` container, which provides exactly what we need, 
+at the small cost of requiring awareness of C++ in the project.
 The C++ code itself is encapsulated in a single file, which
 implements a C API that can be used in the rest of the library
 without requiring any C++.
