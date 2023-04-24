@@ -79,18 +79,6 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
         abort();
     }
 
-    MUK_Init = MUK_DLSYM(h,"MPI_Init");
-    MUK_Init_thread = MUK_DLSYM(h,"MPI_Init_thread");
-    if (provided == NULL) {
-        rc = MUK_Init(argc,argv);
-    } else {
-        rc = MUK_Init_thread(argc,argv,requested,provided);
-    }
-    if (rc) {
-        printf("libinit: MPI initialization failed: %d\n",rc);
-        abort();
-    }
-
     char * wrapname = "/dev/null";
     // figure out which library i am using
     MUK_Get_library_version = MUK_DLSYM(h,"MPI_Get_library_version");
@@ -131,20 +119,8 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     }
 
     // these are ABI-agnostic and important, so why not load them now...
-    MUK_Finalize = MUK_DLSYM(h,"MPI_Finalize");
-    MUK_Finalized = MUK_DLSYM(h,"MPI_Finalized");
-    MUK_Initialized = MUK_DLSYM(h,"MPI_Initialized");
-    MUK_Is_thread_main = MUK_DLSYM(h,"MPI_Is_thread_main");
-    MUK_Query_thread = MUK_DLSYM(h,"MPI_Query_thread");
-    MUK_Get_processor_name = MUK_DLSYM(h,"MPI_Get_processor_name");
     MUK_Wtime = MUK_DLSYM(h,"MPI_Wtime");
     MUK_Wtick = MUK_DLSYM(h,"MPI_Wtick");
-
-    MUK_Add_error_class = MUK_DLSYM(h, "MPI_Add_error_class");
-    MUK_Add_error_code = MUK_DLSYM(h, "MPI_Add_error_code");
-    MUK_Add_error_string = MUK_DLSYM(h, "MPI_Add_error_string");
-    MUK_Error_class = MUK_DLSYM(h, "MPI_Error_class");
-    MUK_Error_string = MUK_DLSYM(h, "MPI_Error_string");
 
     int major, minor;
     MUK_Get_version = MUK_DLSYM(h,"MPI_Get_version");
@@ -170,7 +146,25 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
 #endif
     }
 
-    // all the functions
+    MUK_Get_processor_name = MUK_DLSYM(h,"MPI_Get_processor_name");
+
+    // these used to be loaded directly but since the thread
+    // levels are part of the ABI, they are no wrapped
+    MUK_Init = MUK_DLSYM(wrap_so_handle,"MPI_Init");
+    MUK_Init_thread = MUK_DLSYM(wrap_so_handle,"MPI_Init_thread");
+    MUK_Initialized = MUK_DLSYM(wrap_so_handle,"MPI_Initialized");
+    MUK_Finalize = MUK_DLSYM(wrap_so_handle,"MPI_Finalize");
+    MUK_Finalized = MUK_DLSYM(wrap_so_handle,"MPI_Finalized");
+    MUK_Is_thread_main = MUK_DLSYM(wrap_so_handle,"MPI_Is_thread_main");
+    MUK_Query_thread = MUK_DLSYM(wrap_so_handle,"MPI_Query_thread");
+
+    MUK_Add_error_class = MUK_DLSYM(wrap_so_handle, "MPI_Add_error_class");
+    MUK_Add_error_code = MUK_DLSYM(wrap_so_handle, "MPI_Add_error_code");
+    MUK_Add_error_string = MUK_DLSYM(wrap_so_handle, "MPI_Add_error_string");
+    MUK_Error_class = MUK_DLSYM(wrap_so_handle, "MPI_Error_class");
+    MUK_Error_string = MUK_DLSYM(wrap_so_handle, "MPI_Error_string");
+
+    // the rest of the functions
     MUK_Abort = MUK_DLSYM(wrap_so_handle,"WRAP_Abort");
     MUK_Comm_rank = MUK_DLSYM(wrap_so_handle,"WRAP_Comm_rank");
     MUK_Comm_size = MUK_DLSYM(wrap_so_handle,"WRAP_Comm_size");
@@ -727,6 +721,16 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     rc = WRAP_Load_functions(h,major,minor);
 
     WRAP_CODE_IMPL_TO_MUK = MUK_DLSYM(wrap_so_handle,"ERROR_CODE_IMPL_TO_MUK");
+
+    if (provided == NULL) {
+        rc = MUK_Init(argc,argv);
+    } else {
+        rc = MUK_Init_thread(argc,argv,requested,provided);
+    }
+    if (rc) {
+        printf("libinit: MPI initialization failed: %d\n",rc);
+        abort();
+    }
 
     WRAP_Init_handle_key = MUK_DLSYM(wrap_so_handle,"WRAP_Init_handle_key");
     WRAP_Finalize_handle_key = MUK_DLSYM(wrap_so_handle,"WRAP_Finalize_handle_key");

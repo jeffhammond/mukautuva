@@ -21,6 +21,48 @@
 
 // WRAP->IMPL functions
 
+int WRAP_Init(int * argc, char *** argv)
+{
+    int rc = IMPL_Init(argc, argv);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Finalize(void)
+{
+    int rc = IMPL_Finalize();
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Initialized(int * flag)
+{
+    int rc = IMPL_Initialized(flag);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Finalized(int * flag)
+{
+    int rc = IMPL_Finalized(flag);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Init_thread(int * argc, char *** argv, int requested, int * provided)
+{
+    int rc = IMPL_Init_thread(argc, argv, requested, provided);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Is_thread_main(int * flag)
+{
+    int rc = IMPL_Is_thread_main(flag);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
+int WRAP_Query_thread(int * provided)
+{
+    int rc = IMPL_Query_thread(provided);
+    return RETURN_CODE_IMPL_TO_MUK(rc);
+}
+
 int WRAP_Abort(WRAP_Comm comm, int errorcode)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
@@ -28,7 +70,7 @@ int WRAP_Abort(WRAP_Comm comm, int errorcode)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
-#if 0
+#if 1
 int WRAP_Add_error_class(int *errorclass)
 {
     int rc = IMPL_Add_error_class(errorclass);
@@ -487,7 +529,7 @@ int WRAP_Errhandler_free(WRAP_Errhandler *errhandler)
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
-#if 0
+#if 1
 int WRAP_Error_class(int errorcode, int *errorclass)
 {
     int rc = IMPL_Error_class(errorcode, errorclass);

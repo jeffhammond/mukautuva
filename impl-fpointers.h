@@ -5,12 +5,20 @@
 
 #include <mpi.h>
 
+MUK_EXTERN int (*IMPL_Init)(int * argc, char *** argv);
+MUK_EXTERN int (*IMPL_Init_thread)(int * argc, char *** argv, int requested, int * provided);
+MUK_EXTERN int (*IMPL_Initialized)(int * flag);
+MUK_EXTERN int (*IMPL_Finalize)(void);
+MUK_EXTERN int (*IMPL_Finalized)(int * flag);
+MUK_EXTERN int (*IMPL_Is_thread_main)(int * flag);
+MUK_EXTERN int (*IMPL_Query_thread)(int * provided);
+
 MUK_EXTERN int (*IMPL_Comm_rank)(MPI_Comm comm, int *rank);
 MUK_EXTERN int (*IMPL_Comm_size)(MPI_Comm comm, int *size);
 MUK_EXTERN int (*IMPL_Abort)(MPI_Comm comm, int errorcode);
 MUK_EXTERN int (*IMPL_Accumulate)(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank, MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win);
 MUK_EXTERN int (*IMPL_Accumulate_c)(const void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype, int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win);
-#if 0
+#if 1
 MUK_EXTERN int (*IMPL_Add_error_class)(int *errorclass);
 MUK_EXTERN int (*IMPL_Add_error_code)(int errorclass, int *errorcode);
 MUK_EXTERN int (*IMPL_Add_error_string)(int errorcode, const char *string);
@@ -115,8 +123,10 @@ MUK_EXTERN int (*IMPL_Errhandler_create)(MPI_Comm_errhandler_function *comm_errh
 MUK_EXTERN int (*IMPL_Errhandler_free)(MPI_Errhandler *errhandler);
 MUK_EXTERN int (*IMPL_Errhandler_get)(MPI_Comm comm, MPI_Errhandler *errhandler);
 MUK_EXTERN int (*IMPL_Errhandler_set)(MPI_Comm comm, MPI_Errhandler errhandler);
+#if 1
 MUK_EXTERN int (*IMPL_Error_class)(int errorcode, int *errorclass);
 MUK_EXTERN int (*IMPL_Error_string)(int errorcode, char *string, int *resultlen);
+#endif
 MUK_EXTERN int (*IMPL_Exscan)(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
 MUK_EXTERN int (*IMPL_Exscan_c)(const void *sendbuf, void *recvbuf, MPI_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
 MUK_EXTERN int (*IMPL_Exscan_init)(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Info info, MPI_Request *request);

@@ -255,4 +255,8 @@ static const int * WEIGHTS_IMPL_TO_MUK(const int * weights_impl)
         return weights_impl;
     }
 }
+
+int THREAD_MUK_TO_IMPL(int thread_muk);
+int THREAD_IMPL_TO_MUK(int thread_impl);
+
 #endif

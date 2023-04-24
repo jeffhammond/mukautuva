@@ -241,3 +241,28 @@ int ERROR_CODE_MUK_TO_IMPL(int error_muk)
         return MPI_ERR_UNKNOWN;
     }
 }
+
+int THREAD_MUK_TO_IMPL(int thread_muk)
+{
+         if (thread_muk == MUK_THREAD_SINGLE)      { return MPI_THREAD_SINGLE; }
+    else if (thread_muk == MUK_THREAD_FUNNELED)    { return MPI_THREAD_FUNNELED; }
+    else if (thread_muk == MUK_THREAD_SERIALIZED)  { return MPI_THREAD_SERIALIZED; }
+    else if (thread_muk == MUK_THREAD_MULTIPLE)    { return MPI_THREAD_MULTIPLE; }
+#if DEBUG
+    printf("THREAD_MUK_TO_IMPL thread_muk=%d\n", thread_muk);
+#endif
+    return MPI_UNDEFINED;
+}
+
+int THREAD_IMPL_TO_MUK(int thread_impl)
+{
+         if (thread_impl == MPI_THREAD_SINGLE)      { return MUK_THREAD_SINGLE; }
+    else if (thread_impl == MPI_THREAD_FUNNELED)    { return MUK_THREAD_FUNNELED; }
+    else if (thread_impl == MPI_THREAD_SERIALIZED)  { return MUK_THREAD_SERIALIZED; }
+    else if (thread_impl == MPI_THREAD_MULTIPLE)    { return MUK_THREAD_MULTIPLE; }
+#if DEBUG
+    printf("THREAD_IMPL_TO_MUK thread_impl=%d\n", thread_impl);
+#endif
+    return MPI_UNDEFINED;
+}
+
