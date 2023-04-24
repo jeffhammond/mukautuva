@@ -1,5 +1,15 @@
 // SPDX-License-Identifier: MIT
 
+#ifndef MUK_FUNCTION_POINTERS_H
+#define MUK_FUNCTION_POINTERS_H
+
+int (*MUK_Get_library_version)(char *version, int *resultlen);
+int (*MUK_Get_processor_name)(char *name, int *resultlen);
+int (*MUK_Get_version)(int *version, int *subversion);
+
+//MUK_EXTERN MPI_Aint (*MUK_Aint_add)(MPI_Aint base, MPI_Aint disp);
+//MUK_EXTERN MPI_Aint (*MUK_Aint_diff)(MPI_Aint addr1, MPI_Aint addr2);
+
 double (*MUK_Wtime)(void);
 double (*MUK_Wtick)(void);
 
@@ -7,24 +17,16 @@ int (*MUK_Init)(int *argc, char ***argv);
 int (*MUK_Init_thread)(int *argc, char ***argv, int required, int *provided);
 int (*MUK_Initialized)(int *flag);
 
-int (*MUK_Get_library_version)(char *version, int *resultlen);
-int (*MUK_Get_processor_name)(char *name, int *resultlen);
-int (*MUK_Get_version)(int *version, int *subversion);
-
 int (*MUK_Finalize)(void);
 int (*MUK_Finalized)(int *flag);
 
-int (*MUK_Init_thread)(int *argc, char ***argv, int required, int *provided);
 int (*MUK_Is_thread_main)(int *flag);
 int (*MUK_Query_thread)(int *provided);
 
 int (*MUK_Error_class)(int errorcode, int *errorclass);
 int (*MUK_Error_string)(int errorcode, char *string, int *resultlen);
 
-int (*MUK_Comm_rank)(MPI_Comm comm, int *rank);
-int (*MUK_Comm_size)(MPI_Comm comm, int *size);
 int (*MUK_Abort)(MPI_Comm comm, int errorcode);
-
 int (*MUK_Accumulate)(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank, MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win);
 int (*MUK_Accumulate_c)(const void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype, int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win);
 int (*MUK_Add_error_class)(int *errorclass);
@@ -254,7 +256,9 @@ int (*MUK_Group_compare)(MPI_Group group1, MPI_Group group2, int *result);
 int (*MUK_Group_difference)(MPI_Group group1, MPI_Group group2, MPI_Group *newgroup);
 int (*MUK_Group_excl)(MPI_Group group, int n, const int ranks[], MPI_Group *newgroup);
 int (*MUK_Group_free)(MPI_Group *group);
+
 int (*MUK_Group_from_session_pset)(MPI_Session session, const char *pset_name, MPI_Group *newgroup);
+
 int (*MUK_Group_incl)(MPI_Group group, int n, const int ranks[], MPI_Group *newgroup);
 int (*MUK_Group_intersection)(MPI_Group group1, MPI_Group group2, MPI_Group *newgroup);
 int (*MUK_Group_range_excl)(MPI_Group group, int n, int ranges[][3], MPI_Group *newgroup);
@@ -367,7 +371,9 @@ int (*MUK_Neighbor_alltoallw_init)(const void *sendbuf, const int sendcounts[], 
 int (*MUK_Neighbor_alltoallw_init_c)(const void *sendbuf, const MPI_Count sendcounts[], const MPI_Aint sdispls[], const MPI_Datatype sendtypes[], void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm comm, MPI_Info info, MPI_Request *request);
 int (*MUK_Op_commutative)(MPI_Op op, int *commute);
 int (*MUK_Op_create)(MPI_User_function *user_fn, int commute, MPI_Op *op);
+
 int (*MUK_Op_create_c)(MPI_User_function_c *user_fn, int commute, MPI_Op *op);
+
 int (*MUK_Op_free)(MPI_Op *op);
 int (*MUK_Open_port)(MPI_Info info, char *port_name);
 int (*MUK_Pack)(const void *inbuf, int incount, MPI_Datatype datatype, void *outbuf, int outsize, int *position, MPI_Comm comm);
@@ -410,7 +416,9 @@ int (*MUK_Reduce_scatter_c)(const void *sendbuf, void *recvbuf, const MPI_Count 
 int (*MUK_Reduce_scatter_init)(const void *sendbuf, void *recvbuf, const int recvcounts[], MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Info info, MPI_Request *request);
 int (*MUK_Reduce_scatter_init_c)(const void *sendbuf, void *recvbuf, const MPI_Count recvcounts[], MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Info info, MPI_Request *request);
 int (*MUK_Register_datarep)(const char *datarep, MPI_Datarep_conversion_function *read_conversion_fn, MPI_Datarep_conversion_function *write_conversion_fn, MPI_Datarep_extent_function *dtype_file_extent_fn, void *extra_state);
+
 int (*MUK_Register_datarep_c)(const char *datarep, MPI_Datarep_conversion_function_c *read_conversion_fn, MPI_Datarep_conversion_function_c *write_conversion_fn, MPI_Datarep_extent_function *dtype_file_extent_fn, void *extra_state);
+
 int (*MUK_Request_free)(MPI_Request *request);
 int (*MUK_Request_get_status)(MPI_Request request, int *flag, MPI_Status *status);
 int (*MUK_Rget)(void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank, MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win, MPI_Request *request);
@@ -443,6 +451,7 @@ int (*MUK_Sendrecv)(const void *sendbuf, int sendcount, MPI_Datatype sendtype, i
 int (*MUK_Sendrecv_c)(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype, int dest, int sendtag, void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, int source, int recvtag, MPI_Comm comm, MPI_Status *status);
 int (*MUK_Sendrecv_replace)(void *buf, int count, MPI_Datatype datatype, int dest, int sendtag, int source, int recvtag, MPI_Comm comm, MPI_Status *status);
 int (*MUK_Sendrecv_replace_c)(void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int sendtag, int source, int recvtag, MPI_Comm comm, MPI_Status *status);
+
 int (*MUK_Session_call_errhandler)(MPI_Session session, int errorcode);
 int (*MUK_Session_create_errhandler)(MPI_Session_errhandler_function *session_errhandler_fn, MPI_Errhandler *errhandler);
 int (*MUK_Session_finalize)(MPI_Session *session);
@@ -453,6 +462,7 @@ int (*MUK_Session_get_num_psets)(MPI_Session session, MPI_Info info, int *npset_
 int (*MUK_Session_get_pset_info)(MPI_Session session, const char *pset_name, MPI_Info *info);
 int (*MUK_Session_init)(MPI_Info info, MPI_Errhandler errhandler, MPI_Session *session);
 int (*MUK_Session_set_errhandler)(MPI_Session session, MPI_Errhandler errhandler);
+
 int (*MUK_Ssend)(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm);
 int (*MUK_Ssend_c)(const void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm);
 int (*MUK_Ssend_init)(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request);
@@ -579,3 +589,5 @@ int (*MUK_Win_test)(MPI_Win win, int *flag);
 int (*MUK_Win_unlock)(int rank, MPI_Win win);
 int (*MUK_Win_unlock_all)(MPI_Win win);
 int (*MUK_Win_wait)(MPI_Win win);
+
+#endif
