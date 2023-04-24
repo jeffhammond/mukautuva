@@ -21,6 +21,9 @@
 
 // WRAP->IMPL functions
 
+//double WRAP_Wtime(void) { return IMPL_Wtime(); }
+//double WRAP_Wtick(void) { return IMPL_Wtick(); }
+
 int WRAP_Init(int * argc, char *** argv)
 {
     int rc = IMPL_Init(argc, argv);
