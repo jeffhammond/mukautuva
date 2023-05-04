@@ -119,6 +119,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     }
 
     // these are ABI-agnostic and important, so why not load them now...
+    // FIXME technically, these do not have to have symbols, so we must wrap them.
     MUK_Wtime = MUK_DLSYM(h,"MPI_Wtime");
     MUK_Wtick = MUK_DLSYM(h,"MPI_Wtick");
 
