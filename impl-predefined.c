@@ -2,13 +2,13 @@
 
 #include <stdio.h>
 #include <assert.h>
-#include <mpi.h>
+#include "mpi.h"
 #include "muk-predefined.h"
 
 // Buffer Address Constants
 #if ( __STDC_VERSION__ >= 201112L) && !defined(__clang__)
 // Clang refuses to do this
-_Static_assert(MPI_BOTTOM == NULL);
+_Static_assert(MPI_BOTTOM == NULL , "MPI_BOTTOM == NULL" );
 #endif
 void * IMPL_BOTTOM = MPI_BOTTOM;
 void * IMPL_IN_PLACE = MPI_IN_PLACE;
@@ -16,16 +16,16 @@ void * IMPL_IN_PLACE = MPI_IN_PLACE;
 // we avoid converting thread levels because every known implementation uses
 // the same values for them, but we explicitly verify the assumption here.
 #if ( __STDC_VERSION__ >= 201112L)
-_Static_assert( (int)MUK_UNDEFINED == (int)MPI_UNDEFINED );
+_Static_assert( (int)MUK_UNDEFINED == (int)MPI_UNDEFINED , "MUK_UNDEFINED == MPI_UNDEFINED" );
 #endif
 
 // we avoid converting thread levels because every known implementation uses
 // the same values for them, but we explicitly verify the assumption here.
 #if ( __STDC_VERSION__ >= 201112L)
-_Static_assert( (int)MUK_IDENT     == (int) MPI_IDENT     );
-_Static_assert( (int)MUK_CONGRUENT == (int) MPI_CONGRUENT );
-_Static_assert( (int)MUK_SIMILAR   == (int) MPI_SIMILAR   );
-_Static_assert( (int)MUK_UNEQUAL   == (int) MPI_UNEQUAL   );
+_Static_assert( (int)MUK_IDENT     == (int)MPI_IDENT     , "MUK_IDENT     == MPI_IDENT"     );
+_Static_assert( (int)MUK_CONGRUENT == (int)MPI_CONGRUENT , "MUK_CONGRUENT == MPI_CONGRUENT" );
+_Static_assert( (int)MUK_SIMILAR   == (int)MPI_SIMILAR   , "MUK_SIMILAR   == MPI_SIMILAR"   );
+_Static_assert( (int)MUK_UNEQUAL   == (int)MPI_UNEQUAL   , "MUK_UNEQUAL   == MPI_UNEQUAL"   );
 #endif
 
 // Results of communicator and group comparisons
@@ -108,10 +108,10 @@ int IMPL_COMBINER_VECTOR = MPI_COMBINER_VECTOR;
 // we avoid converting thread levels because every known implementation uses
 // the same values for them, but we explicitly verify the assumption here.
 #if ( __STDC_VERSION__ >= 201112L)
-_Static_assert( (int)MUK_THREAD_FUNNELED   == (int)MPI_THREAD_FUNNELED   );
-_Static_assert( (int)MUK_THREAD_MULTIPLE   == (int)MPI_THREAD_MULTIPLE   );
-_Static_assert( (int)MUK_THREAD_SERIALIZED == (int)MPI_THREAD_SERIALIZED );
-_Static_assert( (int)MUK_THREAD_SINGLE     == (int)MPI_THREAD_SINGLE     );
+_Static_assert( (int)MUK_THREAD_FUNNELED   == (int)MPI_THREAD_FUNNELED   , "MUK_THREAD_FUNNELED   == MPI_THREAD_FUNNELED  " );
+_Static_assert( (int)MUK_THREAD_MULTIPLE   == (int)MPI_THREAD_MULTIPLE   , "MUK_THREAD_MULTIPLE   == MPI_THREAD_MULTIPLE  " );
+_Static_assert( (int)MUK_THREAD_SERIALIZED == (int)MPI_THREAD_SERIALIZED , "MUK_THREAD_SERIALIZED == MPI_THREAD_SERIALIZED" );
+_Static_assert( (int)MUK_THREAD_SINGLE     == (int)MPI_THREAD_SINGLE     , "MUK_THREAD_SINGLE     == MPI_THREAD_SINGLE    " );
 #endif
 
 // Threads Constants

@@ -1,11 +1,11 @@
 ifeq ($(shell uname),Darwin)
     OMPICC=/opt/homebrew/Cellar/open-mpi/4.1.5/bin/mpicc
     OMPICXX=/opt/homebrew/Cellar/open-mpi/4.1.5/bin/mpicxx
-    MPICHCC=/opt/homebrew/Cellar/mpich/4.1.1/bin/mpicc
-    MPICHCXX=/opt/homebrew/Cellar/mpich/4.1.1/bin/mpicxx
+    MPICHCC=/opt/homebrew/Cellar/mpich/4.1.2/bin/mpicc
+    MPICHCXX=/opt/homebrew/Cellar/mpich/4.1.2/bin/mpicxx
     CC=clang
     CFLAGS=-ferror-limit=1 # Clang
-    CFLAGS+=-Wno-c2x-extensions
+    #CFLAGS+=-Wno-c2x-extensions
     #CFLAGS+=-Wno-unused-function
     #CFLAGS+=-Wno-incompatible-function-pointer-types
 else
