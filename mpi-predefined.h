@@ -401,17 +401,19 @@ enum {
 #define MPI_UNWEIGHTED      MUK_UNWEIGHTED
 #define MPI_WEIGHTS_EMPTY   MUK_WEIGHTS_EMPTY
 
-#define MPI_NULL_COPY_FN        ((MPI_Copy_function*)MUK_NULL_COPY_FN)
-#define MPI_DUP_FN              ((MPI_Copy_function*)MUK_DUP_FN)
-#define MPI_NULL_DELETE_FN      ((MPI_Delete_function*)MUK_NULL_DELETE_FN)
-#define MPI_COMM_NULL_COPY_FN   ((MPI_Comm_copy_attr_function*)MUK_COMM_NULL_COPY_FN)
-#define MPI_COMM_DUP_FN         ((MPI_Comm_copy_attr_function*)MUK_COMM_DUP_FN)
-#define MPI_COMM_NULL_DELETE_FN ((MPI_Comm_delete_attr_function*)MUK_COMM_NULL_DELETE_FN)
-#define MPI_TYPE_NULL_COPY_FN   ((MPI_Type_copy_attr_function*)MUK_TYPE_NULL_COPY_FN)
-#define MPI_TYPE_DUP_FN         ((MPI_Type_copy_attr_function*)MUK_TYPE_DUP_FN)
-#define MPI_TYPE_NULL_DELETE_FN ((MPI_Type_delete_attr_function*)MUK_TYPE_NULL_DELETE_FN)
-#define MPI_WIN_NULL_COPY_FN    ((MPI_Win_copy_attr_function*)MUK_WIN_NULL_COPY_FN)
-#define MPI_WIN_DUP_FN          ((MPI_Win_copy_attr_function*)MUK_WIN_DUP_FN)
-#define MPI_WIN_NULL_DELETE_FN  ((MPI_Win_delete_attr_function*)MUK_WIN_NULL_DELETE_FN)
+#define MPI_NULL_COPY_FN         ((MPI_Copy_function*)MUK_NULL_COPY_FN)
+#define MPI_DUP_FN               ((MPI_Copy_function*)MUK_DUP_FN)
+#define MPI_NULL_DELETE_FN       ((MPI_Delete_function*)MUK_NULL_DELETE_FN)
+#define MPI_COMM_NULL_COPY_FN    ((MPI_Comm_copy_attr_function*)MUK_COMM_NULL_COPY_FN)
+#define MPI_COMM_DUP_FN          ((MPI_Comm_copy_attr_function*)MUK_COMM_DUP_FN)
+#define MPI_COMM_NULL_DELETE_FN  ((MPI_Comm_delete_attr_function*)MUK_COMM_NULL_DELETE_FN)
+#define MPI_TYPE_NULL_COPY_FN    ((MPI_Type_copy_attr_function*)MUK_TYPE_NULL_COPY_FN)
+#define MPI_TYPE_DUP_FN          ((MPI_Type_copy_attr_function*)MUK_TYPE_DUP_FN)
+#define MPI_TYPE_NULL_DELETE_FN  ((MPI_Type_delete_attr_function*)MUK_TYPE_NULL_DELETE_FN)
+#define MPI_WIN_NULL_COPY_FN     ((MPI_Win_copy_attr_function*)MUK_WIN_NULL_COPY_FN)
+#define MPI_WIN_DUP_FN           ((MPI_Win_copy_attr_function*)MUK_WIN_DUP_FN)
+#define MPI_WIN_NULL_DELETE_FN   ((MPI_Win_delete_attr_function*)MUK_WIN_NULL_DELETE_FN)
+#define MPI_CONVERSION_FN_NULL   ((MPI_Datarep_conversion_function*)0x0)
+#define MPI_CONVERSION_FN_NULL_C ((MPI_Datarep_conversion_function_c*)0x0)
 
 #endif
