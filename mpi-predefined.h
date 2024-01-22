@@ -124,20 +124,6 @@ enum {
     MPI_LOCK_SHARED     = MUK_LOCK_SHARED
 };
 
-#if 0
-//Fortran status array size and reserved index values (C only)
-enum {
-    MPI_F_STATUS_SIZE,
-    MPI_F_SOURCE,
-    MPI_F_TAG,
-    MPI_F_ERROR,
-    MPI_ADDRESS_KIND,
-    MPI_COUNT_KIND,
-    MPI_INTEGER_KIND,
-    MPI_OFFSET_KIND
-};
-#endif
-
 // Error-handling specifiers
 #define MPI_ERRHANDLER_NULL (MPI_Errhandler)0
 #define MPI_ERRORS_ARE_FATAL (MPI_Errhandler)1
@@ -224,6 +210,15 @@ enum {
 // Reserved groups
 #define MPI_GROUP_NULL  ((MPI_Group)MUK_GROUP_NULL)
 #define MPI_GROUP_EMPTY ((MPI_Group)MUK_GROUP_EMPTY)
+
+enum {
+    // Status indexing - must match MPI_Status definition
+    MPI_F_SOURCE        = 0,
+    MPI_F_TAG           = 1,
+    MPI_F_ERROR         = 2,
+    // Fortran status array size and reserved index values (in C)
+    MPI_F_STATUS_SIZE   = 8
+};
 
 // Communicator split type constants
 enum {
