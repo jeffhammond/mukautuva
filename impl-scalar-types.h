@@ -19,8 +19,8 @@ typedef long long int WRAP_Count;
 typedef long long int WRAP_Offset;
 #else
 // Linux
-typedef long int WRAP_Count;
-typedef long int WRAP_Offset;
+typedef long long int WRAP_Count;
+typedef long long int WRAP_Offset;
 #endif
 #else
 #error NO ABI
