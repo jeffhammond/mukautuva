@@ -52,7 +52,7 @@ other: testmalloc.x
 testmalloc.x: testmalloc.c
 	$(OMPICC) $(CFLAGS) $< -o $@
 
-libs: libmuk.a libmuk.so
+libs: libmuk.a libmuk.so mpich-wrap.so ompi-wrap.so
 
 %.x: %.c libmuk.so mpi.h
 	$(CC) $(CFLAGS) $< -L. -Wl,-rpath,'$$ORIGIN' -lmuk -o $@
@@ -90,10 +90,10 @@ header.o: header.c $(MPI_H)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 libmuk.a: libinit.o
-	$(AR) $(ARFLAGS) $@ $^
+	$(AR) $(ARFLAGS) $@ $<
 
-libmuk.so: libinit.o mpich-wrap.so ompi-wrap.so
-	$(CC) $^ $(SOFLAGS) -o $@
+libmuk.so: libinit.o
+	$(CC) $< $(SOFLAGS) -ldl -o $@
 
 libinit.o: libinit.c muk.h muk-dl.h $(MPI_H)
 	$(CC) $(CFLAGS) -c $< -o $@

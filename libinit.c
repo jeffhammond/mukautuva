@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+#define _GNU_SOURCE
 
 #include <errno.h>  // strtol
 #include <limits.h> // INT_MAX
@@ -6,10 +7,14 @@
 #include "muk.h"
 #include "muk-dl.h"
 
-#if defined(__linux__) && defined(__x86_64__)
-#define LIBMPI_NAME "/usr/lib/x86_64-linux-gnu/libmpi.so"
-#elif defined(__MACH__)
+#if defined(__linux__)
+#define LIBMPI_NAME "libmpi.so"
+#elif defined(__APPLE__)
+#if defined(__x86_64__)
+#define LIBMPI_NAME "/usr/local/lib/libmpi.dylib"
+#else
 #define LIBMPI_NAME "/opt/homebrew/lib/libmpi.dylib"
+#endif
 #else
 #warning No default MPI library path.
 #endif
@@ -149,6 +154,16 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     int major, minor;
     MUK_Get_version = MUK_DLSYM(h,"MPI_Get_version");
     rc = MUK_Get_version(&major, &minor);
+
+#define HAVE_DLADDR 1
+#if defined(HAVE_DLADDR)
+    Dl_info info;
+    char pathname[4096];
+    dladdr(&whose_mpi, &info);
+    strcpy(pathname, info.dli_fname);
+    strcpy(strrchr(pathname, '/') + 1, wrapname);
+    wrapname = pathname;
+#endif
 
     void * wrap_so_handle = dlopen(wrapname, RTLD_LAZY);
     if (wrap_so_handle == NULL) {
