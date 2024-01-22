@@ -57,7 +57,7 @@ libs: libmuk.a libmuk.so mpich-wrap.so ompi-wrap.so
 %.x: %.c libmuk.so mpi.h
 	$(CC) $(CFLAGS) $< -L. -Wl,-rpath,'$$ORIGIN' -lmuk -o $@
 
-MPI_H = mpi.h mpi-constants.h mpi-handle-typedefs.h mpi-typedefs.h mpi-predefined.h mpi-prototypes.h muk-predefined.h
+MPI_H = mpi.h mpi-constants.h mpi-handle-typedefs.h mpi-typedefs.h mpi-predefined.h mpi-prototypes.h mpi-fortran.h muk-predefined.h
 
 IMPL_H =    impl-alltoallw.h impl-constant-conversions.h \
 	    impl-fpointers.h impl-handle-conversions.h \
