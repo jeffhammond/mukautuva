@@ -29,6 +29,7 @@ else
 	#CFLAGS+=-Wno-unused-parameter -Wno-unused-variable -Wno-unused-function
     endif
 endif
+-include Makefile.local
 
 CFLAGS	+= -g -O2 -Wall -Wextra #-Werror # -Wpedantic
 CFLAGS	+= -fPIC
