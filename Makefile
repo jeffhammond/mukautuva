@@ -1,49 +1,58 @@
-ifeq ($(shell uname),Darwin)
-    OMPICC=/opt/homebrew/Cellar/open-mpi/4.1.5/bin/mpicc
-    OMPICXX=/opt/homebrew/Cellar/open-mpi/4.1.5/bin/mpicxx
-    MPICHCC=/opt/homebrew/Cellar/mpich/4.1.2/bin/mpicc
-    MPICHCXX=/opt/homebrew/Cellar/mpich/4.1.2/bin/mpicxx
+UNAME_S := $(shell uname)
+
+ifeq ($(UNAME_S),Darwin)
+    brew_prefix := $(shell brew --prefix)
+    OMPICC=$(wildcard $(brew_prefix)/Cellar/open-mpi/*/bin/mpicc)
+    OMPICXX=$(wildcard $(brew_prefix)/Cellar/open-mpi/*/bin/mpicxx)
+    MPICHCC=$(wildcard $(brew_prefix)/Cellar/mpich/*/bin/mpicc)
+    MPICHCXX=$(wildcard $(brew_prefix)/Cellar/mpich/*/bin/mpicxx)
     CC=clang
     CFLAGS=-ferror-limit=1 # Clang
     #CFLAGS+=-Wno-c2x-extensions
     #CFLAGS+=-Wno-unused-function
     #CFLAGS+=-Wno-incompatible-function-pointer-types
 else
-    ifeq ($(shell hostname),gorby)
-	OMPICC=/usr/bin/mpicc.openmpi
-	OMPICXX=/usr/bin/mpicxx.openmpi
-	MPICHCC=/usr/bin/mpicc.mpich
-	MPICHCXX=/usr/bin/mpicxx.mpich
-	CC=gcc
-    else
-	OMPICC=/usr/bin/mpicc.openmpi
-	OMPICXX=/usr/bin/mpicxx.openmpi
-	MPICHCC=/usr/bin/mpicc.mpich
-	MPICHCXX=/usr/bin/mpicxx.mpich
-	CC=gcc
-	CFLAGS=-fmax-errors=1 # GCC
-	#CFLAGS+=-fsanitize=address
-	# these suppress true errors with callbacks
-	#CFLAGS+=-Wno-incompatible-pointer-types
-	#CFLAGS+=-Wno-cast-function-type
-	#CFLAGS+=-Wno-unused-parameter -Wno-unused-variable -Wno-unused-function
+    OSID := $(shell grep '^ID=' /etc/os-release | cut -d= -f2)
+    ifeq ($(OSID),ubuntu)
+        OMPICC=/usr/bin/mpicc.openmpi
+        OMPICXX=/usr/bin/mpicxx.openmpi
+        MPICHCC=/usr/bin/mpicc.mpich
+        MPICHCXX=/usr/bin/mpicxx.mpich
+        CC=gcc
+    endif
+    ifeq ($(OSID),fedora)
+        OMPICC=/usr/lib64/openmpi/bin/mpicc
+        OMPICXX=/usr/lib64/openmpi/bin/mpicxx
+        MPICHCC=/usr/lib64/mpich/bin/mpicc
+        MPICHCXX=/usr/lib64/mpich/bin/mpicxx
+        CFLAGS=-fmax-errors=1 # GCC
+        #CFLAGS+= -fsanitize=address
+        # these suppress true errors with callbacks
+        #CFLAGS+=-Wno-incompatible-pointer-types
+        #CFLAGS+=-Wno-cast-function-type
+        #CFLAGS+=-Wno-unused-parameter -Wno-unused-variable -Wno-unused-function
     endif
 endif
 -include Makefile.local
 
-CFLAGS	+= -g -O2 -Wall -Wextra #-Werror # -Wpedantic
-CFLAGS	+= -fPIC
+CFLAGS += -g -O2 -Wall -Wextra #-Werror # -Wpedantic
+CFLAGS += -fPIC
 CXXFLAGS = -x c++ -std=c++17
-SOFLAGS	= -shared -lstdc++
 
-AR	= ar
-ARFLAGS	= -r
+SO = $(if $(findstring Darwin,$(UNAME_S)),dylib,so)
+RPATH = $(if $(findstring Darwin,$(UNAME_S)),'@rpath','$$ORIGIN')
+SOFLAGS = -shared
+SOLIBS =
+
+AR      = ar
+ARFLAGS = -r
+
 
 all: libs tests
 
 RUNTESTS = testcoll.x testcoll2.x testcomm.x testinit.x testreqs.x \
-	   testwin.x testgroup.x testtypes.x testtypes2.x testops.x \
-	   testbottom.x testcart.x testerrh.x
+           testwin.x testgroup.x testtypes.x testtypes2.x testops.x \
+           testbottom.x testcart.x testerrh.x
 
 tests: header.o testconstants.x $(RUNTESTS)
 
@@ -52,10 +61,10 @@ other: testmalloc.x
 testmalloc.x: testmalloc.c
 	$(OMPICC) $(CFLAGS) $< -o $@
 
-libs: libmuk.a libmuk.so mpich-wrap.so ompi-wrap.so
+libs: libmuk.a libmuk.$(SO) mpich-wrap.$(SO) ompi-wrap.$(SO)
 
-%.x: %.c libmuk.so mpi.h
-	$(CC) $(CFLAGS) $< -L. -Wl,-rpath,'$$ORIGIN' -lmuk -o $@
+%.x: %.c libmuk.$(SO) mpi.h
+	$(CC) $(CFLAGS) $< -L. -Wl,-rpath,$(RPATH) -lmuk -o $@
 
 MPI_H = mpi.h mpi-constants.h mpi-handle-typedefs.h mpi-typedefs.h mpi-predefined.h mpi-prototypes.h mpi-fortran.h muk-predefined.h
 
@@ -92,8 +101,15 @@ header.o: header.c $(MPI_H)
 libmuk.a: libinit.o
 	$(AR) $(ARFLAGS) $@ $<
 
-libmuk.so: libinit.o
-	$(CC) $< $(SOFLAGS) -ldl -o $@
+
+ifeq ($(UNAME_S),Darwin)
+libmuk.$(SO): WRAPLIBS+=-Wl,-rpath,$(RPATH)
+libmuk.$(SO): WRAPLIBS+=-Wl,mpich-wrap.dylib
+libmuk.$(SO): WRAPLIBS+=-Wl,ompi-wrap.dylib
+endif
+libmuk.$(SO): SOLIBS+=-ldl
+libmuk.$(SO): libinit.o | mpich-wrap.$(SO) ompi-wrap.$(SO)
+	$(CC) $< $(SOFLAGS) $(SOLIBS) $(WRAPLIBS) -o $@
 
 libinit.o: libinit.c muk.h muk-dl.h $(MPI_H)
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -101,11 +117,11 @@ libinit.o: libinit.c muk.h muk-dl.h $(MPI_H)
 libinit.i: libinit.c muk.h muk-dl.h $(MPI_H)
 	$(CC) $(CFLAGS) -E $< -o $@
 
-mpich-wrap.so: $(MPICH_FUNCTION_O)
-	$(MPICHCXX) $(SOFLAGS) $^ -o $@
+mpich-wrap.$(SO): $(MPICH_FUNCTION_O)
+	$(MPICHCXX) $(SOFLAGS) $(SOLIBS) $^ -o $@
 
-ompi-wrap.so: $(OMPI_FUNCTION_O)
-	$(OMPICXX) $(SOFLAGS) $^ -o $@
+ompi-wrap.$(SO): $(OMPI_FUNCTION_O)
+	$(OMPICXX) $(SOFLAGS) $(SOLIBS) $^ -o $@
 
 mpich-predefined.o: impl-predefined.c muk-predefined.h
 	$(MPICHCC) $(CFLAGS) -c $< -o $@
@@ -207,7 +223,6 @@ check: $(RUNTESTS)
 	./test.sh ./testerrh.x
 
 clean:
-	-rm -f *.o *.x *.s *.a *.i *.so
+	-rm -f *.o *.x *.s *.a *.i *.$(SO)
 	-rm -rf *.dSYM
 	-rm -rf *.btr # backtrace
-
