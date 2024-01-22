@@ -55,7 +55,7 @@ testmalloc.x: testmalloc.c
 libs: libmuk.a libmuk.so
 
 %.x: %.c libmuk.so mpi.h
-	$(CC) $(CFLAGS) $< -L. -lmuk -ldl -o $@
+	$(CC) $(CFLAGS) $< -L. -Wl,-rpath,'$$ORIGIN' -lmuk -o $@
 
 MPI_H = mpi.h mpi-constants.h mpi-handle-typedefs.h mpi-typedefs.h mpi-predefined.h mpi-prototypes.h muk-predefined.h
 
