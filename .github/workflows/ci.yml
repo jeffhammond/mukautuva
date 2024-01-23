@@ -1,0 +1,49 @@
+name: ci
+
+on:
+  #push:
+  #  branches:
+  #    - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup MPICH
+      uses: mpi4py/setup-mpi@v1
+      with:
+        mpi: mpich
+
+    - name: Setup Open MPI
+      uses: mpi4py/setup-mpi@v1
+      with:
+        mpi: openmpi
+
+    - name: Build
+      run:  make
+
+    - name: Test
+      if:   false
+      run:  make check

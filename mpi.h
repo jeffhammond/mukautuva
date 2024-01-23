@@ -12,6 +12,7 @@ extern "C" {
 #include "mpi-typedefs.h"
 #include "mpi-predefined.h"
 #include "mpi-prototypes.h"
+#include "mpi-fortran.h"
 
 #if defined(__cplusplus)
 }

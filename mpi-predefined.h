@@ -124,20 +124,6 @@ enum {
     MPI_LOCK_SHARED     = MUK_LOCK_SHARED
 };
 
-#if 0
-//Fortran status array size and reserved index values (C only)
-enum {
-    MPI_F_STATUS_SIZE,
-    MPI_F_SOURCE,
-    MPI_F_TAG,
-    MPI_F_ERROR,
-    MPI_ADDRESS_KIND,
-    MPI_COUNT_KIND,
-    MPI_INTEGER_KIND,
-    MPI_OFFSET_KIND
-};
-#endif
-
 // Error-handling specifiers
 #define MPI_ERRHANDLER_NULL (MPI_Errhandler)0
 #define MPI_ERRORS_ARE_FATAL (MPI_Errhandler)1
@@ -224,6 +210,15 @@ enum {
 // Reserved groups
 #define MPI_GROUP_NULL  ((MPI_Group)MUK_GROUP_NULL)
 #define MPI_GROUP_EMPTY ((MPI_Group)MUK_GROUP_EMPTY)
+
+enum {
+    // Status indexing - must match MPI_Status definition
+    MPI_F_SOURCE        = 0,
+    MPI_F_TAG           = 1,
+    MPI_F_ERROR         = 2,
+    // Fortran status array size and reserved index values (in C)
+    MPI_F_STATUS_SIZE   = 8
+};
 
 // Communicator split type constants
 enum {
@@ -401,17 +396,19 @@ enum {
 #define MPI_UNWEIGHTED      MUK_UNWEIGHTED
 #define MPI_WEIGHTS_EMPTY   MUK_WEIGHTS_EMPTY
 
-#define MPI_NULL_COPY_FN        ((MPI_Copy_function*)MUK_NULL_COPY_FN)
-#define MPI_DUP_FN              ((MPI_Copy_function*)MUK_DUP_FN)
-#define MPI_NULL_DELETE_FN      ((MPI_Delete_function*)MUK_NULL_DELETE_FN)
-#define MPI_COMM_NULL_COPY_FN   ((MPI_Comm_copy_attr_function*)MUK_COMM_NULL_COPY_FN)
-#define MPI_COMM_DUP_FN         ((MPI_Comm_copy_attr_function*)MUK_COMM_DUP_FN)
-#define MPI_COMM_NULL_DELETE_FN ((MPI_Comm_delete_attr_function*)MUK_COMM_NULL_DELETE_FN)
-#define MPI_TYPE_NULL_COPY_FN   ((MPI_Type_copy_attr_function*)MUK_TYPE_NULL_COPY_FN)
-#define MPI_TYPE_DUP_FN         ((MPI_Type_copy_attr_function*)MUK_TYPE_DUP_FN)
-#define MPI_TYPE_NULL_DELETE_FN ((MPI_Type_delete_attr_function*)MUK_TYPE_NULL_DELETE_FN)
-#define MPI_WIN_NULL_COPY_FN    ((MPI_Win_copy_attr_function*)MUK_WIN_NULL_COPY_FN)
-#define MPI_WIN_DUP_FN          ((MPI_Win_copy_attr_function*)MUK_WIN_DUP_FN)
-#define MPI_WIN_NULL_DELETE_FN  ((MPI_Win_delete_attr_function*)MUK_WIN_NULL_DELETE_FN)
+#define MPI_NULL_COPY_FN         ((MPI_Copy_function*)MUK_NULL_COPY_FN)
+#define MPI_DUP_FN               ((MPI_Copy_function*)MUK_DUP_FN)
+#define MPI_NULL_DELETE_FN       ((MPI_Delete_function*)MUK_NULL_DELETE_FN)
+#define MPI_COMM_NULL_COPY_FN    ((MPI_Comm_copy_attr_function*)MUK_COMM_NULL_COPY_FN)
+#define MPI_COMM_DUP_FN          ((MPI_Comm_copy_attr_function*)MUK_COMM_DUP_FN)
+#define MPI_COMM_NULL_DELETE_FN  ((MPI_Comm_delete_attr_function*)MUK_COMM_NULL_DELETE_FN)
+#define MPI_TYPE_NULL_COPY_FN    ((MPI_Type_copy_attr_function*)MUK_TYPE_NULL_COPY_FN)
+#define MPI_TYPE_DUP_FN          ((MPI_Type_copy_attr_function*)MUK_TYPE_DUP_FN)
+#define MPI_TYPE_NULL_DELETE_FN  ((MPI_Type_delete_attr_function*)MUK_TYPE_NULL_DELETE_FN)
+#define MPI_WIN_NULL_COPY_FN     ((MPI_Win_copy_attr_function*)MUK_WIN_NULL_COPY_FN)
+#define MPI_WIN_DUP_FN           ((MPI_Win_copy_attr_function*)MUK_WIN_DUP_FN)
+#define MPI_WIN_NULL_DELETE_FN   ((MPI_Win_delete_attr_function*)MUK_WIN_NULL_DELETE_FN)
+#define MPI_CONVERSION_FN_NULL   ((MPI_Datarep_conversion_function*)0x0)
+#define MPI_CONVERSION_FN_NULL_C ((MPI_Datarep_conversion_function_c*)0x0)
 
 #endif

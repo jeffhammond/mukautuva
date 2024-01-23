@@ -56,3 +56,4 @@ dkms.conf
 
 # VIM
 *.swp
+Makefile.local
