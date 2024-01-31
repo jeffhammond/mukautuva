@@ -124,15 +124,21 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
         }
 
         if (whose_mpi == OMPI) {
-            wrapname = "ompi-wrap.so";
+            wrapname = "ompi-wrap";
         } else if (whose_mpi == MPICH) {
-            wrapname = "mpich-wrap.so";
+            wrapname = "mpich-wrap";
         } else if (whose_mpi == INTEL) {
-            wrapname = "mpich-wrap.so";
+            wrapname = "mpich-wrap";
         } else {
             printf("MPI implementation unknown.\n");
             abort();
         }
+#if defined(__linux__)
+        const char * suffix = ".so";
+#elif defined(__APPLE__)
+        const char * suffix = ".dylib";
+#endif
+        strcat(wrapname,suffix);
     }
 
     // these are ABI-agnostic and important, so why not load them now...
