@@ -9,12 +9,14 @@
 
 #if defined(__linux__)
 #define LIBMPI_NAME "libmpi.so"
+#define DLSUFFIX ".so"
 #elif defined(__APPLE__)
 #if defined(__x86_64__)
 #define LIBMPI_NAME "/usr/local/lib/libmpi.dylib"
 #else
 #define LIBMPI_NAME "/opt/homebrew/lib/libmpi.dylib"
 #endif
+#define DLSUFFIX ".dylib"
 #else
 #warning No default MPI library path.
 #endif
@@ -49,7 +51,7 @@ int * MPICH_WEIGHTS_EMPTY = NULL;
 // alkaa = start
 static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
 {
-    int rc;
+    int rc = 0;
 
     int verbose = 0;
     {
@@ -96,7 +98,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
         abort();
     }
 
-    char * wrapname = "/dev/null";
+    char * wrapname = NULL;
     // figure out which library i am using
     MUK_Get_library_version = MUK_DLSYM(h,"MPI_Get_library_version");
     {
@@ -124,21 +126,16 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
         }
 
         if (whose_mpi == OMPI) {
-            wrapname = "ompi-wrap";
+            wrapname = "ompi-wrap" DLSUFFIX;
         } else if (whose_mpi == MPICH) {
-            wrapname = "mpich-wrap";
+            wrapname = "mpich-wrap" DLSUFFIX;
         } else if (whose_mpi == INTEL) {
-            wrapname = "mpich-wrap";
+            wrapname = "mpich-wrap" DLSUFFIX;
         } else {
             printf("MPI implementation unknown.\n");
             abort();
         }
-#if defined(__linux__)
-        const char * suffix = ".so";
-#elif defined(__APPLE__)
-        const char * suffix = ".dylib";
-#endif
-        strcat(wrapname,suffix);
+        if (verbose) printf("wrapname = %s\n", wrapname);
     }
 
     // these are ABI-agnostic and important, so why not load them now...
