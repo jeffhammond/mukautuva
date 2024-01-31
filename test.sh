@@ -29,7 +29,8 @@ else
     fi
     if [ -e /opt/intel/oneapi/mpi/latest ]; then
        IMPIRUN="/opt/intel/oneapi/mpi/latest/bin/mpirun -l"
-       IMPILIB=/opt/intel/oneapi/mpi/latest/lib/libmpi.so
+       IMPILIB=/opt/intel/oneapi/mpi/latest/lib/debug/libmpi.so
+       #IMPILIB=/opt/intel/oneapi/mpi/latest/lib/release/libmpi.so
     fi
     #OPTS="--mca osc ucx"
     #OMPIRUN="/usr/bin/mpirun.openmpi --tag-output"
