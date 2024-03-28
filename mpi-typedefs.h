@@ -13,7 +13,7 @@ typedef ptrdiff_t MPI_Offset;
 // deal with this later during VAPAA integration
 typedef int MPI_Fint;
 
-// status typedef
+// C status typedef
 typedef struct
 {
     int MPI_SOURCE;
@@ -22,6 +22,16 @@ typedef struct
     int __kielletty__[5];
 }
 MPI_Status;
+
+// Fortran status typedef
+typedef struct
+{
+    int MPI_SOURCE;
+    int MPI_TAG;
+    int MPI_ERROR;
+    int __kielletty__[5];
+}
+MPI_F08_Status;
 
 // callback typedefs
 
