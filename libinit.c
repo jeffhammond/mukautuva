@@ -4909,3 +4909,5 @@ int MPI_Comm_spawn_multiple(int count, char *array_of_commands[], char **array_o
 {
     return MUK_Comm_spawn_multiple(count, array_of_commands, array_of_argv, array_of_maxprocs, array_of_info, root, comm, intercomm, array_of_errcodes);
 }
+
+#include "mpi-fortran.c"

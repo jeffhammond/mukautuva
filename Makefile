@@ -88,7 +88,7 @@ IMPL_FUNCTION_C :=  impl-functions.c impl-load-functions.c impl-keyval.c \
 		    impl-commgroup-functions.c impl-rma-functions.c \
 		    impl-wait-functions.c impl-session-functions.c \
 		    impl-file-functions.c impl-reduce-functions.c \
-		    impl-type-functions.c impl-grequest-functions.c
+		    impl-type-functions.c impl-grequest-functions.c \
 
 IMPL_FUNCTION_O := $(patsubst %.c,%.o,$(IMPL_FUNCTION_C))
 MPICH_FUNCTION_O := $(subst impl,mpich,$(IMPL_FUNCTION_O)) mpich-keyval-map.o
@@ -100,7 +100,6 @@ header.o: header.c $(MPI_H)
 
 libmuk.a: libinit.o
 	$(AR) $(ARFLAGS) $@ $<
-
 
 ifeq ($(UNAME_S),Darwin)
 libmuk.$(SO): WRAPLIBS+=-Wl,-rpath,$(RPATH)
