@@ -168,7 +168,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     wrapname = pathname;
 #endif
 
-    void * wrap_so_handle = dlopen(wrapname, RTLD_LAZY);
+    void * wrap_so_handle = dlopen(wrapname, RTLD_LAZY | RTLD_DEEPBIND);
     if (wrap_so_handle == NULL) {
         printf("dlopen of %s failed: %s\n", wrapname, dlerror() );
         abort();
