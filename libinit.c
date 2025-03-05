@@ -168,7 +168,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     wrapname = pathname;
 #endif
 
-    int flags = RTLD_LAZY;
+    int flags = RTLD_LOCAL | RTLD_LAZY;
 #ifdef RTLD_DEEPBIND
 	flags |= RTLD_DEEPBIND;
 #endif
