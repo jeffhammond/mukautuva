@@ -71,7 +71,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
 
     char * soname;
     {
-        char * env = getenv("MPI_LIB");
+        char * env = getenv("MUK_MPI_LIB");
         if (env == NULL) {
             soname = LIBMPI_NAME;
         } else {

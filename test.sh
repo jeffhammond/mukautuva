@@ -59,16 +59,16 @@ NP=2
 make -j $1
 
 if [ -n "${OMPILIB}" ]; then
-    MPI_LIB=${OMPILIB} ${OMPIRUN} ${OPTS} -n ${NP} $1 || \
-    MPI_LIB=${OMPILIB} ${OMPIRUN} ${OPTS} -n ${NP} ${DBG} ${DBGARGS} $1 ; \
+    MUK_MPI_LIB=${OMPILIB} ${OMPIRUN} ${OPTS} -n ${NP} $1 || \
+    MUK_MPI_LIB=${OMPILIB} ${OMPIRUN} ${OPTS} -n ${NP} ${DBG} ${DBGARGS} $1 ; \
 fi
 
 if [ -n "${MPICHLIB}" ]; then
-    MPI_LIB=${MPICHLIB} ${MPICHRUN} -n ${NP} $1 || \
-    MPI_LIB=${MPICHLIB} ${MPICHRUN} -n ${NP} ${DBG} ${DBGARGS} $1
+    MUK_MPI_LIB=${MPICHLIB} ${MPICHRUN} -n ${NP} $1 || \
+    MUK_MPI_LIB=${MPICHLIB} ${MPICHRUN} -n ${NP} ${DBG} ${DBGARGS} $1
 fi
 
 if [ -n "${IMPILIB}" ]; then
-   MPI_LIB=${IMPILIB} ${IMPIRUN} -n ${NP} $1 || \
-   MPI_LIB=${IMPILIB} ${IMPIRUN} -n ${NP} ${DBG} ${DBGARGS} $1
+   MUK_MPI_LIB=${IMPILIB} ${IMPIRUN} -n ${NP} $1 || \
+   MUK_MPI_LIB=${IMPILIB} ${IMPIRUN} -n ${NP} ${DBG} ${DBGARGS} $1
 fi

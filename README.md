@@ -13,8 +13,8 @@ support it is detection.
 To use MUK, you compile using the implementation-agnostic parts with the system C compiler.
 You must tell the build system which `mpicc` to use for MPICH and Open-MPI.
 At runtime, you must use the appropriate `mpirun` for your implementation, which is specified
-by `MPI_LIB=<path to libmpi.so>`.  MUK knows the defaults for some systems so you can use
-`mpirun` and not set `MPI_LIB` and it will probably work.
+by `MUK_MPI_LIB=<path to libmpi.so>`.  MUK knows the defaults for some systems so you can use
+`mpirun` and not set `MUK_MPI_LIB` and it will probably work.
 
 You configure the build system by editing the top of `Makefile`.
 More complex build systems are a pointless distraction and will not be supported.
@@ -71,7 +71,7 @@ have the IMPL namespace prefix.
 
 The `libmuk.so` library is implemented in `libinit.c`.  Almost all of it is boilerplate to `dlsym`
 MUK functions to the WRAP ones in the back-end.  However, it first has to figure out which implementation
-is used.  It does this by looking at `libmpi.so` (or whatever the user provides via the `MPI_LIB`
+is used.  It does this by looking at `libmpi.so` (or whatever the user provides via the `MUK_MPI_LIB`
 environment variable).  Because the necessary features for this are ABI-agnostic (i.e. they use
 only built-in C types), we can load these functions directly from the implementation shared object (SO).
 We call `MPI_Get_library_version` to see if we are using Open-MPI or an MPICH-derivative
