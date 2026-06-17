@@ -24,7 +24,7 @@
 int WRAP_Abort(WRAP_Comm comm, int errorcode)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    int rc = IMPL_Abort(impl_comm, errorcode);
+    int rc = IMPL_Abort(impl_comm, ERROR_CODE_MUK_TO_IMPL(errorcode));
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -451,14 +451,30 @@ int WRAP_Bsend_init_c(const void *buf, WRAP_Count count, WRAP_Datatype datatype,
 
 int WRAP_Buffer_attach(void *buffer, int size)
 {
-    int rc = IMPL_Buffer_attach(buffer, size);
+    void *impl_buffer = buffer;
+    if ((intptr_t)buffer == (intptr_t)MUK_BUFFER_AUTOMATIC) {
+#ifdef MPI_BUFFER_AUTOMATIC
+        impl_buffer = MPI_BUFFER_AUTOMATIC;
+#else
+        return RETURN_CODE_IMPL_TO_MUK(MPI_ERR_BUFFER);
+#endif
+    }
+    int rc = IMPL_Buffer_attach(impl_buffer, size);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 #if MPI_VERSION >= 4
 int WRAP_Buffer_attach_c(void *buffer, WRAP_Count size)
 {
-    int rc = IMPL_Buffer_attach_c(buffer, size);
+    void *impl_buffer = buffer;
+    if ((intptr_t)buffer == (intptr_t)MUK_BUFFER_AUTOMATIC) {
+#ifdef MPI_BUFFER_AUTOMATIC
+        impl_buffer = MPI_BUFFER_AUTOMATIC;
+#else
+        return RETURN_CODE_IMPL_TO_MUK(MPI_ERR_BUFFER);
+#endif
+    }
+    int rc = IMPL_Buffer_attach_c(impl_buffer, size);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif

@@ -4,11 +4,12 @@
 #define MUK_MPI_TYPEDEFS_H
 
 #include <stddef.h>
+#include <stdint.h>
 
 // basic typedefs
-typedef ptrdiff_t MPI_Aint;
-typedef ptrdiff_t MPI_Count;
-typedef ptrdiff_t MPI_Offset;
+typedef intptr_t MPI_Aint;
+typedef int64_t MPI_Offset;
+typedef MPI_Offset MPI_Count;
 
 // deal with this later during VAPAA integration
 typedef int MPI_Fint;

@@ -29,7 +29,7 @@
 int WRAP_Session_call_errhandler(WRAP_Session session, int errorcode)
 {
     MPI_Session impl_session = CONVERT_MPI_Session(session);
-    int rc = IMPL_Session_call_errhandler(impl_session, errorcode);
+    int rc = IMPL_Session_call_errhandler(impl_session, ERROR_CODE_MUK_TO_IMPL(errorcode));
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -113,4 +113,3 @@ int WRAP_Session_set_errhandler(WRAP_Session session, WRAP_Errhandler errhandler
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 #endif
-

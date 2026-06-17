@@ -39,7 +39,8 @@ void comm_errhandler_trampoline(MPI_Comm *comm, int *errorcode, ...)
         printf("%s: IMPL_Comm_get_attr failed: flag=%d rc=%d\n", __func__, flag, rc);
     }
     WRAP_Comm wrap_comm = OUTPUT_MPI_Comm(*comm);
-    (*fp)(&wrap_comm,errorcode);
+    int wrap_errorcode = ERROR_CODE_IMPL_TO_MUK(*errorcode);
+    (*fp)(&wrap_comm,&wrap_errorcode);
 }
 
 // used by WRAP_Comm_create_keyval
@@ -150,7 +151,7 @@ int WRAP_Comm_get_errhandler(WRAP_Comm comm, WRAP_Errhandler *errhandler)
 int WRAP_Comm_call_errhandler(WRAP_Comm comm, int errorcode)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    int rc = IMPL_Comm_call_errhandler(impl_comm, errorcode);
+    int rc = IMPL_Comm_call_errhandler(impl_comm, ERROR_CODE_MUK_TO_IMPL(errorcode));
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -250,8 +251,8 @@ int WRAP_Cart_shift(WRAP_Comm comm, int direction, int disp, int *rank_source, i
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     int impl_rank_source, impl_rank_dest;
     int rc = IMPL_Cart_shift(impl_comm, direction, disp, &impl_rank_source, &impl_rank_dest);
-    *rank_source = RANK_MUK_TO_IMPL(impl_rank_source);
-    *rank_dest   = RANK_MUK_TO_IMPL(impl_rank_dest);
+    *rank_source = RANK_IMPL_TO_MUK(impl_rank_source);
+    *rank_dest   = RANK_IMPL_TO_MUK(impl_rank_dest);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -286,6 +287,7 @@ int WRAP_Comm_compare(WRAP_Comm comm1, WRAP_Comm comm2, int *result)
     MPI_Comm impl_comm1 = CONVERT_MPI_Comm(comm1);
     MPI_Comm impl_comm2 = CONVERT_MPI_Comm(comm2);
     int rc = IMPL_Comm_compare(impl_comm1, impl_comm2, result);
+    if (rc == MPI_SUCCESS) *result = COMPARE_IMPL_TO_MUK(*result);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -344,7 +346,7 @@ int WRAP_Comm_create_keyval(WRAP_Comm_copy_attr_function *comm_copy_attr_fn, WRA
 int WRAP_Comm_delete_attr(WRAP_Comm comm, int comm_keyval)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    int rc = IMPL_Comm_delete_attr(impl_comm, comm_keyval);
+    int rc = IMPL_Comm_delete_attr(impl_comm, KEY_MUK_TO_IMPL(comm_keyval));
     if (rc) goto end;
     rc = remove_comm_keyval_callbacks(comm_keyval);
     if (rc==0) rc = MPI_ERR_INTERN;
@@ -363,10 +365,10 @@ int WRAP_Comm_get_attr(WRAP_Comm comm, int comm_keyval, void *attribute_val, int
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     int rc = IMPL_Comm_get_attr(impl_comm, KEY_MUK_TO_IMPL(comm_keyval), attribute_val, flag);
     // MPI_TAG_UB and MPI_WTIME_IS_GLOBAL should not require conversion
-    if (comm_keyval == MUK_HOST) {
+    if (rc == MPI_SUCCESS && *flag && comm_keyval == MUK_HOST) {
         **(int**)attribute_val = RANK_IMPL_TO_MUK(**(int**)attribute_val);
     }
-    if (comm_keyval == MUK_IO) {
+    if (rc == MPI_SUCCESS && *flag && comm_keyval == MUK_IO) {
         **(int**)attribute_val = RANK_IMPL_TO_MUK(**(int**)attribute_val);
     }
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -375,7 +377,7 @@ int WRAP_Comm_get_attr(WRAP_Comm comm, int comm_keyval, void *attribute_val, int
 int WRAP_Comm_set_attr(WRAP_Comm comm, int comm_keyval, void *attribute_val)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    int rc = IMPL_Comm_set_attr(impl_comm, comm_keyval, attribute_val);
+    int rc = IMPL_Comm_set_attr(impl_comm, KEY_MUK_TO_IMPL(comm_keyval), attribute_val);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -409,7 +411,7 @@ int WRAP_Keyval_free(int *keyval)
 int WRAP_Attr_delete(WRAP_Comm comm, int keyval)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    int rc = IMPL_Attr_delete(impl_comm, keyval);
+    int rc = IMPL_Attr_delete(impl_comm, KEY_MUK_TO_IMPL(keyval));
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -417,7 +419,7 @@ int WRAP_Attr_get(WRAP_Comm comm, int keyval, void *attribute_val, int *flag)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     int rc = IMPL_Attr_get(impl_comm, KEY_MUK_TO_IMPL(keyval), attribute_val, flag);
-    if (keyval == MUK_HOST) {
+    if (rc == MPI_SUCCESS && *flag && keyval == MUK_HOST) {
         **(int**)attribute_val = RANK_IMPL_TO_MUK(**(int**)attribute_val);
     }
     return RETURN_CODE_IMPL_TO_MUK(rc);
@@ -426,7 +428,7 @@ int WRAP_Attr_get(WRAP_Comm comm, int keyval, void *attribute_val, int *flag)
 int WRAP_Attr_put(WRAP_Comm comm, int keyval, void *attribute_val)
 {
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
-    int rc = IMPL_Attr_put(impl_comm, keyval, attribute_val);
+    int rc = IMPL_Attr_put(impl_comm, KEY_MUK_TO_IMPL(keyval), attribute_val);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -600,6 +602,11 @@ int WRAP_Comm_split_type(WRAP_Comm comm, int split_type, int key, WRAP_Info info
         impl_type = MPI_COMM_TYPE_HW_GUIDED;
     }
 #endif
+#ifdef MPI_COMM_TYPE_RESOURCE_GUIDED
+    else if (split_type == MUK_COMM_TYPE_RESOURCE_GUIDED) {
+        impl_type = MPI_COMM_TYPE_RESOURCE_GUIDED;
+    }
+#endif
     MPI_Comm impl_comm = CONVERT_MPI_Comm(comm);
     MPI_Info impl_info = CONVERT_MPI_Info(info);
     MPI_Comm impl_newcomm;
@@ -713,6 +720,7 @@ int WRAP_Group_compare(WRAP_Group group1, WRAP_Group group2, int *result)
     MPI_Group impl_group1 = CONVERT_MPI_Group(group1);
     MPI_Group impl_group2 = CONVERT_MPI_Group(group2);
     int rc = IMPL_Group_compare(impl_group1, impl_group2, result);
+    if (rc == MPI_SUCCESS) *result = COMPARE_IMPL_TO_MUK(*result);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 

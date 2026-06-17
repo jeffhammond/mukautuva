@@ -2,21 +2,21 @@
 
 let c=0
 for t in \
-    MPI_SUM \
-    MPI_NO_OP \
-    MPI_REPLACE \
-    MPI_MAX \
-    MPI_MIN \
-    MPI_LAND \
-    MPI_BAND \
-    MPI_LOR \
-    MPI_BOR \
-    MPI_LXOR \
-    MPI_BXOR \
-    MPI_MAXLOC \
-    MPI_MINLOC \
     MPI_OP_NULL \
+    MPI_SUM \
+    MPI_MIN \
+    MPI_MAX \
     MPI_PROD \
+    MPI_BAND \
+    MPI_BOR \
+    MPI_BXOR \
+    MPI_LAND \
+    MPI_LOR \
+    MPI_LXOR \
+    MPI_MINLOC \
+    MPI_MAXLOC \
+    MPI_REPLACE \
+    MPI_NO_OP \
     ; do
     #echo "#define ${t} ((MPI_Op)${c})"
     u=$(echo "$t" | sed "s/MPI/MUK/")

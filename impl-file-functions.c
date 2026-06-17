@@ -37,7 +37,8 @@ void file_errhandler_trampoline(MPI_File *file, int *error_code, ...)
                 __func__, (intptr_t)*file);
     }
     WRAP_File wrap_file = OUTPUT_MPI_File(*file);
-    (*fp)(&wrap_file,error_code);
+    int wrap_error_code = ERROR_CODE_IMPL_TO_MUK(*error_code);
+    (*fp)(&wrap_file,&wrap_error_code);
 }
 
 int WRAP_File_create_errhandler(WRAP_File_errhandler_function *file_errhandler_fn, WRAP_Errhandler *errhandler)
@@ -84,7 +85,7 @@ int WRAP_File_get_errhandler(WRAP_File file, WRAP_Errhandler *errhandler)
 int WRAP_File_call_errhandler(WRAP_File fh, int errorcode)
 {
     MPI_File impl_fh = CONVERT_MPI_File(fh);
-    int rc = IMPL_File_call_errhandler(impl_fh, errorcode);
+    int rc = IMPL_File_call_errhandler(impl_fh, ERROR_CODE_MUK_TO_IMPL(errorcode));
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 

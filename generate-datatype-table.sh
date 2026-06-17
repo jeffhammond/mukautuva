@@ -48,10 +48,15 @@ for t in \
     MPI_LOGICAL \
     MPI_CHARACTER \
     MPI_DOUBLE_COMPLEX \
+    MPI_LOGICAL1 \
     MPI_INTEGER1 \
+    MPI_LOGICAL2 \
     MPI_INTEGER2 \
+    MPI_LOGICAL4 \
     MPI_INTEGER4 \
+    MPI_LOGICAL8 \
     MPI_INTEGER8 \
+    MPI_LOGICAL16 \
     MPI_INTEGER16 \
     MPI_REAL2 \
     MPI_REAL4 \
@@ -70,8 +75,6 @@ for t in \
     MPI_2REAL \
     MPI_2DOUBLE_PRECISION \
     MPI_2INTEGER \
-    MPI_LB \
-    MPI_UB \
     ; do
     #echo "#define ${t} ((MPI_Datatype)${c})"
     u=$(echo "$t" | sed "s/MPI/MUK/")

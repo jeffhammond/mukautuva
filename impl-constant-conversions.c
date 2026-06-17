@@ -87,9 +87,6 @@ int ERROR_CODE_IMPL_TO_MUK(int error_c)
     else if (error == MPI_ERR_NO_SPACE              ) { return MUK_ERR_NO_SPACE; }
     else if (error == MPI_ERR_NO_SUCH_FILE          ) { return MUK_ERR_NO_SUCH_FILE; }
     else if (error == MPI_ERR_PORT                  ) { return MUK_ERR_PORT; }
-#if (MPI_VERSION >= 4)
-    else if (error == MPI_ERR_PROC_ABORTED          ) { return MUK_ERR_PROC_ABORTED; }
-#endif
     else if (error == MPI_ERR_QUOTA                 ) { return MUK_ERR_QUOTA; }
     else if (error == MPI_ERR_READ_ONLY             ) { return MUK_ERR_READ_ONLY; }
     else if (error == MPI_ERR_RMA_ATTACH            ) { return MUK_ERR_RMA_ATTACH; }
@@ -97,21 +94,28 @@ int ERROR_CODE_IMPL_TO_MUK(int error_c)
     else if (error == MPI_ERR_RMA_RANGE             ) { return MUK_ERR_RMA_RANGE; }
     else if (error == MPI_ERR_RMA_SHARED            ) { return MUK_ERR_RMA_SHARED; }
     else if (error == MPI_ERR_RMA_SYNC              ) { return MUK_ERR_RMA_SYNC; }
-    else if (error == MPI_ERR_RMA_FLAVOR            ) { return MUK_ERR_RMA_FLAVOR; }
     else if (error == MPI_ERR_SERVICE               ) { return MUK_ERR_SERVICE; }
-#if (MPI_VERSION >= 4)
-    else if (error == MPI_ERR_SESSION               ) { return MUK_ERR_SESSION; }
-#endif
     else if (error == MPI_ERR_SIZE                  ) { return MUK_ERR_SIZE; }
     else if (error == MPI_ERR_SPAWN                 ) { return MUK_ERR_SPAWN; }
     else if (error == MPI_ERR_UNSUPPORTED_DATAREP   ) { return MUK_ERR_UNSUPPORTED_DATAREP; }
     else if (error == MPI_ERR_UNSUPPORTED_OPERATION ) { return MUK_ERR_UNSUPPORTED_OPERATION; }
-#if (MPI_VERSION >= 4)
-    else if (error == MPI_ERR_VALUE_TOO_LARGE       ) { return MUK_ERR_VALUE_TOO_LARGE; }
-#endif
     else if (error == MPI_ERR_WIN                   ) { return MUK_ERR_WIN; }
+    else if (error == MPI_ERR_RMA_FLAVOR            ) { return MUK_ERR_RMA_FLAVOR; }
+#if (MPI_VERSION >= 4)
+    else if (error == MPI_ERR_PROC_ABORTED          ) { return MUK_ERR_PROC_ABORTED; }
+    else if (error == MPI_ERR_VALUE_TOO_LARGE       ) { return MUK_ERR_VALUE_TOO_LARGE; }
+    else if (error == MPI_ERR_SESSION               ) { return MUK_ERR_SESSION; }
+#endif
+#ifdef MPI_ERR_ERRHANDLER
+    else if (error == MPI_ERR_ERRHANDLER            ) { return MUK_ERR_ERRHANDLER; }
+#endif
+#ifdef MPI_ERR_ABI
+    else if (error == MPI_ERR_ABI                   ) { return MUK_ERR_ABI; }
+#endif
     else if (error == MPI_T_ERR_CANNOT_INIT         ) { return MUK_T_ERR_CANNOT_INIT; }
-    //else if (error == MPI_T_ERR_NOT_ACCESSIBLE      ) { return MUK_T_ERR_NOT_ACCESSIBLE; }
+#ifdef MPI_T_ERR_NOT_ACCESSIBLE
+    else if (error == MPI_T_ERR_NOT_ACCESSIBLE      ) { return MUK_T_ERR_NOT_ACCESSIBLE; }
+#endif
     else if (error == MPI_T_ERR_NOT_INITIALIZED     ) { return MUK_T_ERR_NOT_INITIALIZED; }
 #if (MPI_VERSION >= 4)
     else if (error == MPI_T_ERR_NOT_SUPPORTED       ) { return MUK_T_ERR_NOT_SUPPORTED; }
@@ -132,7 +136,7 @@ int ERROR_CODE_IMPL_TO_MUK(int error_c)
     else if (error == MPI_T_ERR_PVAR_NO_ATOMIC      ) { return MUK_T_ERR_PVAR_NO_ATOMIC; }
     else if (error == MPI_ERR_LASTCODE              ) { return MUK_ERR_LASTCODE; }
     else {
-#if 1
+#if 0
         int me;
         IMPL_Comm_rank(MPI_COMM_WORLD,&me);
         int len;
@@ -142,7 +146,7 @@ int ERROR_CODE_IMPL_TO_MUK(int error_c)
         printf("%d: Unknown error returned from the C library: code=%d=%x, class=%d=%x, name=%s\n",
                 me, error_c, error_c, error, error, name);
 #endif
-        return MUK_ERR_UNKNOWN;
+        return error;
     }
 }
 
@@ -192,9 +196,6 @@ int ERROR_CODE_MUK_TO_IMPL(int error_muk)
     else if (error_muk == MUK_ERR_NO_SPACE               ) { return MPI_ERR_NO_SPACE;              }
     else if (error_muk == MUK_ERR_NO_SUCH_FILE           ) { return MPI_ERR_NO_SUCH_FILE;          }
     else if (error_muk == MUK_ERR_PORT                   ) { return MPI_ERR_PORT;                  }
-#if (MPI_VERSION >= 4)
-    else if (error_muk == MUK_ERR_PROC_ABORTED           ) { return MPI_ERR_PROC_ABORTED;          }
-#endif
     else if (error_muk == MUK_ERR_QUOTA                  ) { return MPI_ERR_QUOTA;                 }
     else if (error_muk == MUK_ERR_READ_ONLY              ) { return MPI_ERR_READ_ONLY;             }
     else if (error_muk == MUK_ERR_RMA_ATTACH             ) { return MPI_ERR_RMA_ATTACH;            }
@@ -202,21 +203,34 @@ int ERROR_CODE_MUK_TO_IMPL(int error_muk)
     else if (error_muk == MUK_ERR_RMA_RANGE              ) { return MPI_ERR_RMA_RANGE;             }
     else if (error_muk == MUK_ERR_RMA_SHARED             ) { return MPI_ERR_RMA_SHARED;            }
     else if (error_muk == MUK_ERR_RMA_SYNC               ) { return MPI_ERR_RMA_SYNC;              }
-    else if (error_muk == MUK_ERR_RMA_FLAVOR             ) { return MPI_ERR_RMA_FLAVOR;            }
     else if (error_muk == MUK_ERR_SERVICE                ) { return MPI_ERR_SERVICE;               }
-#if (MPI_VERSION >= 4)
-    else if (error_muk == MUK_ERR_SESSION                ) { return MPI_ERR_SESSION;               }
-#endif
     else if (error_muk == MUK_ERR_SIZE                   ) { return MPI_ERR_SIZE;                  }
     else if (error_muk == MUK_ERR_SPAWN                  ) { return MPI_ERR_SPAWN;                 }
     else if (error_muk == MUK_ERR_UNSUPPORTED_DATAREP    ) { return MPI_ERR_UNSUPPORTED_DATAREP;   }
     else if (error_muk == MUK_ERR_UNSUPPORTED_OPERATION  ) { return MPI_ERR_UNSUPPORTED_OPERATION; }
-#if (MPI_VERSION >= 4)
-    else if (error_muk == MUK_ERR_VALUE_TOO_LARGE        ) { return MPI_ERR_VALUE_TOO_LARGE;       }
-#endif
     else if (error_muk == MUK_ERR_WIN                    ) { return MPI_ERR_WIN;                   }
+    else if (error_muk == MUK_ERR_RMA_FLAVOR             ) { return MPI_ERR_RMA_FLAVOR;            }
+#if (MPI_VERSION >= 4)
+    else if (error_muk == MUK_ERR_PROC_ABORTED           ) { return MPI_ERR_PROC_ABORTED;          }
+    else if (error_muk == MUK_ERR_VALUE_TOO_LARGE        ) { return MPI_ERR_VALUE_TOO_LARGE;       }
+    else if (error_muk == MUK_ERR_SESSION                ) { return MPI_ERR_SESSION;               }
+#endif
+#ifdef MPI_ERR_ERRHANDLER
+    else if (error_muk == MUK_ERR_ERRHANDLER             ) { return MPI_ERR_ERRHANDLER;            }
+#else
+    else if (error_muk == MUK_ERR_ERRHANDLER             ) { return MPI_ERR_UNKNOWN;               }
+#endif
+#ifdef MPI_ERR_ABI
+    else if (error_muk == MUK_ERR_ABI                    ) { return MPI_ERR_ABI;                   }
+#else
+    else if (error_muk == MUK_ERR_ABI                    ) { return MPI_ERR_UNKNOWN;               }
+#endif
     else if (error_muk == MUK_T_ERR_CANNOT_INIT          ) { return MPI_T_ERR_CANNOT_INIT;         }
-    //else if (error_muk == MUK_T_ERR_NOT_ACCESSIBLE       ) { return MPI_T_ERR_NOT_ACCESSIBLE;      }
+#ifdef MPI_T_ERR_NOT_ACCESSIBLE
+    else if (error_muk == MUK_T_ERR_NOT_ACCESSIBLE       ) { return MPI_T_ERR_NOT_ACCESSIBLE;      }
+#else
+    else if (error_muk == MUK_T_ERR_NOT_ACCESSIBLE       ) { return MPI_ERR_UNKNOWN;               }
+#endif
     else if (error_muk == MUK_T_ERR_NOT_INITIALIZED      ) { return MPI_T_ERR_NOT_INITIALIZED;     }
 #if (MPI_VERSION >= 4)
     else if (error_muk == MUK_T_ERR_NOT_SUPPORTED        ) { return MPI_T_ERR_NOT_SUPPORTED;       }
@@ -237,7 +251,6 @@ int ERROR_CODE_MUK_TO_IMPL(int error_muk)
     else if (error_muk == MUK_T_ERR_PVAR_NO_ATOMIC       ) { return MPI_T_ERR_PVAR_NO_ATOMIC;      }
     else if (error_muk == MUK_ERR_LASTCODE               ) { return MPI_ERR_LASTCODE;              }
     else {
-        //fprintf(stderr, "Unknown error code returned from the F library: %d\n", error_muk);
-        return MPI_ERR_UNKNOWN;
+        return error_muk;
     }
 }

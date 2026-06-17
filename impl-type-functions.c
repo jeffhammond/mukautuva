@@ -24,6 +24,38 @@
 //#include "impl-predefined-handle.h"
 #include "impl-keyval-map.h"
 
+static void TYPE_CONTENTS_INTEGERS_IMPL_TO_MUK(int combiner_impl, long long max_integers, int array_of_integers[])
+{
+    if (array_of_integers == NULL || max_integers <= 0) {
+        return;
+    }
+
+    if (combiner_impl == MPI_COMBINER_SUBARRAY) {
+        int ndims = array_of_integers[0];
+        long long order_index = 3LL * ndims + 1;
+        if (order_index < max_integers) {
+            array_of_integers[order_index] = ORDER_IMPL_TO_MUK(array_of_integers[order_index]);
+        }
+    }
+    else if (combiner_impl == MPI_COMBINER_DARRAY) {
+        if (max_integers < 3) {
+            return;
+        }
+        int ndims = array_of_integers[2];
+        long long distrib_index = 3LL + ndims;
+        long long darg_index = distrib_index + ndims;
+        long long order_index = 3LL + 4LL * ndims;
+        if (order_index >= max_integers) {
+            return;
+        }
+        for (int i=0; i<ndims; i++) {
+            array_of_integers[distrib_index + i] = DISTRIBUTE_IMPL_TO_MUK(array_of_integers[distrib_index + i]);
+            array_of_integers[darg_index + i] = DARRAY_DARG_IMPL_TO_MUK(array_of_integers[darg_index + i]);
+        }
+        array_of_integers[order_index] = ORDER_IMPL_TO_MUK(array_of_integers[order_index]);
+    }
+}
+
 // used by WRAP_Type_create_keyval
 
 int type_copy_attr_trampoline(MPI_Datatype impl_type, int type_keyval, void *extra_state, void *attribute_val_in, void *attribute_val_out, int *flag)
@@ -166,33 +198,10 @@ int WRAP_Type_create_darray(int size, int rank, int ndims, const int array_of_gs
     }
     for (int d=0; d<ndims; d++)
     {
-        int dist = array_of_distribs[d];
-        if (dist == MUK_DISTRIBUTE_BLOCK) {
-            impl_array_of_distribs[d] = MPI_DISTRIBUTE_BLOCK;
-        }
-        else if (dist == MUK_DISTRIBUTE_CYCLIC) {
-            impl_array_of_distribs[d] = MPI_DISTRIBUTE_CYCLIC;
-        }
-        else if (dist == MUK_DISTRIBUTE_NONE) {
-            impl_array_of_distribs[d] = MPI_DISTRIBUTE_NONE;
-        }
-        else {
-            impl_array_of_distribs[d] = MPI_UNDEFINED;
-        }
-        int darg = array_of_dargs[d];
-        if (darg == MUK_DISTRIBUTE_DFLT_DARG) {
-            impl_array_of_dargs[d] = MPI_DISTRIBUTE_DFLT_DARG;
-        } else {
-            impl_array_of_dargs[d] = darg;
-        }
+        impl_array_of_distribs[d] = DISTRIBUTE_MUK_TO_IMPL(array_of_distribs[d]);
+        impl_array_of_dargs[d] = DARRAY_DARG_MUK_TO_IMPL(array_of_dargs[d]);
     }
-    int impl_order = MPI_UNDEFINED;
-    if (order == MUK_ORDER_C) {
-        impl_order = MPI_ORDER_C;
-    }
-    else if (order == MUK_ORDER_FORTRAN) {
-        impl_order = MPI_ORDER_FORTRAN;
-    }
+    int impl_order = ORDER_MUK_TO_IMPL(order);
     MPI_Datatype impl_oldtype = CONVERT_MPI_Datatype(oldtype);
     MPI_Datatype impl_newtype;
     rc = IMPL_Type_create_darray(size, rank, ndims, array_of_gsizes, impl_array_of_distribs, impl_array_of_dargs, array_of_psizes, impl_order, impl_oldtype, &impl_newtype);
@@ -205,17 +214,25 @@ int WRAP_Type_create_darray(int size, int rank, int ndims, const int array_of_gs
 
 int WRAP_Type_create_darray_c(int size, int rank, int ndims, const WRAP_Count array_of_gsizes[], const int array_of_distribs[], const int array_of_dargs[], const int array_of_psizes[], int order, WRAP_Datatype oldtype, WRAP_Datatype *newtype)
 {
-    int impl_order = MPI_UNDEFINED;
-    if (order == MUK_ORDER_C) {
-        impl_order = MPI_ORDER_C;
+    int * impl_array_of_distribs = calloc(ndims,sizeof(int));
+    int * impl_array_of_dargs = calloc(ndims,sizeof(int));
+    if (impl_array_of_distribs == NULL || impl_array_of_dargs == NULL) {
+        free(impl_array_of_distribs);
+        free(impl_array_of_dargs);
+        return RETURN_CODE_IMPL_TO_MUK(MPI_ERR_INTERN);
     }
-    else if (order == MUK_ORDER_FORTRAN) {
-        impl_order = MPI_ORDER_FORTRAN;
+    for (int d=0; d<ndims; d++)
+    {
+        impl_array_of_distribs[d] = DISTRIBUTE_MUK_TO_IMPL(array_of_distribs[d]);
+        impl_array_of_dargs[d] = DARRAY_DARG_MUK_TO_IMPL(array_of_dargs[d]);
     }
+    int impl_order = ORDER_MUK_TO_IMPL(order);
     MPI_Datatype impl_oldtype = CONVERT_MPI_Datatype(oldtype);
     MPI_Datatype impl_newtype;
-    int rc = IMPL_Type_create_darray_c(size, rank, ndims, array_of_gsizes, array_of_distribs, array_of_dargs, array_of_psizes, impl_order, impl_oldtype, &impl_newtype);
+    int rc = IMPL_Type_create_darray_c(size, rank, ndims, array_of_gsizes, impl_array_of_distribs, impl_array_of_dargs, array_of_psizes, impl_order, impl_oldtype, &impl_newtype);
     *newtype = OUTPUT_MPI_Datatype(impl_newtype);
+    free(impl_array_of_distribs);
+    free(impl_array_of_dargs);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -373,13 +390,7 @@ int WRAP_Type_create_struct_c(WRAP_Count count, const WRAP_Count array_of_blockl
 
 int WRAP_Type_create_subarray(int ndims, const int array_of_sizes[], const int array_of_subsizes[], const int array_of_starts[], int order, WRAP_Datatype oldtype, WRAP_Datatype *newtype)
 {
-    int impl_order = MPI_UNDEFINED;
-    if (order == MUK_ORDER_C) {
-        impl_order = MPI_ORDER_C;
-    }
-    else if (order == MUK_ORDER_FORTRAN) {
-        impl_order = MPI_ORDER_FORTRAN;
-    }
+    int impl_order = ORDER_MUK_TO_IMPL(order);
     MPI_Datatype impl_oldtype = CONVERT_MPI_Datatype(oldtype);
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_create_subarray(ndims, array_of_sizes, array_of_subsizes, array_of_starts, impl_order, impl_oldtype, &impl_newtype);
@@ -389,13 +400,7 @@ int WRAP_Type_create_subarray(int ndims, const int array_of_sizes[], const int a
 
 int WRAP_Type_create_subarray_c(int ndims, const WRAP_Count array_of_sizes[], const WRAP_Count array_of_subsizes[], const WRAP_Count array_of_starts[], int order, WRAP_Datatype oldtype, WRAP_Datatype *newtype)
 {
-    int impl_order = MPI_UNDEFINED;
-    if (order == MUK_ORDER_C) {
-        impl_order = MPI_ORDER_C;
-    }
-    else if (order == MUK_ORDER_FORTRAN) {
-        impl_order = MPI_ORDER_FORTRAN;
-    }
+    int impl_order = ORDER_MUK_TO_IMPL(order);
     MPI_Datatype impl_oldtype = CONVERT_MPI_Datatype(oldtype);
     MPI_Datatype impl_newtype;
     int rc = IMPL_Type_create_subarray_c(ndims, array_of_sizes, array_of_subsizes, array_of_starts, impl_order, impl_oldtype, &impl_newtype);
@@ -406,7 +411,7 @@ int WRAP_Type_create_subarray_c(int ndims, const WRAP_Count array_of_sizes[], co
 int WRAP_Type_delete_attr(WRAP_Datatype datatype, int type_keyval)
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    int rc = IMPL_Type_delete_attr(impl_datatype, type_keyval);
+    int rc = IMPL_Type_delete_attr(impl_datatype, KEY_MUK_TO_IMPL(type_keyval));
     if (rc) goto end;
     rc = remove_type_keyval_callbacks(type_keyval);
     if (rc==0) rc = MPI_ERR_INTERN;
@@ -449,7 +454,12 @@ int WRAP_Type_get_contents(WRAP_Datatype datatype, int max_integers, int max_add
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Datatype * impl_array_of_datatypes = calloc(max_datatypes,sizeof(MPI_Datatype));
+    int ni, na, nd, combiner_impl;
+    int env_rc = IMPL_Type_get_envelope(impl_datatype, &ni, &na, &nd, &combiner_impl);
     int rc = IMPL_Type_get_contents(impl_datatype, max_integers, max_addresses, max_datatypes, array_of_integers, array_of_addresses, impl_array_of_datatypes);
+    if (rc == MPI_SUCCESS && env_rc == MPI_SUCCESS) {
+        TYPE_CONTENTS_INTEGERS_IMPL_TO_MUK(combiner_impl, max_integers, array_of_integers);
+    }
     for (int i=0; i<max_datatypes; i++) {
         array_of_datatypes[i] = OUTPUT_MPI_Datatype(impl_array_of_datatypes[i]);
     }
@@ -462,7 +472,12 @@ int WRAP_Type_get_contents_c(WRAP_Datatype datatype, WRAP_Count max_integers, WR
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
     MPI_Datatype * impl_array_of_datatypes = calloc(max_datatypes,sizeof(MPI_Datatype));
+    int ni, na, nd, combiner_impl;
+    int env_rc = IMPL_Type_get_envelope(impl_datatype, &ni, &na, &nd, &combiner_impl);
     int rc = IMPL_Type_get_contents_c(impl_datatype, max_integers, max_addresses, max_large_counts, max_datatypes, array_of_integers, array_of_addresses, array_of_large_counts, impl_array_of_datatypes);
+    if (rc == MPI_SUCCESS && env_rc == MPI_SUCCESS) {
+        TYPE_CONTENTS_INTEGERS_IMPL_TO_MUK(combiner_impl, max_integers, array_of_integers);
+    }
     for (int i=0; i<max_datatypes; i++) {
         array_of_datatypes[i] = OUTPUT_MPI_Datatype(impl_array_of_datatypes[i]);
     }
@@ -607,6 +622,11 @@ int WRAP_Type_match_size(int typeclass, int size, WRAP_Datatype *datatype)
     else if (typeclass == MUK_TYPECLASS_COMPLEX) {
         impl_typeclass = MPI_TYPECLASS_COMPLEX;
     }
+#ifdef MPIX_TYPECLASS_LOGICAL
+    else if (typeclass == MUKX_TYPECLASS_LOGICAL) {
+        impl_typeclass = MPIX_TYPECLASS_LOGICAL;
+    }
+#endif
     else {
         printf("Unknown typeclass: %d\n", typeclass);
         impl_typeclass = MPI_UNDEFINED;
@@ -619,7 +639,7 @@ int WRAP_Type_match_size(int typeclass, int size, WRAP_Datatype *datatype)
 int WRAP_Type_set_attr(WRAP_Datatype datatype, int type_keyval, void *attribute_val)
 {
     MPI_Datatype impl_datatype = CONVERT_MPI_Datatype(datatype);
-    int rc = IMPL_Type_set_attr(impl_datatype, type_keyval, attribute_val);
+    int rc = IMPL_Type_set_attr(impl_datatype, KEY_MUK_TO_IMPL(type_keyval), attribute_val);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 

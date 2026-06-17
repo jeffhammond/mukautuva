@@ -41,12 +41,47 @@ Which_MPI_e whose_mpi = UNKNOWN;
 
 int (*WRAP_Load_functions)(void * restrict h, int major, int minor);
 int (*WRAP_CODE_IMPL_TO_MUK)(int error_c);
+int (*WRAP_CODE_MUK_TO_IMPL)(int error_muk);
 void (*WRAP_Init_handle_key)(void);
 void (*WRAP_Finalize_handle_key)(void);
 void (*WRAP_Clear_maps)(void);
 
 int * MPICH_UNWEIGHTED    = NULL;
 int * MPICH_WEIGHTS_EMPTY = NULL;
+
+static int THREAD_LEVEL_MUK_TO_IMPL_DIRECT(int thread_muk)
+{
+    if (thread_muk == MUK_THREAD_SINGLE) {
+        return 0;
+    }
+    else if (thread_muk == MUK_THREAD_FUNNELED) {
+        return 1;
+    }
+    else if (thread_muk == MUK_THREAD_SERIALIZED) {
+        return 2;
+    }
+    else if (thread_muk == MUK_THREAD_MULTIPLE) {
+        return 3;
+    }
+    return thread_muk;
+}
+
+static int THREAD_LEVEL_IMPL_TO_MUK_DIRECT(int thread_impl)
+{
+    if (thread_impl == 0) {
+        return MUK_THREAD_SINGLE;
+    }
+    else if (thread_impl == 1) {
+        return MUK_THREAD_FUNNELED;
+    }
+    else if (thread_impl == 2) {
+        return MUK_THREAD_SERIALIZED;
+    }
+    else if (thread_impl == 3) {
+        return MUK_THREAD_MULTIPLE;
+    }
+    return thread_impl;
+}
 
 // alkaa = start
 static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
@@ -91,7 +126,9 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     if (provided == NULL) {
         rc = MUK_Init(argc,argv);
     } else {
-        rc = MUK_Init_thread(argc,argv,requested,provided);
+        int impl_provided;
+        rc = MUK_Init_thread(argc,argv,THREAD_LEVEL_MUK_TO_IMPL_DIRECT(requested),&impl_provided);
+        *provided = THREAD_LEVEL_IMPL_TO_MUK_DIRECT(impl_provided);
     }
     if (rc) {
         printf("libinit: MPI initialization failed: %d\n",rc);
@@ -749,6 +786,7 @@ static int MUK_Alkaa(int * argc, char *** argv, int requested, int * provided)
     rc = WRAP_Load_functions(h,major,minor);
 
     WRAP_CODE_IMPL_TO_MUK = MUK_DLSYM(wrap_so_handle,"ERROR_CODE_IMPL_TO_MUK");
+    WRAP_CODE_MUK_TO_IMPL = MUK_DLSYM(wrap_so_handle,"ERROR_CODE_MUK_TO_IMPL");
 
     WRAP_Init_handle_key = MUK_DLSYM(wrap_so_handle,"WRAP_Init_handle_key");
     WRAP_Finalize_handle_key = MUK_DLSYM(wrap_so_handle,"WRAP_Finalize_handle_key");
@@ -766,7 +804,6 @@ int MPI_Init(int * argc, char *** argv)
 
 int MPI_Init_thread(int * argc, char *** argv, int requested, int * provided)
 {
-    // no thread conversion here because MUK, MPICH and OMPI all agree
     int rc = MUK_Alkaa(argc,argv,requested,provided);
     return WRAP_CODE_IMPL_TO_MUK(rc);
 }
@@ -833,8 +870,10 @@ int MPI_Is_thread_main(int * flag)
 
 int MPI_Query_thread(int * provided)
 {
-    // no thread conversion here because MUK, MPICH and OMPI all agree
     int rc = MUK_Query_thread(provided);
+    if (rc == MPI_SUCCESS) {
+        *provided = THREAD_LEVEL_IMPL_TO_MUK_DIRECT(*provided);
+    }
     return WRAP_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -846,16 +885,9 @@ int MPI_Get_processor_name(char *name, int *resultlen)
 
 int MPI_Get_version(int * major, int * minor)
 {
-    // calling this function before MPI initialization is allowed.
-    // we should dlopen the MPI implementation when this is called,
-    // but that is not what we are implementing for now.
-    if (MUK_Get_version == NULL) {
-        *major = 3;
-        *minor = 1;
-        return MPI_SUCCESS;
-    }
-    int rc = MUK_Get_version(major, minor);
-    return WRAP_CODE_IMPL_TO_MUK(rc);
+    *major = MPI_VERSION;
+    *minor = MPI_SUBVERSION;
+    return MPI_SUCCESS;
 }
 
 int MPI_Abort(MPI_Comm comm, int errorcode)
@@ -1539,12 +1571,19 @@ int MPI_Errhandler_set(MPI_Comm comm, MPI_Errhandler errhandler)
 
 int MPI_Error_class(int errorcode, int *errorclass)
 {
-    return MUK_Error_class(errorcode, errorclass);
+    int impl_errorcode = WRAP_CODE_MUK_TO_IMPL ? WRAP_CODE_MUK_TO_IMPL(errorcode) : errorcode;
+    int rc = MUK_Error_class(impl_errorcode, errorclass);
+    if (rc == MPI_SUCCESS && WRAP_CODE_IMPL_TO_MUK) {
+        *errorclass = WRAP_CODE_IMPL_TO_MUK(*errorclass);
+    }
+    return WRAP_CODE_IMPL_TO_MUK ? WRAP_CODE_IMPL_TO_MUK(rc) : rc;
 }
 
 int MPI_Error_string(int errorcode, char *string, int *resultlen)
 {
-    return MUK_Error_string(errorcode, string, resultlen);
+    int impl_errorcode = WRAP_CODE_MUK_TO_IMPL ? WRAP_CODE_MUK_TO_IMPL(errorcode) : errorcode;
+    int rc = MUK_Error_string(impl_errorcode, string, resultlen);
+    return WRAP_CODE_IMPL_TO_MUK ? WRAP_CODE_IMPL_TO_MUK(rc) : rc;
 }
 
 int MPI_Exscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)

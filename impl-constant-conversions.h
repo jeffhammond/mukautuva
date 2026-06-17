@@ -44,12 +44,185 @@ static int COMBINER_CODE_IMPL_TO_MUK(int in)
     else if (in == MPI_COMBINER_STRUCT)         { return MUK_COMBINER_STRUCT; }
     else if (in == MPI_COMBINER_SUBARRAY)       { return MUK_COMBINER_SUBARRAY; }
     else if (in == MPI_COMBINER_VECTOR)         { return MUK_COMBINER_VECTOR; }
+#ifdef MPI_COMBINER_VALUE_INDEX
+    else if (in == MPI_COMBINER_VALUE_INDEX)    { return MUK_COMBINER_VALUE_INDEX; }
+#endif
     else                                        { return MUK_UNDEFINED; }
 }
 
-// MUK, MPICH and OMPI agree that ANY_TAG = -1 so no conversion is required.
-#define TAG_MUK_TO_IMPL(tag) (tag)
-#define TAG_IMPL_TO_MUK(tag) (tag)
+MAYBE_UNUSED
+static inline int TAG_MUK_TO_IMPL(int tag_muk)
+{
+    if (tag_muk == MUK_ANY_TAG) {
+        return MPI_ANY_TAG;
+    }
+    return tag_muk;
+}
+
+MAYBE_UNUSED
+static inline int TAG_IMPL_TO_MUK(int tag_impl)
+{
+    if (tag_impl == MPI_ANY_TAG) {
+        return MUK_ANY_TAG;
+    }
+    return tag_impl;
+}
+
+MAYBE_UNUSED
+static inline int THREAD_LEVEL_MUK_TO_IMPL(int thread_muk)
+{
+    if (thread_muk == MUK_THREAD_SINGLE) {
+        return MPI_THREAD_SINGLE;
+    }
+    else if (thread_muk == MUK_THREAD_FUNNELED) {
+        return MPI_THREAD_FUNNELED;
+    }
+    else if (thread_muk == MUK_THREAD_SERIALIZED) {
+        return MPI_THREAD_SERIALIZED;
+    }
+    else if (thread_muk == MUK_THREAD_MULTIPLE) {
+        return MPI_THREAD_MULTIPLE;
+    }
+    return thread_muk;
+}
+
+MAYBE_UNUSED
+static inline int THREAD_LEVEL_IMPL_TO_MUK(int thread_impl)
+{
+    if (thread_impl == MPI_THREAD_SINGLE) {
+        return MUK_THREAD_SINGLE;
+    }
+    else if (thread_impl == MPI_THREAD_FUNNELED) {
+        return MUK_THREAD_FUNNELED;
+    }
+    else if (thread_impl == MPI_THREAD_SERIALIZED) {
+        return MUK_THREAD_SERIALIZED;
+    }
+    else if (thread_impl == MPI_THREAD_MULTIPLE) {
+        return MUK_THREAD_MULTIPLE;
+    }
+    return thread_impl;
+}
+
+MAYBE_UNUSED
+static inline int COMPARE_IMPL_TO_MUK(int result_impl)
+{
+    if (result_impl == MPI_IDENT) {
+        return MUK_IDENT;
+    }
+    else if (result_impl == MPI_CONGRUENT) {
+        return MUK_CONGRUENT;
+    }
+    else if (result_impl == MPI_SIMILAR) {
+        return MUK_SIMILAR;
+    }
+    else if (result_impl == MPI_UNEQUAL) {
+        return MUK_UNEQUAL;
+    }
+    return result_impl;
+}
+
+MAYBE_UNUSED
+static inline int WIN_FLAVOR_IMPL_TO_MUK(int flavor_impl)
+{
+    if (flavor_impl == MPI_WIN_FLAVOR_CREATE) {
+        return MUK_WIN_FLAVOR_CREATE;
+    }
+    else if (flavor_impl == MPI_WIN_FLAVOR_ALLOCATE) {
+        return MUK_WIN_FLAVOR_ALLOCATE;
+    }
+    else if (flavor_impl == MPI_WIN_FLAVOR_DYNAMIC) {
+        return MUK_WIN_FLAVOR_DYNAMIC;
+    }
+    else if (flavor_impl == MPI_WIN_FLAVOR_SHARED) {
+        return MUK_WIN_FLAVOR_SHARED;
+    }
+    return flavor_impl;
+}
+
+MAYBE_UNUSED
+static inline int WIN_MODEL_IMPL_TO_MUK(int model_impl)
+{
+    if (model_impl == MPI_WIN_SEPARATE) {
+        return MUK_WIN_SEPARATE;
+    }
+    else if (model_impl == MPI_WIN_UNIFIED) {
+        return MUK_WIN_UNIFIED;
+    }
+    return model_impl;
+}
+
+MAYBE_UNUSED
+static inline int DISTRIBUTE_MUK_TO_IMPL(int dist_muk)
+{
+    if (dist_muk == MUK_DISTRIBUTE_BLOCK) {
+        return MPI_DISTRIBUTE_BLOCK;
+    }
+    else if (dist_muk == MUK_DISTRIBUTE_CYCLIC) {
+        return MPI_DISTRIBUTE_CYCLIC;
+    }
+    else if (dist_muk == MUK_DISTRIBUTE_NONE) {
+        return MPI_DISTRIBUTE_NONE;
+    }
+    return MPI_UNDEFINED;
+}
+
+MAYBE_UNUSED
+static inline int DISTRIBUTE_IMPL_TO_MUK(int dist_impl)
+{
+    if (dist_impl == MPI_DISTRIBUTE_BLOCK) {
+        return MUK_DISTRIBUTE_BLOCK;
+    }
+    else if (dist_impl == MPI_DISTRIBUTE_CYCLIC) {
+        return MUK_DISTRIBUTE_CYCLIC;
+    }
+    else if (dist_impl == MPI_DISTRIBUTE_NONE) {
+        return MUK_DISTRIBUTE_NONE;
+    }
+    return MUK_UNDEFINED;
+}
+
+MAYBE_UNUSED
+static inline int DARRAY_DARG_MUK_TO_IMPL(int darg_muk)
+{
+    if (darg_muk == MUK_DISTRIBUTE_DFLT_DARG) {
+        return MPI_DISTRIBUTE_DFLT_DARG;
+    }
+    return darg_muk;
+}
+
+MAYBE_UNUSED
+static inline int DARRAY_DARG_IMPL_TO_MUK(int darg_impl)
+{
+    if (darg_impl == MPI_DISTRIBUTE_DFLT_DARG) {
+        return MUK_DISTRIBUTE_DFLT_DARG;
+    }
+    return darg_impl;
+}
+
+MAYBE_UNUSED
+static inline int ORDER_MUK_TO_IMPL(int order_muk)
+{
+    if (order_muk == MUK_ORDER_C) {
+        return MPI_ORDER_C;
+    }
+    else if (order_muk == MUK_ORDER_FORTRAN) {
+        return MPI_ORDER_FORTRAN;
+    }
+    return MPI_UNDEFINED;
+}
+
+MAYBE_UNUSED
+static inline int ORDER_IMPL_TO_MUK(int order_impl)
+{
+    if (order_impl == MPI_ORDER_C) {
+        return MUK_ORDER_C;
+    }
+    else if (order_impl == MPI_ORDER_FORTRAN) {
+        return MUK_ORDER_FORTRAN;
+    }
+    return MUK_UNDEFINED;
+}
 
 MAYBE_UNUSED
 static inline int RANK_MUK_TO_IMPL(int rank_muk)
@@ -174,15 +347,15 @@ MAYBE_UNUSED
 static int IO_MODE_IMPL_TO_MUK(int mode_impl)
 {
     int mode_muk = 0;
-    if (mode_impl & MUK_MODE_APPEND)          { mode_muk |= MPI_MODE_APPEND; }
-    if (mode_impl & MUK_MODE_CREATE)          { mode_muk |= MPI_MODE_CREATE; }
-    if (mode_impl & MUK_MODE_DELETE_ON_CLOSE) { mode_muk |= MPI_MODE_DELETE_ON_CLOSE; }
-    if (mode_impl & MUK_MODE_EXCL)            { mode_muk |= MPI_MODE_EXCL; }
-    if (mode_impl & MUK_MODE_RDONLY)          { mode_muk |= MPI_MODE_RDONLY; }
-    if (mode_impl & MUK_MODE_RDWR)            { mode_muk |= MPI_MODE_RDWR; }
-    if (mode_impl & MUK_MODE_SEQUENTIAL)      { mode_muk |= MPI_MODE_SEQUENTIAL; }
-    if (mode_impl & MUK_MODE_UNIQUE_OPEN)     { mode_muk |= MPI_MODE_UNIQUE_OPEN; }
-    if (mode_impl & MUK_MODE_WRONLY)          { mode_muk |= MPI_MODE_WRONLY; }
+    if (mode_impl & MPI_MODE_APPEND)          { mode_muk |= MUK_MODE_APPEND; }
+    if (mode_impl & MPI_MODE_CREATE)          { mode_muk |= MUK_MODE_CREATE; }
+    if (mode_impl & MPI_MODE_DELETE_ON_CLOSE) { mode_muk |= MUK_MODE_DELETE_ON_CLOSE; }
+    if (mode_impl & MPI_MODE_EXCL)            { mode_muk |= MUK_MODE_EXCL; }
+    if (mode_impl & MPI_MODE_RDONLY)          { mode_muk |= MUK_MODE_RDONLY; }
+    if (mode_impl & MPI_MODE_RDWR)            { mode_muk |= MUK_MODE_RDWR; }
+    if (mode_impl & MPI_MODE_SEQUENTIAL)      { mode_muk |= MUK_MODE_SEQUENTIAL; }
+    if (mode_impl & MPI_MODE_UNIQUE_OPEN)     { mode_muk |= MUK_MODE_UNIQUE_OPEN; }
+    if (mode_impl & MPI_MODE_WRONLY)          { mode_muk |= MUK_MODE_WRONLY; }
     return mode_muk;
 }
 

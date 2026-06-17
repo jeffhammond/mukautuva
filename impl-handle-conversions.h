@@ -296,9 +296,19 @@ static inline MPI_Datatype CONVERT_MPI_Datatype(WRAP_Datatype datatype)
         return MPI_DOUBLE_COMPLEX;
     }
 #endif
+#ifdef MPI_LOGICAL1
+    else if (datatype.ip == (intptr_t)MUK_LOGICAL1) {
+        return MPI_LOGICAL1;
+    }
+#endif
 #ifdef MPI_INTEGER1
     else if (datatype.ip == (intptr_t)MUK_INTEGER1) {
         return MPI_INTEGER1;
+    }
+#endif
+#ifdef MPI_LOGICAL2
+    else if (datatype.ip == (intptr_t)MUK_LOGICAL2) {
+        return MPI_LOGICAL2;
     }
 #endif
 #ifdef MPI_INTEGER2
@@ -306,14 +316,29 @@ static inline MPI_Datatype CONVERT_MPI_Datatype(WRAP_Datatype datatype)
         return MPI_INTEGER2;
     }
 #endif
+#ifdef MPI_LOGICAL4
+    else if (datatype.ip == (intptr_t)MUK_LOGICAL4) {
+        return MPI_LOGICAL4;
+    }
+#endif
 #ifdef MPI_INTEGER4
     else if (datatype.ip == (intptr_t)MUK_INTEGER4) {
         return MPI_INTEGER4;
     }
 #endif
+#ifdef MPI_LOGICAL8
+    else if (datatype.ip == (intptr_t)MUK_LOGICAL8) {
+        return MPI_LOGICAL8;
+    }
+#endif
 #ifdef MPI_INTEGER8
     else if (datatype.ip == (intptr_t)MUK_INTEGER8) {
         return MPI_INTEGER8;
+    }
+#endif
+#ifdef MPI_LOGICAL16
+    else if (datatype.ip == (intptr_t)MUK_LOGICAL16) {
+        return MPI_LOGICAL16;
     }
 #endif
 #ifdef MPI_INTEGER16
@@ -659,9 +684,19 @@ static inline WRAP_Datatype OUTPUT_MPI_Datatype(MPI_Datatype datatype)
         wrap.ip = (intptr_t)MUK_DOUBLE_COMPLEX;
     }
 #endif
+#ifdef MPI_LOGICAL1
+    else if (datatype == MPI_LOGICAL1) {
+        wrap.ip = (intptr_t)MUK_LOGICAL1;
+    }
+#endif
 #ifdef MPI_INTEGER1
     else if (datatype == MPI_INTEGER1) {
         wrap.ip = (intptr_t)MUK_INTEGER1;
+    }
+#endif
+#ifdef MPI_LOGICAL2
+    else if (datatype == MPI_LOGICAL2) {
+        wrap.ip = (intptr_t)MUK_LOGICAL2;
     }
 #endif
 #ifdef MPI_INTEGER2
@@ -669,14 +704,29 @@ static inline WRAP_Datatype OUTPUT_MPI_Datatype(MPI_Datatype datatype)
         wrap.ip = (intptr_t)MUK_INTEGER2;
     }
 #endif
+#ifdef MPI_LOGICAL4
+    else if (datatype == MPI_LOGICAL4) {
+        wrap.ip = (intptr_t)MUK_LOGICAL4;
+    }
+#endif
 #ifdef MPI_INTEGER4
     else if (datatype == MPI_INTEGER4) {
         wrap.ip = (intptr_t)MUK_INTEGER4;
     }
 #endif
+#ifdef MPI_LOGICAL8
+    else if (datatype == MPI_LOGICAL8) {
+        wrap.ip = (intptr_t)MUK_LOGICAL8;
+    }
+#endif
 #ifdef MPI_INTEGER8
     else if (datatype == MPI_INTEGER8) {
         wrap.ip = (intptr_t)MUK_INTEGER8;
+    }
+#endif
+#ifdef MPI_LOGICAL16
+    else if (datatype == MPI_LOGICAL16) {
+        wrap.ip = (intptr_t)MUK_LOGICAL16;
     }
 #endif
 #ifdef MPI_INTEGER16

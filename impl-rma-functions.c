@@ -106,7 +106,8 @@ void win_errhandler_trampoline(MPI_Win *win, int *error_code, ...)
         printf("%s: IMPL_Win_get_attr failed: flag=%d rc=%d\n", __func__, flag, rc);
     }
     WRAP_Win wrap_win = OUTPUT_MPI_Win(*win);
-    (*fp)(&wrap_win,error_code);
+    int wrap_error_code = ERROR_CODE_IMPL_TO_MUK(*error_code);
+    (*fp)(&wrap_win,&wrap_error_code);
 }
 
 int WRAP_Win_create_errhandler(WRAP_Win_errhandler_function *win_errhandler_fn, WRAP_Errhandler *errhandler)
@@ -156,7 +157,7 @@ int WRAP_Win_get_errhandler(WRAP_Win win, WRAP_Errhandler *errhandler)
 int WRAP_Win_call_errhandler(WRAP_Win win, int errorcode)
 {
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Win_call_errhandler(impl_win, errorcode);
+    int rc = IMPL_Win_call_errhandler(impl_win, ERROR_CODE_MUK_TO_IMPL(errorcode));
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
@@ -205,30 +206,26 @@ int WRAP_Win_get_attr(WRAP_Win win, int win_keyval, void *attribute_val, int *fl
     MPI_Win impl_win = CONVERT_MPI_Win(win);
     const int impl_keyval = KEY_MUK_TO_IMPL(win_keyval);
     int rc = IMPL_Win_get_attr(impl_win, impl_keyval, attribute_val, flag);
-    if (impl_keyval == MPI_WIN_MODEL) {
-        // this is the only place this is needed, so we inline it
-        if (**(int**)attribute_val == MPI_WIN_SEPARATE) {
-            **(int**)attribute_val = MUK_WIN_SEPARATE;
-        } else if (**(int**)attribute_val == MPI_WIN_UNIFIED) {
-            **(int**)attribute_val = MUK_WIN_UNIFIED;
-        }
+    if (rc == MPI_SUCCESS && *flag && impl_keyval == MPI_WIN_MODEL) {
+        **(int**)attribute_val = WIN_MODEL_IMPL_TO_MUK(**(int**)attribute_val);
     }
-    // MPI_WIN_CREATE_FLAVOR does not require conversion
-    // because MUK, MPICH and OMPI use the same constants
+    else if (rc == MPI_SUCCESS && *flag && impl_keyval == MPI_WIN_CREATE_FLAVOR) {
+        **(int**)attribute_val = WIN_FLAVOR_IMPL_TO_MUK(**(int**)attribute_val);
+    }
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Win_set_attr(WRAP_Win win, int win_keyval, void *attribute_val)
 {
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Win_set_attr(impl_win, win_keyval, attribute_val);
+    int rc = IMPL_Win_set_attr(impl_win, KEY_MUK_TO_IMPL(win_keyval), attribute_val);
     return RETURN_CODE_IMPL_TO_MUK(rc);
 }
 
 int WRAP_Win_delete_attr(WRAP_Win win, int win_keyval)
 {
     MPI_Win impl_win = CONVERT_MPI_Win(win);
-    int rc = IMPL_Win_delete_attr(impl_win, win_keyval);
+    int rc = IMPL_Win_delete_attr(impl_win, KEY_MUK_TO_IMPL(win_keyval));
     if (rc) goto end;
     end:
     return RETURN_CODE_IMPL_TO_MUK(rc);
